@@ -11,3 +11,25 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.Icon-person {
+  font-size: 18px !important;
+  margin-right: 5px;
+}
+.Knowledge-base {
+  color: #334155 !important;
+}
+.Knowledge-base:hover {
+  background-color: #f1f5f9;
+}
+.Nav-login {
+  margin: 0 90px;
+  padding: 26px 17px;
+}
+.navi-tem {
+  background-color: #0d6efd;
+  border-radius: 7px;
+}
+.Navbar-outer {
+  border-bottom: 1px solid #e2e8f0;
+}
