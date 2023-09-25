@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Image, Nav, Navbar } from 'react-bootstrap';
-import { Person } from '@mui/icons-material';
+import { BsFillPersonFill } from 'react-icons/bs';
 
 function NavbarLogin() {
   return (
@@ -16,8 +16,8 @@ function NavbarLogin() {
         <Navbar.Collapse className="justify-content-end" id="basic-navbar-nav">
           <Nav className=" login-button">
             <Nav className="login-nav ">
-              <Nav.Link className="login-admin" href="#link">
-                <Person className="fs-5 Icon-person " />
+              <Nav.Link className="login-admin" to="/">
+                <BsFillPersonFill className="fs-5 Icon-person " />
                 Login
               </Nav.Link>
               <Nav.Link className="login-admin" href="#link">
