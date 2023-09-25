@@ -2,8 +2,12 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { Container, Row, Col, Card } from "react-bootstrap/";
 import { Link } from "react-router-dom";
-
+import Validations from "../Components/Validations";
+import { useState } from "react";
 function SignUpForm() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   return (
     <Container className="Sign-up-container d-flex  flex-column justify-content-center align-items-center">
       <div className="Sign-up-container-inner px-4 py-3">
@@ -20,18 +24,31 @@ function SignUpForm() {
                   <Form.Label className="mb-1 input-box">
                     Email address
                   </Form.Label>
-                  <Form.Control type="email" />
+                  <Form.Control
+                    value={email}
+                    type="email"
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                    }}
+                  />
+                  <Validations type="email" value={email} />
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
                   <Form.Label className="mb-1">Password</Form.Label>
-                  <Form.Control type="password" />
+                  <Form.Control
+                    type="password"
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                    }}
+                  />
 
                   <Form.Check
                     className="mt-3"
                     type="checkbox"
                     label="Remember me"
                   />
+                  <Validations type="password" value={password} />
                 </Form.Group>
                 <Button
                   className="w-100 py-1 globalbtnColor"
