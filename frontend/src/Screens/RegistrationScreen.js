@@ -30,7 +30,6 @@ function RegistrationForm() {
                     Email address
                   </Form.Label>
                   <Form.Control type="email" />
-                  <Validations type="password" />
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
