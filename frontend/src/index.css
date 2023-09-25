@@ -8,7 +8,7 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
@@ -28,6 +28,21 @@ code {
   font-weight: 600;
 }
 
+/* ---------Priyanshu-Start------------- */
+body {
+  background-color: #f8fafc !important;
+}
+.Sign-up-container {
+  height: 100vh;
+  /* background-color: #ecaeae; */
+}
+.Sign-up-container-inner {
+  /* background-color: rgb(213, 245, 166); */
+}
+.formWidth {
+  text-align: start;
+  width: 400px;
+}
 .globalbtnColor {
   color: #ffffff !important;
   background-color: #1d4ed8 !important;
@@ -77,3 +92,9 @@ code {
 }
 
 /* karan css end */
+.Fpswd-Clogin {
+  text-decoration: none;
+  color: #2563eb;
+}
+
+/* ---------Priyanshu-End------------- */
