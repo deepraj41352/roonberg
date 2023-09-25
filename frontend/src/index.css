@@ -11,6 +11,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Gaytri css start  */
 .fullContainer {
   height: 100vh !important;
 }
@@ -34,6 +36,8 @@ code {
 .formWidth {
   width: 400px !important;
 }
+/* Gaytri css end  */
+/*################################################################################# */
 /* karan start css */
 .login-button {
   align-items: center;
