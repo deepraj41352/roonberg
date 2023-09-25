@@ -1,16 +1,33 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* background-color: rgba(0, 0, 0, 0) !important; */
+  background-color: #f8fafc !important;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+/* Gaytri css start  */
+.fullContainer {
+  height: 100vh !important;
+}
+.formColor {
+  background-color: rgb(255, 255, 255) !important;
+}
+.textLeft {
+  text-align: left !important;
+}
+.heading4 {
+  color: #334155;
+  color: rgb(51, 65, 85);
+  font-weight: 600;
+}
+
 /* ---------Priyanshu-Start------------- */
 body {
   background-color: #f8fafc !important;
@@ -30,6 +47,51 @@ body {
   color: #ffffff !important;
   background-color: #1d4ed8 !important;
 }
+
+.formWidth {
+  width: 400px !important;
+}
+/* Gaytri css end  */
+/*################################################################################# */
+/* karan start css */
+.login-button {
+  align-items: center;
+  margin: 0 !important;
+  gap: 10px !important;
+}
+.login-nav {
+  gap: 10px !important;
+}
+.login-admin {
+  background-color: #2563eb !important;
+  padding: 4px 17px !important;
+  border-radius: 8px;
+  color: white !important;
+  height: 33px !important;
+}
+.main-div {
+  background-color: white !important;
+  padding: 21px 21px !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+.Knowlege-Base:hover {
+  background-color: #e7e7e7;
+}
+.Knowlege-Base {
+  padding: 4px 0px !important;
+  border-radius: 7px !important;
+  color: #334155 !important;
+}
+@media screen and (max-width: 991px) {
+  .login-button {
+    align-items: flex-start;
+  }
+  .login-nav {
+    flex-direction: row !important;
+  }
+}
+
+/* karan css end */
 .Fpswd-Clogin {
   text-decoration: none;
   color: #2563eb;

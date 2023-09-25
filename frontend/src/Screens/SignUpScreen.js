@@ -41,10 +41,7 @@ function SignUpForm() {
                   Submit
                 </Button>
                 <Form.Group className="my-3">
-                  {/* <Link to="/ForgetPassword">Forgot Password?</Link> */}
-                  <a className="Fpswd-Clogin" href="#">
-                    Forgot Password?
-                  </a>
+                  <Link to="/ForgetPassword">Forgot Password?</Link>
                 </Form.Group>
               </Form>
             </Card>
