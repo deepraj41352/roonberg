@@ -29,23 +29,23 @@ code {
 }
 .main-div {
   background-color: white !important;
-  padding: 21px 21px !important;
+  padding: 0px 21px !important;
   border-bottom: 1px solid #e2e8f0 !important;
 }
-.Knowlege-Base:hover {
-  background-color: #e7e7e7;
+.Toggle-button:focus {
+  outline: none !important;
+  box-shadow: none !important;
 }
-.Knowlege-Base {
-  padding: 4px 0px !important;
-  border-radius: 7px !important;
-  color: #334155 !important;
-}
+
 @media screen and (max-width: 991px) {
   .login-button {
     align-items: flex-start;
   }
   .login-nav {
     flex-direction: row !important;
+  }
+  .main-div {
+    padding: 12px 0px !important;
   }
 }
 

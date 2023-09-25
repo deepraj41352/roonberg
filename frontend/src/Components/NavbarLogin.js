@@ -1,18 +1,20 @@
 import React from 'react';
-import { Container, Nav, Navbar } from 'react-bootstrap';
+import { Container, Image, Nav, Navbar } from 'react-bootstrap';
 import { Person } from '@mui/icons-material';
 
 function NavbarLogin() {
   return (
     <Navbar expand="lg" className=" main-div">
       <Container>
-        <Navbar.Brand href="#home">logo and name</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Brand href="#home">
+          <Image className="border-0" src="./logo2.png" thumbnail />
+        </Navbar.Brand>
+        <Navbar.Toggle
+          aria-controls="basic-navbar-nav"
+          className="Toggle-button"
+        />
         <Navbar.Collapse className="justify-content-end" id="basic-navbar-nav">
           <Nav className=" login-button">
-            <Nav.Link className="Knowlege-Base " href="#home">
-              Knowledge Base
-            </Nav.Link>
             <Nav className="login-nav ">
               <Nav.Link className="login-admin" href="#link">
                 <Person className="fs-5 Icon-person " />
