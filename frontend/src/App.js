@@ -3,7 +3,11 @@ import ForgetPassword from './Screens/ForgetPasswordScreen';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import ResetPasswordScreen from './Screens/ResetPasswordScreen';
 import { Nav, NavDropdown, Navbar } from 'react-bootstrap';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 function App() {
+
   return (
     <div className="App">
       <Navbar bg="light" expand="lg">
@@ -23,12 +27,15 @@ function App() {
           </Nav>
         </Navbar.Collapse>
       </Navbar>
+      <ToastContainer position='bottom-center' limit={1} />
+
       <BrowserRouter>
         <Routes>
           <Route path='/ForgetPassword' element={<ForgetPassword />} />
           <Route path='/resetPassword' element={<ResetPasswordScreen />} />
           <Route />
         </Routes>
+
       </BrowserRouter>
       <ForgetPassword />
     </div>
