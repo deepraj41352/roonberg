@@ -1,5 +1,8 @@
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -16,7 +19,7 @@ export const nodeMailer = (mail) => {
     console.log('info ', info);
     return info;
   } catch (err) {
-    console.log('Error ', err);
+    console.log('Error sdfd', err);
     return err;
   }
 };

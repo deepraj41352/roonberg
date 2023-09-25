@@ -5,6 +5,7 @@ import path from 'path';
 import userRouter from './routers/userRouter.js';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import { Console } from 'console';
 
 dotenv.config();
 mongoose
@@ -20,7 +21,6 @@ mongoose
   .catch((err) => {
     console.log(err.message);
   });
-
 const app = express();
 const options = {
   definition: {
@@ -34,7 +34,10 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:5000',
+        url:
+          process.env.NODE_ENV !== 'production'
+            ? 'http://localhost:5000'
+            : 'https://roonberg.onrender.com',
       },
     ],
     schemes: ['https', 'http'],
