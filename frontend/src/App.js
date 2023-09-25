@@ -17,14 +17,13 @@ function App() {
       <ToastContainer position='bottom-center' limit={1} />
       <BrowserRouter>
         <Routes>
+          <Route path='/' element={<SignUpForm />} />
+          <Route path='/registration' element={<RegistrationForm />} />
           <Route path='/ForgetPassword' element={<ForgetPassword />} />
           <Route path='/resetPassword' element={<ResetPasswordScreen />} />
           <Route />
         </Routes>
       </BrowserRouter>
-      <SignUpForm />
-      <RegistrationForm />
-
     </div>
   );
 }

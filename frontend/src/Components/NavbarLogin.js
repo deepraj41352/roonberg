@@ -1,10 +1,10 @@
 import React from 'react';
 import { Container, Nav, Navbar } from 'react-bootstrap';
 import { BsFillPersonFill } from 'react-icons/bs';
-
+import { Link } from "react-router-dom";
 function NavbarLogin() {
   return (
-    <Navbar expand="lg" className="main-div" >
+    <Navbar expand="lg" className=" main-div" >
       <Container>
         <Navbar.Brand href="#home">logo and name</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -14,7 +14,8 @@ function NavbarLogin() {
               Knowledge Base
             </Nav.Link>
             <Nav className="login-nav ">
-              <Nav.Link className="login-admin" href="#link">
+
+              <Nav.Link className="login-admin" to='/'>
                 <BsFillPersonFill className="fs-5 Icon-person " />
                 Login
               </Nav.Link>
