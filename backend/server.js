@@ -49,7 +49,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/test', (req, res) => {
-  res.send('Hello');
+  res.send('Welcome to Roonberg World');
 });
 
 app.use('/api/user', userRouter);
