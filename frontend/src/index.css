@@ -34,5 +34,15 @@ body {
   text-decoration: none;
   color: #2563eb;
 }
-
+@media (max-width: 450px) {
+  .formWidth {
+    width: 350px;
+  }
+}
+@media (max-width: 380px) {
+  .formWidth {
+    width: 100%;
+    min-width: 300px;
+  }
+}
 /* ---------Priyanshu-End------------- */
