@@ -1,10 +1,10 @@
 import React from 'react';
 import { Container, Nav, Navbar } from 'react-bootstrap';
-import { Person } from '@mui/icons-material';
+import { BsFillPersonFill } from 'react-icons/bs';
 
 function NavbarLogin() {
   return (
-    <Navbar expand="lg" className=" main-div">
+    <Navbar expand="lg" className="main-div" >
       <Container>
         <Navbar.Brand href="#home">logo and name</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -15,7 +15,7 @@ function NavbarLogin() {
             </Nav.Link>
             <Nav className="login-nav ">
               <Nav.Link className="login-admin" href="#link">
-                <Person className="fs-5 Icon-person " />
+                <BsFillPersonFill className="fs-5 Icon-person " />
                 Login
               </Nav.Link>
               <Nav.Link className="login-admin" href="#link">

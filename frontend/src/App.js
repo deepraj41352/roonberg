@@ -1,25 +1,29 @@
 import './App.css';
+import ForgetPassword from './Screens/ForgetPasswordScreen';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import ResetPasswordScreen from './Screens/ResetPasswordScreen';
+import { Nav, NavDropdown, Navbar } from 'react-bootstrap';
+import { ToastContainer, toast } from 'react-toastify';
+import NavbarLogin from './Components/NavbarLogin';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <NavbarLogin />
+      <ToastContainer position='bottom-center' limit={1} />
+
+      <BrowserRouter>
+        <Routes>
+          <Route path='/ForgetPassword' element={<ForgetPassword />} />
+          <Route path='/resetPassword' element={<ResetPasswordScreen />} />
+          <Route />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
 
 export default App;
+
