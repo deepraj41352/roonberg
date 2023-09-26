@@ -44,7 +44,7 @@ const options = {
 };
 
 const swaggerSpec = swaggerJSDoc(options);
-app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api/doc', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

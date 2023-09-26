@@ -374,7 +374,7 @@ userRouter.post(
   '/signup',
   expressAsyncHandler(async (req, res) => {
     try {
-      const { first_name, email, password, role } = req.body;
+      const { first_name, last_name, email, password, role } = req.body;
       const existingUser = await User.findOne({ email: email });
       if (existingUser) {
         return res
@@ -384,6 +384,7 @@ userRouter.post(
       const hashedPassword = await bcrypt.hash(password, 8);
       const newUser = new User({
         first_name,
+        last_name,
         email,
         password: hashedPassword,
         role,
