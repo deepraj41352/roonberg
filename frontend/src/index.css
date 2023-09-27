@@ -45,11 +45,30 @@ body {
 }
 .globalbtnColor {
   color: #ffffff !important;
-  background-color: #1d4ed8 !important;
+  background: linear-gradient(
+    178.2deg,
+    rgb(223, 9, 142),
+    rgb(10, 34, 231)
+  ) !important;
 }
 
 .formWidth {
   width: 400px !important;
+}
+
+.tableBg,
+.modelBg {
+  background-color: #334155;
+  color: #fff !important;
+}
+
+.tableEditbtn {
+  background-color: #8a9097 !important;
+}
+
+.tableDeletebtn {
+  color: #fff !important;
+  border-color: #fff !important;
 }
 /* Gaytri css end  */
 /*################################################################################# */
