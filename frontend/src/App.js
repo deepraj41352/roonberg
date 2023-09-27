@@ -13,14 +13,17 @@ import React from 'react';
 function App() {
   return (
     <div className="App">
-      <NavbarLogin />
-      <ToastContainer position="bottom-center" limit={1} />
       <BrowserRouter>
+        <NavbarLogin />
+        <ToastContainer position="bottom-center" limit={1} />
         <Routes>
           <Route path="/" element={<SignUpForm />} />
           <Route path="/registration" element={<RegistrationForm />} />
           <Route path="/ForgetPassword" element={<ForgetPassword />} />
-          <Route path="/resetPassword" element={<ResetPasswordScreen />} />
+          <Route
+            path="/reset-password/:token"
+            element={<ResetPasswordScreen />}
+          />
           <Route />
         </Routes>
       </BrowserRouter>

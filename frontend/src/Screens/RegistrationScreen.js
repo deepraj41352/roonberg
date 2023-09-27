@@ -16,16 +16,20 @@ function RegistrationForm() {
   const [role, setRole] = useState('isAdmin');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isSubmiting, setIsSubmiting] = useState(false);
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
-  console.log(userInfo, 'usrashdfauhasih');
   const submitHandler = async (e) => {
     e.preventDefault();
+    setIsSubmiting(true);
+
     if (password !== confirmPassword) {
       toast.error('password do not match');
+      setIsSubmiting(false);
       return;
     }
+
     try {
       const { data } = await axios.post('/api/user/signup', {
         first_name: firstName,
@@ -34,16 +38,17 @@ function RegistrationForm() {
         password: password,
         role: role,
       });
-      console.log(data);
-      ctxDispatch({ type: 'USER_SIGNUP', payload: data.user });
       navigate('/');
+      toast.success(data.message);
     } catch (err) {
-      toast.error(err);
+      toast.error(err.response?.data?.message);
+    } finally {
+      setIsSubmiting(false);
     }
   };
 
   return (
-    <Container className="Sign-up-container d-flex  flex-column justify-content-center align-items-center">
+    <Container className="Sign-up-container-regis d-flex  flex-column justify-content-center align-items-center">
       <div className="Sign-up-container-inner px-4 py-3">
         <Row className="mb-3">
           <Col>
@@ -108,9 +113,13 @@ function RegistrationForm() {
                 <Button
                   className="w-100 py-1 globalbtnColor"
                   variant="primary"
-                  type="submit">
-                  Submit
+                  type="submit"
+                  disabled={isSubmiting}>
+                  {isSubmiting ? 'Submiting...' : 'Submit'}
                 </Button>
+                <Form.Group className="my-3">
+                  <Link to="/">Signin ?</Link>
+                </Form.Group>
               </Form>
             </Card>
           </Col>

@@ -8,8 +8,7 @@ const initialValue = {
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case 'USER_SIGNUP':
-      console.log('Payload ', action.payload);
+    case 'USER_SIGNINs':
       return { ...state, userInfo: action.payload };
     default:
       return state;

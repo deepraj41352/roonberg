@@ -4,29 +4,40 @@ import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import Validations from '../Components/Validations';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export default function ResetPasswordScreen() {
+  const navigate = useNavigate();
+  const { token } = useParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isSubmiting, setIsSubmiting] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const submitHandler = async (e) => {
+    console.log('submt button is clicked');
     e.preventDefault();
+    setIsSubmiting(true);
+
     if (password !== confirmPassword) {
-      console.log('error');
-      toast.error('password and confirm password not match!');
+      toast.error('password do not match');
+      setIsSubmiting(false);
       return;
     }
-    // else {
-    //     try {
-    //         const { data } = await axios.get(``, { password: password });
-    //         toast.success(data.message);
-
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // }
+    try {
+      const { data } = await axios.post('/api/user/reset-password', {
+        password,
+        token,
+      });
+      toast.success(data.message);
+      navigate('/');
+    } catch (err) {
+      toast.error(err.response?.data?.message);
+    } finally {
+      setIsSubmiting(false);
+    }
   };
+
   return (
     <>
       <Container className="fullContainer d-flex flex-column justify-content-center align-items-center">
@@ -39,9 +50,9 @@ export default function ResetPasswordScreen() {
           <Col>
             <Card className="p-4 formColor">
               <Form
-                onSubmit={handleSubmit}
+                onSubmit={submitHandler}
                 className="formWidth d-flex flex-column">
-                <Form.Label className="textLeft text-left">
+                {/* <Form.Label className="textLeft text-left">
                   Email Address
                 </Form.Label>
                 <Form.Control
@@ -51,7 +62,7 @@ export default function ResetPasswordScreen() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
-                <Validations type="email" value={email} />
+                <Validations type="email" value={email} /> */}
 
                 <Form.Label className="textLeft text-left">Password</Form.Label>
                 <Form.Control
@@ -73,7 +84,12 @@ export default function ResetPasswordScreen() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                 />
-                <Button className="globalbtnColor px-2 py-1">Submit</Button>
+                <Button
+                  type="submit"
+                  className="globalbtnColor px-2 py-1"
+                  disabled={isSubmiting}>
+                  {isSubmiting ? 'Submiting...' : 'Submit'}
+                </Button>
               </Form>
             </Card>
           </Col>
