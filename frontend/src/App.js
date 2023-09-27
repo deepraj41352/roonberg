@@ -25,6 +25,7 @@ function App() {
           <Route path='/' element={<SignUpForm />} />
           <Route path='/registration' element={<RegistrationForm />} />
           <Route path='/ForgetPassword' element={<ForgetPassword />} />
+
           <Route path='/resetPassword' element={<ResetPasswordScreen />} />
           <Route path='/adminProjectList' element={<AdminProjectListScreen />} />
           <Route path='/adminAgentList' element={<AdminAgentListScreen />} />
