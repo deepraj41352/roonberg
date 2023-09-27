@@ -2,7 +2,6 @@ import './App.css';
 import ForgetPassword from './Screens/ForgetPasswordScreen';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import ResetPasswordScreen from './Screens/ResetPasswordScreen';
-import { ToastContainer } from 'react-toastify';
 import NavbarLogin from './Components/NavbarLogin';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
@@ -15,12 +14,16 @@ import AdminAgentListScreen from './Screens/AdminAgentListScreen';
 import AdminCategoriesListScreen from './Screens/AdminCategoriesListScreen';
 import AdminListScreen from './Screens/AdminListScreen';
 import AdminContractorListScreen from './Screens/AdminContractorListScreen';
+import './App.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './App.css';
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <NavbarLogin />
         <ToastContainer position="bottom-center" limit={1} />
+        <NavbarLogin />
         <Routes>
           <Route path="/" element={<SignUpForm />} />
           <Route path="/registration" element={<RegistrationForm />} />
@@ -43,6 +46,7 @@ function App() {
             path="/adminContractorList"
             element={<AdminContractorListScreen />}
           />
+          <Route path="/resetPassword" element={<ResetPasswordScreen />} />
           <Route />
         </Routes>
       </BrowserRouter>

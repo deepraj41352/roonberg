@@ -8,7 +8,7 @@ import { Store } from '../Store';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 function SignUpForm() {
-  const navigate = useNavigate;
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmiting, setIsSubmiting] = useState(false);
@@ -26,8 +26,11 @@ function SignUpForm() {
         password,
       });
       ctxDispatch({ type: 'USER_SIGNIN', payload: data });
+      localStorage.setItem('userInfo', JSON.stringify(data));
+
+      console.log(data);
       toast.success('SignUp successful');
-      navigate('/Dashboad');
+      navigate('/Dashboard');
     } catch (err) {
       toast.error(err.response?.data?.message);
     } finally {
