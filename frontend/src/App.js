@@ -11,9 +11,9 @@ import RegistrationForm from "./Screens/RegistrationScreen";
 function App() {
   return (
     <div className="App">
-      <NavbarLogin />
-      <ToastContainer position="bottom-center" limit={1} />
       <BrowserRouter>
+        <NavbarLogin />
+        <ToastContainer position="bottom-center" limit={1} />
         <Routes>
           <Route path="/" element={<SignUpForm />} />
           <Route path="/registration" element={<RegistrationForm />} />
