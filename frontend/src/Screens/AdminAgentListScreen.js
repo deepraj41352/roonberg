@@ -8,6 +8,8 @@ import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import { Form } from 'react-bootstrap';
+import { BiPlusMedical } from 'react-icons/bi';
+
 const columns = [
   { field: '_id', headerName: 'ID', width: 80 },
   {
@@ -81,7 +83,8 @@ export default function AdminAgentListScreen() {
         variant="outlined"
         className=" m-2 d-flex globalbtnColor"
         onClick={handleNew}>
-        Add Project
+        <BiPlusMedical className='mx-2' />
+        Add Agent
       </Button>
       <Box sx={{ height: 400, width: '100%' }}>
         <DataGrid

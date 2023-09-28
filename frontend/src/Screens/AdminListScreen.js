@@ -52,6 +52,7 @@ export default function AdminListScreen() {
     setSelectedRowData(params);
     setIsModelOpen(true);
     setIsNewAdmin(false);
+
   };
 
   const handleCloseRow = () => {
@@ -67,6 +68,27 @@ export default function AdminListScreen() {
   const handleSubmitNewAdmin = () => {
     setIsModelOpen(false);
   };
+
+  // React.useEffect(() => {
+
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch('/api/admindata'); 
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         setAdminData(data);
+  //       } else {
+  //         console.error('Failed to fetch data');
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching data:', error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
+
+
   return (
     <>
       <Button
