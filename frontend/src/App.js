@@ -14,6 +14,7 @@ import AdminAgentListScreen from './Screens/AdminAgentListScreen';
 import AdminCategoriesListScreen from './Screens/AdminCategoriesListScreen';
 import AdminListScreen from './Screens/AdminListScreen';
 import AdminContractorListScreen from './Screens/AdminContractorListScreen';
+import AdminDashboard from './Screens/AdminDashboard';
 function App() {
 
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path='/adminCategoriesList' element={<AdminCategoriesListScreen />} />
           <Route path='/adminList' element={<AdminListScreen />} />
           <Route path='/adminContractorList' element={<AdminContractorListScreen />} />
+          <Route path='/adminDashboard' element={<AdminDashboard />} />
           <Route />
         </Routes>
       </BrowserRouter>
