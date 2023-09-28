@@ -360,6 +360,18 @@ body {
 .text-decoration-none :hover {
   background-color: #c45bf157;
 }
+.Password-input-eye {
+  display: flex;
+  border: 1px solid #dee2e6;
+}
+/* .Password-input-eye :hover {
+  border: 1px solid #86b7fe !important;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+} */
+.pswd-input {
+  border: none !important;
+  box-shadow: none !important;
+}
 /* ---------Priyanshu-End------------- */
 
 .dash-list li {

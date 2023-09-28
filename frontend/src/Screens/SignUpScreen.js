@@ -3,10 +3,15 @@ import Form from "react-bootstrap/Form";
 import { Container, Row, Col, Card } from "react-bootstrap/";
 import { Link } from "react-router-dom";
 import Validations from "../Components/Validations";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { useState } from "react";
 function SignUpForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
     <Container className="Sign-up-container d-flex  flex-column justify-content-center align-items-center">
@@ -36,13 +41,22 @@ function SignUpForm() {
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
                   <Form.Label className="mb-1">Password</Form.Label>
-                  <Form.Control
-                    type="password"
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                    }}
-                  />
-
+                  <div className="Password-input-eye rounded-2">
+                    <Form.Control
+                      className="pswd-input"
+                      type={showPassword ? "text" : "password"}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className="btn "
+                      onClick={togglePasswordVisibility}
+                    >
+                      {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
+                    </button>
+                  </div>
                   <Form.Check
                     className="mt-3"
                     type="checkbox"
