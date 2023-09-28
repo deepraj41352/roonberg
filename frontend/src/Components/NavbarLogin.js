@@ -38,7 +38,6 @@ function NavbarLogin() {
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
-  console.log(userInfo, 'hsfakh');
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
@@ -171,13 +170,13 @@ function NavbarLogin() {
         <Navbar.Collapse className="justify-content-end" id="basic-navbar-nav">
           <Nav className=" login-button">
             <Nav className="login-nav ">
-              <Nav.Link className="login-admin" to="/">
+              <Link className="login-admin" to="/registration">
                 <BsFillPersonFill className="fs-5 Icon-person " />
-                Login
-              </Nav.Link>
-              <Nav.Link className="login-admin" href="#link">
+                Signup
+              </Link>
+              <Link className="login-admin" href="#link">
                 Admin Login
-              </Nav.Link>
+              </Link>
             </Nav>
           </Nav>
         </Navbar.Collapse>
