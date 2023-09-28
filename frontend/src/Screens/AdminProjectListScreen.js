@@ -48,7 +48,7 @@ const columns = [
 const deleteHandle = async () => {
   if (window.confirm('Are you sure to delete ?')) {
     try {
-    } catch (error) {}
+    } catch (error) { }
   }
 };
 
@@ -160,8 +160,8 @@ export default function AdminProjectListScreen() {
                 isNewProject
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.agentName
-                  : ''
+                    ? selectedRowData.agentName
+                    : ''
               }
               label="Agent Name"
               fullWidth
@@ -172,8 +172,8 @@ export default function AdminProjectListScreen() {
                 isNewProject
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.contractorName
-                  : ''
+                    ? selectedRowData.contractorName
+                    : ''
               }
               label="Contractor Name"
               fullWidth
@@ -184,8 +184,8 @@ export default function AdminProjectListScreen() {
                 isNewProject
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.projectName
-                  : ''
+                    ? selectedRowData.projectName
+                    : ''
               }
               label="Project Name"
               fullWidth
@@ -196,8 +196,8 @@ export default function AdminProjectListScreen() {
                 isNewProject
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.progress
-                  : ''
+                    ? selectedRowData.progress
+                    : ''
               }
               label="progress"
               fullWidth
