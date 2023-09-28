@@ -8,6 +8,8 @@ import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import { Form } from 'react-bootstrap';
+import { BiPlusMedical } from 'react-icons/bi';
+
 const columns = [
   { field: '_id', headerName: 'ID', width: 90 },
   {
@@ -48,7 +50,7 @@ const columns = [
 const deleteHandle = async () => {
   if (window.confirm('Are you sure to delete ?')) {
     try {
-    } catch (error) {}
+    } catch (error) { }
   }
 };
 
@@ -84,6 +86,7 @@ export default function AdminProjectListScreen() {
         variant="outlined"
         className=" m-2 d-flex globalbtnColor"
         onClick={handleNew}>
+        <BiPlusMedical className='mx-2' />
         Add Project
       </Button>
       <Box sx={{ height: 400, width: '100%' }}>
@@ -160,8 +163,8 @@ export default function AdminProjectListScreen() {
                 isNewProject
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.agentName
-                  : ''
+                    ? selectedRowData.agentName
+                    : ''
               }
               label="Agent Name"
               fullWidth
@@ -172,8 +175,8 @@ export default function AdminProjectListScreen() {
                 isNewProject
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.contractorName
-                  : ''
+                    ? selectedRowData.contractorName
+                    : ''
               }
               label="Contractor Name"
               fullWidth
@@ -184,8 +187,8 @@ export default function AdminProjectListScreen() {
                 isNewProject
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.projectName
-                  : ''
+                    ? selectedRowData.projectName
+                    : ''
               }
               label="Project Name"
               fullWidth
@@ -196,8 +199,8 @@ export default function AdminProjectListScreen() {
                 isNewProject
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.progress
-                  : ''
+                    ? selectedRowData.progress
+                    : ''
               }
               label="progress"
               fullWidth

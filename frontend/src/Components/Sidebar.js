@@ -37,7 +37,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
     <div className={`sidebar ${sidebarVisible ? 'visible' : ''} `}>
       <div className="blank-box"></div>
       <ul className="dash-list ">
-        <Link className="text-decoration-none">
+        <Link to="/adminDashboard" className="text-decoration-none">
           <li>
             <AiFillHome className="me-3 fs-5" />
             Dashboard

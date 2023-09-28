@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* background-color: rgba(0, 0, 0, 0) !important; */
@@ -8,7 +8,7 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
@@ -45,14 +45,6 @@ body {
 .formWidth {
   text-align: start;
   width: 400px;
-}
-.globalbtnColor {
-  color: #ffffff !important;
-  background: linear-gradient(
-    178.2deg,
-    rgb(223, 9, 142),
-    rgb(10, 34, 231)
-  ) !important;
 }
 
 .formWidth {
@@ -188,7 +180,7 @@ body {
 
 body {
   margin: 0;
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* background-color: rgba(0, 0, 0, 0) !important; */
@@ -196,7 +188,7 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 

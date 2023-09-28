@@ -8,27 +8,29 @@ import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import { Form } from 'react-bootstrap';
+import { BiPlusMedical } from 'react-icons/bi';
+
 const columns = [
-  { field: '_id', headerName: 'ID', width: 90 },
+  { field: '_id', headerName: 'ID', width: 80 },
   {
     field: 'username',
     headerName: 'Username',
-    width: 150,
+    width: 100,
   },
   {
     field: 'firstName',
     headerName: 'First Name',
-    width: 150,
+    width: 100,
   },
   {
     field: 'lastName',
     headerName: 'Last Name',
-    width: 150,
+    width: 100,
   },
   {
     field: 'email',
     headerName: 'Email',
-    width: 200,
+    width: 180,
   },
   {
     field: 'userStatus',
@@ -45,7 +47,7 @@ const columns = [
 const deleteHandle = async () => {
   if (window.confirm('Are you sure to delete ?')) {
     try {
-    } catch (error) {}
+    } catch (error) { }
   }
 };
 
@@ -81,7 +83,8 @@ export default function AdminAgentListScreen() {
         variant="outlined"
         className=" m-2 d-flex globalbtnColor"
         onClick={handleNew}>
-        Add Project
+        <BiPlusMedical className='mx-2' />
+        Add Agent
       </Button>
       <Box sx={{ height: 400, width: '100%' }}>
         <DataGrid
@@ -157,8 +160,8 @@ export default function AdminAgentListScreen() {
                 isNewAgent
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.username
-                  : ''
+                    ? selectedRowData.username
+                    : ''
               }
               label="Username"
               fullWidth
@@ -169,8 +172,8 @@ export default function AdminAgentListScreen() {
                 isNewAgent
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.firstName
-                  : ''
+                    ? selectedRowData.firstName
+                    : ''
               }
               label="First Name"
               fullWidth
@@ -181,8 +184,8 @@ export default function AdminAgentListScreen() {
                 isNewAgent
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.lastName
-                  : ''
+                    ? selectedRowData.lastName
+                    : ''
               }
               label="Last Name"
               fullWidth
@@ -201,8 +204,8 @@ export default function AdminAgentListScreen() {
                 isNewAgent
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.userStatus
-                  : ''
+                    ? selectedRowData.userStatus
+                    : ''
               }
               label="User Status"
               fullWidth
@@ -213,8 +216,8 @@ export default function AdminAgentListScreen() {
                 isNewAgent
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.assignedCategory
-                  : ''
+                    ? selectedRowData.assignedCategory
+                    : ''
               }
               label="Assigned Category"
               fullWidth

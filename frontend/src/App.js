@@ -29,6 +29,8 @@ import { CgProfile } from 'react-icons/cg';
 import { FiClock } from 'react-icons/fi';
 import { MdOutlineNotifications } from 'react-icons/md';
 import { Store } from './Store';
+import AdminDashboard from './Screens/AdminDashboard';
+import ProtectedRoute from './Components/ProtectedRoute';
 import ProfileScreen from './Screens/ProfileScreen';
 
 function App() {
@@ -152,13 +154,34 @@ function App() {
                         path="/reset-password/:token"
                         element={<ResetPasswordScreen />}
                       />
+
+                      <Route
+                        path="/adminDashboard"
+                        element={
+                          <ProtectedRoute>
+                            <AdminDashboard />
+                          </ProtectedRoute>
+                        }
+                      />
                       <Route
                         path="/adminProjectList"
-                        element={<AdminProjectListScreen />}
+                        element={
+                          <ProtectedRoute>
+                            <AdminProjectListScreen />
+                          </ProtectedRoute>
+                        }
                       />
                       <Route
                         path="/adminAgentList"
-                        element={<AdminAgentListScreen />}
+                        element={
+                          <ProtectedRoute>
+                            <AdminAgentListScreen />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/ProfileScreen"
+                        element={<ProfileScreen />}
                       />
                       <Route
                         path="/ProfileScreen"
@@ -166,17 +189,27 @@ function App() {
                       />
                       <Route
                         path="/adminCategoriesList"
-                        element={<AdminCategoriesListScreen />}
+                        element={
+                          <ProtectedRoute>
+                            <AdminCategoriesListScreen />
+                          </ProtectedRoute>
+                        }
                       />
-                      <Route path="/adminList" element={<AdminListScreen />} />
+                      <Route
+                        path="/adminList"
+                        element={
+                          <ProtectedRoute>
+                            <AdminListScreen />
+                          </ProtectedRoute>
+                        }
+                      />
                       <Route
                         path="/adminContractorList"
-                        element={<AdminContractorListScreen />}
-                      />
-
-                      <Route
-                        path="/resetPassword"
-                        element={<ResetPasswordScreen />}
+                        element={
+                          <ProtectedRoute>
+                            <AdminContractorListScreen />
+                          </ProtectedRoute>
+                        }
                       />
                       <Route />
                     </Routes>
