@@ -28,23 +28,22 @@ import {
   BsSearch,
   BsFillChatLeftQuoteFill,
 } from 'react-icons/bs';
-import { useState, useContext } from 'react';
+import { useContext, useState } from 'react';
 import { BsFillPersonFill } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
+import Sidebar from './Sidebar';
 import { Store } from '../Store';
-import Sidebar from "./Sidebar";
 
 function NavbarLogin() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
-
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
 
-  return (
+  return userInfo ? (
     <Container fluid className="px-0">
       <div className="d-flex ">
         <Sidebar
