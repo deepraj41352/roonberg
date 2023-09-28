@@ -8,6 +8,8 @@ import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import { Form } from 'react-bootstrap';
+import { BiPlusMedical } from 'react-icons/bi';
+
 const columns = [
   { field: '_id', headerName: 'ID', width: 90 },
   {
@@ -35,7 +37,7 @@ const columns = [
 const deleteHandle = async () => {
   if (window.confirm('Are you sure to delete ?')) {
     try {
-    } catch (error) {}
+    } catch (error) { }
   }
 };
 
@@ -71,12 +73,13 @@ export default function AdminListScreen() {
         variant="outlined"
         className=" m-2 d-flex globalbtnColor"
         onClick={handleNew}>
-        Add Project
+        <BiPlusMedical className='mx-2' />
+        Add Admin
       </Button>
       <Box sx={{ height: 400, width: '100%' }}>
         <DataGrid
           className="tableBg mx-2"
-          rows={data.projectList}
+          rows={data.adminData}
           columns={[
             ...columns,
             {
@@ -147,8 +150,8 @@ export default function AdminListScreen() {
                 isNewAdmin
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.username
-                  : ''
+                    ? selectedRowData.username
+                    : ''
               }
               label="Username"
               fullWidth
@@ -159,8 +162,8 @@ export default function AdminListScreen() {
                 isNewAdmin
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.firstName
-                  : ''
+                    ? selectedRowData.firstName
+                    : ''
               }
               label="First Name"
               fullWidth
@@ -171,8 +174,8 @@ export default function AdminListScreen() {
                 isNewAdmin
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.lastName
-                  : ''
+                    ? selectedRowData.lastName
+                    : ''
               }
               label="Last Name"
               fullWidth

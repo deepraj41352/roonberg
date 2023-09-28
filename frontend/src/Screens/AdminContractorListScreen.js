@@ -40,7 +40,7 @@ const columns = [
 const deleteHandle = async () => {
   if (window.confirm('Are you sure to delete ?')) {
     try {
-    } catch (error) {}
+    } catch (error) { }
   }
 };
 
@@ -76,7 +76,7 @@ export default function AdminContractorListScreen() {
         variant="outlined"
         className=" m-2 d-flex globalbtnColor"
         onClick={handleNew}>
-        Add Project
+        Add Contractor
       </Button>
       <Box sx={{ height: 400, width: '100%' }}>
         <DataGrid
@@ -152,8 +152,8 @@ export default function AdminContractorListScreen() {
                 isNewContractor
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.agentName
-                  : ''
+                    ? selectedRowData.agentName
+                    : ''
               }
               label="Agent Name"
               fullWidth
@@ -164,8 +164,8 @@ export default function AdminContractorListScreen() {
                 isNewContractor
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.contractorName
-                  : ''
+                    ? selectedRowData.contractorName
+                    : ''
               }
               label="Contractor Name"
               fullWidth
@@ -176,8 +176,8 @@ export default function AdminContractorListScreen() {
                 isNewContractor
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.projectName
-                  : ''
+                    ? selectedRowData.projectName
+                    : ''
               }
               label="Project Name"
               fullWidth
@@ -188,8 +188,8 @@ export default function AdminContractorListScreen() {
                 isNewContractor
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.progress
-                  : ''
+                    ? selectedRowData.progress
+                    : ''
               }
               label="Progress"
               fullWidth
@@ -200,8 +200,8 @@ export default function AdminContractorListScreen() {
                 isNewContractor
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.startDate
-                  : ''
+                    ? selectedRowData.startDate
+                    : ''
               }
               label="Start Date"
               fullWidth
@@ -212,8 +212,8 @@ export default function AdminContractorListScreen() {
                 isNewContractor
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.endDate
-                  : ''
+                    ? selectedRowData.endDate
+                    : ''
               }
               label="End Date"
               fullWidth

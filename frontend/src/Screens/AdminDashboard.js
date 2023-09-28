@@ -57,7 +57,7 @@ export default function AdminDashboard() {
                     </Card>
                 </Col>
             </Row>
-            <Row>
+            <Row className='w-100'>
                 <Col>
                     <h2>Category</h2>
                     {data.categories.length === 0 ? <div>Data not found</div>

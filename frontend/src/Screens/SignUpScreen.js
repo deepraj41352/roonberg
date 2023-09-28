@@ -3,7 +3,7 @@ import Form from 'react-bootstrap/Form';
 import { Container, Row, Col, Card } from 'react-bootstrap/';
 import { Link, useNavigate } from 'react-router-dom';
 import Validations from '../Components/Validations';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Store } from '../Store';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -29,13 +29,20 @@ function SignUpForm() {
       localStorage.setItem('userInfo', JSON.stringify(data));
 
       toast.success('SignUp successful');
-      navigate('/Dashboard');
+      navigate('/adminDashboard');
     } catch (err) {
       toast.error(err.response?.data?.message);
     } finally {
       setIsSubmiting(false);
     }
   };
+
+  useEffect(() => {
+    if (userInfo) {
+      navigate("/adminDashboard")
+    }
+
+  }, [userInfo, navigate])
 
   return (
     <Container className="Sign-up-container d-flex  flex-column justify-content-center align-items-center">
