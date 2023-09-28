@@ -25,9 +25,12 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
   const { state, dispatch: ctxDispatch } = useContext(Store);
 
   const signoutHandler = () => {
-    ctxDispatch({ type: 'USER_SIGNOUT' });
-    localStorage.removeItem('userInfo');
-    window.location.href = '/';
+    const userConfirm = window.confirm('Are you sure you want to logout?');
+    if (userConfirm) {
+      ctxDispatch({ type: 'USER_SIGNOUT' });
+      localStorage.removeItem('userInfo');
+      window.location.href = '/';
+    }
   };
 
   return (
@@ -58,7 +61,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
             Contractor List
           </li>
         </Link>
-        <Link to="/Dashboard" className="text-decoration-none">
+        <Link to="/ProfileScreen" className="text-decoration-none">
           <li>
             <CgProfile className="me-3 fs-5" />
             Profile

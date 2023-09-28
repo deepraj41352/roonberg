@@ -29,6 +29,7 @@ import { CgProfile } from 'react-icons/cg';
 import { FiClock } from 'react-icons/fi';
 import { MdOutlineNotifications } from 'react-icons/md';
 import { Store } from './Store';
+import ProfileScreen from './Screens/ProfileScreen';
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -158,6 +159,10 @@ function App() {
                       <Route
                         path="/adminAgentList"
                         element={<AdminAgentListScreen />}
+                      />
+                      <Route
+                        path="/ProfileScreen"
+                        element={<ProfileScreen />}
                       />
                       <Route
                         path="/adminCategoriesList"
