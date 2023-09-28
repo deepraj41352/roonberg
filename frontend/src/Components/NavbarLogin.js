@@ -28,83 +28,26 @@ import {
   BsSearch,
   BsFillChatLeftQuoteFill,
 } from 'react-icons/bs';
-import { useState, useContext } from 'react';
+import { useContext, useState } from 'react';
 import { BsFillPersonFill } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
+import Sidebar from './Sidebar';
 import { Store } from '../Store';
-
 function NavbarLogin() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
-
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
-
   return userInfo ? (
     <Container fluid className="px-0">
       <div className="d-flex ">
-        <div className={`sidebar ${sidebarVisible ? 'visible' : ''} `}>
-          <div className="blank-box"></div>
-          <ul className="dash-list">
-            <Link className="text-decoration-none">
-              <li>
-                <AiFillHome className="me-3 fs-5" />
-                Dashboard
-              </li>
-            </Link>
-            <Link className="text-decoration-none">
-              <li>
-                <HiClipboardList className="me-3 fs-5" />
-                Admin List
-              </li>
-            </Link>
-            <Link className="text-decoration-none">
-              <li>
-                <FaListAlt className="me-3 fs-5" />
-                Agent List
-              </li>
-            </Link>
-            <Link className="text-decoration-none">
-              <li>
-                <FaListUl className="me-3 fs-5" />
-                Contractor List
-              </li>
-            </Link>
-            <Link className="text-decoration-none">
-              <li>
-                <CgProfile className="me-3 fs-5" />
-                Profile
-              </li>
-            </Link>
-            <Link className="text-decoration-none">
-              <li>
-                <CiBoxList className="me-3 fs-5" />
-                Categories List
-              </li>
-            </Link>
-            <Link className="text-decoration-none">
-              <li>
-                <AiOutlineProject className="me-3 fs-5" />
-                Project List
-              </li>
-            </Link>
-            <Link className="text-decoration-none">
-              <li>
-                <BsFillChatLeftQuoteFill className="me-3 fs-5" />
-                Chat
-              </li>
-            </Link>
-            <Link className="text-decoration-none">
-              <li>
-                <MdLogout className="me-3 fs-5" />
-                Logout
-              </li>
-            </Link>
-          </ul>
-        </div>
+        <Sidebar
+          sidebarVisible={sidebarVisible}
+          setSidebarVisible={setSidebarVisible}
+        />
         <div className="px-0 w-100">
           <Navbar expand="lg" className=" admin-navbar">
             <Container fluid>

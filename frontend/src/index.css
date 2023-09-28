@@ -8,7 +8,7 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
@@ -173,18 +173,203 @@ body {
 .search-bar-dash-inner {
   background-color: #f8f9fa !important;
 }
+/* .sidebar.visible { */
+/* width: 0px; */
+/* display: none;
+} */
+/* .sidebar {
+  width: 21%;
+  height: 100vh !important;
+  background-color: #120c16;
+  color: #fff; */
+/* white-space: nowrap; */
+/* transition: all ease-in-out 0.5s;
+} */
+
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* background-color: rgba(0, 0, 0, 0) !important; */
+  background-color: white;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+/* Gaytri css start  */
+.fullContainer {
+  height: 100vh !important;
+}
+.formColor {
+  background-color: rgb(255, 255, 255) !important;
+}
+.textLeft {
+  text-align: left !important;
+}
+.heading4 {
+  color: #334155;
+  color: rgb(51, 65, 85);
+  font-weight: 600;
+}
+
+/* ---------Priyanshu-Start------------- */
+body {
+  background-color: #f8fafc !important;
+}
+.Sign-up-container {
+  height: 100vh;
+  /* background-color: #ecaeae; */
+}
+.Sign-up-container-inner {
+  /* background-color: rgb(213, 245, 166); */
+}
+.formWidth {
+  text-align: start;
+  width: 400px;
+}
+.globalbtnColor {
+  color: #ffffff !important;
+  background-color: #1d4ed8 !important;
+}
+
+.formWidth {
+  width: 400px !important;
+}
+/* Gaytri css end  */
+/*################################################################################# */
+/* karan start css */
+.login-button {
+  align-items: center;
+  margin: 0 !important;
+  gap: 10px !important;
+}
+.login-nav {
+  gap: 10px !important;
+}
+.login-admin {
+  background-color: #2563eb !important;
+  padding: 4px 17px !important;
+  border-radius: 8px;
+  color: white !important;
+  height: 33px !important;
+}
+.main-div {
+  background-color: white !important;
+  padding: 21px 21px !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+.Knowlege-Base:hover {
+  background-color: #e7e7e7;
+}
+.Knowlege-Base {
+  padding: 4px 0px !important;
+  border-radius: 7px !important;
+  color: #334155 !important;
+}
+@media screen and (max-width: 991px) {
+  .login-button {
+    align-items: flex-start;
+  }
+  .login-nav {
+    flex-direction: row !important;
+  }
+}
+
+/* karan css end */
+.Fpswd-Clogin {
+  text-decoration: none;
+  color: #2563eb;
+}
+@media (max-width: 450px) {
+  .formWidth {
+    width: 350px;
+  }
+}
+@media (max-width: 380px) {
+  .formWidth {
+    width: 100%;
+    min-width: 300px;
+  }
+}
+/* -------P-Dashboard----- */
+.admin-navbar {
+  background: hsla(289, 93%, 21%, 1);
+
+  background: linear-gradient(
+    180deg,
+    hsla(289, 93%, 21%, 1) 0%,
+    hsla(287, 93%, 6%, 1) 15%,
+    hsla(0, 0%, 0%, 1) 84%,
+    hsla(289, 92%, 20%, 1) 97%
+  );
+
+  background: -moz-linear-gradient(
+    180deg,
+    hsla(289, 93%, 21%, 1) 0%,
+    hsla(287, 93%, 6%, 1) 15%,
+    hsla(0, 0%, 0%, 1) 84%,
+    hsla(289, 92%, 20%, 1) 97%
+  );
+
+  background: -webkit-linear-gradient(
+    180deg,
+    hsla(289, 93%, 21%, 1) 0%,
+    hsla(287, 93%, 6%, 1) 15%,
+    hsla(0, 0%, 0%, 1) 84%,
+    hsla(289, 92%, 20%, 1) 97%
+  );
+
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#560469", endColorstr="#17011D", GradientType=1 );
+}
+.admin-btn-logo {
+  color: white;
+}
+.search-bar-dash {
+  width: 350px !important;
+}
+.search-bar-dash-inner {
+  background-color: #f8f9fa !important;
+}
 .sidebar.visible {
   width: 0px;
-  display: none;
+  /* display: none; */
 }
 .sidebar {
   width: 21%;
   height: 100vh !important;
   background-color: #120c16;
   color: #fff;
-  /* white-space: nowrap; */
-  transition: all ease-in-out 4s;
+  white-space: nowrap;
+  overflow-x: hidden;
+  transition: width 0.3s ease-in-out;
 }
+.dash-list li {
+  list-style: none;
+  text-align: start;
+  padding: 8px 13px;
+}
+.dash-list {
+  padding: 0px;
+  margin: 0px;
+}
+.blank-box {
+  height: 62px;
+  width: 100%;
+  background-color: #21072c57;
+}
+.text-decoration-none {
+  text-decoration: none;
+  color: white;
+}
+.text-decoration-none :hover {
+  background-color: #c45bf157;
+}
+/* ---------Priyanshu-End------------- */
+
 .dash-list li {
   list-style: none;
   text-align: start;
