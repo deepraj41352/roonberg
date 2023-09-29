@@ -1,5 +1,7 @@
 import express from 'express';
-
+<<<<<<<< < Temporary merge branch 1
+import path from 'path';
+=========
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -35,7 +37,10 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:5000',
+        url:
+          process.env.NODE_ENV !== 'production'
+            ? 'http://localhost:5000'
+            : 'https://roonberg.onrender.com',
       },
     ],
     schemes: ['https', 'http'],
@@ -44,13 +49,14 @@ const options = {
 };
 
 const swaggerSpec = swaggerJSDoc(options);
+
 app.use('/api/doc', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/test', (req, res) => {
-  res.send('Hello');
+  res.send('Welcome to Roonberg World');
 });
 
 app.use('/api/user', userRouter);
