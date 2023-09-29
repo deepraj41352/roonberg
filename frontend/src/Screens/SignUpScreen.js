@@ -27,7 +27,7 @@ function SignUpForm() {
       });
       ctxDispatch({ type: 'USER_SIGNIN', payload: data });
       localStorage.setItem('userInfo', JSON.stringify(data));
-
+      console.log("i am signup", data)
       toast.success('SignUp successful');
       navigate('/adminDashboard');
     } catch (err) {

@@ -1,10 +1,7 @@
 import express from 'express';
-<<<<<<<< < Temporary merge branch 1
-import path from 'path';
-=========
+import path from 'path'
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import path from 'path';
 import userRouter from './routers/userRouter.js';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';

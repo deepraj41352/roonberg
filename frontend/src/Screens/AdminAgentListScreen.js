@@ -7,56 +7,81 @@ import { AiFillDelete } from 'react-icons/ai';
 import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
-import { Form } from 'react-bootstrap';
+import { Form, Toast } from 'react-bootstrap';
 import { BiPlusMedical } from 'react-icons/bi';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "FATCH_REQUEST":
+      return { ...state, loading: false }
+    case "FATCH_SUCCESS":
+      return { ...state, AgentData: action.payload, loading: false }
+    case "FATCH_ERROR":
+      return { ...state, error: action.payload, loading: false }
+  }
+}
 
 const columns = [
   { field: '_id', headerName: 'ID', width: 80 },
   {
-    field: 'username',
-    headerName: 'Username',
-    width: 100,
-  },
-  {
-    field: 'firstName',
-    headerName: 'First Name',
-    width: 100,
-  },
-  {
-    field: 'lastName',
-    headerName: 'Last Name',
+    field: 'first_name',
+    headerName: 'Agent Name',
     width: 100,
   },
   {
     field: 'email',
     headerName: 'Email',
-    width: 180,
+    width: 100,
   },
   {
-    field: 'userStatus',
-    headerName: 'User Status',
-    width: 120,
+    field: 'status',
+    headerName: 'Status',
+    width: 100,
   },
-  {
-    field: 'assignedCategory',
-    headerName: 'Assigned Category',
-    width: 150,
-  },
+  // {
+  //   field: 'email',
+  //   headerName: 'Email',
+  //   width: 180,
+  // },
+  // {
+  //   field: 'userStatus',
+  //   headerName: 'User Status',
+  //   width: 120,
+  // },
+  // {
+  //   field: 'assignedCategory',
+  //   headerName: 'Assigned Category',
+  //   width: 150,
+  // },
 ];
 
 const deleteHandle = async () => {
   if (window.confirm('Are you sure to delete ?')) {
     try {
-    } catch (error) { }
+      const data = await axios.delete(`/api/user/${id}`)
+      toast.success(data)
+      console.log(data.message)
+    } catch (error) {
+    }
   }
 };
 
-const getRowId = (row) => row._id;
+
+
+
 
 export default function AdminAgentListScreen() {
+
+  const role = "agent";
   const [isModelOpen, setIsModelOpen] = React.useState(false);
   const [selectedRowData, setSelectedRowData] = React.useState(null);
   const [isNewAgent, setIsNewAgent] = React.useState(false);
+  const [{ loading, error, AgentData }, dispatch] = React.useReducer(reducer, { loading: false, error: '', AgentData: [] })
+  const [data, setData] = React.useState([])
+
 
   const handleEdit = (params) => {
     setSelectedRowData(params);
@@ -77,6 +102,30 @@ export default function AdminAgentListScreen() {
   const handleSaveAgent = () => {
     setIsModelOpen(false);
   };
+
+  React.useEffect(() => {
+    const FatchAgentData = async () => {
+      try {
+        const response = await axios.get(`/api/user/${role}`);
+        const datas = response.data
+        const rowData = datas.map((items) => {
+          return {
+            ...items,
+            _id: items._id,
+
+          }
+        })
+
+        setData(rowData);
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    FatchAgentData();
+
+  }, []);
+
+
   return (
     <>
       <Button
@@ -87,9 +136,10 @@ export default function AdminAgentListScreen() {
         Add Agent
       </Button>
       <Box sx={{ height: 400, width: '100%' }}>
+
         <DataGrid
           className="tableBg mx-2"
-          rows={data.agentData}
+          rows={data}
           columns={[
             ...columns,
             {
@@ -109,7 +159,7 @@ export default function AdminAgentListScreen() {
                     <Button
                       variant="outlined"
                       className="mx-2 tableDeletebtn"
-                      onClick={deleteHandle}
+                      onClick={() => deleteHandle(params.row._id)}
                       startIcon={<AiFillDelete />}>
                       Delete
                     </Button>
@@ -118,7 +168,7 @@ export default function AdminAgentListScreen() {
               },
             },
           ]}
-          getRowId={getRowId}
+          getRowId={(row) => row._id}
           initialState={{
             pagination: {
               paginationModel: {
@@ -130,6 +180,8 @@ export default function AdminAgentListScreen() {
           checkboxSelection
           disableRowSelectionOnClick
         />
+
+
       </Box>
       <Modal open={isModelOpen} onClose={handleCloseRow}>
         <Box
@@ -160,36 +212,13 @@ export default function AdminAgentListScreen() {
                 isNewAgent
                   ? ''
                   : selectedRowData
-                    ? selectedRowData.username
+                    ? selectedRowData.first_name
                     : ''
               }
               label="Username"
               fullWidth
             />
-            <TextField
-              className="mb-2"
-              value={
-                isNewAgent
-                  ? ''
-                  : selectedRowData
-                    ? selectedRowData.firstName
-                    : ''
-              }
-              label="First Name"
-              fullWidth
-            />
-            <TextField
-              className="mb-2"
-              value={
-                isNewAgent
-                  ? ''
-                  : selectedRowData
-                    ? selectedRowData.lastName
-                    : ''
-              }
-              label="Last Name"
-              fullWidth
-            />
+
             <TextField
               className="mb-2"
               value={
@@ -204,24 +233,13 @@ export default function AdminAgentListScreen() {
                 isNewAgent
                   ? ''
                   : selectedRowData
-                    ? selectedRowData.userStatus
+                    ? selectedRowData.status
                     : ''
               }
               label="User Status"
               fullWidth
             />
-            <TextField
-              className="mb-2"
-              value={
-                isNewAgent
-                  ? ''
-                  : selectedRowData
-                    ? selectedRowData.assignedCategory
-                    : ''
-              }
-              label="Assigned Category"
-              fullWidth
-            />
+
             <Button
               variant="contained"
               color="primary"

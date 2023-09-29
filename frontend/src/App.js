@@ -163,7 +163,7 @@ function App() {
                         element={<ProtectedRoute><AdminProjectListScreen /></ProtectedRoute>}
                       />
                       <Route
-                        path="/adminAgentList"
+                        path="/adminAgentList/:userRole"
                         element={<ProtectedRoute><AdminAgentListScreen /></ProtectedRoute>}
                       />
                       <Route

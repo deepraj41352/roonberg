@@ -23,6 +23,9 @@ import { Store } from '../Store';
 
 function Sidebar({ sidebarVisible, setSidebarVisible }) {
     const { state, dispatch: ctxDispatch } = useContext(Store);
+    const { userInfo } = state;
+    const userRole = userInfo.role;
+
 
     const signoutHandler = () => {
         ctxDispatch({ type: 'USER_SIGNOUT' });
@@ -40,13 +43,13 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                         Dashboard
                     </li>
                 </Link>
-                <Link to="/adminList" className="text-decoration-none">
+                <Link to={`/adminList/`} className="text-decoration-none">
                     <li>
                         <HiClipboardList className="me-3 fs-5" />
                         Admin List
                     </li>
                 </Link>
-                <Link to="/adminAgentList" className="text-decoration-none">
+                <Link to={`/adminAgentList/${userRole}`} className="text-decoration-none">
                     <li>
                         <FaListAlt className="me-3 fs-5" />
                         Agent List
