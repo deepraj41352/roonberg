@@ -7,7 +7,7 @@ import {
   generateToken,
   nodeMailer,
   isAuth,
-  isAdmin,
+  isAdminOrSelf,
   baseUrl,
 } from '../util.js';
 
@@ -15,7 +15,7 @@ const userRouter = express.Router();
 
 /**
  * @swagger
- * /users/{role}:
+ * /user/{role}:
  *   get:
  *     summary: Get users by role.
  *     description: Retrieve a list of users with a specific role.
@@ -35,58 +35,83 @@ const userRouter = express.Router();
  *         description: Server error.
  */
 
-userRouter.get('/:role', async (req, res) => {
-  const role = req.params.role;
-  try {
-    const users = await User.find({ role });
-    res.json(users);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
+userRouter.get(
+  '/:role',
+  expressAsyncHandler(async (req, res) => {
+    const role = req.params.role;
+    try {
+      const users = await User.find({ role });
+      res.json(users);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  })
+);
+
+userRouter.put(
+  '/update/:id',
+  isAuth,
+  isAdminOrSelf,
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const user = await User.findById(req.params.id);
+      if (user._id == req.params.id) {
+        await user.updateOne({ $set: req.body });
+        res.status(200).json('update successfully');
+      } else {
+        res.status(403).json('you can not update');
+      }
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  })
+);
 
 /**
  * @swagger
- * /user/{id}:
- *   delete:
- *     summary: Delete a user by ID.
- *     description: Delete a user by their unique ID. Only accessible to admin users.
- *     tags:
- *       - Users
- *     parameters:
- *       - name: id
- *         in: path
- *         description: ID of the user to delete.
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: User successfully deleted.
- *       400:
- *         description: Cannot delete admin user.
- *       404:
- *         description: User not found.
- *       500:
- *         description: Server error.
+ * paths:
+ *   /user/{id}:
+ *     delete:
+ *       summary: Delete a user account.
+ *       tags:
+ *         - User
+ *       parameters:
+ *         - in: path
+ *           name: id
+ *           required: true
+ *           schema:
+ *             type: string
+ *           description: The ID of the user to delete.
+ *       security:
+ *         - BearerAuth: []
+ *       responses:
+ *         '200':
+ *           description: User account successfully deleted.
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: string
+ *                 example: Account has been deleted
+ *         '401':
+ *           description: Unauthorized. User is not authenticated.
+ *         '403':
+ *           description: Forbidden. User does not have permission to delete this account.
+ *         '404':
+ *           description: User not found.
+ *         '500':
+ *           description: Internal Server Error.
  */
-
 userRouter.delete(
   '/:id',
   isAuth,
-  isAdmin,
+  isAdminOrSelf,
   expressAsyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id);
-    if (user) {
-      if (user.email === 'admin@example.com') {
-        res.status(400).send({ message: 'Can Not Delete Admin User' });
-        return;
-      }
-      await user.deleteOne();
-      res.send({ message: 'User Deleted' });
-    } else {
-      res.status(404).send({ message: 'User Not Found' });
+    try {
+      await User.findByIdAndDelete(req.params.id);
+      res.status(200).json('Account has been deleted');
+    } catch (err) {
+      return res.status(500).json(err);
     }
   })
 );
@@ -298,6 +323,7 @@ userRouter.post(
         res.send({
           _id: user._id,
           first_name: user.first_name,
+          last_name: user.last_name,
           email: user.email,
           role: user.role,
           token: generateToken(user),
@@ -389,7 +415,9 @@ userRouter.post(
         role,
       });
       const user = await newUser.save();
-      res.status(201).send({ message: 'User registered successfully.', user });
+      res
+        .status(201)
+        .send({ message: 'User registered successfully. please Login', user });
     } catch (error) {
       console.error(error);
       res

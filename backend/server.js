@@ -5,7 +5,6 @@ import path from 'path';
 import userRouter from './routers/userRouter.js';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import { Console } from 'console';
 
 dotenv.config();
 mongoose
@@ -21,6 +20,7 @@ mongoose
   .catch((err) => {
     console.log(err.message);
   });
+
 const app = express();
 const options = {
   definition: {
@@ -46,6 +46,7 @@ const options = {
 };
 
 const swaggerSpec = swaggerJSDoc(options);
+
 app.use('/api/doc', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(express.json());

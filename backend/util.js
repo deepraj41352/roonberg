@@ -29,7 +29,7 @@ export const baseUrl = () =>
     ? process.env.BASE_URL
     : process.env.NODE_ENV !== 'production'
     ? 'http://localhost:3000'
-    : 'https://sweepmeet.com';
+    : 'https://roonberg.onrender.com';
 
 export const generateToken = (user) => {
   return jwt.sign(
@@ -47,10 +47,10 @@ export const generateToken = (user) => {
 };
 
 export const isAuth = (req, res, next) => {
-  console.log(authorization);
   const authorization = req.headers.authorization;
+  console.log(authorization);
   if (authorization) {
-    const token = authorization.slice(7, authorization.lenght);
+    const token = authorization.slice(7); // Remove 'Bearer ' prefix
     jwt.verify(token, process.env.JWT_SECRET, (err, decode) => {
       if (err) {
         res.status(401).send({ message: 'Invalid token' });
@@ -64,14 +64,17 @@ export const isAuth = (req, res, next) => {
   }
 };
 
-export const isAdmin = (req, res, next) => {
-  console.log(req.user);
+export const isAdminOrSelf = (req, res, next) => {
+  const currentUser = req.user; // Current user making the request
+  const userId = req.params.id; // User ID in the route parameter
+
   if (
-    (req.user && req.user.role === 'superadmin') ||
-    req.user.role === 'admin'
+    currentUser.role === 'superadmin' ||
+    currentUser.role === 'admin' ||
+    currentUser._id === userId
   ) {
     next();
   } else {
-    res.status(401).send({ message: 'Invalid Admin Token' });
+    res.status(401).send({ message: 'Permission Denied' });
   }
 };
