@@ -35,10 +35,10 @@ const userRouter = express.Router();
  *         description: Server error.
  */
 
-userRouter.get(
-  '/:role',
+userRouter.post(
+  '/',
   expressAsyncHandler(async (req, res) => {
-    const role = req.params.role;
+    const role = req.body.role;
     try {
       const users = await User.find({ role });
       res.json(users);

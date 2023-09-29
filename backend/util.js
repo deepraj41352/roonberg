@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import Project from './Models/projectModel.js';
 
 dotenv.config();
 
@@ -48,7 +49,6 @@ export const generateToken = (user) => {
 
 export const isAuth = (req, res, next) => {
   const authorization = req.headers.authorization;
-  console.log(authorization);
   if (authorization) {
     const token = authorization.slice(7); // Remove 'Bearer ' prefix
     jwt.verify(token, process.env.JWT_SECRET, (err, decode) => {
@@ -64,17 +64,29 @@ export const isAuth = (req, res, next) => {
   }
 };
 
-export const isAdminOrSelf = (req, res, next) => {
+export const isAdminOrSelf = async (req, res, next) => {
   const currentUser = req.user; // Current user making the request
   const userId = req.params.id; // User ID in the route parameter
 
-  if (
-    currentUser.role === 'superadmin' ||
-    currentUser.role === 'admin' ||
-    currentUser._id === userId
-  ) {
-    next();
-  } else {
-    res.status(401).send({ message: 'Permission Denied' });
+  try {
+    // Assuming you have a method to retrieve the project owner's ID
+    const project = await Project.findById(req.params.id);
+    console.log(project.projectOwner, '....', currentUser._id);
+    const projectOwnerId = project ? project.projectOwner : null;
+    if (
+      currentUser.role === 'superadmin' ||
+      currentUser.role === 'admin' ||
+      currentUser._id === userId
+    ) {
+      next();
+    } else {
+      if (currentUser._id == projectOwnerId) {
+        next();
+      } else {
+        res.status(401).json({ message: 'Permission Denied' });
+      }
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Internal Server Error', error });
   }
 };
