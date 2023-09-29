@@ -8,26 +8,35 @@ import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import SignUpForm from "./Screens/SignUpScreen";
 import RegistrationForm from "./Screens/RegistrationScreen";
+import React from "react";
 import AdminProjectListScreen from "./Screens/AdminProjectListScreen";
 import AdminAgentListScreen from "./Screens/AdminAgentListScreen";
 import AdminCategoriesListScreen from "./Screens/AdminCategoriesListScreen";
 import AdminListScreen from "./Screens/AdminListScreen";
 import AdminContractorListScreen from "./Screens/AdminContractorListScreen";
+import ProtectedRoute from "./Components/ProtectedRoute";
+import AdminDashboard from "./Screens/AdminDashboard";
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <NavbarLogin />
         <ToastContainer position="bottom-center" limit={1} />
+        <NavbarLogin />
         <Routes>
           <Route path="/" element={<SignUpForm />} />
           <Route path="/registration" element={<RegistrationForm />} />
           <Route path="/ForgetPassword" element={<ForgetPassword />} />
-
-          <Route path="/resetPassword" element={<ResetPasswordScreen />} />
+          <Route
+            path="/reset-password/:token"
+            element={<ResetPasswordScreen />}
+          />
           <Route
             path="/adminProjectList"
-            element={<AdminProjectListScreen />}
+            element={
+              <ProtectedRoute>
+                <AdminProjectListScreen />
+              </ProtectedRoute>
+            }
           />
           <Route path="/adminAgentList" element={<AdminAgentListScreen />} />
           <Route
@@ -39,6 +48,7 @@ function App() {
             path="/adminContractorList"
             element={<AdminContractorListScreen />}
           />
+          <Route path="/adminDashboard" element={<AdminDashboard />} />
           <Route />
         </Routes>
       </BrowserRouter>

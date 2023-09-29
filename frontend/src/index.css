@@ -33,8 +33,11 @@ body {
   background-color: #f8fafc !important;
 }
 .Sign-up-container {
-  height: 100vh;
+  height: calc(100vh - 82px);
   /* background-color: #ecaeae; */
+}
+.forget-container {
+  height: calc(100vh - 82px);
 }
 .Sign-up-container-inner {
   /* background-color: rgb(213, 245, 166); */
@@ -87,26 +90,31 @@ body {
   border-radius: 8px;
   color: white !important;
   height: 33px !important;
+  text-decoration: none;
 }
 .main-div {
   background-color: white !important;
-  padding: 21px 21px !important;
+  padding: 0px 21px !important;
   border-bottom: 1px solid #e2e8f0 !important;
 }
-.Knowlege-Base:hover {
-  background-color: #e7e7e7;
+.Toggle-button:focus {
+  outline: none !important;
+  box-shadow: none !important;
 }
-.Knowlege-Base {
-  padding: 4px 0px !important;
-  border-radius: 7px !important;
-  color: #334155 !important;
+.btn-resend {
+  width: 50%;
+  margin: 0 auto;
 }
+
 @media screen and (max-width: 991px) {
   .login-button {
     align-items: flex-start;
   }
   .login-nav {
     flex-direction: row !important;
+  }
+  .main-div {
+    padding: 12px 0px !important;
   }
 }
 
@@ -360,17 +368,14 @@ body {
 .text-decoration-none :hover {
   background-color: #c45bf157;
 }
-.Password-input-eye {
-  display: flex;
-  border: 1px solid #dee2e6;
+.eye-bttn {
+  position: absolute;
+  top: 0;
+  right: 5px;
+  padding: 5px;
 }
-/* .Password-input-eye :hover {
-  border: 1px solid #86b7fe !important;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
-} */
-.pswd-input {
-  border: none !important;
-  box-shadow: none !important;
+.Password-input-eye {
+  position: relative;
 }
 /* ---------Priyanshu-End------------- */
 

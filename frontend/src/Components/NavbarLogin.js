@@ -1,6 +1,6 @@
-import React from "react";
 import {
   Container,
+  Image,
   Nav,
   Navbar,
   Form,
@@ -28,12 +28,17 @@ import {
   BsSearch,
   BsFillChatLeftQuoteFill,
 } from "react-icons/bs";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { BsFillPersonFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
+import { Store } from "../Store";
 import Sidebar from "./Sidebar";
+
 function NavbarLogin() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
+
+  const { state, dispatch: ctxDispatch } = useContext(Store);
+  const { userInfo } = state;
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
@@ -102,30 +107,35 @@ function NavbarLogin() {
         </div>
       </Container>
     </>
-    // <Navbar expand="lg" className=" main-div" >
-    //   <Container>
-    //     <Navbar.Brand href="#home">logo and name</Navbar.Brand>
-    //     <Navbar.Toggle aria-controls="basic-navbar-nav" />
-    //     <Navbar.Collapse className="justify-content-end" id="basic-navbar-nav">
-    //       <Nav className=" login-button">
-    //         <Nav.Link className="Knowlege-Base " href="#home">
-    //           Knowledge Base
-    //         </Nav.Link>
-    //         <Nav className="login-nav ">
-
-    //           <Nav.Link className="login-admin" to='/'>
-    //             <BsFillPersonFill className="fs-5 Icon-person " />
-    //             Login
-    //           </Nav.Link>
-    //           <Nav.Link className="login-admin" href="#link">
-    //             Admin Login
-    //           </Nav.Link>
-    //         </Nav>
-    //       </Nav>
-    //     </Navbar.Collapse>
-    //   </Container>
-    // </Navbar>
   );
+  // )
+  // : (
+
+  //   <Navbar expand="lg" className=" main-div">
+  //     <Container>
+  //       <Navbar.Brand href="#home">
+  //         <Image className="border-0" src="./logo2.png" thumbnail />
+  //       </Navbar.Brand>
+  //       <Navbar.Toggle
+  //         aria-controls="basic-navbar-nav"
+  //         className="Toggle-button"
+  //       />
+  //       <Navbar.Collapse className="justify-content-end" id="basic-navbar-nav">
+  //         <Nav className=" login-button">
+  //           <Nav className="login-nav ">
+  //             <Link className="login-admin" to="/registration">
+  //               <BsFillPersonFill className="fs-5 Icon-person " />
+  //               Signup
+  //             </Link>
+  //             <Link className="login-admin" href="#link">
+  //               Admin Login
+  //             </Link>
+  //           </Nav>
+  //         </Nav>
+  //       </Navbar.Collapse>
+  //     </Container>
+  //   </Navbar>
+  // );
 }
 
 export default NavbarLogin;
