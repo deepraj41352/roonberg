@@ -9,30 +9,26 @@ import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import { Form } from 'react-bootstrap';
 import { BiPlusMedical } from 'react-icons/bi';
+import axios from 'axios';
 
 const columns = [
-  { field: '_id', headerName: 'ID', width: 90 },
+  { field: '_id', headerName: 'ID', width: 80 },
   {
-    field: 'username',
-    headerName: 'Username',
-    width: 150,
-  },
-  {
-    field: 'firstName',
-    headerName: 'First Name',
-    width: 150,
-  },
-  {
-    field: 'lastName',
-    headerName: 'Last Name',
-    width: 150,
+    field: 'first_name',
+    headerName: 'Admin Name',
+    width: 100,
   },
   {
     field: 'email',
     headerName: 'Email',
-    width: 200,
+    width: 100,
   },
-];
+  {
+    field: 'status',
+    headerName: 'Status',
+    width: 100,
+  },
+]
 
 const deleteHandle = async () => {
   if (window.confirm('Are you sure to delete ?')) {
@@ -41,12 +37,15 @@ const deleteHandle = async () => {
   }
 };
 
-const getRowId = (row) => row._id;
+
 
 export default function AdminListScreen() {
   const [isModelOpen, setIsModelOpen] = React.useState(false);
   const [selectedRowData, setSelectedRowData] = React.useState(null);
   const [isNewAdmin, setIsNewAdmin] = React.useState(false);
+  const role = "admin";
+  const [data, setData] = React.useState([]);
+
 
   const handleEdit = (params) => {
     setSelectedRowData(params);
@@ -68,6 +67,29 @@ export default function AdminListScreen() {
   const handleSubmitNewAdmin = () => {
     setIsModelOpen(false);
   };
+
+  React.useEffect(() => {
+    const FatchAgentData = async () => {
+      try {
+        const response = await axios.post(`/api/user/`, { role: role });
+        const datas = response.data
+        const rowData = datas.map((items) => {
+          return {
+            ...items,
+            _id: items._id,
+
+          }
+        })
+
+        setData(rowData);
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    FatchAgentData();
+
+  }, []);
+
 
   // React.useEffect(() => {
 
@@ -101,7 +123,7 @@ export default function AdminListScreen() {
       <Box sx={{ height: 400, width: '100%' }}>
         <DataGrid
           className="tableBg mx-2"
-          rows={data.adminData}
+          rows={data}
           columns={[
             ...columns,
             {
@@ -130,7 +152,7 @@ export default function AdminListScreen() {
               },
             },
           ]}
-          getRowId={getRowId}
+          getRowId={(row) => row._id}
           initialState={{
             pagination: {
               paginationModel: {
@@ -172,42 +194,31 @@ export default function AdminListScreen() {
                 isNewAdmin
                   ? ''
                   : selectedRowData
-                    ? selectedRowData.username
+                    ? selectedRowData.first_name
                     : ''
               }
               label="Username"
               fullWidth
             />
-            <TextField
-              className="mb-2"
-              value={
-                isNewAdmin
-                  ? ''
-                  : selectedRowData
-                    ? selectedRowData.firstName
-                    : ''
-              }
-              label="First Name"
-              fullWidth
-            />
-            <TextField
-              className="mb-2"
-              value={
-                isNewAdmin
-                  ? ''
-                  : selectedRowData
-                    ? selectedRowData.lastName
-                    : ''
-              }
-              label="Last Name"
-              fullWidth
-            />
+
             <TextField
               className="mb-2"
               value={
                 isNewAdmin ? '' : selectedRowData ? selectedRowData.email : ''
               }
               label="Email"
+              fullWidth
+            />
+            <TextField
+              className="mb-2"
+              value={
+                isNewAdmin
+                  ? ''
+                  : selectedRowData
+                    ? selectedRowData.status
+                    : ''
+              }
+              label="User Status"
               fullWidth
             />
             <Button

@@ -70,7 +70,7 @@ userRouter.put(
 
 /**
  * @swagger
- * paths:
+ * paths: 
  *   /user/{id}:
  *     delete:
  *       summary: Delete a user account.

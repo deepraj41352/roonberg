@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
-import data from '../dummyData';
+
 import { Button, Grid } from '@mui/material';
 import { AiFillDelete } from 'react-icons/ai';
 import { MdEdit } from 'react-icons/md';
@@ -9,9 +9,10 @@ import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import { Form, Toast } from 'react-bootstrap';
 import { BiPlusMedical } from 'react-icons/bi';
-import { useParams } from 'react-router-dom';
+
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { Store } from '../Store';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -21,6 +22,8 @@ const reducer = (state, action) => {
       return { ...state, AgentData: action.payload, loading: false }
     case "FATCH_ERROR":
       return { ...state, error: action.payload, loading: false }
+    case "DELETE_SUCCESS":
+      return { ...state, deleteSuccess: false, loading: false }
   }
 }
 
@@ -58,16 +61,7 @@ const columns = [
   // },
 ];
 
-const deleteHandle = async () => {
-  if (window.confirm('Are you sure to delete ?')) {
-    try {
-      const data = await axios.delete(`/api/user/${id}`)
-      toast.success(data)
-      console.log(data.message)
-    } catch (error) {
-    }
-  }
-};
+
 
 
 
@@ -76,10 +70,13 @@ const deleteHandle = async () => {
 export default function AdminAgentListScreen() {
 
   const role = "agent";
+  const { state } = React.useContext(Store);
+  const { userInfo } = state;
+  const id = userInfo._id;
   const [isModelOpen, setIsModelOpen] = React.useState(false);
   const [selectedRowData, setSelectedRowData] = React.useState(null);
   const [isNewAgent, setIsNewAgent] = React.useState(false);
-  const [{ loading, error, AgentData }, dispatch] = React.useReducer(reducer, { loading: false, error: '', AgentData: [] })
+  const [{ loading, error, AgentData }, dispatch] = React.useReducer(reducer, { deleteSuccess: false, loading: false, error: '', AgentData: [] })
   const [data, setData] = React.useState([])
 
 
@@ -99,14 +96,12 @@ export default function AdminAgentListScreen() {
     setIsNewAgent(true);
   };
 
-  const handleSaveAgent = () => {
-    setIsModelOpen(false);
-  };
+
 
   React.useEffect(() => {
     const FatchAgentData = async () => {
       try {
-        const response = await axios.get(`/api/user/${role}`);
+        const response = await axios.post(`/api/user/`, { role: role });
         const datas = response.data
         const rowData = datas.map((items) => {
           return {
@@ -125,6 +120,69 @@ export default function AdminAgentListScreen() {
 
   }, []);
 
+
+  // const deleteHandle = async (agentId) => {
+  //   if (window.confirm('Are you sure to delete ?')) {
+  //     try {
+  //       const datas = await axios.delete(`/api/user/${id}`,
+  //         { headers: { Authorization: `Bearer ${userInfo.token}` } })
+
+  //       if (datas.status === 200) {
+  //         toast.success("Agent data deleted successfully!");
+  //         setData((prevData) => prevData.filter(row => row._id !== agentId));
+  //         dispatch({ type: "DELETE_SUCCESS" });
+  //       } else {
+  //         toast.error("Failed to delete agent data.");
+  //       }
+  //     } catch (error) {
+  //       toast.error(data.message)
+  //     }
+  //   }
+  // };
+  const deleteHandle = async () => {
+    if (window.confirm('Are you sure to delete?')) {
+      try {
+        const response = await axios.delete(`/api/user/${id}`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` }
+        });
+
+        if (response.status === 200) {
+          toast.success("Agent data deleted successfully!");
+
+          // Update the data state by excluding the deleted row
+          setData((prevData) => prevData?.filter(row => row._id !== id));
+        } else {
+          toast.error("Failed to delete agent data.");
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("An error occurred while deleting agent data.");
+      }
+    }
+  };
+
+
+  const handleSaveAgent = async () => {
+
+    try {
+      const response = await axios.put(`/api/user/update/${id}`, {
+        headers: { Authorization: `Bearer ${userInfo.token}` }
+      });
+
+      if (response.status === 200) {
+        toast.success("Agent data updated successfully!");
+        setIsModelOpen(false);
+
+
+        FatchAgentData();
+      } else {
+        toast.error("Failed to update agent data.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occurred while updating agent data.");
+    }
+  };
 
   return (
     <>
@@ -215,6 +273,7 @@ export default function AdminAgentListScreen() {
                     ? selectedRowData.first_name
                     : ''
               }
+              onChange={(e) => setSelectedRowData({ ...selectedRowData, first_name: e.target.value })}
               label="Username"
               fullWidth
             />
@@ -224,6 +283,8 @@ export default function AdminAgentListScreen() {
               value={
                 isNewAgent ? '' : selectedRowData ? selectedRowData.email : ''
               }
+
+              onChange={(e) => setSelectedRowData({ ...selectedRowData, email: e.target.value })}
               label="Email"
               fullWidth
             />
@@ -236,6 +297,7 @@ export default function AdminAgentListScreen() {
                     ? selectedRowData.status
                     : ''
               }
+              onChange={(e) => setSelectedRowData({ ...selectedRowData, status: e.target.value })}
               label="User Status"
               fullWidth
             />

@@ -43,12 +43,14 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                         Dashboard
                     </li>
                 </Link>
-                <Link to={`/adminList/`} className="text-decoration-none">
-                    <li>
-                        <HiClipboardList className="me-3 fs-5" />
-                        Admin List
-                    </li>
-                </Link>
+                {userRole !== 'admin' && (
+                    <Link to={`/adminList/`} className="text-decoration-none">
+                        <li>
+                            <HiClipboardList className="me-3 fs-5" />
+                            Admin List
+                        </li>
+                    </Link>
+                )}
                 <Link to={`/adminAgentList/${userRole}`} className="text-decoration-none">
                     <li>
                         <FaListAlt className="me-3 fs-5" />

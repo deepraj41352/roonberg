@@ -9,30 +9,26 @@ import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import { Form } from 'react-bootstrap';
 import { BiPlusMedical } from 'react-icons/bi';
+import axios from 'axios';
 
 const columns = [
-  { field: '_id', headerName: 'ID', width: 90 },
+  { field: '_id', headerName: 'ID', width: 80 },
   {
-    field: 'username',
-    headerName: 'Contractor Name',
-    width: 180,
+    field: 'first_name',
+    headerName: 'Agent Name',
+    width: 100,
   },
   {
     field: 'email',
     headerName: 'Email',
-    width: 200,
-  },
-  {
-    field: 'userStatus',
-    headerName: 'Status',
     width: 100,
   },
   {
-    field: 'assignedCategory',
-    headerName: 'Assigned Category',
-    width: 200,
+    field: 'status',
+    headerName: 'Status',
+    width: 100,
   },
-];
+]
 
 const deleteHandle = async () => {
   if (window.confirm('Are you sure to delete ?')) {
@@ -47,6 +43,30 @@ export default function AdminContractorListScreen() {
   const [isModelOpen, setIsModelOpen] = React.useState(false);
   const [selectedRowData, setSelectedRowData] = React.useState(null);
   const [isNewContractor, setIsNewContractor] = React.useState(false);
+  const role = "contractor";
+  const [data, setData] = React.useState([])
+
+  React.useEffect(() => {
+    const FatchAgentData = async () => {
+      try {
+        const response = await axios.post(`/api/user/`, { role: role });
+        const datas = response.data
+        const rowData = datas.map((items) => {
+          return {
+            ...items,
+            _id: items._id,
+
+          }
+        })
+
+        setData(rowData);
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    FatchAgentData();
+
+  }, []);
 
   const handleEdit = (params) => {
     setSelectedRowData(params);
@@ -81,7 +101,7 @@ export default function AdminContractorListScreen() {
       <Box sx={{ height: 400, width: '100%' }}>
         <DataGrid
           className="tableBg mx-2"
-          rows={data.contractorData}
+          rows={data}
           columns={[
             ...columns,
             {
@@ -110,7 +130,7 @@ export default function AdminContractorListScreen() {
               },
             },
           ]}
-          getRowId={getRowId}
+          getRowId={(row) => row._id}
           initialState={{
             pagination: {
               paginationModel: {
@@ -152,10 +172,19 @@ export default function AdminContractorListScreen() {
                 isNewContractor
                   ? ''
                   : selectedRowData
-                    ? selectedRowData.agentName
+                    ? selectedRowData.first_name
                     : ''
               }
-              label="Agent Name"
+              label="Username"
+              fullWidth
+            />
+
+            <TextField
+              className="mb-2"
+              value={
+                isNewContractor ? '' : selectedRowData ? selectedRowData.email : ''
+              }
+              label="Email"
               fullWidth
             />
             <TextField
@@ -164,58 +193,10 @@ export default function AdminContractorListScreen() {
                 isNewContractor
                   ? ''
                   : selectedRowData
-                    ? selectedRowData.contractorName
+                    ? selectedRowData.status
                     : ''
               }
-              label="Contractor Name"
-              fullWidth
-            />
-            <TextField
-              className="mb-2"
-              value={
-                isNewContractor
-                  ? ''
-                  : selectedRowData
-                    ? selectedRowData.projectName
-                    : ''
-              }
-              label="Project Name"
-              fullWidth
-            />
-            <TextField
-              className="mb-2"
-              value={
-                isNewContractor
-                  ? ''
-                  : selectedRowData
-                    ? selectedRowData.progress
-                    : ''
-              }
-              label="Progress"
-              fullWidth
-            />
-            <TextField
-              className="mb-2"
-              value={
-                isNewContractor
-                  ? ''
-                  : selectedRowData
-                    ? selectedRowData.startDate
-                    : ''
-              }
-              label="Start Date"
-              fullWidth
-            />
-            <TextField
-              className="mb-2"
-              value={
-                isNewContractor
-                  ? ''
-                  : selectedRowData
-                    ? selectedRowData.endDate
-                    : ''
-              }
-              label="End Date"
+              label="User Status"
               fullWidth
             />
             <Button

@@ -62,6 +62,8 @@ export default function AdminContractorListScreen() {
   const [selectedRowData, setSelectedRowData] = React.useState(null);
   const [isNewCategory, setIsNewCategory] = React.useState(false);
 
+
+
   const handleEdit = (params) => {
     setSelectedRowData(params);
     setIsModelOpen(true);
