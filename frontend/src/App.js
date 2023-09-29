@@ -3,7 +3,6 @@ import ForgetPassword from './Screens/ForgetPasswordScreen';
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 import ResetPasswordScreen from './Screens/ResetPasswordScreen';
 import { ToastContainer, toast } from 'react-toastify';
-import NavbarLogin from './Components/NavbarLogin';
 import 'react-toastify/dist/ReactToastify.css';
 import SignUpForm from './Screens/SignUpScreen';
 import RegistrationForm from './Screens/RegistrationScreen';
@@ -30,7 +29,7 @@ import { FiClock } from 'react-icons/fi';
 import { MdOutlineNotifications } from 'react-icons/md';
 import { Store } from './Store';
 import AdminDashboard from './Screens/AdminDashboard';
-import ProtectedRoute from './Components/ProtectedRoute';
+import ProtectedRoute from './Components/protectedRoute';
 import ProfileScreen from './Screens/ProfileScreen';
 
 function App() {

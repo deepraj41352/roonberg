@@ -35,8 +35,8 @@ function ProfileScreen() {
   };
 
   return (
-    <Container className="Sign-up-container-regis d-flex  flex-column justify-content-center align-items-center">
-      <div className="Sign-up-container-inner px-4 py-3">
+    <Container className="Sign-up-container-regis d-flex w-100 profileDiv  flex-column justify-content-center align-items-center">
+      <div className="Sign-up-container-inner px-4 py-3 w-100">
         <Row className="mb-3">
           <Col>
             <h4>User Profile</h4>
@@ -45,8 +45,8 @@ function ProfileScreen() {
         <Row>
           <Col>
             <Card>
-              <Form onSubmit={submitHandler} className="p-4 formWidth ">
-                <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form onSubmit={submitHandler} className="p-4 w-100 formWidth ">
+                <Form.Group className="mb-3 " controlId="formBasicEmail">
                   <Form.Label className="mb-1 input-box">First Name</Form.Label>
                   <Form.Control
                     onChange={(e) => setFirstName(e.target.value)}

@@ -234,6 +234,10 @@ body {
 /* Gaytri css end  */
 /*################################################################################# */
 /* karan start css */
+.profileDiv {
+  width: 100% !important;
+}
+
 .login-button {
   align-items: center;
   margin: 0 !important;
