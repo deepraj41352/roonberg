@@ -67,11 +67,11 @@ export const isAuth = (req, res, next) => {
 export const isAdminOrSelf = async (req, res, next) => {
   const currentUser = req.user; // Current user making the request
   const userId = req.params.id; // User ID in the route parameter
+  console.log('userrole', currentUser.role);
 
   try {
     // Assuming you have a method to retrieve the project owner's ID
     const project = await Project.findById(req.params.id);
-    console.log(project.projectOwner, '....', currentUser._id);
     const projectOwnerId = project ? project.projectOwner : null;
     if (
       currentUser.role === 'superadmin' ||

@@ -400,24 +400,26 @@ userRouter.post(
   '/signup',
   expressAsyncHandler(async (req, res) => {
     try {
-      const { first_name, email, password, role } = req.body;
+      const { first_name, last_name, email, role } = req.body;
       const existingUser = await User.findOne({ email: email });
       if (existingUser) {
         return res
           .status(400)
           .send({ message: 'Email is already registered.' });
       }
-      const hashedPassword = await bcrypt.hash(password, 8);
+      const hashedPassword = await bcrypt.hash(req.body.password, 8);
       const newUser = new User({
         first_name,
+        last_name,
         email,
         password: hashedPassword,
         role,
       });
       const user = await newUser.save();
+      const { password, ...other } = user._doc;
       res
         .status(201)
-        .send({ message: 'User registered successfully. please Login', user });
+        .send({ message: 'User registered successfully. please Login', other });
     } catch (error) {
       console.error(error);
       res
