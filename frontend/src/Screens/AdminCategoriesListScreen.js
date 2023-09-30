@@ -28,24 +28,6 @@ const columns = [
     headerName: 'categoryImg',
     width: 210,
   },
-  // {
-  //     field: 'progress',
-  //     headerName: 'Progress',
-  //     width: 90,
-  // },
-  // {
-  //     field: 'startDate',
-  //     type: 'number',
-  //     headerName: 'Start Date',
-  //     width: 110,
-  // },
-
-  // {
-  //     field: 'endDate',
-  //     type: 'number',
-  //     headerName: 'endDate',
-  //     width: 110,
-  // },
 ];
 
 const deleteHandle = async () => {
