@@ -3,6 +3,7 @@ import User from '../Models/userModel.js';
 import expressAsyncHandler from 'express-async-handler';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import multer from 'multer';
 import {
   generateToken,
   nodeMailer,
@@ -10,9 +11,10 @@ import {
   isAdminOrSelf,
   baseUrl,
 } from '../util.js';
-
+import cloudinary from 'cloudinary';
+import streamifier from 'streamifier';
 const userRouter = express.Router();
-
+const upload = multer();
 /**
  * @swagger
  * /user/{role}:
@@ -427,4 +429,93 @@ userRouter.post(
   })
 );
 
+userRouter.put(
+  '/profile',
+  isAuth,
+  upload.single('file'),
+  expressAsyncHandler(async (req, res) => {
+    // console.log('req ', req);
+    const userdata = await User.findById(req.user._id);
+    if (userdata) {
+      if (req.file) {
+        cloudinary.config({
+          cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+          api_key: process.env.CLOUDINARY_API_KEY,
+          api_secret: process.env.CLOUDINARY_API_SECRET,
+        });
+
+        const streamUpload = (req) => {
+          return new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              (error, result) => {
+                if (result) {
+                  resolve(result);
+                } else {
+                  reject(error);
+                }
+              }
+            );
+            streamifier.createReadStream(req.file.buffer).pipe(stream);
+          });
+        };
+        const profile_picture = await streamUpload(req);
+
+        userdata.profile_picture = profile_picture || userdata.profile_picture;
+      }
+
+      userdata.first_name = req.body.first_name || userdata.first_name;
+      userdata.last_name = req.body.last_name || userdata.last_name;
+      userdata.email = req.body.email || userdata.email;
+      userdata.gender = req.body.gender || userdata.gender;
+      userdata.address = req.body.address || userdata.address;
+      userdata.phone_number = req.body.phone_number || userdata.phone_number;
+
+      userdata.dob = req.body.dob || userdata.dob;
+      userdata.country = req.body.country || userdata.country;
+      if (req.body.password) {
+        userdata.password = bcrypt.hashSync(req.body.password, 8);
+      }
+      const updatedUser = await userdata.save();
+      console.log('updatedUser ', updatedUser);
+      const { password, passresetToken, ...other } = updatedUser._doc;
+      const userData = { ...other, token: generateToken(updatedUser) };
+      res.send({
+        userData,
+      });
+    } else {
+      res.status(404).send({ message: 'User not found' });
+    }
+  })
+);
+
+const uploadDoc = async (req) => {
+  try {
+    console.log('REQ ', req.file);
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+
+    const streamUpload = (req) => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream((error, result) => {
+          if (result) {
+            console.log('result ', result);
+            resolve(result);
+          } else {
+            console.log('error ', error);
+            reject(error);
+          }
+        });
+        streamifier.createReadStream(req.file.buffer).pipe(stream);
+      });
+    };
+    const profileUri = await streamUpload(req);
+    console.log('profileUri ', profileUri);
+    return profileUri;
+  } catch (error) {
+    console.log('Cloudinary Error ', error);
+  }
+};
 export default userRouter;
