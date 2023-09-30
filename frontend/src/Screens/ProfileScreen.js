@@ -11,27 +11,46 @@ function ProfileScreen() {
   const { userInfo } = state;
 
   const navigate = useNavigate();
+
   const [firstName, setFirstName] = useState(userInfo.first_name);
-  const [lastName, setLastName] = useState('');
+  const [lastName, setLastName] = useState(userInfo.last_name);
   const [email, setEmail] = useState(userInfo.email);
   const [isSubmiting, setIsSubmiting] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const submitHandler = async (e) => {
     e.preventDefault();
     setIsSubmiting(true);
+    const formDatas = new FormData();
+
+    formDatas.append('profile_picture', selectedFile);
+    formDatas.append('first_name', firstName);
+    formDatas.append('last_name', lastName);
+    formDatas.append('email', email);
 
     try {
-      const { data } = await axios.post('/api/user/', {
-        first_name: firstName,
-        last_name: lastName,
-        email: email,
-      });
+      const { data } = await axios.put(
+        `/api/user/update/${userInfo._id}`,
+        formDatas,
+        {
+          headers: {
+            'content-type': 'multipart/form-data',
+
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        }
+      );
       toast.success(data.message);
     } catch (err) {
       toast.error(err.response?.data?.message);
     } finally {
       setIsSubmiting(false);
     }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
   };
 
   return (
@@ -60,6 +79,7 @@ function ProfileScreen() {
                   <Form.Control
                     onChange={(e) => setLastName(e.target.value)}
                     type="text"
+                    value={lastName}
                     required
                   />
                 </Form.Group>
@@ -79,15 +99,17 @@ function ProfileScreen() {
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
                   <Form.Label className="mb-1">Profile Picture</Form.Label>
-                  <Form.Control type="file" onChange={(e) => {}} />
+                  <Form.Control type="file" onChange={handleFileChange} />
                 </Form.Group>
-                <Button
-                  className="w-100 py-1 mt-3 globalbtnColor"
-                  variant="primary"
-                  type="submit"
-                  disabled={isSubmiting}>
-                  {isSubmiting ? 'Updateing...' : 'Update'}
-                </Button>
+                <div className="d-flex justify-content-center mt-4">
+                  <Button
+                    className=" py-1 w-25 globalbtnColor"
+                    variant="primary"
+                    type="submit"
+                    disabled={isSubmiting}>
+                    {isSubmiting ? 'Updateing...' : 'Update'}
+                  </Button>
+                </div>
               </Form>
             </Card>
           </Col>
