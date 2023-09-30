@@ -5,6 +5,7 @@ import path from 'path';
 import userRouter from './routers/userRouter.js';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import projectRouter from './routers/projectRouter.js';
 
 dotenv.config();
 mongoose
@@ -34,7 +35,10 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:5000',
+        url:
+          process.env.NODE_ENV !== 'production'
+            ? 'http://localhost:5000'
+            : 'https://roonberg.onrender.com',
       },
     ],
     schemes: ['https', 'http'],
@@ -43,7 +47,8 @@ const options = {
 };
 
 const swaggerSpec = swaggerJSDoc(options);
-app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.use('/api/doc', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -53,6 +58,7 @@ app.get('/test', (req, res) => {
 });
 
 app.use('/api/user', userRouter);
+app.use('/api/project', projectRouter);
 
 const _dirname = path.resolve();
 app.use(express.static(path.join(_dirname, 'frontend/build')));
