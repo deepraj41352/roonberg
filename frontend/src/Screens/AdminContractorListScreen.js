@@ -8,39 +8,36 @@ import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import { Form } from 'react-bootstrap';
+import { BiPlusMedical } from 'react-icons/bi';
+
 const columns = [
   { field: '_id', headerName: 'ID', width: 90 },
   {
-    field: 'contractorName',
+    field: 'username',
     headerName: 'Contractor Name',
-    width: 150,
+    width: 180,
   },
   {
-    field: 'projectName',
-    headerName: 'Project Name',
-    width: 150,
+    field: 'email',
+    headerName: 'Email',
+    width: 200,
   },
   {
-    field: 'progress',
-    headerName: 'Progress',
-    width: 90,
+    field: 'userStatus',
+    headerName: 'Status',
+    width: 100,
   },
   {
-    field: 'startDate',
-    headerName: 'Start Date',
-    width: 110,
-  },
-  {
-    field: 'endDate',
-    headerName: 'End Date',
-    width: 110,
+    field: 'assignedCategory',
+    headerName: 'Assigned Category',
+    width: 200,
   },
 ];
 
 const deleteHandle = async () => {
   if (window.confirm('Are you sure to delete ?')) {
     try {
-    } catch (error) {}
+    } catch (error) { }
   }
 };
 
@@ -70,13 +67,16 @@ export default function AdminContractorListScreen() {
   const handleSubmitNewContractor = () => {
     setIsModelOpen(false);
   };
+
+  console.log(data.contractorData)
   return (
     <>
       <Button
         variant="outlined"
         className=" m-2 d-flex globalbtnColor"
         onClick={handleNew}>
-        Add Project
+        <BiPlusMedical className='mx-2' />
+        Add Contractor
       </Button>
       <Box sx={{ height: 400, width: '100%' }}>
         <DataGrid
@@ -152,8 +152,8 @@ export default function AdminContractorListScreen() {
                 isNewContractor
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.agentName
-                  : ''
+                    ? selectedRowData.agentName
+                    : ''
               }
               label="Agent Name"
               fullWidth
@@ -164,8 +164,8 @@ export default function AdminContractorListScreen() {
                 isNewContractor
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.contractorName
-                  : ''
+                    ? selectedRowData.contractorName
+                    : ''
               }
               label="Contractor Name"
               fullWidth
@@ -176,8 +176,8 @@ export default function AdminContractorListScreen() {
                 isNewContractor
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.projectName
-                  : ''
+                    ? selectedRowData.projectName
+                    : ''
               }
               label="Project Name"
               fullWidth
@@ -188,8 +188,8 @@ export default function AdminContractorListScreen() {
                 isNewContractor
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.progress
-                  : ''
+                    ? selectedRowData.progress
+                    : ''
               }
               label="Progress"
               fullWidth
@@ -200,8 +200,8 @@ export default function AdminContractorListScreen() {
                 isNewContractor
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.startDate
-                  : ''
+                    ? selectedRowData.startDate
+                    : ''
               }
               label="Start Date"
               fullWidth
@@ -212,8 +212,8 @@ export default function AdminContractorListScreen() {
                 isNewContractor
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.endDate
-                  : ''
+                    ? selectedRowData.endDate
+                    : ''
               }
               label="End Date"
               fullWidth

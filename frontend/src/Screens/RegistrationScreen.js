@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import Validations from "../Components/Validations";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Store } from "../Store";
 import { FaEye, FaRegEyeSlash } from "react-icons/fa";
 
@@ -25,6 +25,7 @@ function RegistrationForm() {
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
+
   const submitHandler = async (e) => {
     e.preventDefault();
     setIsSubmiting(true);
@@ -51,6 +52,12 @@ function RegistrationForm() {
       setIsSubmiting(false);
     }
   };
+
+  useEffect(() => {
+    if (userInfo) {
+      navigate("/adminDashboard");
+    }
+  }, [userInfo, navigate]);
 
   return (
     <Container className="Sign-up-container-regis d-flex  flex-column justify-content-center align-items-center">

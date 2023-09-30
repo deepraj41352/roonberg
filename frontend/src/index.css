@@ -46,14 +46,6 @@ body {
   text-align: start;
   width: 400px;
 }
-.globalbtnColor {
-  color: #ffffff !important;
-  background: linear-gradient(
-    178.2deg,
-    rgb(223, 9, 142),
-    rgb(10, 34, 231)
-  ) !important;
-}
 
 .formWidth {
   width: 400px !important;
@@ -242,6 +234,10 @@ body {
 /* Gaytri css end  */
 /*################################################################################# */
 /* karan start css */
+.profileDiv {
+  width: 100% !important;
+}
+
 .login-button {
   align-items: center;
   margin: 0 !important;
@@ -340,12 +336,39 @@ body {
 }
 .sidebar {
   width: 21%;
-  height: 100vh !important;
+  min-height: 100vh;
+
+  /* height: 100vh !important; */
   background-color: #120c16;
   color: #fff;
   white-space: nowrap;
   overflow-x: hidden;
   transition: width 0.3s ease-in-out;
+}
+@media (max-width: 960px) {
+  .sidebar {
+    width: 25%;
+  }
+}
+@media (max-width: 810px) {
+  .sidebar {
+    width: 30%;
+  }
+}
+@media (max-width: 700px) {
+  .sidebar {
+    width: 35%;
+  }
+}
+@media (max-width: 620px) {
+  .sidebar {
+    width: 40%;
+  }
+}
+@media (max-width: 560px) {
+  .sidebar {
+    width: 45%;
+  }
 }
 .dash-list li {
   list-style: none;

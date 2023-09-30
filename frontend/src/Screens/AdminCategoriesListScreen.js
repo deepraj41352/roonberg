@@ -8,22 +8,24 @@ import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import { Form } from 'react-bootstrap';
+import { BiPlusMedical } from 'react-icons/bi';
+
 const columns = [
   { field: '_id', headerName: 'ID', width: 90 },
   {
     field: 'categoryName',
     headerName: 'categoryName',
-    width: 150,
+    width: 250,
   },
   {
     field: 'sortDesc',
     headerName: 'sortDesc',
-    width: 150,
+    width: 250,
   },
   {
     field: 'categoryImg',
     headerName: 'categoryImg',
-    width: 110,
+    width: 210,
   },
   // {
   //     field: 'progress',
@@ -48,7 +50,7 @@ const columns = [
 const deleteHandle = async () => {
   if (window.confirm('Are you sure to delete ?')) {
     try {
-    } catch (error) {}
+    } catch (error) { }
   }
 };
 
@@ -84,9 +86,10 @@ export default function AdminContractorListScreen() {
         variant="outlined"
         className=" m-2 d-flex globalbtnColor"
         onClick={handleNew}>
-        Add Project
+        <BiPlusMedical className='mx-2' />
+        Add Category
       </Button>
-      <Box sx={{ height: 400, width: '60%' }}>
+      <Box sx={{ height: 400, width: '100%' }}>
         <DataGrid
           className="tableBg mx-2"
           rows={data.categories}
@@ -160,8 +163,8 @@ export default function AdminContractorListScreen() {
                 isNewCategory
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.categoryName
-                  : ''
+                    ? selectedRowData.categoryName
+                    : ''
               }
               label="Category Name"
               fullWidth
@@ -172,8 +175,8 @@ export default function AdminContractorListScreen() {
                 isNewCategory
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.sortDesc
-                  : ''
+                    ? selectedRowData.sortDesc
+                    : ''
               }
               label="Add description"
               fullWidth
@@ -184,8 +187,8 @@ export default function AdminContractorListScreen() {
                 isNewCategory
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.categoryImg
-                  : ''
+                    ? selectedRowData.categoryImg
+                    : ''
               }
               label="Add Image"
               fullWidth

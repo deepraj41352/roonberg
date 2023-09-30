@@ -8,6 +8,8 @@ import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import { Form } from 'react-bootstrap';
+import { BiPlusMedical } from 'react-icons/bi';
+
 const columns = [
   { field: '_id', headerName: 'ID', width: 90 },
   {
@@ -35,7 +37,7 @@ const columns = [
 const deleteHandle = async () => {
   if (window.confirm('Are you sure to delete ?')) {
     try {
-    } catch (error) {}
+    } catch (error) { }
   }
 };
 
@@ -50,6 +52,7 @@ export default function AdminListScreen() {
     setSelectedRowData(params);
     setIsModelOpen(true);
     setIsNewAdmin(false);
+
   };
 
   const handleCloseRow = () => {
@@ -65,18 +68,40 @@ export default function AdminListScreen() {
   const handleSubmitNewAdmin = () => {
     setIsModelOpen(false);
   };
+
+  // React.useEffect(() => {
+
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch('/api/admindata'); 
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         setAdminData(data);
+  //       } else {
+  //         console.error('Failed to fetch data');
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching data:', error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
+
+
   return (
     <>
       <Button
         variant="outlined"
         className=" m-2 d-flex globalbtnColor"
         onClick={handleNew}>
-        Add Project
+        <BiPlusMedical className='mx-2' />
+        Add Admin
       </Button>
       <Box sx={{ height: 400, width: '100%' }}>
         <DataGrid
           className="tableBg mx-2"
-          rows={data.projectList}
+          rows={data.adminData}
           columns={[
             ...columns,
             {
@@ -147,8 +172,8 @@ export default function AdminListScreen() {
                 isNewAdmin
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.username
-                  : ''
+                    ? selectedRowData.username
+                    : ''
               }
               label="Username"
               fullWidth
@@ -159,8 +184,8 @@ export default function AdminListScreen() {
                 isNewAdmin
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.firstName
-                  : ''
+                    ? selectedRowData.firstName
+                    : ''
               }
               label="First Name"
               fullWidth
@@ -171,8 +196,8 @@ export default function AdminListScreen() {
                 isNewAdmin
                   ? ''
                   : selectedRowData
-                  ? selectedRowData.lastName
-                  : ''
+                    ? selectedRowData.lastName
+                    : ''
               }
               label="Last Name"
               fullWidth
