@@ -21,7 +21,28 @@ mongoose
   .catch((err) => {
     console.log(err.message);
   });
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import path from 'path';
+import userRouter from './routers/userRouter.js';
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import { Console } from 'console';
 
+dotenv.config();
+mongoose
+  .connect(process.env.MONGODB_URI, {
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+
+    autoIndex: true, //make this also true
+  })
+  .then(() => {
+    console.log('connected to db');
+  })
+  .catch((err) => {
+    console.log(err.message);
+  });
 const app = express();
 const options = {
   definition: {
@@ -47,8 +68,7 @@ const options = {
 };
 
 const swaggerSpec = swaggerJSDoc(options);
-
-app.use('/api/doc', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
