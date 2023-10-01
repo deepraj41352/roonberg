@@ -7,6 +7,8 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import projectRouter from './routers/projectRouter.js';
 import categoryRouter from './routers/categoryRouter copy.js';
+import conversationRouter from './routers/conversationRouter.js';
+import MessageRouter from './routers/MessageRoute.js';
 
 dotenv.config();
 mongoose
@@ -61,6 +63,8 @@ app.get('/test', (req, res) => {
 app.use('/api/user', userRouter);
 app.use('/api/project', projectRouter);
 app.use('/api/category', categoryRouter);
+app.use('/api/conversation', conversationRouter);
+app.use('/api/message', MessageRouter);
 
 const _dirname = path.resolve();
 app.use(express.static(path.join(_dirname, 'frontend/build')));

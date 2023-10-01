@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import {
   generateToken,
-  nodeMailer,
+  sendEmailNotify,
   isAuth,
   isAdminOrSelf,
   baseUrl,
@@ -172,16 +172,16 @@ userRouter.post(
 
       const resetLink = `${baseUrl()}/reset-password/${token}`;
       console.log(`${token}`);
-      const mailInfo = {
-        from: '"RoonBerg" <deepraj932000@gmail.com>',
+
+      const options = {
         to: `<${user.email}>`,
         subject: 'Reset Password ✔',
-        html: `<p>Please Click the following link to reset your password:</p>
-                <a href="${resetLink}">Reset Password</a>`,
+        template: 'RESET-PASS',
+        resetLink,
       };
 
       // Send the email
-      const checkMail = await nodeMailer(mailInfo);
+      const checkMail = await sendEmailNotify(options);
 
       if (checkMail) {
         res.send({

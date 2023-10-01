@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 import Project from './Models/projectModel.js';
+import emailTemplate from './emailTemplate.js';
 
 dotenv.config();
 
@@ -14,13 +15,16 @@ const transporter = nodemailer.createTransport({
 });
 transporter.verify().then(console.log).catch(console.error);
 
-export const nodeMailer = (mail) => {
+export const sendEmailNotify = async (options) => {
   try {
-    const info = transporter.sendMail(mail);
-    console.log('info ', info);
+    //options.from = 'BigCommerce <abhay.vyas25@gmail.com>';
+    options.from = '"RoonBerg" <deepraj932000@gmail.com>';
+    options.html = emailTemplate(options);
+    const info = transporter.sendMail(options);
+    console.log('Email Sent ');
     return info;
   } catch (err) {
-    console.log('Error sdfd', err);
+    console.log('Email Error ', err);
     return err;
   }
 };
