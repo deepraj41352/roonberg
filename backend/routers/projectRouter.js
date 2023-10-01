@@ -6,7 +6,7 @@ import User from '../Models/userModel.js';
 import Conversation from '../Models/conversationModel.js';
 
 const projectRouter = express.Router();
-
+ 
 projectRouter.get(
   '/',
   expressAsyncHandler(async (req, res) => {
@@ -33,7 +33,7 @@ projectRouter.post(
         startDate: req.body.startDate,
         endDate: req.body.endDate,
         projectStatus: req.body.projectStatus,
-        projectOwner: req.user._id,
+        projectOwner: req.user._id, 
       });
       const project = await newProject.save();
 

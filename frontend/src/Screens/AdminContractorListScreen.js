@@ -63,7 +63,6 @@ export default function AdminContractorListScreen() {
   const [selectedRowData, setSelectedRowData] = React.useState(null);
   const [isNewContractor, setIsNewContractor] = React.useState(false);
   const role = "contractor";
-  const [data, setData] = React.useState([])
   const { state } = React.useContext(Store);
   const { userInfo } = state;
   const [{ loading, error, constructorData, successDelete, successUpdate }, dispatch] = React.useReducer(reducer,
@@ -79,28 +78,6 @@ export default function AdminContractorListScreen() {
   const [email, setEmail] = React.useState('');
   const [status, setStatus] = React.useState('');
   const [password, setPassword] = React.useState('');
-
-  React.useEffect(() => {
-    const FatchconstructorData = async () => {
-      try {
-        const response = await axios.post(`/api/user/`, { role: role });
-        const datas = response.data
-        const rowData = datas.map((items) => {
-          return {
-            ...items,
-            _id: items._id,
-
-          }
-        })
-
-        setData(rowData);
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    FatchconstructorData();
-
-  }, []);
 
   const handleEdit = (userid) => {
     const constractorToEdit = constructorData.find((constractor) => constractor && constractor._id === userid);
@@ -157,6 +134,7 @@ export default function AdminContractorListScreen() {
   }, [successDelete, successUpdate]);
 
   const handleSubmit = async (e) => {
+
     e.preventDefault()
     if (isNewContractor) {
       const response = await axios.post(`/api/user/signup`, {
