@@ -50,13 +50,12 @@ const options = {
 };
 
 const swaggerSpec = swaggerJSDoc(options);
-
 app.use('/api/doc', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/test', (req, res) => {
+app.get('/api', (req, res) => {
   res.send('Welcome to Roonberg World');
 });
 

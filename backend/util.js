@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
+
+dotenv.config();
 import dotenv from 'dotenv';
 import Project from './Models/projectModel.js';
 import emailTemplate from './emailTemplate.js';

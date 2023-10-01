@@ -3,6 +3,7 @@ import User from '../Models/userModel.js';
 import expressAsyncHandler from 'express-async-handler';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import multer from 'multer';
 import {
   generateToken,
   sendEmailNotify,
@@ -10,9 +11,10 @@ import {
   isAdminOrSelf,
   baseUrl,
 } from '../util.js';
-
+import { v2 as cloudinary } from 'cloudinary';
+import streamifier from 'streamifier';
 const userRouter = express.Router();
-
+const upload = multer();
 /**
  * @swagger
  * /user/{role}:
@@ -320,14 +322,10 @@ userRouter.post(
     const user = await User.findOne({ email: req.body.email });
     if (user) {
       if (bcrypt.compareSync(req.body.password, user.password)) {
-        res.send({
-          _id: user._id,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          email: user.email,
-          role: user.role,
-          token: generateToken(user),
-        });
+        const { password, passresetToken, ...other } = user._doc;
+        const userData = { ...other, token: generateToken(user) };
+
+        res.send(userData);
         return;
       } else {
         res.status(401).send({ message: 'Incorrect password' });
@@ -428,5 +426,71 @@ userRouter.post(
     }
   })
 );
+
+userRouter.put(
+  '/profile',
+  isAuth,
+  upload.single('file'),
+  expressAsyncHandler(async (req, res) => {
+    try {
+      console.log('req.user._id ', req.user._id);
+      const userdata = await User.findById(req.user._id);
+      if (userdata) {
+        if (req.file) {
+          const profile_picture = await uploadDoc(req);
+          req.body.profile_picture = profile_picture;
+        }
+
+        if (req.body.password) {
+          req.body.password = bcrypt.hashSync(req.body.password, 8);
+        }
+        const updatedUser = await User.findOneAndUpdate(
+          { _id: req.user._id },
+          { $set: req.body },
+          { new: true }
+        );
+
+        console.log('updatedUser ', updatedUser);
+        const { password, passresetToken, ...other } = updatedUser._doc;
+        const userData = { ...other, token: generateToken(updatedUser) };
+        res.send({
+          userData,
+        });
+      } else {
+        res.status(404).send({ message: 'User not found' });
+      }
+    } catch (error) {
+      console.log('Error ', error);
+    }
+  })
+);
+
+const uploadDoc = async (req) => {
+  try {
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+
+    const streamUpload = (req) => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream((error, result) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        });
+        streamifier.createReadStream(req.file.buffer).pipe(stream);
+      });
+    };
+
+    const profileUri = await streamUpload(req);
+    return profileUri.url;
+  } catch (error) {
+    console.log('Cloudinary Error ', error);
+  }
+};
 
 export default userRouter;
