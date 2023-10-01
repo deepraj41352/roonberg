@@ -5,10 +5,19 @@ const projectSchema = new mongoose.Schema(
     projectName: { type: String, required: true },
     projectDescription: { type: String },
     projectManager: { type: String },
-    startDate: { type: String },
-    endDate: { type: String },
+    projectCategory: { type: String },
+    createdDate: {
+      type: Date,
+      default: Date.now,
+    },
+    endDate: { type: Date },
     projectStatus: { type: String },
     projectOwner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    assignedAgent: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
   },
   {
     timestamps: true,
