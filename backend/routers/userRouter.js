@@ -11,7 +11,7 @@ import {
   isAdminOrSelf,
   baseUrl,
 } from '../util.js';
-import cloudinary from 'cloudinary';
+import { v2 as cloudinary } from 'cloudinary';
 import streamifier from 'streamifier';
 const userRouter = express.Router();
 const upload = multer();
@@ -322,14 +322,10 @@ userRouter.post(
     const user = await User.findOne({ email: req.body.email });
     if (user) {
       if (bcrypt.compareSync(req.body.password, user.password)) {
-        res.send({
-          _id: user._id,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          email: user.email,
-          role: user.role,
-          token: generateToken(user),
-        });
+        const { password, passresetToken, ...other } = user._doc;
+        const userData = { ...other, token: generateToken(user) };
+
+        res.send(userData);
         return;
       } else {
         res.status(401).send({ message: 'Incorrect password' });
@@ -434,63 +430,41 @@ userRouter.put(
   isAuth,
   upload.single('file'),
   expressAsyncHandler(async (req, res) => {
-    // console.log('req ', req);
-    const userdata = await User.findById(req.user._id);
-    if (userdata) {
-      if (req.file) {
-        cloudinary.config({
-          cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-          api_key: process.env.CLOUDINARY_API_KEY,
-          api_secret: process.env.CLOUDINARY_API_SECRET,
+    try {
+      console.log('req.user._id ', req.user._id);
+      const userdata = await User.findById(req.user._id);
+      if (userdata) {
+        if (req.file) {
+          const profile_picture = await uploadDoc(req);
+          req.body.profile_picture = profile_picture;
+        }
+
+        if (req.body.password) {
+          req.body.password = bcrypt.hashSync(req.body.password, 8);
+        }
+        const updatedUser = await User.findOneAndUpdate(
+          { _id: req.user._id },
+          { $set: req.body },
+          { new: true }
+        );
+
+        console.log('updatedUser ', updatedUser);
+        const { password, passresetToken, ...other } = updatedUser._doc;
+        const userData = { ...other, token: generateToken(updatedUser) };
+        res.send({
+          userData,
         });
-
-        const streamUpload = (req) => {
-          return new Promise((resolve, reject) => {
-            const stream = cloudinary.uploader.upload_stream(
-              (error, result) => {
-                if (result) {
-                  resolve(result);
-                } else {
-                  reject(error);
-                }
-              }
-            );
-            streamifier.createReadStream(req.file.buffer).pipe(stream);
-          });
-        };
-        const profile_picture = await streamUpload(req);
-
-        userdata.profile_picture = profile_picture || userdata.profile_picture;
+      } else {
+        res.status(404).send({ message: 'User not found' });
       }
-
-      userdata.first_name = req.body.first_name || userdata.first_name;
-      userdata.last_name = req.body.last_name || userdata.last_name;
-      userdata.email = req.body.email || userdata.email;
-      userdata.gender = req.body.gender || userdata.gender;
-      userdata.address = req.body.address || userdata.address;
-      userdata.phone_number = req.body.phone_number || userdata.phone_number;
-
-      userdata.dob = req.body.dob || userdata.dob;
-      userdata.country = req.body.country || userdata.country;
-      if (req.body.password) {
-        userdata.password = bcrypt.hashSync(req.body.password, 8);
-      }
-      const updatedUser = await userdata.save();
-      console.log('updatedUser ', updatedUser);
-      const { password, passresetToken, ...other } = updatedUser._doc;
-      const userData = { ...other, token: generateToken(updatedUser) };
-      res.send({
-        userData,
-      });
-    } else {
-      res.status(404).send({ message: 'User not found' });
+    } catch (error) {
+      console.log('Error ', error);
     }
   })
 );
 
 const uploadDoc = async (req) => {
   try {
-    console.log('REQ ', req.file);
     cloudinary.config({
       cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
       api_key: process.env.CLOUDINARY_API_KEY,
@@ -500,22 +474,21 @@ const uploadDoc = async (req) => {
     const streamUpload = (req) => {
       return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream((error, result) => {
-          if (result) {
-            console.log('result ', result);
-            resolve(result);
-          } else {
-            console.log('error ', error);
+          if (error) {
             reject(error);
+          } else {
+            resolve(result);
           }
         });
         streamifier.createReadStream(req.file.buffer).pipe(stream);
       });
     };
+
     const profileUri = await streamUpload(req);
-    console.log('profileUri ', profileUri);
-    return profileUri;
+    return profileUri.url;
   } catch (error) {
     console.log('Cloudinary Error ', error);
   }
 };
+
 export default userRouter;
