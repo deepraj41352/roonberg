@@ -8,7 +8,7 @@ const conversationRouter = express.Router();
 conversationRouter.get('/:projectId', async (req, res) => {
   try {
     const conversation = await Conversation.find({
-      members: { $in: [req.params.projectId] },
+      projectId: req.params.projectId,
     });
     res.status(200).json(conversation);
   } catch (err) {
