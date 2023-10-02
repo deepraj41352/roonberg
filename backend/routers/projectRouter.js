@@ -9,10 +9,29 @@ const projectRouter = express.Router();
  
 projectRouter.get(
   '/',
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     try {
-      const project = await Project.find();
-      res.json(project);
+      // Check user's role and determine which projects to retrieve
+      const userRole = req.user.role; // Replace with the actual way you get the user's role
+
+      if (userRole === 'admin' || userRole === 'superadmin') {
+        // Admin and superadmin can access all projects
+        const projects = await Project.find();
+        res.json(projects);
+      } else if (userRole === 'contractor') {
+        // Contractors can only access their own projects
+        const contractorId = req.user._id; // Replace with the actual way you identify the contractor
+        const projects = await Project.find({ projectOwner: contractorId });
+        res.json(projects);
+      } else if (userRole === 'agent') {
+        // Contractors can only access their own projects
+        const agentId = req.user._id; // Replace with the actual way you identify the contractor
+        const projects = await Project.find({ assignedAgent: agentId });
+        res.json(projects);
+      } else {
+        res.status(403).json({ message: 'Access denied' });
+      }
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server error' });
