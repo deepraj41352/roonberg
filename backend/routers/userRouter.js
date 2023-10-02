@@ -42,7 +42,7 @@ userRouter.post(
   expressAsyncHandler(async (req, res) => {
     const role = req.body.role;
     try {
-      const users = await User.find({ role });
+      const users = await User.find({ role }).sort({ createdAt: -1 });
       res.json(users);
     } catch (error) {
       console.error(error);
