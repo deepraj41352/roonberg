@@ -13,17 +13,24 @@ function RegistrationForm() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState('admin');
+  const [role, setRole] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSubmiting, setIsSubmiting] = useState(false);
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { userInfo } = state;
+  const { userInfo, validationMsg } = state;
+  console.log(validationMsg);
 
   const submitHandler = async (e) => {
     e.preventDefault();
     setIsSubmiting(true);
+
+    if (validationMsg) {
+      toast.error('Please set valid password');
+      setIsSubmiting(false);
+      return;
+    }
 
     if (password !== confirmPassword) {
       toast.error('password do not match');
@@ -37,7 +44,6 @@ function RegistrationForm() {
         last_name: lastName,
         email: email,
         password: password,
-        role: role,
       });
       navigate('/');
       toast.success(data.message);
@@ -50,10 +56,9 @@ function RegistrationForm() {
 
   useEffect(() => {
     if (userInfo) {
-      navigate("/adminDashboard")
+      navigate('/adminDashboard');
     }
-
-  }, [userInfo, navigate])
+  }, [userInfo, navigate]);
 
   return (
     <Container className="Sign-up-container-regis d-flex  flex-column justify-content-center align-items-center">

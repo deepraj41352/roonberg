@@ -3,7 +3,6 @@ import ForgetPassword from './Screens/ForgetPasswordScreen';
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 import ResetPasswordScreen from './Screens/ResetPasswordScreen';
 import { ToastContainer, toast } from 'react-toastify';
-import NavbarLogin from './Components/NavbarLogin';
 import 'react-toastify/dist/ReactToastify.css';
 import SignUpForm from './Screens/SignUpScreen';
 import RegistrationForm from './Screens/RegistrationScreen';
@@ -30,7 +29,10 @@ import { FiClock } from 'react-icons/fi';
 import { MdOutlineNotifications } from 'react-icons/md';
 import { Store } from './Store';
 import AdminDashboard from './Screens/AdminDashboard';
-import ProtectedRoute from './Components/ProtectedRoute';
+import ProtectedRoute from './Components/protectedRoute';
+import ProfileScreen from './Screens/ProfileScreen';
+import ProjectNotification from './Screens/ProjectNotification';
+import AddProject from './Screens/AddProject';
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -149,31 +151,76 @@ function App() {
                         path="/ForgetPassword"
                         element={<ForgetPassword />}
                       />
+                      <Route path="/add-project" element={<AddProject />} />
                       <Route
                         path="/reset-password/:token"
                         element={<ResetPasswordScreen />}
                       />
+                      <Route
+                        path="/projectNotification"
+                        element={<ProjectNotification />}
+                      />
 
                       <Route
                         path="/adminDashboard"
-                        element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>}
+                        element={
+                          <ProtectedRoute>
+                            <AdminDashboard />
+                          </ProtectedRoute>
+                        }
                       />
                       <Route
                         path="/adminProjectList"
-                        element={<ProtectedRoute><AdminProjectListScreen /></ProtectedRoute>}
+                        element={
+                          <ProtectedRoute>
+                            <AdminProjectListScreen />
+                          </ProtectedRoute>
+                        }
                       />
                       <Route
+<<<<<<< HEAD
                         path="/adminAgentList/:userRole"
                         element={<ProtectedRoute><AdminAgentListScreen /></ProtectedRoute>}
+=======
+                        path="/adminAgentList"
+                        element={
+                          <ProtectedRoute>
+                            <AdminAgentListScreen />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/ProfileScreen"
+                        element={<ProfileScreen />}
+                      />
+                      <Route
+                        path="/ProfileScreen"
+                        element={<ProfileScreen />}
+>>>>>>> 593a92fab269af92c8ec33998b371c2fb3b3963e
                       />
                       <Route
                         path="/adminCategoriesList"
-                        element={<ProtectedRoute><AdminCategoriesListScreen /></ProtectedRoute>}
+                        element={
+                          <ProtectedRoute>
+                            <AdminCategoriesListScreen />
+                          </ProtectedRoute>
+                        }
                       />
-                      <Route path="/adminList" element={<ProtectedRoute><AdminListScreen /></ProtectedRoute>} />
+                      <Route
+                        path="/adminList"
+                        element={
+                          <ProtectedRoute>
+                            <AdminListScreen />
+                          </ProtectedRoute>
+                        }
+                      />
                       <Route
                         path="/adminContractorList"
-                        element={<ProtectedRoute><AdminContractorListScreen /></ProtectedRoute>}
+                        element={
+                          <ProtectedRoute>
+                            <AdminContractorListScreen />
+                          </ProtectedRoute>
+                        }
                       />
                       <Route />
                     </Routes>

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import Validations from '../Components/Validations';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Store } from '../Store';
 
 export default function ResetPasswordScreen() {
   const navigate = useNavigate();
@@ -13,11 +14,20 @@ export default function ResetPasswordScreen() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSubmiting, setIsSubmiting] = useState(false);
+  const { state, dispatch: ctxDispatch } = useContext(Store);
+  const { userInfo, validationMsg } = state;
+  console.log(validationMsg);
 
   const submitHandler = async (e) => {
     console.log('submt button is clicked');
     e.preventDefault();
     setIsSubmiting(true);
+
+    if (validationMsg) {
+      toast.error('Please set valid password');
+      setIsSubmiting(false);
+      return;
+    }
 
     if (password !== confirmPassword) {
       toast.error('password do not match');

@@ -1,5 +1,11 @@
 import express from 'express';
+<<<<<<< HEAD
 import path from 'path'
+=======
+
+import path from 'path';
+
+>>>>>>> 593a92fab269af92c8ec33998b371c2fb3b3963e
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userRouter from './routers/userRouter.js';
@@ -50,6 +56,10 @@ const options = {
 };
 
 const swaggerSpec = swaggerJSDoc(options);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 593a92fab269af92c8ec33998b371c2fb3b3963e
 app.use('/api/doc', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(express.json());
