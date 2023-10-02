@@ -40,6 +40,58 @@ projectRouter.get(
 );
 
 projectRouter.post(
+  '/admin/addproject',
+  isAuth,
+  isAdminOrSelf,
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const userRole = req.user.role;
+      const contractorId = req.body.contractorId;
+      const agentId = req.body.agentId;
+      const aget = await User.findById(agentId, 'first_name email');
+      const user = await User.findById(contractorId, 'first_name email');
+      if (userRole === 'admin' || userRole === 'superadmin') {
+        const newProject = new Project({
+          projectName: req.body.projectName,
+          projectDescription: req.body.projectDescription,
+          projectCategory: req.body.projectCategory,
+          startDate: req.body.startDate,
+          endDate: req.body.endDate,
+          projectStatus: req.body.projectStatus,
+          projectOwner: contractorId,
+          assignedAgent: agentId,
+        });
+        const project = await newProject.save();
+        const toEmails = `${user.email},${aget.email}`;
+        const options = {
+          to: toEmails,
+          subject: 'New Project Create✔',
+          template: 'CREATE-PROJECT',
+          projectName: req.body.projectName,
+          projectDescription: req.body.projectDescription,
+          user,
+        };
+        await sendEmailNotify(options);
+
+        if (project.assignedAgent) {
+          const newConversation = new Conversation({
+            members: [project.assignedAgent, project.projectOwner],
+          });
+          await newConversation.save();
+        }
+
+        res.status(201).json({ message: 'Project Created', project });
+      } else {
+        res.status(403).json({ message: 'Access denied' });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  })
+);
+
+projectRouter.post(
   '/',
   isAuth,
   expressAsyncHandler(async (req, res) => {
@@ -48,22 +100,16 @@ projectRouter.post(
       const newProject = new Project({
         projectName: req.body.projectName,
         projectDescription: req.body.projectDescription,
-        projectManager: req.body.projectManager,
+        projectCategory: req.body.projectCategory,
         startDate: req.body.startDate,
         endDate: req.body.endDate,
         projectStatus: req.body.projectStatus,
         projectOwner: req.user._id, 
       });
       const project = await newProject.save();
-
       const adminEmails = await User.find({ role: 'admin' }, 'email');
       const emails = adminEmails.map((user) => user.email);
-      console.log(emails.toString());
-      console.log('userid', req.user._id);
-
       const user = await User.findById(req.user._id, 'first_name email');
-      console.log('user', user);
-
       const options = {
         to: emails.toString(),
         subject: 'New Project Create✔',
@@ -72,14 +118,7 @@ projectRouter.post(
         projectDescription: req.body.projectDescription,
         user,
       };
-
-      // Send the email
-      const checkMail = await sendEmailNotify(options);
-
-      if (checkMail) {
-        console.log(`We sent a reset password link to your email.`);
-      }
-
+      await sendEmailNotify(options);
       res.status(201).json({ message: 'Project Created', project });
     } catch (error) {
       console.log(error);
@@ -97,12 +136,9 @@ projectRouter.post(
       const projectId = req.params.id;
       const agentId = req.body.agentId;
       const user = await User.findById(agentId, 'first_name email');
-      console.log(user);
-
       const updatedProject = await Project.findByIdAndUpdate(projectId, {
         assignedAgent: agentId,
       });
-
       const options = {
         to: user.email,
         subject: 'New Project Create ✔',
@@ -112,7 +148,6 @@ projectRouter.post(
         user,
       };
       await sendEmailNotify(options);
-
       if (updatedProject.assignedAgent) {
         const newConversation = new Conversation({
           members: [updatedProject.assignedAgent, updatedProject.projectOwner],

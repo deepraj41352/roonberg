@@ -118,16 +118,6 @@ const emailTemplate = (options) => {
   <p> New Project created with the following details</p>
       <table role="presentation" border="0" cellpadding="0" cellspacing="10px" style="padding: 30px 30px 30px 60px;">
       <tr>
-     <th>Contractor Name</th>
-     <td>:</td>
-     <td> ${options.user.first_name}</td>
-      </tr>
-      <tr>
-     <th>Contractor Email</th>
-     <td>:</td>
-     <td> ${options.user.email}</td>
-      </tr>
-      <tr>
      <th>Project Name</th>
      <td>:</td>
      <td>${options.projectName}</td>
@@ -137,7 +127,16 @@ const emailTemplate = (options) => {
      <td>:</td>
      <td>${options.projectDescription}</td>
       </tr>
-     
+      <tr>
+      <th>Contractor Name</th>
+      <td>:</td>
+      <td> ${options.user.first_name}</td>
+       </tr>
+       <tr>
+      <th>Contractor Email</th>
+      <td>:</td>
+      <td> ${options.user.email}</td>
+       </tr>
          </table>`;
       return templateHead + templateBody1 + templateFooter;
       break;
