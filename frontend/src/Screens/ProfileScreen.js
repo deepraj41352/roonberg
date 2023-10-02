@@ -36,7 +36,7 @@ function ProfileScreen() {
           headers: {
             'content-type': 'multipart/form-data',
 
-            Authorization: `Bearer ${userInfo.token}`,
+            authorization: `Bearer ${userInfo.token}`,
           },
         }
       );

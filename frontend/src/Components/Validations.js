@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import { Store } from '../Store';
 export default function Validations({ type, value }) {
@@ -21,11 +21,20 @@ export default function Validations({ type, value }) {
         'At least 8 characters,  one uppercase letter, one lowercase letter, one digit , one special character  ';
     }
   }
-
-  ctxDispatch({
-    type: 'VALIDATION_MSG',
-    payload: validationMessage ? true : false,
-  });
+  useEffect(() => {
+    if (validationMessage) {
+      ctxDispatch({
+        type: 'VALIDATION_MSG',
+        payload: validationMessage,
+      });
+    }
+    if (!validationMessage) {
+      ctxDispatch({
+        type: 'VALIDATION_MSG',
+        payload: null,
+      });
+    }
+  }, [validationMessage, ctxDispatch]);
 
   return validationMessage ? (
     <Alert variant="danger" className="error">

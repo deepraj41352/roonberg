@@ -9,16 +9,34 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 function SignUpForm() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
   const [isSubmiting, setIsSubmiting] = useState(false);
-
+  const [rememberMe, setRememberMe] = useState(false);
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
+
+  useEffect(() => {
+    const rememberedUser = localStorage.getItem('rememberedUser');
+    if (rememberedUser) {
+      const { email, password } = JSON.parse(rememberedUser);
+      document.getElementById('username').value = email;
+      document.getElementById('password').value = password;
+      setEmail(email);
+      setPassword(password);
+    }
+  }, []);
 
   const submitHandler = async (e) => {
     e.preventDefault();
     setIsSubmiting(true);
+
+    if (rememberMe) {
+      localStorage.setItem(
+        'rememberedUser',
+        JSON.stringify({ email, password })
+      );
+    }
 
     try {
       const { data } = await axios.post('/api/user/signin', {
@@ -39,10 +57,9 @@ function SignUpForm() {
 
   useEffect(() => {
     if (userInfo) {
-      navigate("/adminDashboard")
+      navigate('/adminDashboard');
     }
-
-  }, [userInfo, navigate])
+  }, [userInfo, navigate]);
 
   return (
     <Container className="Sign-up-container d-flex  flex-column justify-content-center align-items-center">
@@ -61,19 +78,20 @@ function SignUpForm() {
                     Email address
                   </Form.Label>
                   <Form.Control
-                    value={email}
+                    id="username"
+                    // value={email}
                     type="email"
                     required
                     onChange={(e) => {
                       setEmail(e.target.value);
                     }}
                   />
-                  <Validations type="email" value={email} />
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
                   <Form.Label className="mb-1">Password</Form.Label>
                   <Form.Control
+                    id="password"
                     type="password"
                     required
                     onChange={(e) => {
@@ -85,6 +103,9 @@ function SignUpForm() {
                     className="mt-3"
                     type="checkbox"
                     label="Remember me"
+                    onChange={(e) => {
+                      setRememberMe(e.target.checked);
+                    }}
                   />
                   <Validations type="password" value={password} />
                 </Form.Group>

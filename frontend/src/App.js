@@ -31,6 +31,8 @@ import { Store } from './Store';
 import AdminDashboard from './Screens/AdminDashboard';
 import ProtectedRoute from './Components/protectedRoute';
 import ProfileScreen from './Screens/ProfileScreen';
+import ProjectNotification from './Screens/ProjectNotification';
+import AddProject from './Screens/AddProject';
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -149,9 +151,14 @@ function App() {
                         path="/ForgetPassword"
                         element={<ForgetPassword />}
                       />
+                      <Route path="/add-project" element={<AddProject />} />
                       <Route
                         path="/reset-password/:token"
                         element={<ResetPasswordScreen />}
+                      />
+                      <Route
+                        path="/projectNotification"
+                        element={<ProjectNotification />}
                       />
 
                       <Route

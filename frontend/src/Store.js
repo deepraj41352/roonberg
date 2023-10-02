@@ -3,7 +3,7 @@ import React, { createContext, useReducer } from 'react';
 export const Store = createContext();
 
 const initialValue = {
-  validationMsg: false,
+  validationMsg: null,
   userInfo: localStorage.getItem('userInfo')
     ? JSON.parse(localStorage.getItem('userInfo'))
     : null,

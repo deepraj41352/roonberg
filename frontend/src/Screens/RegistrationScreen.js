@@ -20,13 +20,14 @@ function RegistrationForm() {
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo, validationMsg } = state;
+  console.log(validationMsg);
 
   const submitHandler = async (e) => {
     e.preventDefault();
     setIsSubmiting(true);
 
     if (validationMsg) {
-      toast.error('Please fix the validation');
+      toast.error('Please set valid password');
       setIsSubmiting(false);
       return;
     }
@@ -43,7 +44,6 @@ function RegistrationForm() {
         last_name: lastName,
         email: email,
         password: password,
-        role: role,
       });
       navigate('/');
       toast.success(data.message);
