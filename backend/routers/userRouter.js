@@ -465,7 +465,7 @@ userRouter.put(
   })
 );
 
-const uploadDoc = async (req) => {
+export const uploadDoc = async (req) => {
   try {
     cloudinary.config({
       cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -492,5 +492,82 @@ const uploadDoc = async (req) => {
     console.log('Cloudinary Error ', error);
   }
 };
+
+userRouter.post(
+  '/add',
+  isAuth,
+  isAdminOrSelf,
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const { first_name, last_name, email, role, agentCategory } = req.body;
+      const existingUser = await User.findOne({ email: email });
+      if (existingUser) {
+        return res
+          .status(400)
+          .send({ message: 'Email is already registered.' });
+      }
+      if (role === 'agent') {
+        if (agentCategory == '' || agentCategory == null) {
+          return res.status(400).send({ message: 'wrong category provided' });
+        }
+      }
+      const hashedPassword = await bcrypt.hash('RoonBerg@123', 8);
+      const data = {
+        first_name,
+        last_name,
+        email,
+        password: hashedPassword,
+        role,
+        // Only assign the category field if the role is "agent"
+        ...(role === 'agent' ? { agentCategory } : {}),
+      };
+      console.log(data);
+      const newUser = new User(data);
+      const userinfo = await newUser.save();
+
+      const user = await User.findOne({ email: req.body.email });
+
+      if (user) {
+        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+          expiresIn: '3d',
+        });
+
+        user.passresetToken = token;
+        await user.save();
+
+        const resetLink = `${baseUrl()}/reset-password/${token}`;
+        console.log(`${token}`);
+
+        const options = {
+          to: `<${user.email}>`,
+          subject: 'Reset Password ✔',
+          template: 'RESET-PASS',
+          resetLink,
+        };
+
+        // Send the email
+        const checkMail = await sendEmailNotify(options);
+
+        if (checkMail) {
+          res.send({
+            message: `We sent a reset password link to your email.`,
+          });
+        } else {
+          res.status(404).send({ message: 'Email sending failed' });
+        }
+      } else {
+        res.status(404).send({ message: 'User not found' });
+      }
+
+      const { password, ...other } = userinfo._doc;
+      res.status(201).send({ message: 'User created successfully', other });
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .send({ message: 'User creation failed. Please try again later.' });
+    }
+  })
+);
 
 export default userRouter;
