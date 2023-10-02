@@ -48,8 +48,7 @@ const options = {
 };
 
 const swaggerSpec = swaggerJSDoc(options);
-<<<<<<< HEAD
-=======
+
 
 app.use('/api/doc', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
@@ -73,7 +72,7 @@ app.use((err, req, res, next) => {
   res.status(500).send({ message: err.message });
 });
 
-const port = process.env.PORT || 5001;
+const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`server is running on port : ${port}`);
 });

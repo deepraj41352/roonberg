@@ -14,6 +14,8 @@ function SignUpForm() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmiting, setIsSubmiting] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
