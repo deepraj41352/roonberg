@@ -31,18 +31,20 @@ import { Store } from "./Store";
 import AdminDashboard from "./Screens/AdminDashboard";
 import ProtectedRoute from "./Components/protectedRoute";
 import ProfileScreen from "./Screens/ProfileScreen";
+import Theme from "./Components/Theme";
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
-
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { userInfo } = state;
+  const { toggleState, userInfo } = state;
+  const theme = toggleState ? "dark" : "light";
+
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
 
   return (
-    <div className="App">
+    <div className={`App ${theme}`}>
       <BrowserRouter>
         <ToastContainer position="bottom-center" limit={1} />
         <div>
@@ -89,6 +91,10 @@ function App() {
                           style={{ maxHeight: "100px" }}
                           navbarScroll
                         >
+                          <div className="py-2">
+                            <Theme />
+                          </div>
+
                           <Nav.Link href="#action1">
                             <BiShareAlt className="fs-4 admin-btn-logo" />
                           </Nav.Link>

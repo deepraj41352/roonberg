@@ -14,7 +14,7 @@ function RegistrationForm() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("isAdmin");
+  const [role, setRole] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -24,11 +24,17 @@ function RegistrationForm() {
   };
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { userInfo } = state;
+  const { userInfo, validationMsg } = state;
 
   const submitHandler = async (e) => {
     e.preventDefault();
     setIsSubmiting(true);
+
+    if (validationMsg) {
+      toast.error("Please fix the validation");
+      setIsSubmiting(false);
+      return;
+    }
 
     if (password !== confirmPassword) {
       toast.error("password do not match");
