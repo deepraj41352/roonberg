@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import userRouter from './routers/userRouter.js';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import projectRouter from './routers/projectRouter.js';
 
 dotenv.config();
 mongoose
@@ -60,6 +61,7 @@ app.get('/test', (req, res) => {
 });
 
 app.use('/api/user', userRouter);
+app.use('/api/project', projectRouter);
 
 const _dirname = path.resolve();
 app.use(express.static(path.join(_dirname, "frontend/build")));

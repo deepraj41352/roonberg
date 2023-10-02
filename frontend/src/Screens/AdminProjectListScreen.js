@@ -109,7 +109,7 @@ export default function AdminProjectListScreen() {
     const FatchProjectData = async () => {
       try {
         dispatch("FATCH_REQUEST")
-        const response = await axios.get(`/api/project/`);
+        const response = await axios.get(`/api/project/`, { headers: { Authorization: `Bearer ${userInfo.token}` } });
         const datas = response.data
         console.log(datas)
         const rowData = datas.map((items) => {
@@ -209,19 +209,21 @@ export default function AdminProjectListScreen() {
 
   return (
     <>
+      <Button
+        variant="outlined"
+        className=" m-2 d-flex globalbtnColor"
+        onClick={handleNew}>
+        <BiPlusMedical className='mx-2' />
+        Add Project
+      </Button>
       {loading ? (
         <div>Loading .....</div>
       ) : (error ? (
         <div>{error}</div>
       ) : (
         <>
-          <Button
-            variant="outlined"
-            className=" m-2 d-flex globalbtnColor"
-            onClick={handleNew}>
-            <BiPlusMedical className='mx-2' />
-            Add Project
-          </Button>
+
+
           <Box sx={{ height: 400, width: '100%' }}>
             <DataGrid
               className="tableBg mx-2"
@@ -333,8 +335,8 @@ export default function AdminProjectListScreen() {
               </Form>
             </Box>
           </Modal>
-        </>))}
-
+        </>
+      ))}
     </>
   );
 }

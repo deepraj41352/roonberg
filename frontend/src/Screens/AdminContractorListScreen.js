@@ -103,7 +103,8 @@ export default function AdminContractorListScreen() {
     const FatchconstractorData = async () => {
       try {
         dispatch("FATCH_REQUEST")
-        const response = await axios.post(`/api/user/`, { role: role });
+        const response = await axios.post(`/api/user/`, { role: role },
+          { headers: { Authorization: `Bearer ${userInfo.token}` } });
         const datas = response.data
         const rowData = datas.map((items) => {
           return {
