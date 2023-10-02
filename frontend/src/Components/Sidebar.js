@@ -10,19 +10,19 @@ import {
   AiOutlineAlignLeft,
   AiFillHome,
   AiOutlineProject,
-} from 'react-icons/ai';
-import { CgProfile } from 'react-icons/cg';
-import { FiClock } from 'react-icons/fi';
-import { MdOutlineNotifications, MdLogout } from 'react-icons/md';
+} from "react-icons/ai";
+import { CgProfile } from "react-icons/cg";
+import { FiClock } from "react-icons/fi";
+import { MdOutlineNotifications, MdLogout } from "react-icons/md";
 import {
   BsFillPlusCircleFill,
   BsSearch,
   BsFillChatLeftQuoteFill,
-} from 'react-icons/bs';
-import { useState } from 'react';
-import { BsFillPersonFill } from 'react-icons/bs';
-import { Link } from 'react-router-dom';
-import { Store } from '../Store';
+} from "react-icons/bs";
+import { useState } from "react";
+import { BsFillPersonFill } from "react-icons/bs";
+import { Link } from "react-router-dom";
+import { Store } from "../Store";
 
 function Sidebar({ sidebarVisible, setSidebarVisible }) {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -30,16 +30,16 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
   console.log(userInfo.role);
 
   const signoutHandler = () => {
-    const userConfirm = window.confirm('Are you sure you want to logout?');
+    const userConfirm = window.confirm("Are you sure you want to logout?");
     if (userConfirm) {
-      ctxDispatch({ type: 'USER_SIGNOUT' });
-      localStorage.removeItem('userInfo');
-      window.location.href = '/';
+      ctxDispatch({ type: "USER_SIGNOUT" });
+      localStorage.removeItem("userInfo");
+      window.location.href = "/";
     }
   };
 
   return (
-    <div className={`sidebar ${sidebarVisible ? 'visible' : ''} `}>
+    <div className={`sidebar ${sidebarVisible ? "visible" : ""} `}>
       <div className="blank-box"></div>
       <ul className="dash-list ">
         <Link to="/adminDashboard" className="text-decoration-none">
@@ -118,7 +118,8 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
         <Link
           to="#Logout"
           onClick={signoutHandler}
-          className="text-decoration-none">
+          className="text-decoration-none"
+        >
           <li>
             <MdLogout className="me-3 fs-5" />
             Logout

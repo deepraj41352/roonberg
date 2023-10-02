@@ -1,18 +1,22 @@
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import { Container, Row, Col, Card } from 'react-bootstrap/';
-import { Link, useNavigate } from 'react-router-dom';
-import Validations from '../Components/Validations';
-import { useContext, useEffect, useState } from 'react';
-import { Store } from '../Store';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import { Container, Row, Col, Card } from "react-bootstrap/";
+import { Link, useNavigate } from "react-router-dom";
+import Validations from "../Components/Validations";
+import { FaEye, FaRegEyeSlash } from "react-icons/fa";
+import { useContext, useState, useEffect } from "react";
+import { Store } from "../Store";
+import axios from "axios";
+import { toast } from "react-toastify";
 function SignUpForm() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isSubmiting, setIsSubmiting] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
 
@@ -39,15 +43,15 @@ function SignUpForm() {
     }
 
     try {
-      const { data } = await axios.post('/api/user/signin', {
+      const { data } = await axios.post("/api/user/signin", {
         email,
         password,
       });
-      ctxDispatch({ type: 'USER_SIGNIN', payload: data });
-      localStorage.setItem('userInfo', JSON.stringify(data));
-      console.log("i am signup", data)
-      toast.success('SignUp successful');
-      navigate('/adminDashboard');
+      ctxDispatch({ type: "USER_SIGNIN", payload: data });
+      localStorage.setItem("userInfo", JSON.stringify(data));
+
+      toast.success("SignUp successful");
+      navigate("/adminDashboard");
     } catch (err) {
       toast.error(err.response?.data?.message);
     } finally {
@@ -90,15 +94,23 @@ function SignUpForm() {
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
                   <Form.Label className="mb-1">Password</Form.Label>
-                  <Form.Control
-                    id="password"
-                    type="password"
-                    required
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                    }}
-                  />
-
+                  <div className="Password-input-eye">
+                    <div className=" rounded-2">
+                      <Form.Control
+                        className="pswd-input"
+                        type={showPassword ? "text" : "password"}
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                        }}
+                      />
+                    </div>
+                    <div
+                      className="eye-bttn "
+                      onClick={togglePasswordVisibility}
+                    >
+                      {showPassword ? <FaEye /> : <FaRegEyeSlash />}
+                    </div>
+                  </div>
                   <Form.Check
                     className="mt-3"
                     type="checkbox"
@@ -113,8 +125,9 @@ function SignUpForm() {
                   className="w-100 py-1 globalbtnColor"
                   variant="primary"
                   type="submit"
-                  disabled={isSubmiting}>
-                  {isSubmiting ? 'Submiting...' : 'Submit'}
+                  disabled={isSubmiting}
+                >
+                  {isSubmiting ? "Submiting..." : "Submit"}
                 </Button>
                 <Form.Group className="my-3">
                   <Link to="/ForgetPassword">Forgot Password?</Link>
