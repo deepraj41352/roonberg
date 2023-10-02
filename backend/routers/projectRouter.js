@@ -54,6 +54,7 @@ projectRouter.post(
         const newProject = new Project({
           projectName: req.body.projectName,
           projectDescription: req.body.projectDescription,
+          projectCategory: req.body.projectCategory,
           startDate: req.body.startDate,
           endDate: req.body.endDate,
           projectStatus: req.body.projectStatus,
