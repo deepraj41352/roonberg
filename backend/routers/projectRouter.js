@@ -139,5 +139,21 @@ projectRouter.put(
     }
   })
 );
-
+projectRouter.get(
+  '/:id',
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const project = await Project.findById(req.params.id);
+      if (!project) {
+        res.status(400).json({ message: 'Project not found' });
+      }
+      const conversions = await Conversation.find({ projectId: req.params.id });
+      const { ...other } = project._doc;
+      res.json({ ...other, conversions: conversions });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  })
+);
 export default projectRouter;
