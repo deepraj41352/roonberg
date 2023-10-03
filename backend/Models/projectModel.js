@@ -12,11 +12,12 @@ const projectSchema = new mongoose.Schema(
     endDate: { type: Date },
     projectStatus: { type: String, default: 'active' },
     projectOwner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    assignedAgent: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      default: null,
-    },
+    assignedAgent: [
+      {
+        agentId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        categoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
+      },
+    ],
   },
   {
     timestamps: true,
