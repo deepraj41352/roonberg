@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
-import Validations from '../Component/Validations';
+import Validations from '../Components/Validations';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 

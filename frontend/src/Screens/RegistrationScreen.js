@@ -4,7 +4,7 @@ import { Container, Row, Col, Card } from "react-bootstrap/";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import Validations from "../Component/Validations";
+import Validations from "../Components/Validations";
 import { useContext, useState, useEffect } from "react";
 import { Store } from "../Store";
 import { FaEye, FaRegEyeSlash } from "react-icons/fa";
