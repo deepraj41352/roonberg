@@ -267,6 +267,9 @@ body {
 .profileDiv {
   width: 100% !important;
 }
+.auto-text {
+  width: 100%;
+}
 
 .login-button {
   align-items: center;

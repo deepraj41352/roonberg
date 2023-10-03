@@ -79,15 +79,7 @@ export default function AdminProjectListScreen() {
   const [isModelOpen, setIsModelOpen] = React.useState(false);
   const [selectedRowData, setSelectedRowData] = React.useState(null);
   const [isNewProject, setIsNewProject] = React.useState(false);
-  const [startDate, setStartDate] = React.useState();
-  const [endDate, setEndDate] = React.useState();
 
-  const [selectedOptions, setSelectedOptions] = React.useState([]);
-  const options = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
-
-  const handleChange = (event) => {
-    setSelectedOptions(event.target.value);
-  };
   const { state } = React.useContext(Store);
   const { userInfo } = state;
   const [
@@ -105,9 +97,14 @@ export default function AdminProjectListScreen() {
   const [projectDescription, setProjectDescription] = React.useState('');
   const [projectOwner, setProjectOwner] = React.useState('');
   const [assignedAgent, setAssignedAgent] = React.useState('');
-  const [inputType, setInputType] = React.useState('text');
-  const [inputValue, setInputValue] = React.useState('');
-  const inputRef = React.useRef(null);
+  const [startDate, setStartDate] = React.useState();
+  const [endDate, setEndDate] = React.useState();
+  const [selectedOptions, setSelectedOptions] = React.useState([]);
+  const options = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
+
+  const handleChange = (event) => {
+    setSelectedOptions(event.target.value);
+  };
 
   const handleEdit = (userid) => {
     const constractorToEdit = projectData.find(
@@ -184,6 +181,9 @@ export default function AdminProjectListScreen() {
         {
           projectName: projectName,
           projectDescription: projectDescription,
+          projectCategory: selectedOptions,
+          createdDate: startDate,
+          endDate: endDate,
         },
         {
           headers: { Authorization: `Bearer ${userInfo.token}` },
@@ -253,7 +253,6 @@ export default function AdminProjectListScreen() {
 
   return (
     <>
-      <MultiSelectDropdown />
       <Button
         variant="outlined"
         className=" m-2 d-flex globalbtnColor"
@@ -352,16 +351,11 @@ export default function AdminProjectListScreen() {
                       label="Project Name"
                       fullWidth
                     />
-                    <TextField
-                      className="mb-2"
-                      value={isNewProject ? '' : projectDescription}
-                      onChange={(e) => setProjectDescription(e.target.value)}
-                      label="Project Description"
-                      fullWidth
-                    />
+
                     <TextField
                       id="outlined-multiline-static"
-                      label="Enter Text"
+                      onChange={(e) => setProjectDescription(e.target.value)}
+                      label="Project Description"
                       multiline
                       rows={4}
                       fullWidth
