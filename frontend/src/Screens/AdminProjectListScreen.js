@@ -90,8 +90,20 @@ export default function AdminProjectListScreen() {
   const [projectName, setProjectName] = React.useState('');
   const [projectDescription, setProjectDescription] = React.useState('');
   const [assignedAgent, setAssignedAgent] = React.useState('');
-  const [category, setCategory] = React.useState([]);
+  const [category, setCategory] = React.useState('');
   const [contractor, setContractor] = React.useState('');
+  const [moreFields, setMoreFields] = React.useState([]);
+
+  const [categoryAgentPairs, setCategoryAgentPairs] = React.useState([]);
+
+  const handleAddCategoryAgentPair = () => {
+    if (category && assignedAgent) {
+      const newPair = { category, assignedAgent };
+      setCategoryAgentPairs([...categoryAgentPairs, newPair]);
+      setCategory('');
+      setAssignedAgent('');
+    }
+  };
 
   const handleEdit = (userid) => {
     const constractorToEdit = projectData.find((constractor) => constractor && constractor._id === userid);
@@ -103,6 +115,8 @@ export default function AdminProjectListScreen() {
     setIsModelOpen(true);
     setIsNewProject(false);
   };
+
+
 
   const handleCloseRow = () => {
     setIsModelOpen(false);
@@ -136,8 +150,6 @@ export default function AdminProjectListScreen() {
         console.log(error)
       }
     }
-
-
     if (successDelete) {
       dispatch({ type: "DELETE_RESET" })
     }
@@ -254,7 +266,7 @@ export default function AdminProjectListScreen() {
       try {
         const response = await axios.post(`/api/user/`, { role: "agent" });
         const datas = response.data;
-        console.log(datas)
+
         setAssignedAgent(datas);
         dispatch({ type: "FATCH_AGENTS", payload: datas })
 
@@ -264,6 +276,23 @@ export default function AdminProjectListScreen() {
     FatchAgentData();
 
   }, [])
+
+  const assignedAgenthandle = () => {
+    if (category) {
+      const selectedCategory = categoryData.find(categoryItem => categoryItem._id === category);
+      if (selectedCategory) {
+        const agentForCategory = agentData.find(agentItem => agentItem.agentCategory === selectedCategory._id);
+        if (agentForCategory) {
+          return [agentForCategory]
+        }
+      }
+    }
+    return [];
+  }
+  const handleAddfields = () => {
+    setMoreFields([...moreFields, {}]);
+  }
+
   return (
     <>
       <Button
@@ -326,7 +355,7 @@ export default function AdminProjectListScreen() {
           </Box>
           <Modal open={isModelOpen} onClose={handleCloseRow}>
             <Box
-              className="modelBg"
+              className="modelBg scroll-form"
               sx={{
                 position: 'absolute',
                 top: '50%',
@@ -337,71 +366,111 @@ export default function AdminProjectListScreen() {
                 boxShadow: 24,
                 p: 4,
               }}>
-              <Form onSubmit={handleSubmit}>
-                <ImCross color='black' className='formcrossbtn' onClick={handleCloseRow} />
-                {isNewProject ? (
-                  <h4 className="d-flex justify-content-center">
-                    Add new Project Details
-                  </h4>
-                ) : (
-                  <h4 className="d-flex justify-content-center">
-                    Edit Project Details
-                  </h4>
-                )}
-                <TextField
-                  className="mb-2"
-                  value={projectName}
-                  onChange={(e) => setProjectName(e.target.value)}
-                  label="Project Name"
-                  fullWidth
-                />
+              <div className="">
+                <Form onSubmit={handleSubmit}>
 
 
+                  <ImCross color='black' className='formcrossbtn' onClick={handleCloseRow} />
+                  {isNewProject ? (
+                    <h4 className="d-flex justify-content-center">
+                      Add new Project Details
+                    </h4>
+                  ) : (
+                    <h4 className="d-flex justify-content-center">
+                      Edit Project Details
+                    </h4>
+                  )}
+                  <TextField
+                    className="mb-2"
+                    value={projectName}
+                    onChange={(e) => setProjectName(e.target.value)}
+                    label="Project Name"
+                    fullWidth
+                  />
+                  <select className='formselect mb-2' value={contractor} onChange={(e) => setContractor(e.target.value)}>
+                    <option value="" >
+                      Select a Contractor
+                    </option>
+                    {contractorData.map((items) => (
+                      <option key={items._id} value={items._id} >{items.first_name}</option>
+                    ))}
+                  </select>
 
-                {userInfo.role === "contractor" && userInfo.role === "contractor" && (
+                  <select className='formselect mb-2' value={category} onChange={(e) => setCategory(e.target.value)} >
+                    <option value="" >
+                      Select a category
+                    </option>
+                    {categoryData.map((items) => (
+                      <option key={items._id} value={items._id} >{items.categoryName}</option>
+                    ))}
+                  </select>
+                  <select className='formselect mb-2' value={assignedAgent} onChange={(e) => setAssignedAgent(e.target.value)}>
+                    <option value="" >
+                      Select a Agent
+                    </option>
+                    {assignedAgenthandle().map((item) => (
+                      <option key={item._id} value={item._id}>
+                        {item.first_name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className='d-flex align-items-start'>
+                    <BiPlusMedical color="black" className='mx-2' onClick={() => { handleAddfields(); handleAddCategoryAgentPair() }} />
+                    <p className='text-dark'>Add more category and agent</p>
+                  </div>
+                  <ul>
+                    {categoryAgentPairs.map((pair, index) => (
+                      <li key={index}>
+                        Category: {pair.category}, Agent: {pair.assignedAgent}
+                      </li>
+                    ))}
+                  </ul>
+                  {moreFields.map((index) => (
+                    <div key={index}>
+                      <>
+                        <select className='formselect mb-2' value={category} onChange={(e) => setCategory(e.target.value)} >
+                          <option value="" >
+                            Select a category
+                          </option>
+                          {categoryData.map((items) => (
+                            <option key={items._id} value={items._id} >{items.categoryName}</option>
+                          ))}
+                        </select>
+                        <select className='formselect mb-2' value={assignedAgent} onChange={(e) => setAssignedAgent(e.target.value)}>
+                          <option value="" >
+                            Select a Agent
+                          </option>
+                          {assignedAgenthandle().map((item) => (
+                            <option key={item._id} value={item._id}>
+                              {item.first_name}
+                            </option>
+                          ))}
+                        </select>
+                        <hr className='bg-dark' />
+                      </>
+                    </div>
+                  ))}
+
+                  <textarea
+                    className="mb-2 textArea"
+                    value={projectDescription}
+                    onChange={(e) => setProjectDescription(e.target.value)}
+                    type="textarea"
+                    rows="3"
+                    placeholder='Project Description'
+                  />
+                  <Button className='formbtn'
+                    variant="contained"
+                    color="primary"
+                    type='submit'
+                  >
+                    {isNewProject ? 'Add Project' : 'Save Changes'}
+                  </Button>
                   <>
-                    <select className='formselect mb-2' value={category} onChange={(e) => setCategory(e.target.value)}>
-                      <option value="" >
-                        Select a category
-                      </option>
-                      {categoryData.map((items) => (
-                        <option key={items._id} value={items._id} >{items.categoryName}</option>
-                      ))}
-                    </select>
-                    <select className='formselect mb-2' value={contractor} onChange={(e) => setContractor(e.target.value)}>
-                      <option value="" >
-                        Select a Contractor
-                      </option>
-                      {contractorData.map((items) => (
-                        <option key={items._id} value={items._id} >{items.first_name}</option>
-                      ))}
-                    </select>
-                    <select className='formselect mb-2' value={assignedAgent} onChange={(e) => setAssignedAgent(e.target.value)}>
-                      <option value="" >
-                        Select a Agent
-                      </option>
-                      {agentData.map((items) => (
-                        <option key={items._id} value={items._id} >{items.first_name}</option>
-                      ))}
-                    </select>
                   </>
-                )}
-                <textarea
-                  className="mb-2 textArea"
-                  value={projectDescription}
-                  onChange={(e) => setProjectDescription(e.target.value)}
-                  type="textarea"
-                  rows="3"
-                  placeholder='Project Description'
-                />
-                <Button className='formbtn'
-                  variant="contained"
-                  color="primary"
-                  type='submit'
-                >
-                  {isNewProject ? 'Add Project' : 'Save Changes'}
-                </Button>
-              </Form>
+                </Form>
+              </div>
+
             </Box>
           </Modal>
         </>
