@@ -40,6 +40,14 @@ code {
   float: right !important;
   cursor: pointer !important;
 }
+
+.textArea {
+  width: 100% !important;
+  font-weight: 600;
+  padding: 16.5px 14px;
+  border-color: #dee2e6 !important;
+}
+
 /* ---------Priyanshu-Start------------- */
 body {
   background-color: #f8fafc !important;
@@ -221,6 +229,10 @@ code {
 }
 .formselect {
   width: 335px !important;
+  padding: 16.5px 14px;
+  border-color: #dee2e6;
+  font-weight: 700px !important;
+  border-radius: 5px;
 }
 .formbtn {
   float: right !important;

@@ -105,6 +105,7 @@ export default function AdminAgentListScreen() {
   };
 
   React.useEffect(() => {
+    console.log("i am run")
     const FatchAgentData = async () => {
       try {
         dispatch("FATCH_REQUEST")
@@ -136,7 +137,7 @@ export default function AdminAgentListScreen() {
     }
 
 
-  }, [successDelete, successUpdate]);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault()
