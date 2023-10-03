@@ -122,6 +122,7 @@ export default function AdminProjectListScreen() {
             assignedAgent: items.assignedAgent,
           }
         })
+        console.log(rowData)
         dispatch({ type: "FATCH_SUCCESS", payload: rowData });
       } catch (error) {
         console.log(error)

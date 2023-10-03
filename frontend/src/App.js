@@ -29,7 +29,7 @@ import { FiClock } from "react-icons/fi";
 import { MdOutlineNotifications } from "react-icons/md";
 import { Store } from "./Store";
 import AdminDashboard from "./Screens/AdminDashboard";
-import ProtectedRoute from "./Components/ProtectedRoute";
+import ProtectedRoute from "./Components/protectedRoute";
 import ProfileScreen from "./Screens/ProfileScreen";
 import Theme from "./Components/Theme";
 import ProjectNotification from './Screens/ProjectNotification';
