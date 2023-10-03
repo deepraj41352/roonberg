@@ -225,6 +225,11 @@ code {
 .formbtn {
   float: right !important;
 }
+
+.MuiFormControl-root {
+  margin-bottom: 8px !important;
+  width: 100% !important;
+}
 .tableBg p,
 button {
   color: white !important;
@@ -449,3 +454,7 @@ body {
   background-color: #c45bf157;
 }
 /* ---------Priyanshu-End------------- */
+.css-1jy569b-MuiFormLabel-root-MuiInputLabel-root {
+  background-color: #fff !important;
+  padding: 3px;
+}
