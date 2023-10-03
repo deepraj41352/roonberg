@@ -55,7 +55,7 @@ projectRouter.post(
           projectName: req.body.projectName,
           projectDescription: req.body.projectDescription,
           projectCategory: req.body.projectCategory,
-          startDate: req.body.startDate,
+          createdDate: req.body.createdDate,
           endDate: req.body.endDate,
           projectStatus: req.body.projectStatus,
           projectOwner: contractorId,
@@ -101,7 +101,7 @@ projectRouter.post(
         projectName: req.body.projectName,
         projectDescription: req.body.projectDescription,
         projectCategory: req.body.projectCategory,
-        startDate: req.body.startDate,
+        createdDate: req.body.createdDate,
         endDate: req.body.endDate,
         projectStatus: req.body.projectStatus,
         projectOwner: req.user._id,
@@ -135,10 +135,21 @@ projectRouter.post(
     try {
       const projectId = req.params.id;
       const agentId = req.body.agentId;
+      const categoryId = req.body.categoryId;
       const user = await User.findById(agentId, 'first_name email');
-      const updatedProject = await Project.findByIdAndUpdate(projectId, {
-        assignedAgent: agentId,
-      });
+      const updatedProject = await Project.findByIdAndUpdate(
+        projectId,
+        {
+          $push: {
+            assignedAgent: {
+              agentId: agentId,
+              categoryId: categoryId,
+            },
+          },
+        },
+        { new: true }
+      );
+
       const options = {
         to: user.email,
         subject: 'New Project Create ✔',
@@ -150,7 +161,7 @@ projectRouter.post(
       await sendEmailNotify(options);
       if (updatedProject.assignedAgent) {
         const newConversation = new Conversation({
-          members: [updatedProject.assignedAgent, updatedProject.projectOwner],
+          members: [agentId, updatedProject.projectOwner],
         });
         await newConversation.save();
       }
