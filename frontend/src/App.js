@@ -1,17 +1,17 @@
-import "./App.css";
-import ForgetPassword from "./Screens/ForgetPasswordScreen";
-import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
-import ResetPasswordScreen from "./Screens/ResetPasswordScreen";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import SignUpForm from "./Screens/SignUpScreen";
-import RegistrationForm from "./Screens/RegistrationScreen";
-import AdminProjectListScreen from "./Screens/AdminProjectListScreen";
-import AdminAgentListScreen from "./Screens/AdminAgentListScreen";
-import AdminCategoriesListScreen from "./Screens/AdminCategoriesListScreen";
-import AdminListScreen from "./Screens/AdminListScreen";
-import AdminContractorListScreen from "./Screens/AdminContractorListScreen";
-import { useContext, useState } from "react";
+import './App.css';
+import ForgetPassword from './Screens/ForgetPasswordScreen';
+import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
+import ResetPasswordScreen from './Screens/ResetPasswordScreen';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import SignUpForm from './Screens/SignUpScreen';
+import RegistrationForm from './Screens/RegistrationScreen';
+import AdminProjectListScreen from './Screens/AdminProjectListScreen';
+import AdminAgentListScreen from './Screens/AdminAgentListScreen';
+import AdminCategoriesListScreen from './Screens/AdminCategoriesListScreen';
+import AdminListScreen from './Screens/AdminListScreen';
+import AdminContractorListScreen from './Screens/AdminContractorListScreen';
+import { useContext, useState } from 'react';
 import {
   Container,
   Form,
@@ -19,19 +19,19 @@ import {
   InputGroup,
   Nav,
   Navbar,
-} from "react-bootstrap";
-import Sidebar from "./Components/Sidebar";
-import { AiOutlineAlignLeft, AiOutlineCheck } from "react-icons/ai";
-import { BsFillPersonFill, BsSearch } from "react-icons/bs";
-import { BiShareAlt } from "react-icons/bi";
-import { CgProfile } from "react-icons/cg";
-import { FiClock } from "react-icons/fi";
-import { MdOutlineNotifications } from "react-icons/md";
-import { Store } from "./Store";
-import AdminDashboard from "./Screens/AdminDashboard";
-import ProtectedRoute from "./Components/protectedRoute";
-import ProfileScreen from "./Screens/ProfileScreen";
-import Theme from "./Components/Theme";
+} from 'react-bootstrap';
+import Sidebar from './Components/Sidebar';
+import { AiOutlineAlignLeft, AiOutlineCheck } from 'react-icons/ai';
+import { BsFillPersonFill, BsSearch } from 'react-icons/bs';
+import { BiShareAlt } from 'react-icons/bi';
+import { CgProfile } from 'react-icons/cg';
+import { FiClock } from 'react-icons/fi';
+import { MdOutlineNotifications } from 'react-icons/md';
+import { Store } from './Store';
+import AdminDashboard from './Screens/AdminDashboard';
+import ProtectedRoute from './Components/protectedRoute';
+import ProfileScreen from './Screens/ProfileScreen';
+import Theme from './Components/Theme';
 import ProjectNotification from './Screens/ProjectNotification';
 import AddProject from './Screens/AddProject';
 
@@ -39,7 +39,7 @@ function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
-  const theme = toggleState ? "dark" : "light";
+  const theme = toggleState ? 'dark' : 'light';
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
@@ -90,7 +90,7 @@ function App() {
                       >
                         <Nav
                           className="gap-3"
-                          style={{ maxHeight: "100px" }}
+                          style={{ maxHeight: '100px' }}
                           navbarScroll
                         >
                           <div className="py-2">
@@ -189,7 +189,11 @@ function App() {
                       />
                       <Route
                         path="/adminAgentList/:userRole"
-                        element={<ProtectedRoute><AdminAgentListScreen /></ProtectedRoute>}
+                        element={
+                          <ProtectedRoute>
+                            <AdminAgentListScreen />
+                          </ProtectedRoute>
+                        }
                       />
                       <Route
                         path="/adminCategoriesList"
