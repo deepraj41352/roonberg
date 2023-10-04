@@ -6,7 +6,7 @@ import User from '../Models/userModel.js';
 import Conversation from '../Models/conversationModel.js';
 
 const projectRouter = express.Router();
- 
+
 projectRouter.get(
   '/',
   isAuth,
@@ -48,11 +48,11 @@ projectRouter.post(
       const newProject = new Project({
         projectName: req.body.projectName,
         projectDescription: req.body.projectDescription,
-        projectManager: req.body.projectManager,
-        startDate: req.body.startDate,
+        projectCategory: req.body.projectCategory,
+        createdDate: req.body.createdDate,
         endDate: req.body.endDate,
         projectStatus: req.body.projectStatus,
-        projectOwner: req.user._id, 
+        projectOwner: req.user._id,
       });
       const project = await newProject.save();
 
