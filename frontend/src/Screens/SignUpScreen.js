@@ -14,15 +14,35 @@ function SignUpForm() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmiting, setIsSubmiting] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
 
+  useEffect(() => {
+    const rememberedUser = localStorage.getItem("rememberedUser");
+    if (rememberedUser) {
+      const { email, password } = JSON.parse(rememberedUser);
+      document.getElementById("username").value = email;
+      document.getElementById("password").value = password;
+      setEmail(email);
+      setPassword(password);
+    }
+  }, []);
+
   const submitHandler = async (e) => {
     e.preventDefault();
     setIsSubmiting(true);
+
+    if (rememberMe) {
+      localStorage.setItem(
+        "rememberedUser",
+        JSON.stringify({ email, password })
+      );
+    }
 
     try {
       const { data } = await axios.post("/api/user/signin", {
@@ -64,6 +84,7 @@ function SignUpForm() {
                     Email address
                   </Form.Label>
                   <Form.Control
+                    id="username"
                     value={email}
                     type="email"
                     required
@@ -71,7 +92,6 @@ function SignUpForm() {
                       setEmail(e.target.value);
                     }}
                   />
-                  <Validations type="email" value={email} />
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
@@ -79,6 +99,8 @@ function SignUpForm() {
                   <div className="Password-input-eye">
                     <div className=" rounded-2">
                       <Form.Control
+                        id="password"
+                        value={password}
                         className="pswd-input"
                         type={showPassword ? "text" : "password"}
                         onChange={(e) => {
@@ -97,6 +119,9 @@ function SignUpForm() {
                     className="mt-3"
                     type="checkbox"
                     label="Remember me"
+                    onChange={(e) => {
+                      setRememberMe(e.target.checked);
+                    }}
                   />
                   <Validations type="password" value={password} />
                 </Form.Group>

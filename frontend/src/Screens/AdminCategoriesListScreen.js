@@ -1,56 +1,39 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import { DataGrid } from '@mui/x-data-grid';
-import data from '../dummyData';
-import { Button, Grid } from '@mui/material';
-import { AiFillDelete } from 'react-icons/ai';
-import { MdEdit } from 'react-icons/md';
-import Modal from '@mui/material/Modal';
-import TextField from '@mui/material/TextField';
-import { Form } from 'react-bootstrap';
-import { BiPlusMedical } from 'react-icons/bi';
+import * as React from "react";
+import Box from "@mui/material/Box";
+import { DataGrid } from "@mui/x-data-grid";
+import data from "../dummyData";
+import { Button, Grid } from "@mui/material";
+import { AiFillDelete } from "react-icons/ai";
+import { MdEdit } from "react-icons/md";
+import Modal from "@mui/material/Modal";
+import TextField from "@mui/material/TextField";
+import { Form } from "react-bootstrap";
+import { BiPlusMedical } from "react-icons/bi";
+import { Store } from "../Store";
 
 const columns = [
-  { field: '_id', headerName: 'ID', width: 90 },
+  { field: "_id", headerName: "ID", width: 90 },
   {
-    field: 'categoryName',
-    headerName: 'categoryName',
+    field: "categoryName",
+    headerName: "categoryName",
     width: 250,
   },
   {
-    field: 'sortDesc',
-    headerName: 'sortDesc',
+    field: "sortDesc",
+    headerName: "sortDesc",
     width: 250,
   },
   {
-    field: 'categoryImg',
-    headerName: 'categoryImg',
+    field: "categoryImg",
+    headerName: "categoryImg",
     width: 210,
   },
-  // {
-  //     field: 'progress',
-  //     headerName: 'Progress',
-  //     width: 90,
-  // },
-  // {
-  //     field: 'startDate',
-  //     type: 'number',
-  //     headerName: 'Start Date',
-  //     width: 110,
-  // },
-
-  // {
-  //     field: 'endDate',
-  //     type: 'number',
-  //     headerName: 'endDate',
-  //     width: 110,
-  // },
 ];
 
 const deleteHandle = async () => {
-  if (window.confirm('Are you sure to delete ?')) {
+  if (window.confirm("Are you sure to delete ?")) {
     try {
-    } catch (error) { }
+    } catch (error) {}
   }
 };
 
@@ -80,24 +63,28 @@ export default function AdminContractorListScreen() {
   const handleSubmitNewCategory = () => {
     setIsModelOpen(false);
   };
+  const { state, dispatch: ctxDispatch } = React.useContext(Store);
+  const { toggleState, userInfo } = state;
+  const theme = toggleState ? "dark" : "light";
   return (
     <>
       <Button
         variant="outlined"
         className=" m-2 d-flex globalbtnColor"
-        onClick={handleNew}>
-        <BiPlusMedical className='mx-2' />
+        onClick={handleNew}
+      >
+        <BiPlusMedical className="mx-2" />
         Add Category
       </Button>
-      <Box sx={{ height: 400, width: '100%' }}>
+      <Box sx={{ height: 400, width: "100%" }}>
         <DataGrid
-          className="tableBg mx-2"
+          className={`tableBg mx-2 ${theme}DataGrid`}
           rows={data.categories}
           columns={[
             ...columns,
             {
-              field: 'action',
-              headerName: 'Action',
+              field: "action",
+              headerName: "Action",
               width: 250,
               renderCell: (params) => {
                 return (
@@ -106,14 +93,16 @@ export default function AdminContractorListScreen() {
                       variant="contained"
                       className="mx-2 tableEditbtn"
                       onClick={() => handleEdit(params.row)}
-                      startIcon={<MdEdit />}>
+                      startIcon={<MdEdit />}
+                    >
                       Edit
                     </Button>
                     <Button
                       variant="outlined"
                       className="mx-2 tableDeletebtn"
                       onClick={deleteHandle}
-                      startIcon={<AiFillDelete />}>
+                      startIcon={<AiFillDelete />}
+                    >
                       Delete
                     </Button>
                   </Grid>
@@ -138,15 +127,16 @@ export default function AdminContractorListScreen() {
         <Box
           className="modelBg"
           sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
             width: 400,
-            bgcolor: 'background.paper',
+            bgcolor: "background.paper",
             boxShadow: 24,
             p: 4,
-          }}>
+          }}
+        >
           <Form>
             {isNewCategory ? (
               <h4 className="d-flex justify-content-center">
@@ -161,10 +151,10 @@ export default function AdminContractorListScreen() {
               className="mb-2"
               value={
                 isNewCategory
-                  ? ''
+                  ? ""
                   : selectedRowData
-                    ? selectedRowData.categoryName
-                    : ''
+                  ? selectedRowData.categoryName
+                  : ""
               }
               label="Category Name"
               fullWidth
@@ -173,10 +163,10 @@ export default function AdminContractorListScreen() {
               className="mb-2"
               value={
                 isNewCategory
-                  ? ''
+                  ? ""
                   : selectedRowData
-                    ? selectedRowData.sortDesc
-                    : ''
+                  ? selectedRowData.sortDesc
+                  : ""
               }
               label="Add description"
               fullWidth
@@ -185,10 +175,10 @@ export default function AdminContractorListScreen() {
               className="mb-2"
               value={
                 isNewCategory
-                  ? ''
+                  ? ""
                   : selectedRowData
-                    ? selectedRowData.categoryImg
-                    : ''
+                  ? selectedRowData.categoryImg
+                  : ""
               }
               label="Add Image"
               fullWidth
@@ -197,8 +187,9 @@ export default function AdminContractorListScreen() {
               variant="contained"
               color="primary"
               onClick={handleSubmitNewCategory}
-              onChange={(e) => e.target.value}>
-              {isNewCategory ? 'Add Project' : 'Save Changes'}
+              onChange={(e) => e.target.value}
+            >
+              {isNewCategory ? "Add Project" : "Save Changes"}
             </Button>
           </Form>
         </Box>

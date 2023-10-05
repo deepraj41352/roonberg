@@ -1,9 +1,17 @@
 /* -----------priyanshu-theme-css-start---------- */
 .dark {
-  background-color: #5bacc0;
+  background-color: #ddd;
+  /* background: rgb(3, 1, 43);
+  background: linear-gradient(
+    45deg,
+    rgba(23, 62, 103, 1) 0%,
+    rgb(17, 55, 95) 20%,
+    rgb(14, 36, 82) 48%,
+    rgba(3, 1, 43, 1) 100%
+  ); */
 }
 .light {
-  background-color: #ffffff;
+  background-color: #ddd;
 }
 
 /* -----------priyanshu-theme-css-end------------- */
@@ -36,7 +44,10 @@ code {
   color: rgb(51, 65, 85);
   font-weight: 600;
 }
-
+.formcrossbtn {
+  float: right !important;
+  cursor: pointer !important;
+}
 /* ---------Priyanshu-Start------------- */
 body {
   background-color: #f8fafc !important;
@@ -61,8 +72,12 @@ body {
 }
 
 .tableBg,
-.modelBg {
-  background-color: #334155;
+.lightmodelBg {
+  background-color: #abc1e0;
+  color: #fff !important;
+}
+.darkmodelBg {
+  background-color: #07162c;
   color: #fff !important;
 }
 
@@ -71,8 +86,8 @@ body {
 }
 
 .tableDeletebtn {
-  color: #fff !important;
-  border-color: #fff !important;
+  color: #8a9097 !important;
+  border: 2px solid #8a9097 !important;
 }
 /* Gaytri css end  */
 /*################################################################################# */
@@ -136,56 +151,6 @@ body {
   }
 }
 /* -------P-Dashboard----- */
-.admin-navbar {
-  background: hsla(289, 93%, 21%, 1);
-
-  background: linear-gradient(
-    180deg,
-    hsla(289, 93%, 21%, 1) 0%,
-    hsla(287, 93%, 6%, 1) 15%,
-    hsla(0, 0%, 0%, 1) 84%,
-    hsla(289, 92%, 20%, 1) 97%
-  );
-
-  background: -moz-linear-gradient(
-    180deg,
-    hsla(289, 93%, 21%, 1) 0%,
-    hsla(287, 93%, 6%, 1) 15%,
-    hsla(0, 0%, 0%, 1) 84%,
-    hsla(289, 92%, 20%, 1) 97%
-  );
-
-  background: -webkit-linear-gradient(
-    180deg,
-    hsla(289, 93%, 21%, 1) 0%,
-    hsla(287, 93%, 6%, 1) 15%,
-    hsla(0, 0%, 0%, 1) 84%,
-    hsla(289, 92%, 20%, 1) 97%
-  );
-
-  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#560469", endColorstr="#17011D", GradientType=1 );
-}
-.admin-btn-logo {
-  color: white;
-}
-.search-bar-dash {
-  width: 350px !important;
-}
-.search-bar-dash-inner {
-  background-color: #f8f9fa !important;
-}
-/* .sidebar.visible { */
-/* width: 0px; */
-/* display: none;
-} */
-/* .sidebar {
-  width: 21%;
-  height: 100vh !important;
-  background-color: #120c16;
-  color: #fff; */
-/* white-space: nowrap; */
-/* transition: all ease-in-out 0.5s;
-} */
 
 body {
   margin: 0;
@@ -216,7 +181,20 @@ code {
   color: rgb(51, 65, 85);
   font-weight: 600;
 }
-
+.formselect {
+  width: 335px !important;
+}
+.formbtn {
+  float: right !important;
+}
+.tableBg p,
+button {
+  color: white !important;
+}
+.tableBg input[type="checkbox"] {
+  border-color: white !important;
+  background-color: white !important;
+}
 /* ---------Priyanshu-Start------------- */
 body {
   background-color: #f8fafc !important;
@@ -302,33 +280,22 @@ body {
 }
 /* -------P-Dashboard----- */
 .admin-navbar {
-  background: hsla(289, 93%, 21%, 1);
-
+  /* background: rgb(23, 35, 103);
   background: linear-gradient(
-    180deg,
-    hsla(289, 93%, 21%, 1) 0%,
-    hsla(287, 93%, 6%, 1) 15%,
-    hsla(0, 0%, 0%, 1) 84%,
-    hsla(289, 92%, 20%, 1) 97%
+    9deg,
+    rgba(23, 35, 103, 0.5410539215686274) 0%,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(24, 24, 82, 1) 45%,
+    rgba(0, 0, 0, 1) 93%
+  );*/
+  border-bottom: 1px solid #22455c;
+  background: rgb(0, 0, 0);
+  background: linear-gradient(
+    1deg,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(17, 17, 74, 1) 68%,
+    rgba(0, 0, 0, 1) 93%
   );
-
-  background: -moz-linear-gradient(
-    180deg,
-    hsla(289, 93%, 21%, 1) 0%,
-    hsla(287, 93%, 6%, 1) 15%,
-    hsla(0, 0%, 0%, 1) 84%,
-    hsla(289, 92%, 20%, 1) 97%
-  );
-
-  background: -webkit-linear-gradient(
-    180deg,
-    hsla(289, 93%, 21%, 1) 0%,
-    hsla(287, 93%, 6%, 1) 15%,
-    hsla(0, 0%, 0%, 1) 84%,
-    hsla(289, 92%, 20%, 1) 97%
-  );
-
-  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#560469", endColorstr="#17011D", GradientType=1 );
 }
 .admin-btn-logo {
   color: white;
@@ -348,7 +315,8 @@ body {
   min-height: 100vh;
 
   /* height: 100vh !important; */
-  background-color: #120c16;
+  /* background-color: #120c16; */
+  background-color: #070719;
   color: #fff;
   white-space: nowrap;
   overflow-x: hidden;
@@ -391,7 +359,7 @@ body {
 .blank-box {
   height: 62px;
   width: 100%;
-  background-color: #21072c57;
+  background-color: #060612;
 }
 .text-decoration-none {
   text-decoration: none;
@@ -409,6 +377,31 @@ body {
 .Password-input-eye {
   position: relative;
 }
+.projectScreenCard {
+  /* max-width: 500px !important; */
+  width: 100%;
+}
+.projectScreenCard2 {
+  /* max-width: 500px !important; */
+  width: 100%;
+  height: min-content !important;
+}
+.categoriesProject {
+  max-width: 1025px !important;
+  margin: 0px auto;
+}
+.categorieslist {
+  width: 100% !important;
+}
+.chatboxes {
+  max-width: 50%;
+  min-width: 48% !important;
+  max-height: 115px;
+}
+.projectScreenCard-outer {
+  margin: 0 auto;
+  padding: 12px 40px;
+}
 /* ---------Priyanshu-End------------- */
 
 .dash-list li {
@@ -420,16 +413,42 @@ body {
   padding: 0px;
   margin: 0px;
 }
-.blank-box {
+/* .blank-box {
   height: 62px;
   width: 100%;
   background-color: #21072c57;
-}
+} */
 .text-decoration-none {
   text-decoration: none;
   color: white;
 }
 .text-decoration-none :hover {
-  background-color: #c45bf157;
+  background-color: #0f2855;
+}
+.text-decoration-none :checked {
+  background-color: #0f2855;
 }
 /* ---------Priyanshu-End------------- */
+.darkCardBody {
+  color: white !important;
+  background-color: #070719 !important;
+}
+.lightCardBody {
+  color: black !important;
+}
+.darkDataGrid {
+  color: white !important;
+  background-color: #070719 !important;
+}
+.lightDataGrid {
+  color: black !important;
+  background-color: white !important;
+}
+.darkCardHeader {
+  background-color: #0e0e3d !important;
+  border-bottom: 0.5px solid snow !important;
+}
+.chatBtn {
+  background-color: #25d366 !important;
+  border-color: #25d366 !important;
+}

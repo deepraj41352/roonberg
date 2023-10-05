@@ -3,7 +3,7 @@ import React, { createContext, useReducer } from "react";
 export const Store = createContext();
 
 const initialValue = {
-  // validationMsg: false,
+  validationMsg: null,
   toggleState: localStorage.getItem("toggleState")
     ? JSON.parse(localStorage.getItem("toggleState"))
     : null,
@@ -16,8 +16,8 @@ const reducer = (state, action) => {
   switch (action.type) {
     case "USER_SIGNIN":
       return { ...state, userInfo: action.payload };
-    // case 'VALIDATION_MSG':
-    //   return { ...state, validationMsg: action.payload };
+    case 'VALIDATION_MSG':
+      return { ...state, validationMsg: action.payload };
     case "USER_SIGNOUT":
       return {
         ...state,

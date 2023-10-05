@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema(
     },
     status: { type: String, default: 'active' },
     passresetToken: { type: String },
+    agentCategory: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
   },
   {
     timestamps: true,

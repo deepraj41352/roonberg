@@ -18,6 +18,7 @@ import AdminCategoriesListScreen from "./Screens/AdminCategoriesListScreen";
 import AdminListScreen from "./Screens/AdminListScreen";
 import AdminContractorListScreen from "./Screens/AdminContractorListScreen";
 import SearchScreen from "./Screens/SearchScreen";
+import ProjectSingleScreen from "./Screens/ProjectSingleScreen";
 import { useContext, useState } from "react";
 import {
   Container,
@@ -39,6 +40,8 @@ import AdminDashboard from "./Screens/AdminDashboard";
 import ProtectedRoute from "./Components/protectedRoute";
 import ProfileScreen from "./Screens/ProfileScreen";
 import Theme from "./Components/Theme";
+import ProjectNotification from "./Screens/ProjectNotification";
+import AddProject from "./Screens/AddProject";
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -59,7 +62,7 @@ function App() {
   };
 
   return (
-    <div className={`App ${theme}`}>
+    <div className={userInfo ? `App ${theme}` : `App`}>
       <ToastContainer position="bottom-center" limit={1} />
       <div>
         <Container fluid className="px-0">
@@ -173,9 +176,14 @@ function App() {
                       path="/ForgetPassword"
                       element={<ForgetPassword />}
                     />
+                    <Route path="/add-project" element={<AddProject />} />
                     <Route
                       path="/reset-password/:token"
                       element={<ResetPasswordScreen />}
+                    />
+                    <Route
+                      path="/projectNotification"
+                      element={<ProjectNotification />}
                     />
 
                     <Route
@@ -195,7 +203,7 @@ function App() {
                       }
                     />
                     <Route
-                      path="/adminAgentList"
+                      path="/adminAgentList/"
                       element={
                         <ProtectedRoute>
                           <AdminAgentListScreen />
@@ -231,6 +239,11 @@ function App() {
                     <Route
                       path="/searchScreen"
                       element={<SearchScreen searchFor={searchValue} />}
+                    />
+                    <Route />
+                    <Route
+                      path="/projectSingleScreen/:id"
+                      element={<ProjectSingleScreen />}
                     />
                     <Route />
                   </Routes>
