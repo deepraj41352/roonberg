@@ -18,16 +18,19 @@ projectRouter.get(
       if (userRole === 'admin' || userRole === 'superadmin') {
         // Admin and superadmin can access all projects
         const projects = await Project.find();
+        projects.sort((a, b) => b.createdAt - a.createdAt); //for data descending order
         res.json(projects);
       } else if (userRole === 'contractor') {
         // Contractors can only access their own projects
         const contractorId = req.user._id; // Replace with the actual way you identify the contractor
         const projects = await Project.find({ projectOwner: contractorId });
+        projects.sort((a, b) => b.createdAt - a.createdAt); //for data descending order
         res.json(projects);
       } else if (userRole === 'agent') {
         // Contractors can only access their own projects
         const agentId = req.user._id; // Replace with the actual way you identify the contractor
         const projects = await Project.find({ assignedAgent: agentId });
+        projects.sort((a, b) => b.createdAt - a.createdAt); //for data descending order
         res.json(projects);
       } else {
         res.status(403).json({ message: 'Access denied' });

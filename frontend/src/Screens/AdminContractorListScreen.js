@@ -12,6 +12,7 @@ import axios from 'axios';
 import { Store } from '../Store';
 import { toast } from 'react-toastify';
 import { ImCross } from 'react-icons/im';
+import { ThreeDots } from 'react-loader-spinner';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -196,7 +197,22 @@ export default function AdminContractorListScreen() {
   return (
     <>
       {loading ? (
-        <div>Loading .....</div>
+         <>
+         <div className='ThreeDot' >
+         <ThreeDots 
+ height="80" 
+ width="80" 
+ radius="9"
+ className="ThreeDot justify-content-center"
+ color="#0e0e3d" 
+ ariaLabel="three-dots-loading"
+ wrapperStyle={{}}
+ wrapperClassName=""
+ visible={true}
+  />
+  </div>
+ 
+         </>
       ) : (error ? (
         <div>{error}</div>
       ) : (

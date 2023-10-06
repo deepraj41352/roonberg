@@ -85,7 +85,7 @@ function SignUpForm() {
                   </Form.Label>
                   <Form.Control
                     id="username"
-                    // value={email}
+                    value={email}
                     type="email"
                     required
                     onChange={(e) => {
@@ -99,6 +99,8 @@ function SignUpForm() {
                   <div className="Password-input-eye">
                     <div className=" rounded-2">
                       <Form.Control
+                      id="password"
+                    value={password}
                         className="pswd-input"
                         type={showPassword ? "text" : "password"}
                         onChange={(e) => {

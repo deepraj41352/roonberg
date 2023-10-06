@@ -1,13 +1,12 @@
 import express from 'express';
-
 import path from 'path';
-
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userRouter from './routers/userRouter.js';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import projectRouter from './routers/projectRouter.js';
+
 
 dotenv.config();
 mongoose
@@ -78,3 +77,4 @@ const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`server is running on port : ${port}`);
 });
+

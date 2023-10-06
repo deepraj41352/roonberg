@@ -34,6 +34,7 @@ import ProfileScreen from './Screens/ProfileScreen';
 import Theme from './Components/Theme';
 import ProjectNotification from './Screens/ProjectNotification';
 import AddProject from './Screens/AddProject';
+import ChatScreen from './Screens/ChatScreen';
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -166,6 +167,16 @@ function App() {
                         path="/reset-password/:token"
                         element={<ResetPasswordScreen />}
                       />
+                        <Route
+                        path="/ProfileScreen"
+                        element={<ProfileScreen />}
+                      />
+                         {/* <Route
+                        path="/ChatScreen"
+                        element={<ChatScreen />}
+                      /> */}
+                      
+
                       <Route
                         path="/projectNotification"
                         element={<ProjectNotification />}

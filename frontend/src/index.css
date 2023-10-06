@@ -15,7 +15,10 @@ body {
   /* background-color: rgba(0, 0, 0, 0) !important; */
   background-color: white;
 }
-
+.ThreeDot{
+  display: flex;
+  justify-content: center !important;
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
