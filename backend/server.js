@@ -6,7 +6,7 @@ import userRouter from './routers/userRouter.js';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import projectRouter from './routers/projectRouter.js';
-import categoryRouter from './routers/categoryRouter copy.js';
+import categoryRouter from './routers/categoryRouter.js';
 import conversationRouter from './routers/conversationRouter.js';
 import MessageRouter from './routers/MessageRoute.js';
 
