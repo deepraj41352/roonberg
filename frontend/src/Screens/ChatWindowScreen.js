@@ -83,12 +83,12 @@ function ChatWindowScreen() {
             {chatMessages.map((item) => (
               <>
                 {userInfo._id == item.sender ? (
-                  <div className="chat-senderMsg ">
-                    <p className="chat-senderMsg-inner p-2">{item.text}</p>
-                  </div>
-                ) : (
                   <div className="chat-receiverMsg ">
                     <p className="chat-receiverMsg-inner p-2">{item.text}</p>
+                  </div>
+                ) : (
+                  <div className="chat-senderMsg ">
+                    <p className="chat-senderMsg-inner p-2">{item.text}</p>
                   </div>
                 )}
               </>
