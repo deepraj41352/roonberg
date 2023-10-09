@@ -280,6 +280,7 @@ body {
 }
 /* -------P-Dashboard----- */
 .admin-navbar {
+  height: 66px !important;
   /* background: rgb(23, 35, 103);
   background: linear-gradient(
     9deg,
@@ -431,14 +432,17 @@ body {
 /* ---------Priyanshu-End------------- */
 .darkCardBody {
   color: white !important;
-  background-color: #070719 !important;
+  /* background-color: #070719 !important; */
+  background-color: #0d0d32 !important;
+  /* background-color: #0b0b27 !important; */
 }
 .lightCardBody {
   color: black !important;
 }
 .darkDataGrid {
   color: white !important;
-  background-color: #070719 !important;
+  /* background-color: #0b0b27 !important; */
+  background-color: #0d0d32 !important;
 }
 .lightDataGrid {
   color: black !important;
@@ -451,4 +455,45 @@ body {
 .chatBtn {
   background-color: #25d366 !important;
   border-color: #25d366 !important;
+}
+.chatWindow {
+  height: calc(100vh - 90px) !important;
+  width: 60%;
+}
+.chatWindowProjectInfo {
+  width: 25%;
+}
+.chat-senderMsg {
+  display: flex;
+  justify-content: start;
+  max-width: 60%;
+}
+.chat-senderMsg-inner {
+  background-color: #a0ddd0;
+  border-radius: 10px;
+  border-top-left-radius: 0px !important;
+  text-align: start;
+}
+.chat-receiverMsg {
+  display: flex;
+  justify-content: end;
+  max-width: 60%;
+  margin-left: 40%;
+}
+.chat-receiverMsg-inner {
+  background-color: #96df9c;
+  border-radius: 10px;
+  border-top-right-radius: 0px !important;
+  text-align: start;
+}
+.chatWindowBody {
+  overflow: auto; /* Add scrollbars when content overflows */
+}
+.Roonberg-logo {
+  height: 50px !important;
+  background: none !important;
+  border: none !important;
+}
+.chat-receiverMsg-inner p {
+  margin-bottom: 0px;
 }

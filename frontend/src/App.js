@@ -19,6 +19,7 @@ import AdminListScreen from "./Screens/AdminListScreen";
 import AdminContractorListScreen from "./Screens/AdminContractorListScreen";
 import SearchScreen from "./Screens/SearchScreen";
 import ProjectSingleScreen from "./Screens/ProjectSingleScreen";
+import ChatWindowScreen from "./Screens/ChatWindowScreen";
 import { useContext, useState } from "react";
 import {
   Container,
@@ -84,6 +85,13 @@ function App() {
                     >
                       <AiOutlineAlignLeft />
                     </div>
+                    <Navbar.Brand href="#home">
+                      <Image
+                        className="Roonberg-logo me-3 ms-2"
+                        src="./logo2.png"
+                        thumbnail
+                      />
+                    </Navbar.Brand>
                     <Form className="d-flex">
                       <InputGroup className="search-bar-dash">
                         <Form.Control
@@ -244,6 +252,11 @@ function App() {
                     <Route
                       path="/projectSingleScreen/:id"
                       element={<ProjectSingleScreen />}
+                    />
+                    <Route />
+                    <Route
+                      path="/chatWindowScreen/:id"
+                      element={<ChatWindowScreen />}
                     />
                     <Route />
                   </Routes>

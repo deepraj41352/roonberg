@@ -5,7 +5,7 @@ import { Store } from "../Store";
 import { Button, Form } from "react-bootstrap";
 import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -32,6 +32,7 @@ const reducer = (state, action) => {
 
 function ProjectSingleScreen() {
   const { id } = useParams();
+  const navigate = useNavigate();
   console.log("param:", id);
   const { state } = useContext(Store);
   // const { userInfo } = state;
@@ -48,6 +49,19 @@ function ProjectSingleScreen() {
     categoryData: {},
     successUpdate: false,
   });
+  const [conversations, setConversation] = useState([]);
+  useEffect(() => {
+    const getConversations = async () => {
+      try {
+        const res = await axios.get(`/api/conversation/${id}`);
+        console.log("sharma", res.data);
+        setConversation(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getConversations();
+  }, []);
 
   useEffect(() => {
     const fetchProjectData = async () => {
@@ -172,31 +186,24 @@ function ProjectSingleScreen() {
               <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
               <Card.Body className="d-flex flex-wrap gap-3 ">
                 {/* -------- */}
-                <Card className="chatboxes">
-                  <Card.Header>Chat</Card.Header>
-                  <Card.Body>
-                    <Button className="chatBtn" type="button">
-                      Chat 1
-                    </Button>
-                  </Card.Body>
-                </Card>
-
-                <Card className="chatboxes">
-                  <Card.Header>Chat</Card.Header>
-                  <Card.Body>
-                    <Button className="chatBtn" type="button">
-                      Chat 2
-                    </Button>
-                  </Card.Body>
-                </Card>
-                <Card className="chatboxes">
-                  <Card.Header>Chat</Card.Header>
-                  <Card.Body>
-                    <Button className="chatBtn" type="button">
-                      Chat 3
-                    </Button>
-                  </Card.Body>
-                </Card>
+                {conversations.map((conversion) => {
+                  return (
+                    <Card className="chatboxes">
+                      <Card.Header>Chat</Card.Header>
+                      <Card.Body>
+                        <Link to={`/chatWindowScreen/${conversion._id}`}>
+                          <Button
+                            className="chatBtn"
+                            type="button"
+                            // onClick={conversionHandler(conversion._id)}
+                          >
+                            {conversion._id}
+                          </Button>
+                        </Link>
+                      </Card.Body>
+                    </Card>
+                  );
+                })}
 
                 {/* -------- */}
               </Card.Body>
