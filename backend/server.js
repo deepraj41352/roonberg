@@ -64,6 +64,9 @@ app.get('/test', (req, res) => {
 
 app.use('/api/user', userRouter);
 app.use('/api/project', projectRouter);
+app.use('/api/category', categoryRouter);
+app.use('/api/conversation', conversationRouter);
+app.use('/api/message', MessageRouter);
 
 const _dirname = path.resolve();
 app.use(express.static(path.join(_dirname, 'frontend/build')));
