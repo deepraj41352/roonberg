@@ -28,21 +28,22 @@ import {
   InputGroup,
   Nav,
   Navbar,
-} from "react-bootstrap";
-import Sidebar from "./Components/Sidebar";
-import { AiOutlineAlignLeft, AiOutlineCheck } from "react-icons/ai";
-import { BsFillPersonFill, BsSearch } from "react-icons/bs";
-import { BiShareAlt } from "react-icons/bi";
-import { CgProfile } from "react-icons/cg";
-import { FiClock } from "react-icons/fi";
-import { MdOutlineNotifications } from "react-icons/md";
-import { Store } from "./Store";
-import AdminDashboard from "./Screens/AdminDashboard";
-import ProtectedRoute from "./Components/protectedRoute";
-import ProfileScreen from "./Screens/ProfileScreen";
-import Theme from "./Components/Theme";
-import ProjectNotification from "./Screens/ProjectNotification";
-import AddProject from "./Screens/AddProject";
+} from 'react-bootstrap';
+import Sidebar from './Components/Sidebar';
+import { AiOutlineAlignLeft, AiOutlineCheck } from 'react-icons/ai';
+import { BsFillPersonFill, BsSearch } from 'react-icons/bs';
+import { BiShareAlt } from 'react-icons/bi';
+import { CgProfile } from 'react-icons/cg';
+import { FiClock } from 'react-icons/fi';
+import { MdOutlineNotifications } from 'react-icons/md';
+import { Store } from './Store';
+import AdminDashboard from './Screens/AdminDashboard';
+import ProtectedRoute from './Components/protectedRoute';
+import ProfileScreen from './Screens/ProfileScreen';
+import Theme from './Components/Theme';
+import ProjectNotification from './Screens/ProjectNotification';
+import AddProject from './Screens/AddProject';
+import ChatScreen from './Screens/ChatScreen';
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);

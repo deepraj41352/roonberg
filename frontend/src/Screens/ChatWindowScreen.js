@@ -14,6 +14,7 @@ import { Store } from "../Store";
 import { Socket, io } from "socket.io-client";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import {format} from "timeago.js"
 
 function ChatWindowScreen() {
   const { id } = useParams();
@@ -83,12 +84,14 @@ function ChatWindowScreen() {
             {chatMessages.map((item) => (
               <>
                 {userInfo._id == item.sender ? (
-                  <div className="chat-receiverMsg ">
+                  <div className="chat-receiverMsg d-flex flex-column">
                     <p className="chat-receiverMsg-inner p-2">{item.text}</p>
+                    <div className="">{format(item.createdAt)}</div>
                   </div>
                 ) : (
-                  <div className="chat-senderMsg ">
+                  <div className="chat-senderMsg d-flex flex-column ">
                     <p className="chat-senderMsg-inner p-2">{item.text}</p>
+                    <div className="">{format(item.createdAt)}</div>
                   </div>
                 )}
               </>

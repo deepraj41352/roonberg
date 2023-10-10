@@ -93,7 +93,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
             Project List
           </li>
         </Link>
-        <Link to="/Dashboard" className="text-decoration-none">
+        <Link to="/ChatScreen" className="text-decoration-none">
           <li>
             <BsFillChatLeftQuoteFill className="me-3 fs-5" />
             Chat

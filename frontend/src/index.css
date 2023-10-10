@@ -23,7 +23,10 @@ body {
   /* background-color: rgba(0, 0, 0, 0) !important; */
   background-color: white;
 }
-
+.ThreeDot{
+  display: flex;
+  justify-content: center !important;
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
@@ -187,6 +190,11 @@ code {
 .formbtn {
   float: right !important;
 }
+
+.MuiFormControl-root {
+  margin-bottom: 8px !important;
+  width: 100% !important;
+}
 .tableBg p,
 button {
   color: white !important;
@@ -223,6 +231,9 @@ body {
 /* karan start css */
 .profileDiv {
   width: 100% !important;
+}
+.auto-text {
+  width: 100%;
 }
 
 .login-button {
@@ -430,6 +441,10 @@ body {
   background-color: #0f2855;
 }
 /* ---------Priyanshu-End------------- */
+.css-1jy569b-MuiFormLabel-root-MuiInputLabel-root {
+  background-color: #fff !important;
+  padding: 3px;
+}
 .darkCardBody {
   color: white !important;
   /* background-color: #070719 !important; */

@@ -1,17 +1,18 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import { DataGrid } from "@mui/x-data-grid";
-import { Button, FormControl, Grid, MenuItem, Select } from "@mui/material";
-import { AiFillDelete } from "react-icons/ai";
-import { MdEdit } from "react-icons/md";
-import Modal from "@mui/material/Modal";
-import TextField from "@mui/material/TextField";
-import { Form } from "react-bootstrap";
-import { BiPlusMedical } from "react-icons/bi";
-import axios from "axios";
-import { Store } from "../Store";
-import { toast } from "react-toastify";
-import { ImCross } from "react-icons/im";
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import { DataGrid } from '@mui/x-data-grid';
+import { Button, FormControl, Grid, MenuItem, Select } from '@mui/material';
+import { AiFillDelete } from 'react-icons/ai';
+import { MdEdit } from 'react-icons/md';
+import Modal from '@mui/material/Modal';
+import TextField from '@mui/material/TextField';
+import { Form } from 'react-bootstrap';
+import { BiPlusMedical } from 'react-icons/bi';
+import axios from 'axios';
+import { Store } from '../Store';
+import { toast } from 'react-toastify';
+import { ImCross } from 'react-icons/im';
+import { ThreeDots } from 'react-loader-spinner';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -199,8 +200,23 @@ export default function AdminContractorListScreen() {
   return (
     <>
       {loading ? (
-        <div>Loading .....</div>
-      ) : error ? (
+         <>
+         <div className='ThreeDot' >
+         <ThreeDots 
+ height="80" 
+ width="80" 
+ radius="9"
+ className="ThreeDot justify-content-center"
+ color="#0e0e3d" 
+ ariaLabel="three-dots-loading"
+ wrapperStyle={{}}
+ wrapperClassName=""
+ visible={true}
+  />
+  </div>
+ 
+         </>
+      ) : (error ? (
         <div>{error}</div>
       ) : (
         <>
@@ -335,7 +351,7 @@ export default function AdminContractorListScreen() {
             </Box>
           </Modal>
         </>
-      )}
+      ))}
     </>
   );
 }
