@@ -163,15 +163,8 @@ projectRouter.post(
       });
       const project = await newProject.save();
       const adminEmails = await User.find({ role: 'admin' }, 'email');
-
-      const adminEmails = await User.find({ role: 'admin' }, 'email');
       const emails = adminEmails.map((user) => user.email);
       const user = await User.findById(req.user._id, 'first_name email');
-      console.log(emails.toString());
-      console.log('userid', req.user._id);
-
-      const user = await User.findById(req.user._id, 'first_name email');
-      console.log('user', user);
 
       const options = {
         to: emails.toString(),
@@ -221,12 +214,6 @@ projectRouter.post(
         },
         { new: true }
       );
-      const user = await User.findById(agentId, 'first_name email');
-      console.log(user);
-
-      const updatedProject = await Project.findByIdAndUpdate(projectId, {
-        assignedAgent: agentId,
-      });
 
       const options = {
         to: user.email,

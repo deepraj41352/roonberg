@@ -35,4 +35,16 @@ MessageRouter.get('/:conversationId', async (req, res) => {
   }
 });
 
+MessageRouter.delete('/:conversationId', async (req, res) => {
+  try {
+    await Message.deleteMany({
+      conversationId: req.params.conversationId,
+    });
+    res.status(200).json('message deleted');
+  } catch (err) {
+    console.log('error', err);
+    return res.status(500).json(err);
+  }
+});
+
 export default MessageRouter;
