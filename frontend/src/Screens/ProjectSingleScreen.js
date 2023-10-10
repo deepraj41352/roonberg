@@ -58,6 +58,7 @@ function ProjectSingleScreen() {
         setConversation(res.data);
       } catch (err) {
         console.log(err);
+        
       }
     };
     getConversations();
@@ -71,7 +72,6 @@ function ProjectSingleScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const datas = response.data;
-        console.log(datas);
         dispatch({ type: "FETCH_SUCCESS", payload: datas });
       } catch (error) {
         console.error("Error fetching project data:", error);

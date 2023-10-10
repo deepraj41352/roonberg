@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   Card,
   CardBody,
@@ -16,21 +16,54 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import {format} from "timeago.js"
 
+
 function ChatWindowScreen() {
   const { id } = useParams();
+  const { state, dispatch: ctxDispatch } = useContext(Store);
+  const { toggleState, userInfo } = state;
   const [showFontStyle, setShowFontStyle] = useState(false);
   const [conversation, setConversation] = useState([]);
   const [chatMessages, setChatMessages] = useState([]);
+  const [arrivalMessage, setArrivalMessage] = useState(null);
+  const [conversationID, setConversationID] = useState();
+const [checkstate, setCheckstate] =useState(false)
 
-  const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { toggleState, userInfo } = state;
-  console.log("user", userInfo);
+  const socket = useRef(io("ws://localhost:8900"))
+  const scrollRef = useRef()
+
+  useEffect(()=>{
+    socket.current= io("ws://localhost:8900")
+    socket.current.on("getMessage",data=>{
+      setArrivalMessage({
+        sender:data.senderId,
+        text:data.text,
+        // createdAt:Date.now()
+
+      })
+    })
+  },[])
+  
+useEffect(()=>{
+ // console.log("arivalmsg",chatMessages)
+arrivalMessage  && conversationID?.members.includes(arrivalMessage.sender)&&
+  setChatMessages((prev)=>[...prev , arrivalMessage])
+
+},[arrivalMessage,conversationID])
+
+
+
+useEffect(()=>{
+  socket.current.emit("addUser",userInfo._id )
+  socket.current.on("getUsers",users=>{
+    // console.log("userids and socket",users)
+  })
+},[])
+
 
   useEffect(() => {
     const getMessages = async () => {
       try {
         const { data } = await axios.get(`/api/message/${id}`);
-        console.log("karannn", data);
         setChatMessages(data);
       } catch (err) {
         console.log(err);
@@ -40,7 +73,25 @@ function ChatWindowScreen() {
     getMessages();
   }, [conversation]);
 
-  console.log("chat", chatMessages);
+  
+  useEffect(() => {
+    const getConversation = async () => {
+      try {
+        const { data } = await axios.post(`/api/conversation/${id}`);
+        setConversationID(data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    getConversation();
+  }, []);
+
+  // console.log("karan",conversationID)
+
+ 
+
+  // console.log("chat", chatMessages);
   const showFontStyleBox = () => {
     setShowFontStyle(!showFontStyle);
   };
@@ -63,35 +114,50 @@ function ChatWindowScreen() {
   };
 
   const submitHandler = async (e) => {
+    const receiverdId = conversationID.members.find((member) => member !== userInfo._id);
+
+    socket.current.emit("sendMessage",{
+      senderId: userInfo._id,
+      receiverdId:receiverdId,
+      text:newMessage,
+    })
+
+
     try {
       const { data } = await axios.post("/api/message/", {
         conversationId: id,
         sender: userInfo._id,
         text: newMessage,
       });
-      console.log(data);
+      // console.log(data);
+      // setCheckstate(!checkstate)
     } catch (err) {
       console.log(err.response?.data?.message);
     }
   };
 
+  useEffect(()=>{
+    scrollRef.current?.scrollIntoView({behavior:"smooth"})
+  },[chatMessages,newMessage])
+
   return (
     <div className=" d-flex justify-content-center align-items-center">
       <div className="d-flex justify-content-center gap-3 ">
-        <Card className="chatWindow mt-3">
+        <Card    className="chatWindow mt-3">
           <CardHeader>Rohan </CardHeader>
           <CardBody className="chatWindowBody pb-0">
+            {console.log('chatMessages ',chatMessages)}
             {chatMessages.map((item) => (
               <>
                 {userInfo._id == item.sender ? (
-                  <div className="chat-receiverMsg d-flex flex-column">
+                  <div ref={scrollRef} className="chat-receiverMsg d-flex flex-column">
                     <p className="chat-receiverMsg-inner p-2">{item.text}</p>
-                    <div className="">{format(item.createdAt)}</div>
+                    <div className="timeago">{format(item.createdAt)}</div>
                   </div>
                 ) : (
-                  <div className="chat-senderMsg d-flex flex-column ">
+                  <div ref={scrollRef} className="chat-senderMsg d-flex flex-column ">
                     <p className="chat-senderMsg-inner p-2">{item.text}</p>
-                    <div className="">{format(item.createdAt)}</div>
+                    <div className="timeago">{format(item.createdAt)}</div>
                   </div>
                 )}
               </>
@@ -130,7 +196,7 @@ function ChatWindowScreen() {
             <IoSendSharp className="ms-3" onClick={handleSendMessage} />
           </CardFooter>
         </Card>
-        <Card className="chatWindowProjectInfo mt-3">
+        <Card className="chatWindowProjectInfo mt-3" style={{display:"none"}}>
           <CardHeader>Project Status</CardHeader>
           <CardBody> Project Status like ....on progress</CardBody>
         </Card>

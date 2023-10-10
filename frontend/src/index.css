@@ -478,8 +478,13 @@ body {
 .chatWindowProjectInfo {
   width: 25%;
 }
+.timeago{
+  font-size: 12px;
+}
 .chat-senderMsg {
   display: flex;
+  align-items: flex-start;
+
   justify-content: start;
   max-width: 60%;
 }
@@ -488,10 +493,13 @@ body {
   border-radius: 10px;
   border-top-left-radius: 0px !important;
   text-align: start;
+  margin-bottom: 0;
+  margin-top: 20px;
 }
 .chat-receiverMsg {
   display: flex;
   justify-content: end;
+  align-items: end;
   max-width: 60%;
   margin-left: 40%;
 }
@@ -500,6 +508,8 @@ body {
   border-radius: 10px;
   border-top-right-radius: 0px !important;
   text-align: start;
+  margin-bottom: 0;
+  margin-top: 20px;
 }
 .chatWindowBody {
   overflow: auto; /* Add scrollbars when content overflows */
