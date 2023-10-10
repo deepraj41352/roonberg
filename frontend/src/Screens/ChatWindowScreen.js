@@ -96,7 +96,6 @@ function ChatWindowScreen() {
 
             {messages.map((message) => (
               <div className="chat-receiverMsg">
-                {/* <p className="chat-receiverMsg-inner p-2">{message}</p> */}
                 <p
                   className="chat-receiverMsg-inner p-2"
                   dangerouslySetInnerHTML={{ __html: message }}

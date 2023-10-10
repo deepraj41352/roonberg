@@ -92,7 +92,7 @@ function App() {
                         thumbnail
                       />
                     </Navbar.Brand>
-                    <Form className="d-flex">
+                    <Form className=" search-bar-dash-outer">
                       <InputGroup className="search-bar-dash">
                         <Form.Control
                           type="search"
