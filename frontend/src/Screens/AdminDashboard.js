@@ -1,17 +1,21 @@
-import React from 'react';
-import { Card, Col, Row } from 'react-bootstrap';
-import { MdQueue } from 'react-icons/md';
-import { GrCompliance } from 'react-icons/gr';
-import { HiUserGroup } from 'react-icons/hi';
-import data from '../dummyData';
-import Chart from 'react-google-charts';
+import React, { useContext } from "react";
+import { Card, Col, Row } from "react-bootstrap";
+import { MdQueue } from "react-icons/md";
+import { GrCompliance } from "react-icons/gr";
+import { HiUserGroup } from "react-icons/hi";
+import data from "../dummyData";
+import Chart from "react-google-charts";
+import { Store } from "../Store";
 
 export default function AdminDashboard() {
+  const { state, dispatch: ctxDispatch } = useContext(Store);
+  const { toggleState, userInfo } = state;
+  const theme = toggleState ? "dark" : "light";
   return (
     <>
       <Row className="m-2">
         <Col>
-          <Card>
+          <Card className={`${theme}CardBody`}>
             <Card.Body>
               <Card.Title className="d-flex justify-content-center align-items-center">
                 <MdQueue className="mx-2" />
@@ -22,7 +26,7 @@ export default function AdminDashboard() {
           </Card>
         </Col>
         <Col>
-          <Card>
+          <Card className={`${theme}CardBody`}>
             <Card.Body>
               <Card.Title className="d-flex justify-content-center align-items-center">
                 <GrCompliance className="mx-2" />
@@ -33,7 +37,7 @@ export default function AdminDashboard() {
           </Card>
         </Col>
         <Col>
-          <Card>
+          <Card className={`${theme}CardBody`}>
             <Card.Body>
               <Card.Title className="d-flex justify-content-center align-items-center">
                 <HiUserGroup className="mx-2" />
@@ -44,7 +48,7 @@ export default function AdminDashboard() {
           </Card>
         </Col>
         <Col>
-          <Card>
+          <Card className={`${theme}CardBody`}>
             <Card.Body>
               <Card.Title className="d-flex justify-content-center align-items-center">
                 <HiUserGroup className="mx-2" />

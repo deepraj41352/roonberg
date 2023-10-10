@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
@@ -14,18 +14,18 @@ const userSchema = new mongoose.Schema(
     profile_picture: { type: String },
     role: {
       type: String,
-      default: 'contractor',
+      default: "contractor",
       lowercase: true,
       required: true,
     },
-    status: { type: String, default: 'active' },
+    status: { type: String, default: "active" },
     passresetToken: { type: String },
-    agentCategory: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
+    agentCategory: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
   },
   {
     timestamps: true,
   }
 );
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 export default User;

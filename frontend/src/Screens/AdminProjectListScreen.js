@@ -25,15 +25,16 @@ import {
   MenuItem,
   Button,
 } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case 'FATCH_REQUEST':
-      return { ...state, loading: true };
-    case 'FATCH_SUCCESS':
-      return { ...state, projectData: action.payload, loading: false };
-    case 'FATCH_ERROR':
-      return { ...state, error: action.payload, loading: false };
+    case "FATCH_REQUEST":
+      return { ...state, loading: true }
+    case "FATCH_SUCCESS":
+      return { ...state, projectData: action.payload, loading: false }
+    case "FATCH_ERROR":
+      return { ...state, error: action.payload, loading: false }
 
     case 'DELETE_SUCCESS':
       return { ...state, successDelete: action.payload };
@@ -53,25 +54,25 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: '_id', headerName: 'ID', width: 90 },
+  { field: "_id", headerName: "ID", width: 90 },
   {
-    field: 'projectName',
-    headerName: 'Project Name',
+    field: "projectName",
+    headerName: "Project Name",
     width: 150,
   },
   {
-    field: 'projectDescription',
-    headerName: 'Description',
+    field: "projectDescription",
+    headerName: "Description",
     width: 150,
   },
   {
-    field: 'projectOwner',
-    headerName: 'Project Owner',
+    field: "projectOwner",
+    headerName: "Project Owner",
     width: 90,
   },
   {
-    field: 'assignedAgent',
-    headerName: 'Assigned Agent',
+    field: "assignedAgent",
+    headerName: "Assigned Agent",
     width: 110,
   },
 ];
@@ -84,13 +85,14 @@ export default function AdminProjectListScreen() {
 
 
   const { state } = React.useContext(Store);
-  const { userInfo } = state;
+  const { toggleState, userInfo } = state;
+  const theme = toggleState ? "dark" : "light";
   const [
     { loading, error, projectData, successDelete, successUpdate },
     dispatch,
   ] = React.useReducer(reducer, {
     loading: true,
-    error: '',
+    error: "",
     projectData: [],
     successDelete: false,
     successUpdate: false,
@@ -113,12 +115,12 @@ export default function AdminProjectListScreen() {
     const constractorToEdit = projectData.find(
       (constractor) => constractor && constractor._id === userid
     );
-    setProjectName(constractorToEdit ? constractorToEdit.projectName : '');
+    setProjectName(constractorToEdit ? constractorToEdit.projectName : "");
     setProjectDescription(
-      constractorToEdit ? constractorToEdit.projectDescription : ''
+      constractorToEdit ? constractorToEdit.projectDescription : ""
     );
-    setProjectOwner(constractorToEdit ? constractorToEdit.projectOwner : '');
-    setAssignedAgent(constractorToEdit ? constractorToEdit.assignedAgent : '');
+    setProjectOwner(constractorToEdit ? constractorToEdit.projectOwner : "");
+    setAssignedAgent(constractorToEdit ? constractorToEdit.assignedAgent : "");
     setSelectedRowData(constractorToEdit);
     setIsModelOpen(true);
     setIsNewProject(false);
@@ -135,7 +137,7 @@ export default function AdminProjectListScreen() {
   };
 
   React.useEffect(() => {
-    const fetchProjectData = async () => {
+    const FatchProjectData = async () => {
       try {
         dispatch({ type: 'FATCH_REQUEST' }); // Dispatch an action instead of calling it as a function
         const response = await axios.get('/api/project', {
@@ -154,16 +156,18 @@ export default function AdminProjectListScreen() {
         console.log("sharam",rowData)
         dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
       } catch (error) {
-        console.error(error); // Log errors using console.error
+        console.log(error)
       }
     };
 
     if (successDelete) {
-      dispatch({ type: 'DELETE_RESET' });
-    } else if (successUpdate) {
-      dispatch({ type: 'UPDATE_RESET' });
-    } else {
-      fetchProjectData(); // Call the function to fetch project data
+      dispatch({ type: "DELETE_RESET" })
+    }
+    else if (successUpdate) {
+      dispatch({ type: "UPDATE_RESET" })
+    }
+    else {
+      FatchProjectData()
     }
   }, [successDelete, successUpdate, dispatch, userInfo.token]); // Add dependencies to the dependency array
 
@@ -234,17 +238,11 @@ export default function AdminProjectListScreen() {
 
       }
     }
-  };
 
-  // const handleFieldClick = () => {
-  //   setInputType('date');
-  // };
-  // const handleFieldClickEnd = () => {
-  //   setinputTypeEnd('date');
-  // };
+  }
 
   const deleteHandle = async (productId) => {
-    if (window.confirm('Are you sure to delete?')) {
+    if (window.confirm("Are you sure to delete?")) {
       try {
         const response = await axios.delete(`/api/project/${productId}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
@@ -253,9 +251,8 @@ export default function AdminProjectListScreen() {
         if (response.status === 200) {
           toast.success('Data deleted successfully!');
           dispatch({
-            type: 'DELETE_SUCCESS',
-            payload: true,
-          });
+            type: "DELETE_SUCCESS", payload: true
+          })
         } else {
           toast.error('Failed to delete data.');
         }
@@ -305,7 +302,7 @@ visible={true}
             <Tab className="tab-color" eventKey="All" title="All">
               <Box sx={{ height: 400, width: '100%' }}>
                 <DataGrid
-                  className="tableBg mx-2"
+                  className={`tableBg mx-2 ${theme}DataGrid`}
                   rows={projectData}
                   columns={[
                     ...columns,
@@ -316,14 +313,16 @@ visible={true}
                       renderCell: (params) => {
                         return (
                           <Grid item xs={8}>
+                            <Link to={`/projectSingleScreen/${params.row._id}`}>
                             <Button
                               variant="contained"
                               className="mx-2 tableEditbtn"
-                              onClick={() => handleEdit(params.row._id)}
-                              startIcon={<MdEdit />}
+                              // onClick={() => handleEdit(params.row._id)}
+                              // startIcon={<MdEdit />}
                             >
                               Edit
                             </Button>
+                            </Link>
                             <Button
                               variant="outlined"
                               className="mx-2 tableDeletebtn"
@@ -450,7 +449,7 @@ visible={true}
             <Tab className="tab-color" eventKey="Active" title="Active">
               <Box sx={{ height: 400, width: '100%' }}>
                 <DataGrid
-                  className="tableBg mx-2"
+                  className={`tableBg mx-2 ${theme}DataGrid`}
                   rows={projectActiveData}
                   columns={[
                     ...columns,
@@ -461,14 +460,18 @@ visible={true}
                       renderCell: (params) => {
                         return (
                           <Grid item xs={8}>
+                         <Link to={`/projectSingleScreen/${params.row._id}`}>
+
                             <Button
                               variant="contained"
                               className="mx-2 tableEditbtn"
-                              onClick={() => handleEdit(params.row._id)}
-                              startIcon={<MdEdit />}
+                              // onClick={() => handleEdit(params.row._id)}
+                              // startIcon={<MdEdit />}
                             >
                               Edit
                             </Button>
+                            </Link>
+
                             <Button
                               variant="outlined"
                               className="mx-2 tableDeletebtn"
@@ -499,7 +502,7 @@ visible={true}
             <Tab className="tab-color" eventKey="Completed" title="Completed">
               <Box sx={{ height: 400, width: '100%' }}>
                 <DataGrid
-                  className="tableBg mx-2"
+                  className={`tableBg mx-2 ${theme}DataGrid`}
                   rows={projectCompleteData}
                   columns={[
                     ...columns,
@@ -510,14 +513,18 @@ visible={true}
                       renderCell: (params) => {
                         return (
                           <Grid item xs={8}>
+                          <Link to={`/projectSingleScreen/${params.row._id}`}>
+
                             <Button
                               variant="contained"
                               className="mx-2 tableEditbtn"
-                              onClick={() => handleEdit(params.row._id)}
-                              startIcon={<MdEdit />}
+                              // onClick={() => handleEdit(params.row._id)}
+                              // startIcon={<MdEdit />}
                             >
                               Edit
                             </Button>
+                            </Link>
+
                             <Button
                               variant="outlined"
                               className="mx-2 tableDeletebtn"
@@ -548,7 +555,7 @@ visible={true}
             <Tab className="tab-color" eventKey="Qued" title="Qued">
               <Box sx={{ height: 400, width: '100%' }}>
                 <DataGrid
-                  className="tableBg mx-2"
+                  className={`tableBg mx-2 ${theme}DataGrid`}
                   rows={projectQuedData}
                   columns={[
                     ...columns,
@@ -559,14 +566,17 @@ visible={true}
                       renderCell: (params) => {
                         return (
                           <Grid item xs={8}>
+                          <Link to={`/projectSingleScreen/${params.row._id}`}>
+
                             <Button
                               variant="contained"
                               className="mx-2 tableEditbtn"
-                              onClick={() => handleEdit(params.row._id)}
-                              startIcon={<MdEdit />}
+                              // onClick={() => handleEdit(params.row._id)}
+                              // startIcon={<MdEdit />}
                             >
                               Edit
                             </Button>
+                            </Link>
                             <Button
                               variant="outlined"
                               className="mx-2 tableDeletebtn"

@@ -1,15 +1,15 @@
-import React, { useContext, useState } from 'react';
-import { Button, Card, Col, Container, Form, Row } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
-import { Store } from '../Store';
-import { toast } from 'react-toastify';
-import axios from 'axios';
-import Validations from '../Components/Validations';
+import React, { useContext, useState } from "react";
+import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
+import { Store } from "../Store";
+import { toast } from "react-toastify";
+import axios from "axios";
+import Validations from "../Components/Validations";
 
 function ProfileScreen() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { userInfo } = state;
-
+  const { toggleState, userInfo } = state;
+  const theme = toggleState ? "dark" : "light";
   const navigate = useNavigate();
 
   const [firstName, setFirstName] = useState(userInfo.first_name);
@@ -23,10 +23,10 @@ function ProfileScreen() {
     setIsSubmiting(true);
     const formDatas = new FormData();
 
-    formDatas.append('profile_picture', selectedFile);
-    formDatas.append('first_name', firstName);
-    formDatas.append('last_name', lastName);
-    formDatas.append('email', email);
+    formDatas.append("profile_picture", selectedFile);
+    formDatas.append("first_name", firstName);
+    formDatas.append("last_name", lastName);
+    formDatas.append("email", email);
 
     try {
       const { data } = await axios.put(
@@ -34,7 +34,7 @@ function ProfileScreen() {
         formDatas,
         {
           headers: {
-            'content-type': 'multipart/form-data',
+            "content-type": "multipart/form-data",
 
             authorization: `Bearer ${userInfo.token}`,
           },
@@ -63,7 +63,7 @@ function ProfileScreen() {
         </Row>
         <Row>
           <Col>
-            <Card>
+            <Card className={`${theme}CardBody`}>
               <Form onSubmit={submitHandler} className="p-4 w-100 formWidth ">
                 <Form.Group className="mb-3 " controlId="formBasicEmail">
                   <Form.Label className="mb-1 input-box">First Name</Form.Label>
@@ -106,8 +106,9 @@ function ProfileScreen() {
                     className=" py-1 w-25 globalbtnColor"
                     variant="primary"
                     type="submit"
-                    disabled={isSubmiting}>
-                    {isSubmiting ? 'Updateing...' : 'Update'}
+                    disabled={isSubmiting}
+                  >
+                    {isSubmiting ? "Updateing..." : "Update"}
                   </Button>
                 </div>
               </Form>

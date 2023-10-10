@@ -18,11 +18,11 @@ import { ThreeDots } from 'react-loader-spinner';
 const reducer = (state, action) => {
   switch (action.type) {
     case "FATCH_REQUEST":
-      return { ...state, loading: true }
+      return { ...state, loading: true };
     case "FATCH_SUCCESS":
-      return { ...state, adminData: action.payload, loading: false }
+      return { ...state, adminData: action.payload, loading: false };
     case "FATCH_ERROR":
-      return { ...state, error: action.payload, loading: false }
+      return { ...state, error: action.payload, loading: false };
 
     case "DELETE_SUCCESS":
       return { ...state, successDelete: action.payload };
@@ -38,28 +38,27 @@ const reducer = (state, action) => {
 
     default:
       return state;
-  };
-
-}
+  }
+};
 
 const columns = [
-  { field: '_id', headerName: 'ID', width: 80 },
+  { field: "_id", headerName: "ID", width: 80 },
   {
-    field: 'first_name',
-    headerName: 'Admin Name',
+    field: "first_name",
+    headerName: "Admin Name",
     width: 150,
   },
   {
-    field: 'email',
-    headerName: 'Email',
+    field: "email",
+    headerName: "Email",
     width: 200,
   },
   {
-    field: 'status',
-    headerName: 'Status',
+    field: "status",
+    headerName: "Status",
     width: 150,
   },
-]
+];
 
 export default function AdminListScreen() {
   const [isModelOpen, setIsModelOpen] = React.useState(false);
@@ -67,21 +66,23 @@ export default function AdminListScreen() {
   const [isNewAdmin, setIsNewAdmin] = React.useState(false);
   const role = "admin";
   const { state } = React.useContext(Store);
-  const { userInfo } = state;
-  const [{ loading, error, adminData, successDelete, successUpdate }, dispatch] = React.useReducer(reducer,
-    {
-      loading: true,
-      error: '',
-      adminData: [],
-      successDelete: false,
-      successUpdate: false
+  const { toggleState, userInfo } = state;
+  const theme = toggleState ? "dark" : "light";
+  const [
+    { loading, error, adminData, successDelete, successUpdate },
+    dispatch,
+  ] = React.useReducer(reducer, {
+    loading: true,
+    error: "",
+    adminData: [],
+    successDelete: false,
+    successUpdate: false,
+  });
 
-    })
-
-  const [name, setName] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [status, setStatus] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const [name, setName] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [status, setStatus] = React.useState("");
+  const [password, setPassword] = React.useState("");
 
   const handleCloseRow = () => {
     setIsModelOpen(false);
@@ -94,11 +95,12 @@ export default function AdminListScreen() {
   };
 
   const handleEdit = (userid) => {
-
-    const adminToEdit = adminData.find((admin) => admin && admin._id === userid);
-    setName(adminToEdit ? adminToEdit.first_name : '');
-    setEmail(adminToEdit ? adminToEdit.email : '');
-    setStatus(adminToEdit ? adminToEdit.status : 'active');
+    const adminToEdit = adminData.find(
+      (admin) => admin && admin._id === userid
+    );
+    setName(adminToEdit ? adminToEdit.first_name : "");
+    setEmail(adminToEdit ? adminToEdit.email : "");
+    setStatus(adminToEdit ? adminToEdit.status : "active");
     setSelectedRowData(adminToEdit);
     setIsModelOpen(true);
     setIsNewAdmin(false);
@@ -107,9 +109,13 @@ export default function AdminListScreen() {
   React.useEffect(() => {
     const FatchadminData = async () => {
       try {
-        dispatch("FATCH_REQUEST")
-        const response = await axios.post(`/api/user/`, { role: role });
-        const datas = response.data
+        dispatch("FATCH_REQUEST");
+        const response = await axios.post(
+          `/api/user/`,
+          { role: role },
+          { headers: { Authorization: `Bearer ${userInfo.token}` } }
+        );
+        const datas = response.data;
         const rowData = datas.map((items) => {
           return {
             ...items,
@@ -117,46 +123,45 @@ export default function AdminListScreen() {
             first_name: items.first_name,
             email: items.email,
             status: items.status,
-
-          }
-        })
-        dispatch({ type: "FATCH_SUCCESS", payload: rowData })
+          };
+        });
+        dispatch({ type: "FATCH_SUCCESS", payload: rowData });
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-    }
+    };
     if (successDelete) {
-      dispatch({ type: "DELETE_RESET" })
-    }
-    else if (successUpdate) {
-      dispatch({ type: "UPDATE_RESET" })
-    }
-    else {
+      dispatch({ type: "DELETE_RESET" });
+    } else if (successUpdate) {
+      dispatch({ type: "UPDATE_RESET" });
+    } else {
       FatchadminData();
     }
-
-
   }, [successDelete, successUpdate]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (isNewAdmin) {
       const response = await axios.post(`/api/user/signup`, {
-        first_name: name, email: email, password: password, role: role
+        first_name: name,
+        email: email,
+        password: password,
+        role: role,
       });
       if (response.status === 201) {
         toast.success("admin added Successfully !");
         const datas = response.data;
-        setIsModelOpen(false)
-        dispatch({ type: "FATCH_SUCCESS", payload: datas })
-        dispatch({ type: "UPDATE_SUCCESS", payload: true })
-
+        setIsModelOpen(false);
+        dispatch({ type: "FATCH_SUCCESS", payload: datas });
+        dispatch({ type: "UPDATE_SUCCESS", payload: true });
       }
-    }
-    else {
-      const response = await axios.put(`/api/user/update/${selectedRowData._id}`,
+    } else {
+      const response = await axios.put(
+        `/api/user/update/${selectedRowData._id}`,
         {
-          first_name: name, email: email, role: role
+          first_name: name,
+          email: email,
+          role: role,
         },
 
         { headers: { Authorization: `Bearer ${userInfo.token}` } }
@@ -164,26 +169,25 @@ export default function AdminListScreen() {
 
       if (response.status === 200) {
         toast.success(response.data);
-        setIsModelOpen(false)
-        dispatch({ type: "UPDATE_SUCCESS", payload: true })
-
+        setIsModelOpen(false);
+        dispatch({ type: "UPDATE_SUCCESS", payload: true });
       }
     }
-
-  }
+  };
 
   const deleteHandle = async (userid) => {
-    if (window.confirm('Are you sure to delete?')) {
+    if (window.confirm("Are you sure to delete?")) {
       try {
         const response = await axios.delete(`/api/user/${userid}`, {
-          headers: { Authorization: `Bearer ${userInfo.token}` }
+          headers: { Authorization: `Bearer ${userInfo.token}` },
         });
 
         if (response.status === 200) {
           toast.success("admin data deleted successfully!");
           dispatch({
-            type: "DELETE_SUCCESS", payload: true
-          })
+            type: "DELETE_SUCCESS",
+            payload: true,
+          });
         } else {
           toast.error("Failed to delete admin data.");
         }
@@ -200,7 +204,6 @@ export default function AdminListScreen() {
 
   return (
     <>
-
       {loading ? (
         <>
         <div className='ThreeDot' >
@@ -225,19 +228,20 @@ visible={true}
           <Button
             variant="outlined"
             className=" m-2 d-flex globalbtnColor"
-            onClick={handleNew}>
-            <BiPlusMedical className='mx-2' />
+            onClick={handleNew}
+          >
+            <BiPlusMedical className="mx-2" />
             Add Admin
           </Button>
-          <Box sx={{ height: 400, width: '100%' }}>
+          <Box sx={{ height: 400, width: "100%" }}>
             <DataGrid
-              className="tableBg mx-2"
+              className={`tableBg mx-2 ${theme}DataGrid`}
               rows={adminData}
               columns={[
                 ...columns,
                 {
-                  field: 'action',
-                  headerName: 'Action',
+                  field: "action",
+                  headerName: "Action",
                   width: 250,
                   renderCell: (params) => {
                     return (
@@ -246,14 +250,16 @@ visible={true}
                           variant="contained"
                           className="mx-2 tableEditbtn"
                           onClick={() => handleEdit(params.row._id)}
-                          startIcon={<MdEdit />}>
+                          startIcon={<MdEdit />}
+                        >
                           Edit
                         </Button>
                         <Button
                           variant="outlined"
                           className="mx-2 tableDeletebtn"
                           onClick={() => deleteHandle(params.row._id)}
-                          startIcon={<AiFillDelete />}>
+                          startIcon={<AiFillDelete />}
+                        >
                           Delete
                         </Button>
                       </Grid>
@@ -278,17 +284,22 @@ visible={true}
             <Box
               className="modelBg"
               sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
                 width: 400,
-                bgcolor: 'background.paper',
+                bgcolor: "background.paper",
                 boxShadow: 24,
                 p: 4,
-              }}>
+              }}
+            >
               <Form onSubmit={handleSubmit}>
-                <ImCross color='black' className='formcrossbtn' onClick={handleCloseRow} />
+                <ImCross
+                  color="black"
+                  className="formcrossbtn"
+                  onClick={handleCloseRow}
+                />
                 {isNewAdmin ? (
                   <h4 className="d-flex justify-content-center">
                     Add new Admin Details
@@ -308,47 +319,44 @@ visible={true}
 
                 <TextField
                   className="mb-2"
-                  value={
-                    email
-                  }
-
+                  value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   label="Email"
                   fullWidth
                 />
-                {isNewAdmin && <TextField
-                  className="mb-2"
-                  value={
-                    password
-                  }
+                {isNewAdmin && (
+                  <TextField
+                    className="mb-2"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    label="Password"
+                    fullWidth
+                  />
+                )}
 
-                  onChange={(e) => setPassword(e.target.value)}
-                  label="Password"
-                  fullWidth
-                />}
-
-                <FormControl className='formselect'>
-
-                  <Select value={status}
-                    onChange={(e) => setStatus(e.target.value)} >
+                <FormControl className="formselect">
+                  <Select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                  >
                     <MenuItem value="Active">Active</MenuItem>
                     <MenuItem value="Inactive">Inactive</MenuItem>
                   </Select>
                 </FormControl>
                 <br></br>
-                <Button className='mt-2 formbtn'
+                <Button
+                  className="mt-2 formbtn"
                   variant="contained"
                   color="primary"
-
-                  type='submit'>
-                  {isNewAdmin ? 'Add admin' : 'Save Changes'}
+                  type="submit"
+                >
+                  {isNewAdmin ? "Add admin" : "Save Changes"}
                 </Button>
               </Form>
             </Box>
           </Modal>
         </>
-      ))
-      }
+      ))}
     </>
   );
 }

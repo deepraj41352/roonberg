@@ -1,10 +1,10 @@
-import express from 'express';
-import Message from '../Models/messageModel.js';
+import express from "express";
+import Message from "../Models/messageModel.js";
 
 const MessageRouter = express.Router();
 //add
 
-MessageRouter.post('/', async (req, res) => {
+MessageRouter.post("/", async (req, res) => {
   const newMessage = new Message(req.body);
   try {
     const savedMessage = await newMessage.save();
@@ -16,7 +16,7 @@ MessageRouter.post('/', async (req, res) => {
 
 //get
 
-MessageRouter.get('/:conversationId', async (req, res) => {
+MessageRouter.get("/:conversationId", async (req, res) => {
   try {
     const messages = await Message.find({
       conversationId: req.params.conversationId,
