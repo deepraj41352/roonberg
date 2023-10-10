@@ -12,6 +12,7 @@ import { Store } from '../Store';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Tab from 'react-bootstrap/Tab';
+import { ThreeDots } from 'react-loader-spinner';
 import Tabs from 'react-bootstrap/Tabs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -24,15 +25,16 @@ import {
   MenuItem,
   Button,
 } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case 'FATCH_REQUEST':
-      return { ...state, loading: true };
-    case 'FATCH_SUCCESS':
-      return { ...state, projectData: action.payload, loading: false };
-    case 'FATCH_ERROR':
-      return { ...state, error: action.payload, loading: false };
+    case "FATCH_REQUEST":
+      return { ...state, loading: true }
+    case "FATCH_SUCCESS":
+      return { ...state, projectData: action.payload, loading: false }
+    case "FATCH_ERROR":
+      return { ...state, error: action.payload, loading: false }
 
     case 'DELETE_SUCCESS':
       return { ...state, successDelete: action.payload };
@@ -52,25 +54,25 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: '_id', headerName: 'ID', width: 90 },
+  { field: "_id", headerName: "ID", width: 90 },
   {
-    field: 'projectName',
-    headerName: 'Project Name',
+    field: "projectName",
+    headerName: "Project Name",
     width: 150,
   },
   {
-    field: 'projectDescription',
-    headerName: 'Description',
+    field: "projectDescription",
+    headerName: "Description",
     width: 150,
   },
   {
-    field: 'projectOwner',
-    headerName: 'Project Owner',
+    field: "projectOwner",
+    headerName: "Project Owner",
     width: 90,
   },
   {
-    field: 'assignedAgent',
-    headerName: 'Assigned Agent',
+    field: "assignedAgent",
+    headerName: "Assigned Agent",
     width: 110,
   },
 ];
@@ -79,15 +81,18 @@ export default function AdminProjectListScreen() {
   const [isModelOpen, setIsModelOpen] = React.useState(false);
   const [selectedRowData, setSelectedRowData] = React.useState(null);
   const [isNewProject, setIsNewProject] = React.useState(false);
+  const [isSubmiting, setIsSubmiting] = React.useState(false);
+
 
   const { state } = React.useContext(Store);
-  const { userInfo } = state;
+  const { toggleState, userInfo } = state;
+  const theme = toggleState ? "dark" : "light";
   const [
     { loading, error, projectData, successDelete, successUpdate },
     dispatch,
   ] = React.useReducer(reducer, {
     loading: true,
-    error: '',
+    error: "",
     projectData: [],
     successDelete: false,
     successUpdate: false,
@@ -110,12 +115,12 @@ export default function AdminProjectListScreen() {
     const constractorToEdit = projectData.find(
       (constractor) => constractor && constractor._id === userid
     );
-    setProjectName(constractorToEdit ? constractorToEdit.projectName : '');
+    setProjectName(constractorToEdit ? constractorToEdit.projectName : "");
     setProjectDescription(
-      constractorToEdit ? constractorToEdit.projectDescription : ''
+      constractorToEdit ? constractorToEdit.projectDescription : ""
     );
-    setProjectOwner(constractorToEdit ? constractorToEdit.projectOwner : '');
-    setAssignedAgent(constractorToEdit ? constractorToEdit.assignedAgent : '');
+    setProjectOwner(constractorToEdit ? constractorToEdit.projectOwner : "");
+    setAssignedAgent(constractorToEdit ? constractorToEdit.assignedAgent : "");
     setSelectedRowData(constractorToEdit);
     setIsModelOpen(true);
     setIsNewProject(false);
@@ -132,14 +137,14 @@ export default function AdminProjectListScreen() {
   };
 
   React.useEffect(() => {
-    const fetchProjectData = async () => {
+    const FatchProjectData = async () => {
       try {
         dispatch({ type: 'FATCH_REQUEST' }); // Dispatch an action instead of calling it as a function
         const response = await axios.get('/api/project', {
           headers: { Authorization: `Bearer ${userInfo.token}` }, // Use template literals to interpolate the token
         });
         const datas = response.data;
-        console.log(datas);
+        console.log( 'karan',datas);
         const rowData = datas.map((items) => ({
           ...items,
           _id: items._id,
@@ -148,18 +153,21 @@ export default function AdminProjectListScreen() {
           projectOwner: items.projectOwner,
           assignedAgent: items.assignedAgent,
         }));
+        console.log("sharam",rowData)
         dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
       } catch (error) {
-        console.error(error); // Log errors using console.error
+        console.log(error)
       }
     };
 
     if (successDelete) {
-      dispatch({ type: 'DELETE_RESET' });
-    } else if (successUpdate) {
-      dispatch({ type: 'UPDATE_RESET' });
-    } else {
-      fetchProjectData(); // Call the function to fetch project data
+      dispatch({ type: "DELETE_RESET" })
+    }
+    else if (successUpdate) {
+      dispatch({ type: "UPDATE_RESET" })
+    }
+    else {
+      FatchProjectData()
     }
   }, [successDelete, successUpdate, dispatch, userInfo.token]); // Add dependencies to the dependency array
 
@@ -175,6 +183,8 @@ export default function AdminProjectListScreen() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmiting(true);
+
     if (isNewProject) {
       const response = await axios.post(
         '/api/project/',
@@ -190,14 +200,19 @@ export default function AdminProjectListScreen() {
         }
       );
       console.log(response.data.message);
+      
       if (response.status === 201) {
         toast.success(response.data.message);
         const datas = response.data;
         setIsModelOpen(false);
-        dispatch({ type: 'FATCH_SUCCESS', payload: datas });
+        setIsSubmiting(false);
+
+        // dispatch({ type: 'FATCH_SUCCESS', payload: datas });
         dispatch({ type: 'UPDATE_SUCCESS', payload: true });
       } else if (response.status === 500) {
         toast.error(response.data.error);
+        setIsSubmiting(false);
+
       }
     } else {
       const response = await axios.put(
@@ -214,22 +229,20 @@ export default function AdminProjectListScreen() {
       if (response.status === 200) {
         toast.success(response.data);
         setIsModelOpen(false);
+        setIsSubmiting(false);
+
         dispatch({ type: 'UPDATE_SUCCESS', payload: true });
       } else if (response.status === 500) {
         toast.error(response.message);
+        setIsSubmiting(false);
+
       }
     }
-  };
 
-  // const handleFieldClick = () => {
-  //   setInputType('date');
-  // };
-  // const handleFieldClickEnd = () => {
-  //   setinputTypeEnd('date');
-  // };
+  }
 
   const deleteHandle = async (productId) => {
-    if (window.confirm('Are you sure to delete?')) {
+    if (window.confirm("Are you sure to delete?")) {
       try {
         const response = await axios.delete(`/api/project/${productId}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
@@ -238,9 +251,8 @@ export default function AdminProjectListScreen() {
         if (response.status === 200) {
           toast.success('Data deleted successfully!');
           dispatch({
-            type: 'DELETE_SUCCESS',
-            payload: true,
-          });
+            type: "DELETE_SUCCESS", payload: true
+          })
         } else {
           toast.error('Failed to delete data.');
         }
@@ -262,7 +274,22 @@ export default function AdminProjectListScreen() {
         Add Project
       </Button>
       {loading ? (
-        <div>Loading .....</div>
+        <>
+        <div className='ThreeDot' >
+        <ThreeDots 
+height="80" 
+width="80" 
+radius="9"
+className="ThreeDot justify-content-center"
+color="#0e0e3d" 
+ariaLabel="three-dots-loading"
+wrapperStyle={{}}
+wrapperClassName=""
+visible={true}
+ />
+ </div>
+
+        </>
       ) : error ? (
         <div>{error}</div>
       ) : (
@@ -275,7 +302,7 @@ export default function AdminProjectListScreen() {
             <Tab className="tab-color" eventKey="All" title="All">
               <Box sx={{ height: 400, width: '100%' }}>
                 <DataGrid
-                  className="tableBg mx-2"
+                  className={`tableBg mx-2 ${theme}DataGrid`}
                   rows={projectData}
                   columns={[
                     ...columns,
@@ -286,14 +313,16 @@ export default function AdminProjectListScreen() {
                       renderCell: (params) => {
                         return (
                           <Grid item xs={8}>
+                            <Link to={`/projectSingleScreen/${params.row._id}`}>
                             <Button
                               variant="contained"
                               className="mx-2 tableEditbtn"
-                              onClick={() => handleEdit(params.row._id)}
-                              startIcon={<MdEdit />}
+                              // onClick={() => handleEdit(params.row._id)}
+                              // startIcon={<MdEdit />}
                             >
                               Edit
                             </Button>
+                            </Link>
                             <Button
                               variant="outlined"
                               className="mx-2 tableDeletebtn"
@@ -345,6 +374,7 @@ export default function AdminProjectListScreen() {
                       </h4>
                     )}
                     <TextField
+                    required
                       className="mb-2"
                       value={projectName}
                       onChange={(e) => setProjectName(e.target.value)}
@@ -353,6 +383,7 @@ export default function AdminProjectListScreen() {
                     />
 
                     <TextField
+                    required
                       id="outlined-multiline-static"
                       onChange={(e) => setProjectDescription(e.target.value)}
                       label="Project Description"
@@ -366,6 +397,7 @@ export default function AdminProjectListScreen() {
                     <FormControl fullWidth>
                       <InputLabel>Choose Options</InputLabel>
                       <Select
+                      required
                         multiple
                         value={selectedOptions}
                         onChange={handleChange}
@@ -387,20 +419,28 @@ export default function AdminProjectListScreen() {
 
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DateField
+                      required
                         label="Start Date"
                         value={startDate}
                         onChange={(newValue) => setStartDate(newValue)}
                         format="MM-DD-YYYY"
                       />
                       <DateField
+                      required
                         label="End Date"
                         value={endDate}
                         onChange={(newValue) => setEndDate(newValue)}
                         format="MM-DD-YYYY"
                       />
                     </LocalizationProvider>
-                    <Button variant="contained" color="primary" type="submit">
-                      {isNewProject ? 'Add Project' : 'Save Changes'}
+                    <Button variant="contained" color="primary" type="submit"
+                        disabled={isSubmiting}
+                        >
+                          
+                    
+                    
+                    
+                      {isNewProject ? (isSubmiting ? "Adding Project..." : "Add Project") : (isSubmiting ? "Saving Changes..." : "Save Changes")}
                     </Button>
                   </Form>
                 </Box>
@@ -409,7 +449,7 @@ export default function AdminProjectListScreen() {
             <Tab className="tab-color" eventKey="Active" title="Active">
               <Box sx={{ height: 400, width: '100%' }}>
                 <DataGrid
-                  className="tableBg mx-2"
+                  className={`tableBg mx-2 ${theme}DataGrid`}
                   rows={projectActiveData}
                   columns={[
                     ...columns,
@@ -420,14 +460,18 @@ export default function AdminProjectListScreen() {
                       renderCell: (params) => {
                         return (
                           <Grid item xs={8}>
+                         <Link to={`/projectSingleScreen/${params.row._id}`}>
+
                             <Button
                               variant="contained"
                               className="mx-2 tableEditbtn"
-                              onClick={() => handleEdit(params.row._id)}
-                              startIcon={<MdEdit />}
+                              // onClick={() => handleEdit(params.row._id)}
+                              // startIcon={<MdEdit />}
                             >
                               Edit
                             </Button>
+                            </Link>
+
                             <Button
                               variant="outlined"
                               className="mx-2 tableDeletebtn"
@@ -458,7 +502,7 @@ export default function AdminProjectListScreen() {
             <Tab className="tab-color" eventKey="Completed" title="Completed">
               <Box sx={{ height: 400, width: '100%' }}>
                 <DataGrid
-                  className="tableBg mx-2"
+                  className={`tableBg mx-2 ${theme}DataGrid`}
                   rows={projectCompleteData}
                   columns={[
                     ...columns,
@@ -469,14 +513,18 @@ export default function AdminProjectListScreen() {
                       renderCell: (params) => {
                         return (
                           <Grid item xs={8}>
+                          <Link to={`/projectSingleScreen/${params.row._id}`}>
+
                             <Button
                               variant="contained"
                               className="mx-2 tableEditbtn"
-                              onClick={() => handleEdit(params.row._id)}
-                              startIcon={<MdEdit />}
+                              // onClick={() => handleEdit(params.row._id)}
+                              // startIcon={<MdEdit />}
                             >
                               Edit
                             </Button>
+                            </Link>
+
                             <Button
                               variant="outlined"
                               className="mx-2 tableDeletebtn"
@@ -507,7 +555,7 @@ export default function AdminProjectListScreen() {
             <Tab className="tab-color" eventKey="Qued" title="Qued">
               <Box sx={{ height: 400, width: '100%' }}>
                 <DataGrid
-                  className="tableBg mx-2"
+                  className={`tableBg mx-2 ${theme}DataGrid`}
                   rows={projectQuedData}
                   columns={[
                     ...columns,
@@ -518,14 +566,17 @@ export default function AdminProjectListScreen() {
                       renderCell: (params) => {
                         return (
                           <Grid item xs={8}>
+                          <Link to={`/projectSingleScreen/${params.row._id}`}>
+
                             <Button
                               variant="contained"
                               className="mx-2 tableEditbtn"
-                              onClick={() => handleEdit(params.row._id)}
-                              startIcon={<MdEdit />}
+                              // onClick={() => handleEdit(params.row._id)}
+                              // startIcon={<MdEdit />}
                             >
                               Edit
                             </Button>
+                            </Link>
                             <Button
                               variant="outlined"
                               className="mx-2 tableDeletebtn"

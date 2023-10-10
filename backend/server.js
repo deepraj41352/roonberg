@@ -1,14 +1,12 @@
 import express from 'express';
-
-import path from 'path';
-
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import path from 'path';
 import userRouter from './routers/userRouter.js';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import projectRouter from './routers/projectRouter.js';
-import categoryRouter from './routers/categoryRouter.js';
+import categoryRouter from './routers/categoryRouter copy.js';
 import conversationRouter from './routers/conversationRouter.js';
 import MessageRouter from './routers/MessageRoute.js';
 
@@ -58,7 +56,7 @@ app.use('/api/doc', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/test', (req, res) => {
+app.get('/api', (req, res) => {
   res.send('Welcome to Roonberg World');
 });
 
