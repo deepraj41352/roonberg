@@ -17,7 +17,6 @@ import Tabs from 'react-bootstrap/Tabs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateField } from '@mui/x-date-pickers/DateField';
-import MultiSelectDropdown from './ex';
 import {
   FormControl,
   InputLabel,
@@ -29,13 +28,16 @@ import { Link } from 'react-router-dom';
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "FATCH_REQUEST":
-      return { ...state, loading: true }
-    case "FATCH_SUCCESS":
-      return { ...state, projectData: action.payload, loading: false }
-    case "FATCH_ERROR":
-      return { ...state, error: action.payload, loading: false }
-
+    case 'FATCH_REQUEST':
+      return { ...state, loading: true };
+    case 'FATCH_SUCCESS':
+      return { ...state, projectData: action.payload, loading: false };
+    case 'FATCH_ERROR':
+      return { ...state, error: action.payload, loading: false };
+    case 'SUCCESS_CATEGORY':
+      return { ...state, categoryData: action.payload, loading: false };
+    case 'ERROR_CATEGORY':
+      return { ...state, error: action.payload, loading: false };
     case 'DELETE_SUCCESS':
       return { ...state, successDelete: action.payload };
 
@@ -54,25 +56,25 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: "_id", headerName: "ID", width: 90 },
+  { field: '_id', headerName: 'ID', width: 90 },
   {
-    field: "projectName",
-    headerName: "Project Name",
+    field: 'projectName',
+    headerName: 'Project Name',
     width: 150,
   },
   {
-    field: "projectDescription",
-    headerName: "Description",
+    field: 'projectDescription',
+    headerName: 'Description',
     width: 150,
   },
   {
-    field: "projectOwner",
-    headerName: "Project Owner",
+    field: 'projectCategory',
+    headerName: 'project Category',
     width: 90,
   },
   {
-    field: "assignedAgent",
-    headerName: "Assigned Agent",
+    field: 'assignedAgent',
+    headerName: 'Assigned Agent',
     width: 110,
   },
 ];
@@ -83,16 +85,15 @@ export default function AdminProjectListScreen() {
   const [isNewProject, setIsNewProject] = React.useState(false);
   const [isSubmiting, setIsSubmiting] = React.useState(false);
 
-
   const { state } = React.useContext(Store);
   const { toggleState, userInfo } = state;
-  const theme = toggleState ? "dark" : "light";
+  const theme = toggleState ? 'dark' : 'light';
   const [
-    { loading, error, projectData, successDelete, successUpdate },
+    { loading, error, projectData, successDelete, successUpdate, categoryData },
     dispatch,
   ] = React.useReducer(reducer, {
     loading: true,
-    error: "",
+    error: '',
     projectData: [],
     successDelete: false,
     successUpdate: false,
@@ -105,26 +106,52 @@ export default function AdminProjectListScreen() {
   const [startDate, setStartDate] = React.useState();
   const [endDate, setEndDate] = React.useState();
   const [selectedOptions, setSelectedOptions] = React.useState([]);
-  const options = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
+
+  React.useEffect(() => {
+    const fetchCategoryData = async () => {
+      try {
+        dispatch('FETCH_REQUEST');
+        const response = await axios.get(`/api/category`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        const categoryData = response.data;
+        const uniqueCategories = Array.from(
+          new Set(
+            categoryData.map((item) => ({
+              _id: item._id,
+              categoryName: item.categoryName,
+            }))
+          )
+        );
+        console.log('category', uniqueCategories);
+        dispatch({ type: 'SUCCESS_CATEGORY', payload: uniqueCategories });
+      } catch (error) {
+        console.error('Error fetching category data:', error);
+      }
+    };
+
+    fetchCategoryData();
+  }, []);
 
   const handleChange = (event) => {
+    console.log('event', event);
     setSelectedOptions(event.target.value);
   };
 
-  const handleEdit = (userid) => {
-    const constractorToEdit = projectData.find(
-      (constractor) => constractor && constractor._id === userid
-    );
-    setProjectName(constractorToEdit ? constractorToEdit.projectName : "");
-    setProjectDescription(
-      constractorToEdit ? constractorToEdit.projectDescription : ""
-    );
-    setProjectOwner(constractorToEdit ? constractorToEdit.projectOwner : "");
-    setAssignedAgent(constractorToEdit ? constractorToEdit.assignedAgent : "");
-    setSelectedRowData(constractorToEdit);
-    setIsModelOpen(true);
-    setIsNewProject(false);
-  };
+  // const handleEdit = (userid) => {
+  //   const constractorToEdit = projectData.find(
+  //     (constractor) => constractor && constractor._id === userid
+  //   );
+  //   setProjectName(constractorToEdit ? constractorToEdit.projectName : '');
+  //   setProjectDescription(
+  //     constractorToEdit ? constractorToEdit.projectDescription : ''
+  //   );
+  //   setProjectOwner(constractorToEdit ? constractorToEdit.projectOwner : '');
+  //   setAssignedAgent(constractorToEdit ? constractorToEdit.assignedAgent : '');
+  //   setSelectedRowData(constractorToEdit);
+  //   setIsModelOpen(true);
+  //   setIsNewProject(false);
+  // };
 
   const handleCloseRow = () => {
     setIsModelOpen(false);
@@ -144,30 +171,29 @@ export default function AdminProjectListScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` }, // Use template literals to interpolate the token
         });
         const datas = response.data;
-        console.log( 'karan',datas);
         const rowData = datas.map((items) => ({
           ...items,
           _id: items._id,
           projectName: items.projectName,
           projectDescription: items.projectDescription,
-          projectOwner: items.projectOwner,
-          assignedAgent: items.assignedAgent,
+          projectCategory: items.projectCategory,
+          assignedAgent: items.assignedAgent
+            ? items.assignedAgent.map((agent) => agent.agentId)
+            : '',
         }));
-        console.log("sharam",rowData)
+        console.log('rowData', rowData);
         dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     };
 
     if (successDelete) {
-      dispatch({ type: "DELETE_RESET" })
-    }
-    else if (successUpdate) {
-      dispatch({ type: "UPDATE_RESET" })
-    }
-    else {
-      FatchProjectData()
+      dispatch({ type: 'DELETE_RESET' });
+    } else if (successUpdate) {
+      dispatch({ type: 'UPDATE_RESET' });
+    } else {
+      FatchProjectData();
     }
   }, [successDelete, successUpdate, dispatch, userInfo.token]); // Add dependencies to the dependency array
 
@@ -180,11 +206,11 @@ export default function AdminProjectListScreen() {
   const projectQuedData = projectData.filter((item) => {
     return item.projectStatus === 'qued';
   });
+  console.log('selectedOptions', selectedOptions);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmiting(true);
-
     if (isNewProject) {
       const response = await axios.post(
         '/api/project/',
@@ -200,7 +226,7 @@ export default function AdminProjectListScreen() {
         }
       );
       console.log(response.data.message);
-      
+
       if (response.status === 201) {
         toast.success(response.data.message);
         const datas = response.data;
@@ -212,7 +238,6 @@ export default function AdminProjectListScreen() {
       } else if (response.status === 500) {
         toast.error(response.data.error);
         setIsSubmiting(false);
-
       }
     } else {
       const response = await axios.put(
@@ -235,14 +260,12 @@ export default function AdminProjectListScreen() {
       } else if (response.status === 500) {
         toast.error(response.message);
         setIsSubmiting(false);
-
       }
     }
-
-  }
+  };
 
   const deleteHandle = async (productId) => {
-    if (window.confirm("Are you sure to delete?")) {
+    if (window.confirm('Are you sure to delete?')) {
       try {
         const response = await axios.delete(`/api/project/${productId}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
@@ -251,8 +274,9 @@ export default function AdminProjectListScreen() {
         if (response.status === 200) {
           toast.success('Data deleted successfully!');
           dispatch({
-            type: "DELETE_SUCCESS", payload: true
-          })
+            type: 'DELETE_SUCCESS',
+            payload: true,
+          });
         } else {
           toast.error('Failed to delete data.');
         }
@@ -275,20 +299,19 @@ export default function AdminProjectListScreen() {
       </Button>
       {loading ? (
         <>
-        <div className='ThreeDot' >
-        <ThreeDots 
-height="80" 
-width="80" 
-radius="9"
-className="ThreeDot justify-content-center"
-color="#0e0e3d" 
-ariaLabel="three-dots-loading"
-wrapperStyle={{}}
-wrapperClassName=""
-visible={true}
- />
- </div>
-
+          <div className="ThreeDot">
+            <ThreeDots
+              height="80"
+              width="80"
+              radius="9"
+              className="ThreeDot justify-content-center"
+              color="#0e0e3d"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClassName=""
+              visible={true}
+            />
+          </div>
         </>
       ) : error ? (
         <div>{error}</div>
@@ -314,14 +337,14 @@ visible={true}
                         return (
                           <Grid item xs={8}>
                             <Link to={`/projectSingleScreen/${params.row._id}`}>
-                            <Button
-                              variant="contained"
-                              className="mx-2 tableEditbtn"
-                              // onClick={() => handleEdit(params.row._id)}
-                              // startIcon={<MdEdit />}
-                            >
-                              Edit
-                            </Button>
+                              <Button
+                                variant="contained"
+                                className="mx-2 tableEditbtn"
+                                // onClick={() => handleEdit(params.row._id)}
+                                // startIcon={<MdEdit />}
+                              >
+                                Edit
+                              </Button>
                             </Link>
                             <Button
                               variant="outlined"
@@ -374,7 +397,7 @@ visible={true}
                       </h4>
                     )}
                     <TextField
-                    required
+                      required
                       className="mb-2"
                       value={projectName}
                       onChange={(e) => setProjectName(e.target.value)}
@@ -383,7 +406,7 @@ visible={true}
                     />
 
                     <TextField
-                    required
+                      required
                       id="outlined-multiline-static"
                       onChange={(e) => setProjectDescription(e.target.value)}
                       label="Project Description"
@@ -395,23 +418,29 @@ visible={true}
                       // onChange={handleChange}
                     />
                     <FormControl fullWidth>
-                      <InputLabel>Choose Options</InputLabel>
+                      <InputLabel>Categories</InputLabel>
                       <Select
-                      required
+                        required
                         multiple
                         value={selectedOptions}
                         onChange={handleChange}
                         renderValue={(selected) => (
                           <div>
                             {selected.map((value) => (
-                              <span key={value}>{value}, </span>
+                              <span key={value}>
+                                {categoryData
+                                  ? categoryData.find(
+                                      (option) => option._id === value
+                                    )?.categoryName
+                                  : ''}
+                              </span>
                             ))}
                           </div>
                         )}
                       >
-                        {options.map((option) => (
-                          <MenuItem key={option} value={option}>
-                            {option}
+                        {categoryData.map((option) => (
+                          <MenuItem key={option._id} value={option._id}>
+                            {option.categoryName}
                           </MenuItem>
                         ))}
                       </Select>
@@ -419,28 +448,33 @@ visible={true}
 
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DateField
-                      required
+                        required
                         label="Start Date"
                         value={startDate}
                         onChange={(newValue) => setStartDate(newValue)}
                         format="MM-DD-YYYY"
                       />
                       <DateField
-                      required
+                        required
                         label="End Date"
                         value={endDate}
                         onChange={(newValue) => setEndDate(newValue)}
                         format="MM-DD-YYYY"
                       />
                     </LocalizationProvider>
-                    <Button variant="contained" color="primary" type="submit"
-                        disabled={isSubmiting}
-                        >
-                          
-                    
-                    
-                    
-                      {isNewProject ? (isSubmiting ? "Adding Project..." : "Add Project") : (isSubmiting ? "Saving Changes..." : "Save Changes")}
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      type="submit"
+                      disabled={isSubmiting}
+                    >
+                      {isNewProject
+                        ? isSubmiting
+                          ? 'Adding Project...'
+                          : 'Add Project'
+                        : isSubmiting
+                        ? 'Saving Changes...'
+                        : 'Save Changes'}
                     </Button>
                   </Form>
                 </Box>
@@ -460,16 +494,15 @@ visible={true}
                       renderCell: (params) => {
                         return (
                           <Grid item xs={8}>
-                         <Link to={`/projectSingleScreen/${params.row._id}`}>
-
-                            <Button
-                              variant="contained"
-                              className="mx-2 tableEditbtn"
-                              // onClick={() => handleEdit(params.row._id)}
-                              // startIcon={<MdEdit />}
-                            >
-                              Edit
-                            </Button>
+                            <Link to={`/projectSingleScreen/${params.row._id}`}>
+                              <Button
+                                variant="contained"
+                                className="mx-2 tableEditbtn"
+                                // onClick={() => handleEdit(params.row._id)}
+                                // startIcon={<MdEdit />}
+                              >
+                                Edit
+                              </Button>
                             </Link>
 
                             <Button
@@ -513,16 +546,15 @@ visible={true}
                       renderCell: (params) => {
                         return (
                           <Grid item xs={8}>
-                          <Link to={`/projectSingleScreen/${params.row._id}`}>
-
-                            <Button
-                              variant="contained"
-                              className="mx-2 tableEditbtn"
-                              // onClick={() => handleEdit(params.row._id)}
-                              // startIcon={<MdEdit />}
-                            >
-                              Edit
-                            </Button>
+                            <Link to={`/projectSingleScreen/${params.row._id}`}>
+                              <Button
+                                variant="contained"
+                                className="mx-2 tableEditbtn"
+                                // onClick={() => handleEdit(params.row._id)}
+                                // startIcon={<MdEdit />}
+                              >
+                                Edit
+                              </Button>
                             </Link>
 
                             <Button
@@ -566,16 +598,15 @@ visible={true}
                       renderCell: (params) => {
                         return (
                           <Grid item xs={8}>
-                          <Link to={`/projectSingleScreen/${params.row._id}`}>
-
-                            <Button
-                              variant="contained"
-                              className="mx-2 tableEditbtn"
-                              // onClick={() => handleEdit(params.row._id)}
-                              // startIcon={<MdEdit />}
-                            >
-                              Edit
-                            </Button>
+                            <Link to={`/projectSingleScreen/${params.row._id}`}>
+                              <Button
+                                variant="contained"
+                                className="mx-2 tableEditbtn"
+                                // onClick={() => handleEdit(params.row._id)}
+                                // startIcon={<MdEdit />}
+                              >
+                                Edit
+                              </Button>
                             </Link>
                             <Button
                               variant="outlined"
