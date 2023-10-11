@@ -38,12 +38,15 @@ import { FiClock } from 'react-icons/fi';
 import { MdOutlineNotifications } from 'react-icons/md';
 import { Store } from './Store';
 import AdminDashboard from './Screens/AdminDashboard';
-import ProtectedRoute from './Components/protectedRoute';
+import ProtectedRoute from './Components/ProtectedRoute';
 import ProfileScreen from './Screens/ProfileScreen';
 import Theme from './Components/Theme';
 import ProjectNotification from './Screens/ProjectNotification';
 import AddProject from './Screens/AddProject';
 import ChatScreen from './Screens/ChatScreen';
+import AdminEditCategory from "./Screens/AdminEditCategoryScreen";
+import AdminEditAgent from "./Screens/AdminEditAgentScreen";
+
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -249,17 +252,27 @@ function App() {
                       path="/searchScreen"
                       element={<SearchScreen searchFor={searchValue} />}
                     />
-                    <Route />
+
                     <Route
                       path="/projectSingleScreen/:id"
                       element={<ProjectSingleScreen />}
                     />
-                    <Route />
+
                     <Route
                       path="/chatWindowScreen/:id"
                       element={<ChatWindowScreen />}
                     />
-                    <Route />
+
+                    <Route
+                      path="/adminEditCategory/:id"
+                      element={<AdminEditCategory />}
+                    />
+
+                    <Route
+                      path="/adminEditAgent/:id"
+                      element={<AdminEditAgent />}
+                    />
+
                   </Routes>
                 </div>
               </main>

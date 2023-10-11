@@ -17,18 +17,18 @@
 /* -----------priyanshu-theme-css-end------------- */
 body {
   margin: 0;
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* background-color: rgba(0, 0, 0, 0) !important; */
   background-color: white;
 }
-.ThreeDot{
+.ThreeDot {
   display: flex;
   justify-content: center !important;
 }
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
@@ -60,6 +60,19 @@ code {
 }
 
 /* ---------Priyanshu-Start------------- */
+@media (max-width: 380px) {
+  .input-box-inner {
+    max-width: 210px !important;
+  }
+}
+.ProfileScreen-inner {
+  max-width: 450px;
+}
+@media (max-width: 400px) {
+  .ProfileScreen-inner {
+    max-width: 330px;
+  }
+}
 body {
   background-color: #f8fafc !important;
 }
@@ -165,7 +178,7 @@ body {
 
 body {
   margin: 0;
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* background-color: rgba(0, 0, 0, 0) !important; */
@@ -173,7 +186,7 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
@@ -211,7 +224,7 @@ code {
 button {
   color: white !important;
 }
-.tableBg input[type="checkbox"] {
+.tableBg input[type='checkbox'] {
   border-color: white !important;
   background-color: white !important;
 }
