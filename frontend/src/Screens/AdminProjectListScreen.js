@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
-import { Button, Grid, MenuItem, Select, TextareaAutosize } from '@mui/material';
+import { Grid } from '@mui/material';
 import { AiFillDelete } from 'react-icons/ai';
 import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
@@ -11,7 +11,21 @@ import { BiPlusMedical } from 'react-icons/bi';
 import { Store } from '../Store';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { ImCross } from 'react-icons/im';
+import Tab from 'react-bootstrap/Tab';
+import { ThreeDots } from 'react-loader-spinner';
+import Tabs from 'react-bootstrap/Tabs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateField } from '@mui/x-date-pickers/DateField';
+import MultiSelectDropdown from './ex';
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Button,
+} from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -22,16 +36,16 @@ const reducer = (state, action) => {
     case "FATCH_ERROR":
       return { ...state, error: action.payload, loading: false }
 
-    case "DELETE_SUCCESS":
+    case 'DELETE_SUCCESS':
       return { ...state, successDelete: action.payload };
 
-    case "DELETE_RESET":
+    case 'DELETE_RESET':
       return { ...state, successDelete: false };
 
-    case "UPDATE_SUCCESS":
+    case 'UPDATE_SUCCESS':
       return { ...state, successUpdate: action.payload };
 
-    case "UPDATE_RESET":
+    case 'UPDATE_RESET':
       return { ...state, successUpdate: false };
     case "FATCH_CATEGORY":
       return { ...state, categoryData: action.payload };
@@ -41,76 +55,76 @@ const reducer = (state, action) => {
       return { ...state, contractorData: action.payload };
     default:
       return state;
-  };
-}
+  }
+};
 
 const columns = [
-  { field: '_id', headerName: 'ID', width: 90 },
+  { field: "_id", headerName: "ID", width: 90 },
   {
-    field: 'projectName',
-    headerName: 'Project Name',
+    field: "projectName",
+    headerName: "Project Name",
     width: 150,
   },
   {
-    field: 'projectDescription',
-    headerName: 'Description',
+    field: "projectDescription",
+    headerName: "Description",
     width: 150,
   },
   {
-    field: 'projectOwner',
-    headerName: 'Project Owner',
+    field: "projectOwner",
+    headerName: "Project Owner",
     width: 90,
   },
   {
-    field: 'assignedAgent',
-    headerName: 'Assigned Agent',
+    field: "assignedAgent",
+    headerName: "Assigned Agent",
     width: 110,
   },
-
 ];
 
 export default function AdminProjectListScreen() {
   const [isModelOpen, setIsModelOpen] = React.useState(false);
   const [selectedRowData, setSelectedRowData] = React.useState(null);
   const [isNewProject, setIsNewProject] = React.useState(false);
+  const [isSubmiting, setIsSubmiting] = React.useState(false);
+
+
   const { state } = React.useContext(Store);
-  const { userInfo } = state;
-  const [{ loading, error, projectData, successDelete, successUpdate, categoryData, agentData, contractorData }, dispatch] = React.useReducer(reducer,
-    {
-      loading: true,
-      error: '',
-      projectData: [],
-      categoryData: [],
-      contractorData: [],
-      agentData: [],
-      successDelete: false,
-      successUpdate: false
-    })
+  const { toggleState, userInfo } = state;
+  const theme = toggleState ? "dark" : "light";
+  const [
+    { loading, error, projectData, successDelete, successUpdate },
+    dispatch,
+  ] = React.useReducer(reducer, {
+    loading: true,
+    error: "",
+    projectData: [],
+    successDelete: false,
+    successUpdate: false,
+  });
 
   const [projectName, setProjectName] = React.useState('');
   const [projectDescription, setProjectDescription] = React.useState('');
   const [assignedAgent, setAssignedAgent] = React.useState('');
-  const [category, setCategory] = React.useState('');
-  const [contractor, setContractor] = React.useState('');
-  const [moreFields, setMoreFields] = React.useState([]);
+  const [startDate, setStartDate] = React.useState();
+  const [endDate, setEndDate] = React.useState();
+  const [selectedOptions, setSelectedOptions] = React.useState([]);
+  const options = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
 
-  const [categoryAgentPairs, setCategoryAgentPairs] = React.useState([]);
-
-  const handleAddCategoryAgentPair = () => {
-    if (category && assignedAgent) {
-      const newPair = { category, assignedAgent };
-      setCategoryAgentPairs([...categoryAgentPairs, newPair]);
-      setCategory('');
-      setAssignedAgent('');
-    }
+  const handleChange = (event) => {
+    setSelectedOptions(event.target.value);
   };
 
   const handleEdit = (userid) => {
-    const constractorToEdit = projectData.find((constractor) => constractor && constractor._id === userid);
-    setProjectName(constractorToEdit ? constractorToEdit.projectName : '');
-    setProjectDescription(constractorToEdit ? constractorToEdit.projectDescription : '');
-    setCategory(constractorToEdit ? constractorToEdit.category : '');
-    setAssignedAgent(constractorToEdit ? constractorToEdit.assignedAgent : '');
+    const constractorToEdit = projectData.find(
+      (constractor) => constractor && constractor._id === userid
+    );
+    setProjectName(constractorToEdit ? constractorToEdit.projectName : "");
+    setProjectDescription(
+      constractorToEdit ? constractorToEdit.projectDescription : ""
+    );
+    setProjectOwner(constractorToEdit ? constractorToEdit.projectOwner : "");
+    setAssignedAgent(constractorToEdit ? constractorToEdit.assignedAgent : "");
     setSelectedRowData(constractorToEdit);
     setIsModelOpen(true);
     setIsNewProject(false);
@@ -128,28 +142,30 @@ export default function AdminProjectListScreen() {
     setIsNewProject(true);
   };
 
-
   React.useEffect(() => {
     const FatchProjectData = async () => {
       try {
-        dispatch("FATCH_REQUEST")
-        const response = await axios.get(`/api/project/`, { headers: { Authorization: `Bearer ${userInfo.token}` } });
+        dispatch({ type: 'FATCH_REQUEST' }); // Dispatch an action instead of calling it as a function
+        const response = await axios.get('/api/project', {
+          headers: { Authorization: `Bearer ${userInfo.token}` }, // Use template literals to interpolate the token
+        });
         const datas = response.data;
-        const rowData = datas.map((items) => {
-          return {
-            ...items,
-            _id: items._id,
-            projectName: items.projectName,
-            projectDescription: items.projectDescription,
-            projectOwner: items.projectOwner,
-            assignedAgent: items.assignedAgent,
-          }
-        })
-        dispatch({ type: "FATCH_SUCCESS", payload: rowData });
+        console.log('karan', datas);
+        const rowData = datas.map((items) => ({
+          ...items,
+          _id: items._id,
+          projectName: items.projectName,
+          projectDescription: items.projectDescription,
+          projectOwner: items.projectOwner,
+          assignedAgent: items.assignedAgent,
+        }));
+        console.log("sharam", rowData)
+        dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
       } catch (error) {
         console.log(error)
       }
-    }
+    };
+
     if (successDelete) {
       dispatch({ type: "DELETE_RESET" })
     }
@@ -159,67 +175,92 @@ export default function AdminProjectListScreen() {
     else {
       FatchProjectData()
     }
+  }, [successDelete, successUpdate, dispatch, userInfo.token]); // Add dependencies to the dependency array
 
-
-  }, [successDelete, successUpdate]);
-
+  const projectActiveData = projectData.filter((item) => {
+    return item.projectStatus === 'active';
+  });
+  const projectCompleteData = projectData.filter((item) => {
+    return item.projectStatus === 'complete';
+  });
+  const projectQuedData = projectData.filter((item) => {
+    return item.projectStatus === 'qued';
+  });
 
   const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmiting(true);
 
-    e.preventDefault()
     if (isNewProject) {
-      const response = await axios.post(`/api/project/`, {
-        projectName: projectName, projectDescription: projectDescription,
-      }, { headers: { Authorization: `Bearer ${userInfo.token}` } });
-      console.log(response.data.message)
+      const response = await axios.post(
+        '/api/project/',
+        {
+          projectName: projectName,
+          projectDescription: projectDescription,
+          projectCategory: selectedOptions,
+          createdDate: startDate,
+          endDate: endDate,
+        },
+        {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+      console.log(response.data.message);
+
       if (response.status === 201) {
         toast.success(response.data.message);
         const datas = response.data;
-        setIsModelOpen(false)
-        dispatch({ type: "FATCH_SUCCESS", payload: datas })
-        dispatch({ type: "UPDATE_SUCCESS", payload: true })
+        setIsModelOpen(false);
+        setIsSubmiting(false);
+
+        // dispatch({ type: 'FATCH_SUCCESS', payload: datas });
+        dispatch({ type: 'UPDATE_SUCCESS', payload: true });
+      } else if (response.status === 500) {
+        toast.error(response.data.error);
+        setIsSubmiting(false);
+
       }
-      else if (response.status === 500) {
-        toast.error(response.data.error)
-      }
-    }
-    else {
-      const response = await axios.put(`/api/project/update/${selectedRowData._id}`,
+    } else {
+      const response = await axios.put(
+        `/api/project/update/${selectedRowData._id}`,
         {
-          projectName: projectName, projectDescription: projectDescription
+          projectName: projectName,
+          projectDescription: projectDescription,
         },
-
-        { headers: { Authorization: `Bearer ${userInfo.token}` } }
-
-
+        {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        }
       );
 
       if (response.status === 200) {
         toast.success(response.data);
-        setIsModelOpen(false)
-        dispatch({ type: "UPDATE_SUCCESS", payload: true })
-      }
-      else if (response.status === 500) {
-        toast.error(response.message)
+        setIsModelOpen(false);
+        setIsSubmiting(false);
+
+        dispatch({ type: 'UPDATE_SUCCESS', payload: true });
+      } else if (response.status === 500) {
+        toast.error(response.message);
+        setIsSubmiting(false);
+
       }
     }
 
   }
 
   const deleteHandle = async (productId) => {
-    if (window.confirm('Are you sure to delete?')) {
+    if (window.confirm("Are you sure to delete?")) {
       try {
         const response = await axios.delete(`/api/project/${productId}`, {
-          headers: { Authorization: `Bearer ${userInfo.token}` }
+          headers: { Authorization: `Bearer ${userInfo.token}` },
         });
 
         if (response.status === 200) {
-          toast.success(" data deleted successfully!");
+          toast.success('Data deleted successfully!');
           dispatch({
             type: "DELETE_SUCCESS", payload: true
           })
         } else {
-          toast.error("Failed to delete data.");
+          toast.error('Failed to delete data.');
         }
       } catch (error) {
         console.error(error);
@@ -228,86 +269,39 @@ export default function AdminProjectListScreen() {
     }
   };
 
-  React.useEffect(() => {
-    const FatchCategory = async () => {
-      try {
-        dispatch("FATCH_REQUEST")
-        const response = await axios.get(`/api/category/`, { headers: { Authorization: `Bearer ${userInfo.token}` } });
-        const datas = response.data;
-        setCategory(datas)
-        dispatch({ type: "FATCH_CATEGORY", payload: datas });
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    FatchCategory();
-  }, []);
-
-  React.useEffect(() => {
-
-    const FatchCatagoryData = async () => {
-      try {
-        const response = await axios.post(`/api/user/`, { role: "contractor" });
-        const datas = response.data;
-        console.log(datas)
-        setContractor(datas);
-        dispatch({ type: "FATCH_CONTRACTOR", payload: datas })
-
-      } catch (error) {
-      }
-    }
-    FatchCatagoryData();
-
-  }, [])
-
-  React.useEffect(() => {
-
-    const FatchAgentData = async () => {
-      try {
-        const response = await axios.post(`/api/user/`, { role: "agent" });
-        const datas = response.data;
-
-        setAssignedAgent(datas);
-        dispatch({ type: "FATCH_AGENTS", payload: datas })
-
-      } catch (error) {
-      }
-    }
-    FatchAgentData();
-
-  }, [])
-
-  const assignedAgenthandle = () => {
-    if (category) {
-      const selectedCategory = categoryData.find(categoryItem => categoryItem._id === category);
-      if (selectedCategory) {
-        const agentForCategory = agentData.find(agentItem => agentItem.agentCategory === selectedCategory._id);
-        if (agentForCategory) {
-          return [agentForCategory]
-        }
-      }
-    }
-    return [];
-  }
-  const handleAddfields = () => {
-    setMoreFields([...moreFields, {}]);
-  }
-
   return (
     <>
       <Button
         variant="outlined"
         className=" m-2 d-flex globalbtnColor"
-        onClick={handleNew}>
-        <BiPlusMedical className='mx-2' />
+        onClick={handleNew}
+      >
+        <BiPlusMedical className="mx-2" />
         Add Project
       </Button>
       {loading ? (
-        <div>Loading .....</div>
-      ) : (error ? (
+        <>
+          <div className='ThreeDot' >
+            <ThreeDots
+              height="80"
+              width="80"
+              radius="9"
+              className="ThreeDot justify-content-center"
+              color="#0e0e3d"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClassName=""
+              visible={true}
+            />
+          </div>
+
+        </>
+      ) : error ? (
         <div>{error}</div>
       ) : (
         <>
+
+
           <Box sx={{ height: 400, width: '100%' }}>
             <DataGrid
               className="tableBg mx-2"
@@ -355,7 +349,7 @@ export default function AdminProjectListScreen() {
           </Box>
           <Modal open={isModelOpen} onClose={handleCloseRow}>
             <Box
-              className="modelBg scroll-form"
+              className="modelBg"
               sx={{
                 position: 'absolute',
                 top: '50%',
@@ -366,115 +360,61 @@ export default function AdminProjectListScreen() {
                 boxShadow: 24,
                 p: 4,
               }}>
-              <div className="">
-                <Form onSubmit={handleSubmit}>
+              <Form onSubmit={handleSubmit}>
+                {isNewProject ? (
+                  <h4 className="d-flex justify-content-center">
+                    Add new Project Details
+                  </h4>
+                ) : (
+                  <h4 className="d-flex justify-content-center">
+                    Edit Project Details
+                  </h4>
+                )}
+                <TextField
+                  className="mb-2"
+                  value={isNewProject ? '' : projectName}
+                  onChange={(e) => setProjectName(e.target.value)}
+                  label="Project Name"
+                  fullWidth
+                />
+                <TextField
+                  className="mb-2"
+                  value={isNewProject ? '' : projectDescription}
+                  onChange={(e) => setProjectDescription(e.target.value)}
+                  label="Project Description"
+                  fullWidth
+                />
+                <TextField
+                  className="mb-2"
+                  value={
+                    isNewProject ? '' : projectOwner
+                  }
+                  onChange={(e) => setProjectOwner(e.target.value)}
+                  label="Project Owner"
+                  fullWidth
+                />
 
-
-                  <ImCross color='black' className='formcrossbtn' onClick={handleCloseRow} />
-                  {isNewProject ? (
-                    <h4 className="d-flex justify-content-center">
-                      Add new Project Details
-                    </h4>
-                  ) : (
-                    <h4 className="d-flex justify-content-center">
-                      Edit Project Details
-                    </h4>
-                  )}
-                  <TextField
-                    className="mb-2"
-                    value={projectName}
-                    onChange={(e) => setProjectName(e.target.value)}
-                    label="Project Name"
-                    fullWidth
-                  />
-                  <select className='formselect mb-2' value={contractor} onChange={(e) => setContractor(e.target.value)}>
-                    <option value="" >
-                      Select a Contractor
-                    </option>
-                    {contractorData.map((items) => (
-                      <option key={items._id} value={items._id} >{items.first_name}</option>
-                    ))}
-                  </select>
-
-                  <select className='formselect mb-2' value={category} onChange={(e) => setCategory(e.target.value)} >
-                    <option value="" >
-                      Select a category
-                    </option>
-                    {categoryData.map((items) => (
-                      <option key={items._id} value={items._id} >{items.categoryName}</option>
-                    ))}
-                  </select>
-                  <select className='formselect mb-2' value={assignedAgent} onChange={(e) => setAssignedAgent(e.target.value)}>
-                    <option value="" >
-                      Select a Agent
-                    </option>
-                    {assignedAgenthandle().map((item) => (
-                      <option key={item._id} value={item._id}>
-                        {item.first_name}
-                      </option>
-                    ))}
-                  </select>
-                  <div className='d-flex align-items-start'>
-                    <BiPlusMedical color="black" className='mx-2' onClick={() => { handleAddfields(); handleAddCategoryAgentPair() }} />
-                    <p className='text-dark'>Add more category and agent</p>
-                  </div>
-                  <ul>
-                    {categoryAgentPairs.map((pair, index) => (
-                      <li key={index}>
-                        Category: {pair.category}, Agent: {pair.assignedAgent}
-                      </li>
-                    ))}
-                  </ul>
-                  {moreFields.map((index) => (
-                    <div key={index}>
-                      <>
-                        <select className='formselect mb-2' value={category} onChange={(e) => setCategory(e.target.value)} >
-                          <option value="" >
-                            Select a category
-                          </option>
-                          {categoryData.map((items) => (
-                            <option key={items._id} value={items._id} >{items.categoryName}</option>
-                          ))}
-                        </select>
-                        <select className='formselect mb-2' value={assignedAgent} onChange={(e) => setAssignedAgent(e.target.value)}>
-                          <option value="" >
-                            Select a Agent
-                          </option>
-                          {assignedAgenthandle().map((item) => (
-                            <option key={item._id} value={item._id}>
-                              {item.first_name}
-                            </option>
-                          ))}
-                        </select>
-                        <hr className='bg-dark' />
-                      </>
-                    </div>
-                  ))}
-
-                  <textarea
-                    className="mb-2 textArea"
-                    value={projectDescription}
-                    onChange={(e) => setProjectDescription(e.target.value)}
-                    type="textarea"
-                    rows="3"
-                    placeholder='Project Description'
-                  />
-                  <Button className='formbtn'
-                    variant="contained"
-                    color="primary"
-                    type='submit'
-                  >
-                    {isNewProject ? 'Add Project' : 'Save Changes'}
-                  </Button>
-                  <>
-                  </>
-                </Form>
-              </div>
-
+                <TextField
+                  className="mb-2"
+                  value={
+                    isNewProject ? '' : assignedAgent
+                  }
+                  onChange={(e) => setAssignedAgent(e.target.value)}
+                  label="Assigned Agent"
+                  fullWidth
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  type='submit'
+                >
+                  {isNewProject ? 'Add Project' : 'Save Changes'}
+                </Button>
+              </Form>
             </Box>
           </Modal>
         </>
-      ))}
+      )}
     </>
   );
 }

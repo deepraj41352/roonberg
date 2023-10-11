@@ -23,11 +23,11 @@ function SignUpForm() {
   const { userInfo } = state;
 
   useEffect(() => {
-    const rememberedUser = localStorage.getItem('rememberedUser');
+    const rememberedUser = localStorage.getItem("rememberedUser");
     if (rememberedUser) {
       const { email, password } = JSON.parse(rememberedUser);
-      document.getElementById('username').value = email;
-      document.getElementById('password').value = password;
+      document.getElementById("username").value = email;
+      document.getElementById("password").value = password;
       setEmail(email);
       setPassword(password);
     }
@@ -39,7 +39,7 @@ function SignUpForm() {
 
     if (rememberMe) {
       localStorage.setItem(
-        'rememberedUser',
+        "rememberedUser",
         JSON.stringify({ email, password })
       );
     }
@@ -63,7 +63,7 @@ function SignUpForm() {
 
   useEffect(() => {
     if (userInfo) {
-      navigate('/adminDashboard');
+      navigate("/adminDashboard");
     }
   }, [userInfo, navigate]);
 
@@ -85,7 +85,7 @@ function SignUpForm() {
                   </Form.Label>
                   <Form.Control
                     id="username"
-                    // value={email}
+                    value={email}
                     type="email"
                     required
                     onChange={(e) => {
@@ -99,6 +99,8 @@ function SignUpForm() {
                   <div className="Password-input-eye">
                     <div className=" rounded-2">
                       <Form.Control
+                      id="password"
+                    value={password}
                         className="pswd-input"
                         type={showPassword ? "text" : "password"}
                         onChange={(e) => {
