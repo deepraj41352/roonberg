@@ -1,23 +1,23 @@
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import { Container, Row, Col, Card } from "react-bootstrap/";
-import { toast } from "react-toastify";
-import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
-import Validations from "../Components/Validations";
-import { useContext, useState, useEffect } from "react";
-import { Store } from "../Store";
-import { FaEye, FaRegEyeSlash } from "react-icons/fa";
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import { Container, Row, Col, Card } from 'react-bootstrap/';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
+import Validations from '../Components/Validations';
+import { useContext, useState, useEffect } from 'react';
+import { Store } from '../Store';
+import { FaEye, FaRegEyeSlash } from 'react-icons/fa';
 
 function RegistrationForm() {
   const navigate = useNavigate();
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState("");
-  const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [role, setRole] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isSubmiting, setIsSubmiting] = useState(false);
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -25,7 +25,6 @@ function RegistrationForm() {
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo, validationMsg } = state;
-  console.log(validationMsg);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -38,19 +37,19 @@ function RegistrationForm() {
     }
 
     if (password !== confirmPassword) {
-      toast.error("password do not match");
+      toast.error('password do not match');
       setIsSubmiting(false);
       return;
     }
 
     try {
-      const { data } = await axios.post("/api/user/signup", {
+      const { data } = await axios.post('/api/user/signup', {
         first_name: firstName,
         last_name: lastName,
         email: email,
         password: password,
       });
-      navigate("/");
+      navigate('/');
       toast.success(data.message);
     } catch (err) {
       toast.error(err.response?.data?.message);
@@ -61,7 +60,7 @@ function RegistrationForm() {
 
   useEffect(() => {
     if (userInfo) {
-      navigate("/adminDashboard");
+      navigate('/adminDashboard');
     }
   }, [userInfo, navigate]);
 
@@ -113,7 +112,7 @@ function RegistrationForm() {
                     <div className=" rounded-2">
                       <Form.Control
                         className="pswd-input"
-                        type={showPassword ? "text" : "password"}
+                        type={showPassword ? 'text' : 'password'}
                         onChange={(e) => {
                           setPassword(e.target.value);
                         }}
@@ -144,7 +143,7 @@ function RegistrationForm() {
                   type="submit"
                   disabled={isSubmiting}
                 >
-                  {isSubmiting ? "Submiting..." : "Submit"}
+                  {isSubmiting ? 'Submiting...' : 'Submit'}
                 </Button>
                 <Form.Group className="my-3">
                   <Link to="/">Signin ?</Link>

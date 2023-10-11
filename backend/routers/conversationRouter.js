@@ -1,11 +1,11 @@
-import express from "express";
-import Conversation from "../Models/conversationModel.js";
+import express from 'express';
+import Conversation from '../Models/conversationModel.js';
 
 const conversationRouter = express.Router();
 
 //get conv of a user
 
-conversationRouter.get("/:projectId", async (req, res) => {
+conversationRouter.get('/:projectId', async (req, res) => {
   try {
     const conversation = await Conversation.find({
       projectId: req.params.projectId,
@@ -18,7 +18,7 @@ conversationRouter.get("/:projectId", async (req, res) => {
 
 // get conv includes two userId
 
-conversationRouter.get("/find/:firstUserId/:secondUserId", async (req, res) => {
+conversationRouter.get('/find/:firstUserId/:secondUserId', async (req, res) => {
   try {
     const conversation = await Conversation.findOne({
       members: { $all: [req.params.firstUserId, req.params.secondUserId] },

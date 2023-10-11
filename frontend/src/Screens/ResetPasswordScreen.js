@@ -16,10 +16,8 @@ export default function ResetPasswordScreen() {
   const [isSubmiting, setIsSubmiting] = useState(false);
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo, validationMsg } = state;
-  console.log(validationMsg);
 
   const submitHandler = async (e) => {
-    console.log('submt button is clicked');
     e.preventDefault();
     setIsSubmiting(true);
 
@@ -61,7 +59,8 @@ export default function ResetPasswordScreen() {
             <Card className="p-4 formColor">
               <Form
                 onSubmit={submitHandler}
-                className="formWidth d-flex flex-column">
+                className="formWidth d-flex flex-column"
+              >
                 {/* <Form.Label className="textLeft text-left">
                   Email Address
                 </Form.Label>
@@ -97,7 +96,8 @@ export default function ResetPasswordScreen() {
                 <Button
                   type="submit"
                   className="globalbtnColor px-2 py-1"
-                  disabled={isSubmiting}>
+                  disabled={isSubmiting}
+                >
                   {isSubmiting ? 'Submiting...' : 'Submit'}
                 </Button>
               </Form>

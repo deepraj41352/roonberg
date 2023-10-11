@@ -13,7 +13,6 @@ import { Store } from '../Store';
 function Sidebar({ sidebarVisible, setSidebarVisible }) {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
-  console.log(userInfo.role);
 
   const signoutHandler = () => {
     const userConfirm = window.confirm('Are you sure you want to logout?');

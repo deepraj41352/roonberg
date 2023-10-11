@@ -8,7 +8,6 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { Card, Col, Container, Form, Row } from 'react-bootstrap';
 
-
 import Button from '@mui/material/Button';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -52,99 +51,94 @@ function AddProject() {
         headers: { Authorization: `Bearer ${userInfo.token}` },
       }
     );
-    console.log(response.data.message);
-    
+
     if (response.status === 201) {
       setIsSubmiting(false);
 
       toast.success(response.data.message);
       navigate('/adminProjectList');
-
-      
     } else if (response.status === 500) {
       toast.error(response.data.error);
       setIsSubmiting(false);
-
     }
   };
 
   return (
     <Container className="Sign-up-container-regis d-flex w-100 profileDiv  flex-column justify-content-center align-items-center">
-            <div className="Sign-up-container-inner px-4 py-3 w-100">
+      <div className="Sign-up-container-inner px-4 py-3 w-100">
+        <form onSubmit={handleSubmit}>
+          <h4 className="d-flex justify-content-center">Add new Project</h4>
 
+          <TextField
+            className="mb-2"
+            value={projectName}
+            onChange={(e) => setProjectName(e.target.value)}
+            label="Project Name"
+            fullWidth
+            required
+          />
 
-    <form onSubmit={handleSubmit}>
-      <h4 className="d-flex justify-content-center">Add new Project</h4>
+          <TextField
+            id="outlined-multiline-static"
+            onChange={(e) => setProjectDescription(e.target.value)}
+            label="Project Description"
+            multiline
+            rows={4}
+            fullWidth
+            required
+            variant="outlined"
+          />
 
-      <TextField
-        className="mb-2"
-        value={projectName}
-        onChange={(e) => setProjectName(e.target.value)}
-        label="Project Name"
-        fullWidth
-        required
-      />
-
-      <TextField
-        id="outlined-multiline-static"
-        onChange={(e) => setProjectDescription(e.target.value)}
-        label="Project Description"
-        multiline
-        rows={4}
-        fullWidth
-        required
-        variant="outlined"
-      />
-
-      <FormControl fullWidth>
-        <InputLabel>Choose Options</InputLabel>
-        <Select
-          multiple
-          required
-          value={selectedOptions}
-          onChange={handleChange}
-          renderValue={(selected) => (
-            <div>
-              {selected.map((value) => (
-                <span key={value}>{value}, </span>
+          <FormControl fullWidth>
+            <InputLabel>Choose Options</InputLabel>
+            <Select
+              multiple
+              required
+              value={selectedOptions}
+              onChange={handleChange}
+              renderValue={(selected) => (
+                <div>
+                  {selected.map((value) => (
+                    <span key={value}>{value}, </span>
+                  ))}
+                </div>
+              )}
+            >
+              {options.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
               ))}
-            </div>
-          )}
-        >
-          {options.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+            </Select>
+          </FormControl>
 
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DateField
-        required
-          label="Start Date"
-          value={startDate}
-          onChange={(newValue) => setStartDate(newValue)}
-          format="MM-DD-YYYY"
-        />
-        <DateField
-        required
-          label="End Date"
-          value={endDate}
-          onChange={(newValue) => setEndDate(newValue)}
-          format="MM-DD-YYYY"
-        />
-      </LocalizationProvider>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateField
+              required
+              label="Start Date"
+              value={startDate}
+              onChange={(newValue) => setStartDate(newValue)}
+              format="MM-DD-YYYY"
+            />
+            <DateField
+              required
+              label="End Date"
+              value={endDate}
+              onChange={(newValue) => setEndDate(newValue)}
+              format="MM-DD-YYYY"
+            />
+          </LocalizationProvider>
 
-      <Button variant="contained" color="primary" type="submit"
-       disabled={isSubmiting}
-       >
-         {isSubmiting ? "Adding Project..." : "Add Project"}
-       
-      </Button>
-    </form>
-    </div>
-
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            disabled={isSubmiting}
+          >
+            {isSubmiting ? 'Adding Project...' : 'Add Project'}
+          </Button>
+        </form>
+      </div>
     </Container>
   );
 }
