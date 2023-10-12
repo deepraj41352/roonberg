@@ -6,6 +6,7 @@ import { Button, Form } from 'react-bootstrap';
 import MultiSelect from 'react-multiple-select-dropdown-lite';
 import 'react-multiple-select-dropdown-lite/dist/index.css';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -35,6 +36,9 @@ function ProjectSingleScreen() {
   const navigate = useNavigate();
   const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [createdDate, setCreatedDate] = useState();
+  const [endDate, setEndDate] = useState();
   const theme = toggleState ? 'dark' : 'light';
   const [
     { loading, error, projectData, categoryData, successUpdate },
@@ -66,8 +70,21 @@ function ProjectSingleScreen() {
         const response = await axios.get(`/api/project/${id}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
-        const ProjectData = response.data;
-        dispatch({ type: 'FATCH_SUCCESS', payload: ProjectData });
+        const ProjectDatas = response.data;
+        console.log('ProjectDatas', ProjectDatas);
+        setEndDate(
+          ProjectDatas.endDate ? ProjectDatas.endDate.split('T')[0] : null
+        );
+        setCreatedDate(
+          ProjectDatas.createdDate
+            ? ProjectDatas.createdDate.split('T')[0]
+            : null
+        );
+        setSelectedOptions(
+          ProjectDatas.projectCategory.map((item) => item.categoryId).join(',')
+        );
+
+        dispatch({ type: 'FATCH_SUCCESS', payload: ProjectDatas });
       } catch (error) {
         console.error('Error fetching project data:', error);
       }
@@ -93,21 +110,68 @@ function ProjectSingleScreen() {
     fetchCategoryData();
   }, []);
 
-  const [value, setvalue] = useState('');
-  const [placeholder, setPlaceholder] = useState('Categories');
+  console.log('selectedOptions', selectedOptions);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // Construct the updated data object
+      const categoryIds = selectedOptions.split(',');
+      const projectCategory = categoryIds.map((categoryId) => {
+        const category = categoryData.find((cat) => cat._id === categoryId);
+        return {
+          categoryId,
+          categoryName: category ? category.categoryName : 'Unknown Category',
+        };
+      });
 
-  const handleOnchange = (val) => {
-    setvalue(val);
-    setPlaceholder('');
+      const updatedData = {
+        projectName: projectData.projectName,
+        projectDescription: projectData.projectDescription,
+        projectCategory, // Assign the constructed projectCategory array here
+        createdDate: createdDate,
+        endDate: endDate,
+      };
+
+      const response = await axios.put(
+        `/api/project/update/${id}`,
+        updatedData,
+        {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success('Project updated Successfully !');
+        console.log(response);
+      }
+    } catch (error) {
+      console.error('API Error:', error);
+    }
   };
-  // const options = categoryData.map((cat) => cat.categoryName);
-  // console.log('options', options);
 
-  const options = categoryData.map((item) => ({
-    label: item.categoryName,
-    value: item._id, // You can use _id or another unique identifier as the value
-  }));
-  console.log('categoryData', categoryData);
+  const options =
+    categoryData && Array.isArray(categoryData)
+      ? categoryData.map((item) => ({
+          label: item.categoryName,
+          value: item._id,
+        }))
+      : [];
+  // console.log(projectData);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    dispatch({
+      type: 'FATCH_SUCCESS',
+      payload: {
+        ...projectData,
+        [name]: value,
+      },
+    });
+  };
+
+  const handleCategoryChange = (selected) => {
+    setSelectedOptions(selected);
+  };
   return (
     <div>
       {loading ? (
@@ -122,10 +186,15 @@ function ProjectSingleScreen() {
                 Project Details
               </Card.Header>
               <Card.Body className="text-start">
-                <Form className="px-3">
+                <Form className="px-3" onSubmit={handleSubmit}>
                   <Form.Group className="mb-3">
                     <Form.Label className="fw-bold">Project Name</Form.Label>
-                    <Form.Control type="text" value={projectData.projectName} />
+                    <Form.Control
+                      type="text"
+                      name="projectName"
+                      value={projectData.projectName}
+                      onChange={handleInputChange}
+                    />
                   </Form.Group>
                   <Form.Group
                     className="mb-3"
@@ -137,37 +206,39 @@ function ProjectSingleScreen() {
                     <Form.Control
                       as="textarea"
                       rows={3}
+                      name="projectDescription"
                       value={projectData.projectDescription}
+                      onChange={handleInputChange}
                     />
                   </Form.Group>
-
                   <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold">
-                      {projectData.projectDescription}
-                    </Form.Label>
+                    <Form.Label className="fw-bold">Select Options:</Form.Label>
                     <MultiSelect
                       className="categorieslist"
-                      onChange={handleOnchange}
+                      onChange={handleCategoryChange}
                       options={options}
-                      placeholder={placeholder}
+                      defaultValue={selectedOptions}
                     />
                   </Form.Group>
                   <div className="d-flex gap-3 mb-3">
-                    <Form.Group className="w-100" controlId="duedate">
+                    <Form.Group className="w-100" controlId="start-date">
                       <Form.Label className="fw-bold">Start Date</Form.Label>
                       <Form.Control
                         type="date"
-                        name="duedate"
-                        value={projectData.createdDate}
-                        placeholder="Due date"
+                        name="createdDate"
+                        value={createdDate}
+                        onChange={(e) => setCreatedDate(e.target.value)}
+                        placeholder="Start Date"
                       />
                     </Form.Group>
-                    <Form.Group className="w-100" controlId="duedate">
+                    <Form.Group className="w-100" controlId="end-date">
                       <Form.Label className="fw-bold">End Date</Form.Label>
                       <Form.Control
                         type="date"
-                        name="duedate"
-                        placeholder="Due date"
+                        name="endDate"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        placeholder="End Date"
                       />
                     </Form.Group>
                   </div>

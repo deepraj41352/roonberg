@@ -17,18 +17,18 @@
 /* -----------priyanshu-theme-css-end------------- */
 body {
   margin: 0;
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* background-color: rgba(0, 0, 0, 0) !important; */
   background-color: white;
 }
-.ThreeDot{
+.ThreeDot {
   display: flex;
   justify-content: center !important;
 }
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
@@ -157,7 +157,7 @@ body {
 
 body {
   margin: 0;
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* background-color: rgba(0, 0, 0, 0) !important; */
@@ -165,7 +165,7 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
@@ -199,7 +199,7 @@ code {
 button {
   color: white !important;
 }
-.tableBg input[type="checkbox"] {
+.tableBg input[type='checkbox'] {
   border-color: white !important;
   background-color: white !important;
 }
@@ -511,4 +511,12 @@ body {
 }
 .chat-receiverMsg-inner p {
   margin-bottom: 0px;
+}
+
+/* /dipak/................. */
+.msl-chip {
+  color: #060612;
+}
+.msl-options {
+  color: #060612;
 }

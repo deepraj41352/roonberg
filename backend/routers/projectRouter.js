@@ -299,6 +299,7 @@ projectRouter.put(
     }
   })
 );
+
 projectRouter.get(
   '/:id',
   expressAsyncHandler(async (req, res) => {
