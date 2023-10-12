@@ -29,8 +29,9 @@ projectRouter.get(
       } else if (userRole === 'agent') {
         // Contractors can only access their own projects
         const agentId = req.user._id; // Replace with the actual way you identify the contractor
-        const projects = await Project.find({ assignedAgent: agentId });
-        projects.sort((a, b) => b.createdAt - a.createdAt); //for data descending order
+        const projects = await Project.find({
+          'assignedAgent.agentId': agentId,
+        });        projects.sort((a, b) => b.createdAt - a.createdAt); //for data descending order
         res.json(projects);
       } else {
         res.status(403).json({ message: 'Access denied' });
@@ -227,6 +228,7 @@ projectRouter.post(
       if (updatedProject.assignedAgent) {
         const newConversation = new Conversation({
           members: [agentId, updatedProject.projectOwner],
+          projectId:projectId,
         });
         await newConversation.save();
       }

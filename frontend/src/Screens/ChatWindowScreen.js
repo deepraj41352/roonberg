@@ -37,14 +37,13 @@ const [checkstate, setCheckstate] =useState(false)
       setArrivalMessage({
         sender:data.senderId,
         text:data.text,
-        // createdAt:Date.now()
+        createdAt:Date.now()
 
       })
     })
   },[])
   
 useEffect(()=>{
- // console.log("arivalmsg",chatMessages)
 arrivalMessage  && conversationID?.members.includes(arrivalMessage.sender)&&
   setChatMessages((prev)=>[...prev , arrivalMessage])
 
@@ -55,7 +54,6 @@ arrivalMessage  && conversationID?.members.includes(arrivalMessage.sender)&&
 useEffect(()=>{
   socket.current.emit("addUser",userInfo._id )
   socket.current.on("getUsers",users=>{
-    // console.log("userids and socket",users)
   })
 },[])
 
@@ -87,33 +85,33 @@ useEffect(()=>{
     getConversation();
   }, []);
 
-  // console.log("karan",conversationID)
 
- 
 
-  // console.log("chat", chatMessages);
   const showFontStyleBox = () => {
     setShowFontStyle(!showFontStyle);
   };
-  const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState("");
+  // const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [val, setVal] = useState("");
+
   const handleSendMessage = () => {
+    const messageObject = { text: newMessage,sender:userInfo._id };
+
     if (newMessage.trim() !== "") {
-      setMessages([...messages, newMessage]);
+      setChatMessages([...chatMessages, messageObject]);
       setNewMessage("");
     }
     if (val.trim() !== "") {
-      setMessages([...messages, val]);
       setVal("");
     }
     submitHandler();
   };
-  const [val, setVal] = useState("");
   const onChange = (value) => {
     setVal(value);
   };
 
   const submitHandler = async (e) => {
+    
     const receiverdId = conversationID.members.find((member) => member !== userInfo._id);
 
     socket.current.emit("sendMessage",{
@@ -121,35 +119,30 @@ useEffect(()=>{
       receiverdId:receiverdId,
       text:newMessage,
     })
-
-
     try {
       const { data } = await axios.post("/api/message/", {
         conversationId: id,
         sender: userInfo._id,
         text: newMessage,
       });
-      // console.log(data);
-      // setCheckstate(!checkstate)
     } catch (err) {
       console.log(err.response?.data?.message);
     }
   };
-
   useEffect(()=>{
     scrollRef.current?.scrollIntoView({behavior:"smooth"})
   },[chatMessages,newMessage])
 
   return (
     <div className=" d-flex justify-content-center align-items-center">
-      <div className="d-flex justify-content-center gap-3 ">
+      <div className="d-flex justify-content-center gap-3 w-100 ">
         <Card    className="chatWindow mt-3">
           <CardHeader>Rohan </CardHeader>
           <CardBody className="chatWindowBody pb-0">
             {console.log('chatMessages ',chatMessages)}
             {chatMessages.map((item) => (
               <>
-                {userInfo._id == item.sender ? (
+                {userInfo._id == item.sender ?  (
                   <div ref={scrollRef} className="chat-receiverMsg d-flex flex-column">
                     <p className="chat-receiverMsg-inner p-2">{item.text}</p>
                     <div className="timeago">{format(item.createdAt)}</div>
@@ -163,15 +156,15 @@ useEffect(()=>{
               </>
             ))}
 
-            {messages.map((message) => (
-              <div className="chat-receiverMsg">
+            {/* {messages.map((message) => (
+              <div className="chat-receiverMsg"> */}
                 {/* <p className="chat-receiverMsg-inner p-2">{message}</p> */}
-                <p
+                {/* <p
                   className="chat-receiverMsg-inner p-2"
                   dangerouslySetInnerHTML={{ __html: message }}
                 ></p>
               </div>
-            ))}
+            ))} */}
           </CardBody>
           <CardFooter className="d-flex align-items-center">
             <Form className="w-100">

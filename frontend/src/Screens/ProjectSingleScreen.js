@@ -54,7 +54,6 @@ function ProjectSingleScreen() {
     const getConversations = async () => {
       try {
         const res = await axios.get(`/api/conversation/${id}`);
-        console.log("sharma", res.data);
         setConversation(res.data);
       } catch (err) {
         console.log(err);
@@ -63,6 +62,7 @@ function ProjectSingleScreen() {
     };
     getConversations();
   }, []);
+  console.log("convsrsation",conversations)
 
   useEffect(() => {
     const fetchProjectData = async () => {
@@ -72,15 +72,15 @@ function ProjectSingleScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const datas = response.data;
+        console.log("datasss",datas)
         dispatch({ type: "FETCH_SUCCESS", payload: datas });
       } catch (error) {
         console.error("Error fetching project data:", error);
       }
     };
-
     fetchProjectData();
   }, []);
-
+console.log('project datass',projectData)
   useEffect(() => {
     const fetchCategoryData = async () => {
       try {
@@ -185,13 +185,16 @@ function ProjectSingleScreen() {
             <Card className={`projectScreenCard2 ${theme}CardBody`}>
               <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
               <Card.Body className="d-flex flex-wrap gap-3 ">
-                {/* -------- */}
                 {conversations.map((conversion) => {
                   return (
-                    <Card className="chatboxes">
-                      <Card.Header>Chat</Card.Header>
-                      <Card.Body>
-                        <Link to={`/chatWindowScreen/${conversion._id}`}>
+                    <>
+                    {userInfo.role == "agent" ? (
+                      <>
+                      {conversion.members.includes(userInfo._id) && (     
+                        <Card className="chatboxes">
+                        <Card.Header>Chat</Card.Header>
+                        <Card.Body>
+                         <Link to={`/chatWindowScreen/${conversion._id}`}>
                           <Button
                             className="chatBtn"
                             type="button"
@@ -200,12 +203,32 @@ function ProjectSingleScreen() {
                             {conversion._id}
                           </Button>
                         </Link>
-                      </Card.Body>
-                    </Card>
+                        </Card.Body>
+                        </Card>
+                      )}
+                      </>
+                      ):(
+                        <>
+                          <Card className="chatboxes">
+                          <Card.Header>Chat</Card.Header>
+                          <Card.Body>
+                           <Link to={`/chatWindowScreen/${conversion._id}`}>
+                            <Button
+                              className="chatBtn"
+                              type="button"
+                              // onClick={conversionHandler(conversion._id)}
+                            >
+                              {conversion._id}
+                            </Button>
+                          </Link>
+                          </Card.Body>
+                          </Card>
+                        </>
+                        )}
+
+                    </>
                   );
                 })}
-
-                {/* -------- */}
               </Card.Body>
             </Card>
           </div>

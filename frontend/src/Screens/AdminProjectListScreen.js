@@ -88,6 +88,7 @@ export default function AdminProjectListScreen() {
   const { state } = React.useContext(Store);
   const { toggleState, userInfo } = state;
   const theme = toggleState ? 'dark' : 'light';
+  console.log("uesrinfo",userInfo)
   const [
     { loading, error, projectData, successDelete, successUpdate, categoryData },
     dispatch,
@@ -426,19 +427,19 @@ export default function AdminProjectListScreen() {
                         onChange={handleChange}
                         renderValue={(selected) => (
                           <div>
-                            {selected.map((value) => (
-                              <span key={value}>
-                                {categoryData
-                                  ? categoryData.find(
-                                      (option) => option._id === value
-                                    )?.categoryName
-                                  : ''}
-                              </span>
-                            ))}
+                            {selected
+  ? selected.map((value) => (
+      <span key={value}>
+        {categoryData
+          ? (categoryData.find((option) => option._id === value) || {}).categoryName
+          : ''}
+      </span>
+    ))
+  : ''}
                           </div>
                         )}
                       >
-                        {categoryData.map((option) => (
+                        {categoryData && categoryData.map((option) => (
                           <MenuItem key={option._id} value={option._id}>
                             {option.categoryName}
                           </MenuItem>
