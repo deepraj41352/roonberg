@@ -120,7 +120,7 @@ useEffect(()=>{
       text:newMessage,
     })
     try {
-      const { data } = await axios.post("/api/message/", {
+      const { data } = await axios.post('/api/message/', {
         conversationId: id,
         sender: userInfo._id,
         text: newMessage,
@@ -171,14 +171,14 @@ useEffect(()=>{
               <InputGroup>
                 <Form.Control
                   type="text"
-                  style={{ display: showFontStyle ? "none" : "block" }}
+                  style={{ display: showFontStyle ? 'none' : 'block' }}
                   placeholder="Type your message here..."
                   aria-label="Search"
                   aria-describedby="basic-addon2"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                 />
-                <div style={{ display: showFontStyle ? "block" : "none" }}>
+                <div style={{ display: showFontStyle ? 'block' : 'none' }}>
                   <MyStatefulEditor markup="" onChange={onChange} />
                 </div>
                 <div className="d-flex justify-content-center align-items-center ps-2 ">

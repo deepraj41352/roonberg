@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 import { Grid } from '@mui/material';
 import { AiFillDelete } from 'react-icons/ai';
-import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import { Form } from 'react-bootstrap';
@@ -102,42 +101,10 @@ export default function AdminProjectListScreen() {
 
   const [projectName, setProjectName] = React.useState('');
   const [projectDescription, setProjectDescription] = React.useState('');
-  const [projectOwner, setProjectOwner] = React.useState('');
-  const [assignedAgent, setAssignedAgent] = React.useState('');
+
   const [startDate, setStartDate] = React.useState();
   const [endDate, setEndDate] = React.useState();
   const [selectedOptions, setSelectedOptions] = React.useState([]);
-
-  React.useEffect(() => {
-    const fetchCategoryData = async () => {
-      try {
-        dispatch('FETCH_REQUEST');
-        const response = await axios.get(`/api/category`, {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        });
-        const categoryData = response.data;
-        const uniqueCategories = Array.from(
-          new Set(
-            categoryData.map((item) => ({
-              _id: item._id,
-              categoryName: item.categoryName,
-            }))
-          )
-        );
-        console.log('category', uniqueCategories);
-        dispatch({ type: 'SUCCESS_CATEGORY', payload: uniqueCategories });
-      } catch (error) {
-        console.error('Error fetching category data:', error);
-      }
-    };
-
-    fetchCategoryData();
-  }, []);
-
-  const handleChange = (event) => {
-    console.log('event', event);
-    setSelectedOptions(event.target.value);
-  };
 
   // const handleEdit = (userid) => {
   //   const constractorToEdit = projectData.find(
@@ -167,9 +134,9 @@ export default function AdminProjectListScreen() {
   React.useEffect(() => {
     const FatchProjectData = async () => {
       try {
-        dispatch({ type: 'FATCH_REQUEST' }); // Dispatch an action instead of calling it as a function
+        dispatch({ type: 'FATCH_REQUEST' });
         const response = await axios.get('/api/project', {
-          headers: { Authorization: `Bearer ${userInfo.token}` }, // Use template literals to interpolate the token
+          headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const datas = response.data;
         const rowData = datas.map((items) => ({
@@ -177,12 +144,14 @@ export default function AdminProjectListScreen() {
           _id: items._id,
           projectName: items.projectName,
           projectDescription: items.projectDescription,
-          projectCategory: items.projectCategory,
+          projectCategory: items.projectCategory
+            ? items.projectCategory.map((cat) => cat.categoryName)
+            : '',
           assignedAgent: items.assignedAgent
-            ? items.assignedAgent.map((agent) => agent.agentId)
+            ? items.assignedAgent.map((agent) => agent.agentName)
             : '',
         }));
-        console.log('rowData', rowData);
+
         dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
       } catch (error) {
         console.log(error);
@@ -196,7 +165,7 @@ export default function AdminProjectListScreen() {
     } else {
       FatchProjectData();
     }
-  }, [successDelete, successUpdate, dispatch, userInfo.token]); // Add dependencies to the dependency array
+  }, [successDelete, successUpdate, dispatch, userInfo.token]);
 
   const projectActiveData = projectData.filter((item) => {
     return item.projectStatus === 'active';
@@ -207,7 +176,6 @@ export default function AdminProjectListScreen() {
   const projectQuedData = projectData.filter((item) => {
     return item.projectStatus === 'qued';
   });
-  console.log('selectedOptions', selectedOptions);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -226,8 +194,6 @@ export default function AdminProjectListScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         }
       );
-      console.log(response.data.message);
-
       if (response.status === 201) {
         toast.success(response.data.message);
         const datas = response.data;
@@ -286,6 +252,35 @@ export default function AdminProjectListScreen() {
         toast.error('An error occurred while deleting data.');
       }
     }
+  };
+
+  React.useEffect(() => {
+    const fetchCategoryData = async () => {
+      try {
+        dispatch('FETCH_REQUEST');
+        const response = await axios.get(`/api/category`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        const categoryData = response.data;
+        const uniqueCategories = Array.from(
+          new Set(
+            categoryData.map((item) => ({
+              _id: item._id,
+              categoryName: item.categoryName,
+            }))
+          )
+        );
+        dispatch({ type: 'SUCCESS_CATEGORY', payload: uniqueCategories });
+      } catch (error) {
+        console.error('Error fetching category data:', error);
+      }
+    };
+
+    fetchCategoryData();
+  }, []);
+
+  const handleChange = (event) => {
+    setSelectedOptions(event.target.value);
   };
 
   return (
@@ -425,25 +420,26 @@ export default function AdminProjectListScreen() {
                         multiple
                         value={selectedOptions}
                         onChange={handleChange}
-                        renderValue={(selected) => (
-                          <div>
-                            {selected
-  ? selected.map((value) => (
-      <span key={value}>
-        {categoryData
-          ? (categoryData.find((option) => option._id === value) || {}).categoryName
-          : ''}
-      </span>
-    ))
-  : ''}
-                          </div>
-                        )}
+                        // renderValue={(selected) => (
+                        //   <div>
+                        //     {categoryData && selected
+                        //       ? selected.map((value) => (
+                        //           <span key={value}>
+                        //             {categoryData.find(
+                        //               (option) => option._id === value
+                        //             ).categoryName + ','}
+                        //           </span>
+                        //         ))
+                        //       : ''}
+                        //   </div>
+                        // )}
                       >
-                        {categoryData && categoryData.map((option) => (
-                          <MenuItem key={option._id} value={option._id}>
-                            {option.categoryName}
-                          </MenuItem>
-                        ))}
+                        {categoryData &&
+                          categoryData.map((option) => (
+                            <MenuItem key={option._id} value={option._id}>
+                              {option.categoryName}
+                            </MenuItem>
+                          ))}
                       </Select>
                     </FormControl>
 

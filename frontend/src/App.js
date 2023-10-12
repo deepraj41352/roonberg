@@ -109,7 +109,6 @@ function App() {
                         </InputGroup.Text>
                       </InputGroup>
                     </Form>
-                    {console.log(searchValue)}
                     <Navbar.Toggle aria-controls="navbarScroll" />
                     <Navbar.Collapse
                       className="justify-content-end"
