@@ -90,24 +90,17 @@ useEffect(()=>{
   const showFontStyleBox = () => {
     setShowFontStyle(!showFontStyle);
   };
-  // const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const [val, setVal] = useState("");
-
   const handleSendMessage = () => {
     const messageObject = { text: newMessage,sender:userInfo._id };
-
     if (newMessage.trim() !== "") {
       setChatMessages([...chatMessages, messageObject]);
       setNewMessage("");
     }
-    if (val.trim() !== "") {
-      setVal("");
-    }
     submitHandler();
   };
   const onChange = (value) => {
-    setVal(value);
+    setNewMessage(value);
   };
 
   const submitHandler = async (e) => {
@@ -144,27 +137,20 @@ useEffect(()=>{
               <>
                 {userInfo._id == item.sender ?  (
                   <div ref={scrollRef} className="chat-receiverMsg d-flex flex-column">
-                    <p className="chat-receiverMsg-inner p-2">{item.text}</p>
+                    <p className="chat-receiverMsg-inner p-2" dangerouslySetInnerHTML={{ __html: item.text }}></p>
                     <div className="timeago">{format(item.createdAt)}</div>
                   </div>
                 ) : (
                   <div ref={scrollRef} className="chat-senderMsg d-flex flex-column ">
-                    <p className="chat-senderMsg-inner p-2">{item.text}</p>
+                    <p className="chat-senderMsg-inner p-2" dangerouslySetInnerHTML={{ __html: item.text }}></p>
                     <div className="timeago">{format(item.createdAt)}</div>
                   </div>
                 )}
               </>
             ))}
 
-            {/* {messages.map((message) => (
-              <div className="chat-receiverMsg"> */}
-                {/* <p className="chat-receiverMsg-inner p-2">{message}</p> */}
-                {/* <p
-                  className="chat-receiverMsg-inner p-2"
-                  dangerouslySetInnerHTML={{ __html: message }}
-                ></p>
-              </div>
-            ))} */}
+        
+   
           </CardBody>
           <CardFooter className="d-flex align-items-center">
             <Form className="w-100">
@@ -179,7 +165,7 @@ useEffect(()=>{
                   onChange={(e) => setNewMessage(e.target.value)}
                 />
                 <div style={{ display: showFontStyle ? 'block' : 'none' }}>
-                  <MyStatefulEditor markup="" onChange={onChange} />
+                  <MyStatefulEditor markup="" value={newMessage}  onChange={onChange} />
                 </div>
                 <div className="d-flex justify-content-center align-items-center ps-2 ">
                   <RxFontStyle onClick={showFontStyleBox} />
@@ -189,7 +175,7 @@ useEffect(()=>{
             <IoSendSharp className="ms-3" onClick={handleSendMessage} />
           </CardFooter>
         </Card>
-        <Card className="chatWindowProjectInfo mt-3" style={{display:"none"}}>
+        <Card className="chatWindowProjectInfo mt-3" >
           <CardHeader>Project Status</CardHeader>
           <CardBody> Project Status like ....on progress</CardBody>
         </Card>
