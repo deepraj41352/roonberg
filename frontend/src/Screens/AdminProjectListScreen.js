@@ -16,8 +16,7 @@ import Tabs from 'react-bootstrap/Tabs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateField } from '@mui/x-date-pickers/DateField';
-
-
+import MultiSelectDropdown from './ex';
 import {
   FormControl,
   InputLabel,
@@ -25,21 +24,18 @@ import {
   MenuItem,
   Button,
 } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useContext, useEffect, useReducer, useState } from 'react';
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case 'FATCH_REQUEST':
-      return { ...state, loading: true };
-    case 'FATCH_SUCCESS':
-      return { ...state, projectData: action.payload, loading: false };
-    case 'FATCH_ERROR':
-      return { ...state, error: action.payload, loading: false };
-    case 'SUCCESS_CATEGORY':
-      return { ...state, categoryData: action.payload, loading: false };
-    case 'ERROR_CATEGORY':
-      return { ...state, error: action.payload, loading: false };
+    case "FATCH_REQUEST":
+      return { ...state, loading: true }
+    case "FATCH_SUCCESS":
+      return { ...state, projectData: action.payload, loading: false }
+    case "FATCH_ERROR":
+      return { ...state, error: action.payload, loading: false }
+
     case 'DELETE_SUCCESS':
       return { ...state, successDelete: action.payload };
 
@@ -63,25 +59,25 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: '_id', headerName: 'ID', width: 90 },
+  { field: "_id", headerName: "ID", width: 90 },
   {
-    field: 'projectName',
-    headerName: 'Project Name',
+    field: "projectName",
+    headerName: "Project Name",
     width: 150,
   },
   {
-    field: 'projectDescription',
-    headerName: 'Description',
+    field: "projectDescription",
+    headerName: "Description",
     width: 150,
   },
   {
-    field: 'projectCategory',
-    headerName: 'project Category',
+    field: "projectOwner",
+    headerName: "Project Owner",
     width: 90,
   },
   {
-    field: 'assignedAgent',
-    headerName: 'Assigned Agent',
+    field: "assignedAgent",
+    headerName: "Assigned Agent",
     width: 110,
   },
 ];
@@ -91,13 +87,11 @@ export default function AdminProjectListScreen() {
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [isNewProject, setIsNewProject] = useState(false);
   const [isSubmiting, setIsSubmiting] = useState(false);
-
-
   const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
-  const theme = toggleState ? 'dark' : 'light';
+  const theme = toggleState ? "dark" : "light";
   const [
-    { loading, error, projectData, successDelete, successUpdate, categoryData, categoryData, agentData, contractorData },
+    { loading, error, projectData, successDelete, successUpdate, categoryData, agentData, contractorData },
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
@@ -113,44 +107,59 @@ export default function AdminProjectListScreen() {
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [projectOwner, setProjectOwner] = useState('');
-  const [assignedAgent, setAssignedAgent] = useState('');
-
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
-  const [selectedOptions, setSelectedOptions] = useState([]);
-  const options = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
-  const [selectCategory, setSelectCategory] = useState('');
-  const [contractor, setContractor] = useState('');
-  const [moreFields, setMoreFields] = useState([]);
-  const handleChange = (event) => {
-    setSelectedOptions(event.target.value);
+  const navigate = useNavigate();
+  const [agents, setAgents] = useState([{ categoryid: '', agentid: '' }]);
+
+  // const assignedAgentByCateHandle = () => {
+  //   if (categoryId) {
+  //     const selectedCategory1 = categoryData.find(categoryItem => categoryItem._id === categoryId);
+  //     if (selectedCategory1) {
+  //       const agentForCategory = agentData.find(agentItem => agentItem.agentCategory === selectedCategory1._id);
+  //       if (agentForCategory) {
+  //         return [agentForCategory]
+
+  //       }
+  //     }
+  //   }
+  //   return [];
+  // }
+
+  const handleAgentChange = (index, key, value) => {
+    const updatedAgents = [...agents];
+    updatedAgents[index] = {
+      ...updatedAgents[index],
+      [key]: value,
+    };
+    setAgents(updatedAgents);
   };
 
-  const [categoryAgentPairs, setCategoryAgentPairs] = useState([]);
+  const addAgent = () => {
+    setAgents([...agents, { categoryid: '', agentid: '' }]);
+  };
 
-  const handleAddCategoryAgentPair = () => {
-    if (selectCategory && assignedAgent) {
-      const newPair = { selectCategory, assignedAgent };
-      setCategoryAgentPairs([...categoryAgentPairs, newPair]);
-      setSelectCategory('');
-      setAssignedAgent('');
-    }
+  console.log(agents)
+  const removeAgent = (index) => {
+    const updatedAgents = [...agents];
+    updatedAgents.splice(index, 1);
+    setAgents(updatedAgents);
   };
 
   const handleEdit = (userid) => {
 
-    const constractorToEdit = projectData.find(
-      (constractor) => constractor && constractor._id === userid
-    );
-    setProjectName(constractorToEdit ? constractorToEdit.projectName : "");
-    setProjectDescription(
-      constractorToEdit ? constractorToEdit.projectDescription : ""
-    );
-    setProjectOwner(constractorToEdit ? constractorToEdit.projectOwner : "");
-    setAssignedAgent(constractorToEdit ? constractorToEdit.assignedAgent : "");
-    setSelectedRowData(constractorToEdit);
-    setIsModelOpen(true);
-    setIsNewProject(false);
+    // const constractorToEdit = projectData.find(
+    //   (constractor) => constractor && constractor._id === userid
+    // );
+    // setProjectName(constractorToEdit ? constractorToEdit.projectName : "");
+    // setProjectDescription(
+    //   constractorToEdit ? constractorToEdit.projectDescription : ""
+    // );
+    // setProjectOwner(constractorToEdit ? constractorToEdit.projectOwner : "");
+    // // setAssignedAgent(constractorToEdit ? constractorToEdit.assignedAgent : "");
+    // setSelectedRowData(constractorToEdit);
+    // setIsModelOpen(true);
+    // setIsNewProject(false);
   };
 
   const handleCloseRow = () => {
@@ -169,7 +178,6 @@ export default function AdminProjectListScreen() {
         dispatch("FATCH_REQUEST")
         const response = await axios.get(`/api/category/`, { headers: { Authorization: `Bearer ${userInfo.token}` } });
         const datas = response.data;
-        setSelectCategory(datas)
         dispatch({ type: "FATCH_CATEGORY", payload: datas });
       } catch (error) {
         console.log(error)
@@ -185,7 +193,6 @@ export default function AdminProjectListScreen() {
         const response = await axios.post(`/api/user/`, { role: "contractor" });
         const datas = response.data;
         console.log(datas)
-        setContractor(datas);
         dispatch({ type: "FATCH_CONTRACTOR", payload: datas })
 
       } catch (error) {
@@ -201,8 +208,6 @@ export default function AdminProjectListScreen() {
       try {
         const response = await axios.post(`/api/user/`, { role: "agent" });
         const datas = response.data;
-
-        setAssignedAgent(datas);
         dispatch({ type: "FATCH_AGENTS", payload: datas })
 
       } catch (error) {
@@ -227,27 +232,24 @@ export default function AdminProjectListScreen() {
           _id: items._id,
           projectName: items.projectName,
           projectDescription: items.projectDescription,
-          projectCategory: items.projectCategory
-            ? items.projectCategory.map((cat) => cat.categoryName)
-            : '',
-          assignedAgent: items.assignedAgent
-            ? items.assignedAgent.map((agent) => agent.agentName)
-            : '',
+          projectOwner: items.projectOwner,
+          assignedAgent: items.assignedAgent,
         }));
         console.log("sharam", rowData)
-
         dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
       } catch (error) {
-        console.log(error);
+        console.log(error)
       }
     };
 
     if (successDelete) {
-      dispatch({ type: 'DELETE_RESET' });
-    } else if (successUpdate) {
-      dispatch({ type: 'UPDATE_RESET' });
-    } else {
-      FatchProjectData();
+      dispatch({ type: "DELETE_RESET" })
+    }
+    else if (successUpdate) {
+      dispatch({ type: "UPDATE_RESET" })
+    }
+    else {
+      FatchProjectData()
     }
   }, [successDelete, successUpdate, dispatch, userInfo.token]); // Add dependencies to the dependency array
 
@@ -261,42 +263,53 @@ export default function AdminProjectListScreen() {
     return item.projectStatus === 'qued';
   });
 
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmiting(true);
-    const response = await axios.post(
-      '/api/project/',
-      {
-        projectName: projectName,
-        projectDescription: projectDescription,
-        // projectCategory: selectedOptions,
-        createdDate: startDate,
-        endDate: endDate,
+    console.log("agents", agents)
+    // try {
 
-      },
-      {
-        headers: { Authorization: `Bearer ${userInfo.token}` },
-      }
-    );
-    console.log(response.data.message);
+    //   const response = await axios.post(
+    //     '/api/project/admin/addproject',
+    //     {
+    //       projectName: projectName,
+    //       projectDescription: projectDescription,
+    //       createdDate: startDate,
+    //       endDate: endDate,
+    //       assignedAgent: agents,
+    //       // projectOwner: ,
+    //       // projectCategory: projectCategory
+    //     },
+    //     {
+    //       headers: { Authorization: `Bearer ${userInfo.token}` },
+    //     }
+    //   );
+    //   console.log(response.data.message);
+    //   console.log(response);
 
-    if (response.status === 201) {
-      toast.success(response.data.message);
-      const datas = response.data;
-      setIsModelOpen(false);
-      setIsSubmiting(false);
+    //   if (response.status === 201) {
+    //     toast.success(response.data.message);
+    //     const datas = response.data;
+    //     setIsModelOpen(false);
+    //     setIsSubmiting(false);
+    //     setProjectName('');
+    //     setProjectDescription('');
+    //     startDate();
+    //     endDate();
+    //     dispatch({ type: 'UPDATE_SUCCESS', payload: true });
 
-      // dispatch({ type: 'FATCH_SUCCESS', payload: datas });
-      dispatch({ type: 'UPDATE_SUCCESS', payload: true });
-    } else if (response.status === 500) {
-      toast.error(response.data.error);
-      setIsSubmiting(false);
-
-    }
+    //   }
+    // } catch (error) {
+    //   toast.error(error.response);
+    //   console.log(error)
+    //   setIsSubmiting(false);
+    // }
   }
 
   const deleteHandle = async (productId) => {
-    if (window.confirm('Are you sure to delete?')) {
+    if (window.confirm("Are you sure to delete?")) {
       try {
         const response = await axios.delete(`/api/project/${productId}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
@@ -316,20 +329,9 @@ export default function AdminProjectListScreen() {
       }
     }
   };
-  const assignedAgentByCateHandle = () => {
-    if (selectCategory) {
-      const selectedCategory1 = categoryData.find(categoryItem => categoryItem._id === selectCategory);
-      if (selectedCategory1) {
-        const agentForCategory = agentData.find(agentItem => agentItem.agentCategory === selectedCategory1._id);
-        if (agentForCategory) {
-          return [agentForCategory]
-        }
-      }
-    }
-    return [];
-  }
-  const handleAddfields = () => {
-    setMoreFields([...moreFields, {}]);
+
+  const handleRedirectToContractorScreen = () => {
+    navigate('/adminContractorList')
   }
   return (
     <>
@@ -431,7 +433,7 @@ export default function AdminProjectListScreen() {
                     p: 4,
                   }}
                 >
-                  <Form onSubmit={handleSubmit}>
+                  <Form className='scrollInAdminproject' onSubmit={handleSubmit}>
                     {isNewProject ? (
                       <h4 className="d-flex justify-content-center">
                         Add new Project Details
@@ -443,7 +445,6 @@ export default function AdminProjectListScreen() {
                     )}
                     <TextField
                       required
-                      required
                       className="mb-2"
                       value={projectName}
                       onChange={(e) => setProjectName(e.target.value)}
@@ -453,7 +454,6 @@ export default function AdminProjectListScreen() {
 
                     <TextField
                       required
-                      required
                       id="outlined-multiline-static"
                       onChange={(e) => setProjectDescription(e.target.value)}
                       label="Project Description"
@@ -461,127 +461,58 @@ export default function AdminProjectListScreen() {
                       rows={4}
                       fullWidth
                       variant="outlined"
-                    // value={'text'}
-                    // onChange={handleChange}
                     />
-
-                    {/* <FormControl fullWidth>
-                      <InputLabel>Choose Options</InputLabel>
-                      <Select
-                        required
-                        multiple
-                        value={selectedOptions}
-                        onChange={handleChange}
-                        renderValue={(selected) => (
-                          <div>
-                            {selected.map((value) => (
-                              <span key={value}>{value}, </span>
-                            ))}
-                          </div>
-                        )}
-                      >
-                        {options.map((option) => (
-                          <MenuItem key={option} value={option}>
-                            {option}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl> */}
-
                     <FormControl >
                       <InputLabel>Choose Contractor</InputLabel>
-                      <Select
-                        value={contractor} onChange={(e) => setContractor(e.target.value)}
-                      >
-                        <MenuItem>Select Contractor</MenuItem>
+                      <Select >
+                        <MenuItem onClick={() => { handleRedirectToContractorScreen() }}>  <BiPlusMedical /> add new Contractor</MenuItem>
                         {contractorData.map((items) => (
                           <MenuItem key={items._id} value={items._id} >{items.first_name}</MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
 
-                    <FormControl >
-                      <InputLabel>Choose Category</InputLabel>
-                      <Select
-                        value={selectCategory} onChange={(e) => setSelectCategory(e.target.value)}
-                      >
-                        <MenuItem>Select Category</MenuItem>
-                        {categoryData.map((items) => (
-                          <MenuItem key={items._id} value={items._id} >{items.categoryName}</MenuItem>
                         ))}
                       </Select>
                     </FormControl>
-                    <FormControl >
-                      <InputLabel>Choose Agent</InputLabel>
-                      <Select
-                        value={assignedAgent} onChange={(e) => setAssignedAgent(e.target.value)}
-                      >
-                        <MenuItem>Select Agent</MenuItem>
-                        {assignedAgentByCateHandle().map((item) => (
-                          <MenuItem key={item._id} value={item._id}>
-                            {item.first_name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-
                     <div className='d-flex align-items-start'>
-                      <BiPlusMedical color="black" className='mx-2' onClick={() => { handleAddfields() }} />
+                      <BiPlusMedical color="black" className='mx-2' onClick={addAgent} />
                       <p className='text-dark'>Add more category and agent</p>
                     </div>
-                    {moreFields.map((index) => (
+                    {agents.map((agent, index) => (
                       <div key={index}>
-                        <>
-                          <FormControl >
-                            <InputLabel>Choose Category</InputLabel>
-                            <Select
-                              value={selectCategory} onChange={(e) => setSelectCategory(e.target.value)}
-                            >
-                              <MenuItem>Select Category</MenuItem>
-                              {categoryData.map((items) => (
-                                <MenuItem key={items._id} value={items._id} >{items.categoryName}</MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                          <FormControl >
-                            <InputLabel>Choose Agent</InputLabel>
-                            <Select
-                              value={assignedAgent} onChange={(e) => setAssignedAgent(e.target.value)}
-                            >
-                              <MenuItem>Select Agent</MenuItem>
-                              {assignedAgentByCateHandle().map((item) => (
-                                <MenuItem key={item._id} value={item._id}>
-                                  {item.first_name}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                        </>
+                        <FormControl>
+                          <InputLabel>Choose Category</InputLabel>
+                          <Select
+                            value={agent.categoryid}
+                            onChange={(e) => handleAgentChange(index, 'categoryid', e.target.value)}
+                          >
+                            <MenuItem>Select Category</MenuItem>
+                            {categoryData.map((category) => (
+                              <MenuItem key={category._id} value={category._id}>
+                                {category.categoryName}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                        <FormControl>
+                          <InputLabel>Choose Agent</InputLabel>
+                          <Select
+                            value={agent.agentid}
+                            onChange={(e) => handleAgentChange(index, 'agentid', e.target.value)}
+                          >
+                            <MenuItem>Select Agent</MenuItem>
+                            {agentData.map((agent) => (
+                              <MenuItem key={agent._id} value={agent._id}>
+                                {agent.first_name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
                       </div>
                     ))}
-                    {/* {moreFields.map((index) => (
-                    <div key={index}>
-                      <>
-                        <select className='formselect mb-2' value={category} onChange={(e) => setCategory(e.target.value)} >
-                          <option value="" >
-                            Select a category
-                          </option>
-                          {categoryData.map((items) => (
-                            <option key={items._id} value={items._id} >{items.categoryName}</option>
-                          ))}
-                        </select>
-                        <select className='formselect mb-2' value={assignedAgent} onChange={(e) => setAssignedAgent(e.target.value)}>
-                          <option value="" >
-                            Select a Agent
-                          </option>
-                          {assignedAgenthandle().map((item) => (
-                            <option key={item._id} value={item._id}>
-                              {item.first_name}
-                            </option>
-                          ))} */}
+
+
+
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DateField
-                        required
                         required
                         label="Start Date"
                         value={startDate}
@@ -590,7 +521,6 @@ export default function AdminProjectListScreen() {
                       />
                       <DateField
                         required
-                        required
                         label="End Date"
                         value={endDate}
                         onChange={(newValue) => setEndDate(newValue)}
@@ -598,7 +528,7 @@ export default function AdminProjectListScreen() {
                       />
                     </LocalizationProvider>
                     <Button variant="contained" color="primary" type="submit"
-                      disabled={isSubmiting} onClick={handleAddCategoryAgentPair}
+                      disabled={isSubmiting}
                     >
                       {isNewProject ? (isSubmiting ? "Adding Project..." : "Add Project") : (isSubmiting ? "Saving Changes..." : "Save Changes")}
                     </Button>
@@ -731,8 +661,8 @@ export default function AdminProjectListScreen() {
                               <Button
                                 variant="contained"
                                 className="mx-2 tableEditbtn"
-                              // onClick={() => handleEdit(params.row._id)}
-                              // startIcon={<MdEdit />}
+                                onClick={() => handleEdit(params.row._id)}
+                                startIcon={<MdEdit />}
                               >
                                 Edit
                               </Button>

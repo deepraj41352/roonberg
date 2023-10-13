@@ -46,6 +46,8 @@ import AddProject from './Screens/AddProject';
 import ChatScreen from './Screens/ChatScreen';
 import AdminEditCategory from "./Screens/AdminEditCategoryScreen";
 import AdminEditAgent from "./Screens/AdminEditAgentScreen";
+import Testfile from './Screens/testfile';
+import ProjectForm from './Screens/testnew';
 
 
 function App() {
@@ -270,7 +272,14 @@ function App() {
                       path="/adminEditAgent/:id"
                       element={<AdminEditAgent />}
                     />
-
+                    <Route
+                      path="/test"
+                      element={<Testfile />}
+                    />
+                    <Route
+                      path="/testnew"
+                      element={<ProjectForm />}
+                    />
                   </Routes>
                 </div>
               </main>
