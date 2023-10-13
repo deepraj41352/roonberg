@@ -50,20 +50,20 @@ function ProjectSingleScreen() {
     categoryData: {},
     successUpdate: false,
   });
-  const [conversations, setConversation] = useState([]);
-  useEffect(() => {
-    const getConversations = async () => {
-      try {
-        const res = await axios.get(`/api/conversation/${id}`);
-        setConversation(res.data);
-      } catch (err) {
-        console.log(err);
+  // const [conversations, setConversation] = useState([]);
+  // useEffect(() => {
+  //   const getConversations = async () => {
+  //     try {
+  //       const res = await axios.get(`/api/conversation/${id}`);
+  //       setConversation(res.data);
+  //     } catch (err) {
+  //       console.log(err);
         
-      }
-    };
-    getConversations();
-  }, []);
-  console.log("convsrsation",conversations)
+  //     }
+  //   };
+  //   getConversations();
+  // }, []);
+  // console.log("convsrsation",conversations)
 
   useEffect(() => {
     const fetchProjectData = async () => {
@@ -93,7 +93,7 @@ function ProjectSingleScreen() {
     };
     fetchProjectData();
   }, []);
-console.log('project datass',projectData)
+console.log('project== datass',projectData)
   useEffect(() => {
     const fetchCategoryData = async () => {
       try {
@@ -173,6 +173,9 @@ console.log('project datass',projectData)
   const handleCategoryChange = (selected) => {
     setSelectedOptions(selected);
   };
+
+
+
   return (
     <div>
       {loading ? (
@@ -252,14 +255,18 @@ console.log('project datass',projectData)
             <Card className={`projectScreenCard2 ${theme}CardBody`}>
               <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
               <Card.Body className="d-flex flex-wrap gap-3 ">
-                {conversations.map((conversion) => {
+                
+                {projectData?.conversions?.map((conversion) => {
+
+              const assignedAgent = projectData.assignedAgent.find((assignedAgent) => assignedAgent.agentId === conversion.members[0])
                   return (
                     <>
                     {userInfo.role == "agent" ? (
                       <>
-                      {conversion.members.includes(userInfo._id) && (     
+                      {conversion.members.includes(userInfo._id) && (    
+                        <>
                         <Card className="chatboxes">
-                        <Card.Header>Chat</Card.Header>
+                        {/* <Card.Header>{assignedAgent.categoryId}</Card.Header> */}
                         <Card.Body>
                          <Link to={`/chatWindowScreen/${conversion._id}`}>
                           <Button
@@ -267,17 +274,18 @@ console.log('project datass',projectData)
                             type="button"
                             // onClick={conversionHandler(conversion._id)}
                           >
-                            {conversion._id}
+                          Chat Now
                           </Button>
                         </Link>
                         </Card.Body>
                         </Card>
+                        </>
                       )}
                       </>
                       ):(
                         <>
                           <Card className="chatboxes">
-                          <Card.Header>Chat</Card.Header>
+                          <Card.Header>{assignedAgent.categoryName}</Card.Header>
                           <Card.Body>
                            <Link to={`/chatWindowScreen/${conversion._id}`}>
                             <Button
@@ -285,7 +293,7 @@ console.log('project datass',projectData)
                               type="button"
                               // onClick={conversionHandler(conversion._id)}
                             >
-                              {conversion._id}
+                            {assignedAgent.agentName}
                             </Button>
                           </Link>
                           </Card.Body>

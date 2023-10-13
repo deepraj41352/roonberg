@@ -422,24 +422,23 @@ export default function AdminProjectListScreen() {
                         onChange={handleChange}
                         // renderValue={(selected) => (
                         //   <div>
-                        //     {categoryData && selected
-                        //       ? selected.map((value) => (
-                        //           <span key={value}>
-                        //             {categoryData.find(
+                        //     {selected.map((value) => (
+                        //       <span key={value}>
+                        //         {categoryData
+                        //           ? categoryData.find(
                         //               (option) => option._id === value
-                        //             ).categoryName + ','}
-                        //           </span>
-                        //         ))
-                        //       : ''}
+                        //             )?.categoryName
+                        //           : ''}
+                        //       </span>
+                        //     ))}
                         //   </div>
                         // )}
                       >
-                        {categoryData &&
-                          categoryData.map((option) => (
-                            <MenuItem key={option._id} value={option._id}>
-                              {option.categoryName}
-                            </MenuItem>
-                          ))}
+                        {categoryData && categoryData.map((option) => (
+                          <MenuItem key={option._id} value={option._id}>
+                            {option.categoryName}
+                          </MenuItem>
+                        ))}
                       </Select>
                     </FormControl>
 

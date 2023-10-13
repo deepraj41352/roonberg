@@ -229,6 +229,8 @@ projectRouter.post(
       const projectId = req.params.id;
       const agentId = req.body.agentId;
       const categoryId = req.body.categoryId;
+      const category = await Category.findById(categoryId);
+
       const user = await User.findById(agentId, '_id first_name email');
       const updatedProject = await Project.findByIdAndUpdate(
         projectId,
@@ -238,6 +240,7 @@ projectRouter.post(
               agentId: agentId,
               agentName: user.first_name,
               categoryId: categoryId,
+              categoryName:category.categoryName,
             },
           },
         },

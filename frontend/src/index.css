@@ -503,6 +503,7 @@ body {
   max-width: 60%;
   margin-left: 40%;
 }
+
 .chat-receiverMsg-inner {
   background-color: #96df9c;
   border-radius: 10px;
@@ -529,4 +530,16 @@ body {
 }
 .msl-options {
   color: #060612;
+}
+.classforprofile{
+  display: flex;
+  gap: 20px;
+  justify-content: start;
+  align-items: center;
+}
+.classforprofile img{
+  height: 100px;
+  width: 100px;
+
+  border-radius: 50%;
 }
