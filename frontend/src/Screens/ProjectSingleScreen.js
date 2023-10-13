@@ -1,28 +1,28 @@
-import axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
-import Card from "react-bootstrap/Card";
-import { Store } from "../Store";
-import { Button, Form } from "react-bootstrap";
-import MultiSelect from "react-multiple-select-dropdown-lite";
-import "react-multiple-select-dropdown-lite/dist/index.css";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import axios from 'axios';
+import React, { useContext, useEffect, useState } from 'react';
+import Card from 'react-bootstrap/Card';
+import { Store } from '../Store';
+import { Button, Form } from 'react-bootstrap';
+import MultiSelect from 'react-multiple-select-dropdown-lite';
+import 'react-multiple-select-dropdown-lite/dist/index.css';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "FATCH_REQUEST":
+    case 'FATCH_REQUEST':
       return { ...state, loading: true };
-    case "FATCH_SUCCESS":
+    case 'FATCH_SUCCESS':
       return { ...state, projectData: action.payload, loading: false };
-    case "FATCH_ERROR":
+    case 'FATCH_ERROR':
       return { ...state, error: action.payload, loading: false };
-    case "SUCCESS_CATEGORY":
+    case 'SUCCESS_CATEGORY':
       return { ...state, categoryData: action.payload, loading: false };
-    case "ERROR_CATEGORY":
+    case 'ERROR_CATEGORY':
       return { ...state, error: action.payload, loading: false };
-    case "UPDATE_SUCCESS":
+    case 'UPDATE_SUCCESS':
       return { ...state, successUpdate: action.payload };
 
-    case "UPDATE_RESET":
+    case 'UPDATE_RESET':
       return { ...state, successUpdate: false };
 
     default:
@@ -33,18 +33,15 @@ const reducer = (state, action) => {
 function ProjectSingleScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
-  console.log("param:", id);
   const { state } = useContext(Store);
-  // const { userInfo } = state;
-  // const { state, dispatch: ctxDispatch } = React.useContext(Store);
   const { toggleState, userInfo } = state;
-  const theme = toggleState ? "dark" : "light";
+  const theme = toggleState ? 'dark' : 'light';
   const [
     { loading, error, projectData, categoryData, successUpdate },
     dispatch,
   ] = React.useReducer(reducer, {
     loading: true,
-    error: "",
+    error: '',
     projectData: {},
     categoryData: {},
     successUpdate: false,
@@ -54,7 +51,6 @@ function ProjectSingleScreen() {
     const getConversations = async () => {
       try {
         const res = await axios.get(`/api/conversation/${id}`);
-        console.log("sharma", res.data);
         setConversation(res.data);
       } catch (err) {
         console.log(err);
@@ -66,15 +62,14 @@ function ProjectSingleScreen() {
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
-        dispatch("FETCH_REQUEST");
+        dispatch('FETCH_REQUEST');
         const response = await axios.get(`/api/project/${id}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
-        const datas = response.data;
-        console.log(datas);
-        dispatch({ type: "FETCH_SUCCESS", payload: datas });
+        const ProjectData = response.data;
+        dispatch({ type: 'FATCH_SUCCESS', payload: ProjectData });
       } catch (error) {
-        console.error("Error fetching project data:", error);
+        console.error('Error fetching project data:', error);
       }
     };
 
@@ -84,37 +79,35 @@ function ProjectSingleScreen() {
   useEffect(() => {
     const fetchCategoryData = async () => {
       try {
-        dispatch("FETCH_REQUEST");
+        dispatch('FETCH_REQUEST');
         const response = await axios.get(`/api/category`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const category = response.data;
-        console.log(category);
-        dispatch({ type: "SUCCESS_CATEGORY", payload: category });
+        dispatch({ type: 'SUCCESS_CATEGORY', payload: category });
       } catch (error) {
-        console.error("Error fetching category data:", error);
+        console.error('Error fetching category data:', error);
       }
     };
 
     fetchCategoryData();
   }, []);
 
-  const [value, setvalue] = useState("");
-  const [placeholder, setPlaceholder] = useState("Categories");
+  const [value, setvalue] = useState('');
+  const [placeholder, setPlaceholder] = useState('Categories');
 
   const handleOnchange = (val) => {
-    console.log("val", val);
     setvalue(val);
-    setPlaceholder("");
+    setPlaceholder('');
   };
-  console.log("categoryData", categoryData);
-  const options = {};
-  // const options = categoryData.map((item) => ({
-  //   label: item.categoryName,
-  //   value: item.categoryName,
-  // }));
-  console.log("options", options);
+  // const options = categoryData.map((cat) => cat.categoryName);
+  // console.log('options', options);
 
+  const options = categoryData.map((item) => ({
+    label: item.categoryName,
+    value: item._id, // You can use _id or another unique identifier as the value
+  }));
+  console.log('categoryData', categoryData);
   return (
     <div>
       {loading ? (
@@ -149,7 +142,9 @@ function ProjectSingleScreen() {
                   </Form.Group>
 
                   <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold">Categories</Form.Label>
+                    <Form.Label className="fw-bold">
+                      {projectData.projectDescription}
+                    </Form.Label>
                     <MultiSelect
                       className="categorieslist"
                       onChange={handleOnchange}

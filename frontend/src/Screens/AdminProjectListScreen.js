@@ -16,7 +16,6 @@ import Tabs from 'react-bootstrap/Tabs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateField } from '@mui/x-date-pickers/DateField';
-import MultiSelectDropdown from './ex';
 
 
 import {
@@ -31,13 +30,16 @@ import { useContext, useEffect, useReducer, useState } from 'react';
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "FATCH_REQUEST":
-      return { ...state, loading: true }
-    case "FATCH_SUCCESS":
-      return { ...state, projectData: action.payload, loading: false }
-    case "FATCH_ERROR":
-      return { ...state, error: action.payload, loading: false }
-
+    case 'FATCH_REQUEST':
+      return { ...state, loading: true };
+    case 'FATCH_SUCCESS':
+      return { ...state, projectData: action.payload, loading: false };
+    case 'FATCH_ERROR':
+      return { ...state, error: action.payload, loading: false };
+    case 'SUCCESS_CATEGORY':
+      return { ...state, categoryData: action.payload, loading: false };
+    case 'ERROR_CATEGORY':
+      return { ...state, error: action.payload, loading: false };
     case 'DELETE_SUCCESS':
       return { ...state, successDelete: action.payload };
 
@@ -61,25 +63,25 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: "_id", headerName: "ID", width: 90 },
+  { field: '_id', headerName: 'ID', width: 90 },
   {
-    field: "projectName",
-    headerName: "Project Name",
+    field: 'projectName',
+    headerName: 'Project Name',
     width: 150,
   },
   {
-    field: "projectDescription",
-    headerName: "Description",
+    field: 'projectDescription',
+    headerName: 'Description',
     width: 150,
   },
   {
-    field: "projectOwner",
-    headerName: "Project Owner",
+    field: 'projectCategory',
+    headerName: 'project Category',
     width: 90,
   },
   {
-    field: "assignedAgent",
-    headerName: "Assigned Agent",
+    field: 'assignedAgent',
+    headerName: 'Assigned Agent',
     width: 110,
   },
 ];
@@ -93,9 +95,9 @@ export default function AdminProjectListScreen() {
 
   const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
-  const theme = toggleState ? "dark" : "light";
+  const theme = toggleState ? 'dark' : 'light';
   const [
-    { loading, error, projectData, successDelete, successUpdate, categoryData, agentData, contractorData },
+    { loading, error, projectData, successDelete, successUpdate, categoryData, categoryData, agentData, contractorData },
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
@@ -225,24 +227,27 @@ export default function AdminProjectListScreen() {
           _id: items._id,
           projectName: items.projectName,
           projectDescription: items.projectDescription,
-          projectOwner: items.projectOwner,
-          assignedAgent: items.assignedAgent,
+          projectCategory: items.projectCategory
+            ? items.projectCategory.map((cat) => cat.categoryName)
+            : '',
+          assignedAgent: items.assignedAgent
+            ? items.assignedAgent.map((agent) => agent.agentName)
+            : '',
         }));
         console.log("sharam", rowData)
+
         dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     };
 
     if (successDelete) {
-      dispatch({ type: "DELETE_RESET" })
-    }
-    else if (successUpdate) {
-      dispatch({ type: "UPDATE_RESET" })
-    }
-    else {
-      FatchProjectData()
+      dispatch({ type: 'DELETE_RESET' });
+    } else if (successUpdate) {
+      dispatch({ type: 'UPDATE_RESET' });
+    } else {
+      FatchProjectData();
     }
   }, [successDelete, successUpdate, dispatch, userInfo.token]); // Add dependencies to the dependency array
 
@@ -291,7 +296,7 @@ export default function AdminProjectListScreen() {
   }
 
   const deleteHandle = async (productId) => {
-    if (window.confirm("Are you sure to delete?")) {
+    if (window.confirm('Are you sure to delete?')) {
       try {
         const response = await axios.delete(`/api/project/${productId}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
@@ -438,6 +443,7 @@ export default function AdminProjectListScreen() {
                     )}
                     <TextField
                       required
+                      required
                       className="mb-2"
                       value={projectName}
                       onChange={(e) => setProjectName(e.target.value)}
@@ -446,6 +452,7 @@ export default function AdminProjectListScreen() {
                     />
 
                     <TextField
+                      required
                       required
                       id="outlined-multiline-static"
                       onChange={(e) => setProjectDescription(e.target.value)}
@@ -575,12 +582,14 @@ export default function AdminProjectListScreen() {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DateField
                         required
+                        required
                         label="Start Date"
                         value={startDate}
                         onChange={(newValue) => setStartDate(newValue)}
                         format="MM-DD-YYYY"
                       />
                       <DateField
+                        required
                         required
                         label="End Date"
                         value={endDate}

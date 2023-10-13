@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Card,
   CardBody,
@@ -6,15 +6,15 @@ import {
   CardHeader,
   Form,
   InputGroup,
-} from "react-bootstrap";
-import { IoSendSharp } from "react-icons/io5";
-import { RxFontStyle } from "react-icons/rx";
-import MyStatefulEditor from "../Components/rte_test";
-import { Store } from "../Store";
-import { Socket, io } from "socket.io-client";
-import axios from "axios";
-import { useParams } from "react-router-dom";
-import {format} from "timeago.js"
+} from 'react-bootstrap';
+import { IoSendSharp } from 'react-icons/io5';
+import { RxFontStyle } from 'react-icons/rx';
+import MyStatefulEditor from '../Components/rte_test';
+import { Store } from '../Store';
+import { Socket, io } from 'socket.io-client';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
+import { format } from 'timeago.js';
 
 function ChatWindowScreen() {
   const { id } = useParams();
@@ -24,13 +24,11 @@ function ChatWindowScreen() {
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
-  console.log("user", userInfo);
 
   useEffect(() => {
     const getMessages = async () => {
       try {
         const { data } = await axios.get(`/api/message/${id}`);
-        console.log("karannn", data);
         setChatMessages(data);
       } catch (err) {
         console.log(err);
@@ -40,36 +38,34 @@ function ChatWindowScreen() {
     getMessages();
   }, [conversation]);
 
-  console.log("chat", chatMessages);
   const showFontStyleBox = () => {
     setShowFontStyle(!showFontStyle);
   };
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState("");
+  const [newMessage, setNewMessage] = useState('');
   const handleSendMessage = () => {
-    if (newMessage.trim() !== "") {
+    if (newMessage.trim() !== '') {
       setMessages([...messages, newMessage]);
-      setNewMessage("");
+      setNewMessage('');
     }
-    if (val.trim() !== "") {
+    if (val.trim() !== '') {
       setMessages([...messages, val]);
-      setVal("");
+      setVal('');
     }
     submitHandler();
   };
-  const [val, setVal] = useState("");
+  const [val, setVal] = useState('');
   const onChange = (value) => {
     setVal(value);
   };
 
   const submitHandler = async (e) => {
     try {
-      const { data } = await axios.post("/api/message/", {
+      const { data } = await axios.post('/api/message/', {
         conversationId: id,
         sender: userInfo._id,
         text: newMessage,
       });
-      console.log(data);
     } catch (err) {
       console.log(err.response?.data?.message);
     }
@@ -112,14 +108,14 @@ function ChatWindowScreen() {
               <InputGroup>
                 <Form.Control
                   type="text"
-                  style={{ display: showFontStyle ? "none" : "block" }}
+                  style={{ display: showFontStyle ? 'none' : 'block' }}
                   placeholder="Type your message here..."
                   aria-label="Search"
                   aria-describedby="basic-addon2"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                 />
-                <div style={{ display: showFontStyle ? "block" : "none" }}>
+                <div style={{ display: showFontStyle ? 'block' : 'none' }}>
                   <MyStatefulEditor markup="" onChange={onChange} />
                 </div>
                 <div className="d-flex justify-content-center align-items-center ps-2 ">

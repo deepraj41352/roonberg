@@ -1,26 +1,26 @@
-import "./App.css";
-import ForgetPassword from "./Screens/ForgetPasswordScreen";
+import './App.css';
+import ForgetPassword from './Screens/ForgetPasswordScreen';
 import {
   BrowserRouter,
   Link,
   Route,
   Routes,
   useNavigate,
-} from "react-router-dom";
-import ResetPasswordScreen from "./Screens/ResetPasswordScreen";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import SignUpForm from "./Screens/SignUpScreen";
-import RegistrationForm from "./Screens/RegistrationScreen";
-import AdminProjectListScreen from "./Screens/AdminProjectListScreen";
-import AdminAgentListScreen from "./Screens/AdminAgentListScreen";
-import AdminCategoriesListScreen from "./Screens/AdminCategoriesListScreen";
-import AdminListScreen from "./Screens/AdminListScreen";
-import AdminContractorListScreen from "./Screens/AdminContractorListScreen";
-import SearchScreen from "./Screens/SearchScreen";
-import ProjectSingleScreen from "./Screens/ProjectSingleScreen";
-import ChatWindowScreen from "./Screens/ChatWindowScreen";
-import { useContext, useState } from "react";
+} from 'react-router-dom';
+import ResetPasswordScreen from './Screens/ResetPasswordScreen';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import SignUpForm from './Screens/SignInScreen';
+import RegistrationForm from './Screens/RegistrationScreen';
+import AdminProjectListScreen from './Screens/AdminProjectListScreen';
+import AdminAgentListScreen from './Screens/AdminAgentListScreen';
+import AdminCategoriesListScreen from './Screens/AdminCategoriesListScreen';
+import AdminListScreen from './Screens/AdminListScreen';
+import AdminContractorListScreen from './Screens/AdminContractorListScreen';
+import SearchScreen from './Screens/SearchScreen';
+import ProjectSingleScreen from './Screens/ProjectSingleScreen';
+import ChatWindowScreen from './Screens/ChatWindowScreen';
+import { useContext, useState } from 'react';
 import {
   Container,
   Form,
@@ -52,8 +52,8 @@ function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
-  const theme = toggleState ? "dark" : "light";
-  const [searchValue, setSearchValue] = useState("");
+  const theme = toggleState ? 'dark' : 'light';
+  const [searchValue, setSearchValue] = useState('');
   const navigate = useNavigate();
   const handleInputChange = (event) => {
     setSearchValue(event.target.value);
@@ -63,7 +63,7 @@ function App() {
     setSidebarVisible(!sidebarVisible);
   };
   const handleSearchScreen = () => {
-    navigate("/searchScreen");
+    navigate('/searchScreen');
   };
 
   return (
@@ -113,7 +113,6 @@ function App() {
                         </InputGroup.Text>
                       </InputGroup>
                     </Form>
-                    {console.log(searchValue)}
                     <Navbar.Toggle aria-controls="navbarScroll" />
                     <Navbar.Collapse
                       className="justify-content-end"
@@ -121,7 +120,7 @@ function App() {
                     >
                       <Nav
                         className="gap-3"
-                        style={{ maxHeight: "100px" }}
+                        style={{ maxHeight: '100px' }}
                         navbarScroll
                       >
                         <div className="py-2">
@@ -199,7 +198,7 @@ function App() {
                     />
 
                     <Route
-                      path="/adminDashboard"
+                      path="/dashboard"
                       element={
                         <ProtectedRoute>
                           <AdminDashboard />
@@ -222,8 +221,7 @@ function App() {
                         </ProtectedRoute>
                       }
                     />
-                    <Route path="/ProfileScreen" element={<ProfileScreen />} />
-                    <Route path="/ProfileScreen" element={<ProfileScreen />} />
+                    <Route path="/profile-screen" element={<ProfileScreen />} />
                     <Route
                       path="/adminCategoriesList"
                       element={

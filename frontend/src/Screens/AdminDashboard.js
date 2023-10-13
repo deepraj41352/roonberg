@@ -1,18 +1,19 @@
-import React, { useContext } from "react";
-import { Card, Col, Row } from "react-bootstrap";
-import { MdQueue } from "react-icons/md";
-import { GrCompliance } from "react-icons/gr";
-import { HiUserGroup } from "react-icons/hi";
-import data from "../dummyData";
-import Chart from "react-google-charts";
-import { Store } from "../Store";
+import React, { useContext } from 'react';
+import { Card, Col, Row } from 'react-bootstrap';
+import { MdQueue } from 'react-icons/md';
+import { GrCompliance } from 'react-icons/gr';
+import { HiUserGroup } from 'react-icons/hi';
+import data from '../dummyData';
+import Chart from 'react-google-charts';
+import { Store } from '../Store';
 
 export default function AdminDashboard() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
-  const theme = toggleState ? "dark" : "light";
-  return (
+  const theme = toggleState ? 'dark' : 'light';
+  return userInfo.role == 'superadmin' ? (
     <>
+      {' '}
       <Row className="m-2">
         <Col>
           <Card className={`${theme}CardBody`}>
@@ -79,6 +80,12 @@ export default function AdminDashboard() {
             </>
           )}
         </Col>
+      </Row>
+    </>
+  ) : (
+    <>
+      <Row>
+        <h2>Well Come {userInfo.first_name}</h2>
       </Row>
     </>
   );
