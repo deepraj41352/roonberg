@@ -14,7 +14,7 @@ import { Store } from "../Store";
 import { Socket, io } from "socket.io-client";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import {format} from "timeago.js"
+import { format } from "timeago.js";
 
 function ChatWindowScreen() {
   const { id } = useParams();
@@ -76,7 +76,7 @@ function ChatWindowScreen() {
   };
 
   return (
-    <div className=" d-flex justify-content-center align-items-center">
+    <div className=" justify-content-center align-items-center">
       <div className="d-flex justify-content-center gap-3 ">
         <Card className="chatWindow mt-3">
           <CardHeader>Rohan </CardHeader>

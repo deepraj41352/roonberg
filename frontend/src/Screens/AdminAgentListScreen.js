@@ -20,7 +20,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { Store } from "../Store";
 import { ImCross } from "react-icons/im";
-import { ThreeDots } from 'react-loader-spinner';
+import { ThreeDots } from "react-loader-spinner";
+import { useNavigate } from "react-router-dom";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -36,13 +37,8 @@ const reducer = (state, action) => {
 
     case "DELETE_RESET":
       return { ...state, successDelete: false };
-
-    case "UPDATE_SUCCESS":
-      return { ...state, successUpdate: action.payload };
-
-    case "UPDATE_RESET":
-      return { ...state, successUpdate: false };
-
+    case "FATCH_CATEGORY":
+      return { ...state, categoryData: action.payload };
     default:
       return state;
   }
@@ -61,7 +57,12 @@ const columns = [
     width: 200,
   },
   {
-    field: "status",
+    field: "agentCategory",
+    headerName: "Category",
+    width: 150,
+  },
+  {
+    field: "userStatus",
     headerName: "Status",
     width: 150,
   },
@@ -69,48 +70,36 @@ const columns = [
 
 export default function AdminAgentListScreen() {
   const role = "agent";
+  const navigate = useNavigate();
   const { state } = React.useContext(Store);
   const { toggleState, userInfo } = state;
   const theme = toggleState ? "dark" : "light";
   const [isModelOpen, setIsModelOpen] = React.useState(false);
-  const [selectedRowData, setSelectedRowData] = React.useState(null);
-  const [isNewAgent, setIsNewAgent] = React.useState(false);
-  const [
-    { loading, error, AgentData, successDelete, successUpdate },
-    dispatch,
-  ] = React.useReducer(reducer, {
-    loading: true,
-    error: "",
-    AgentData: [],
-    successDelete: false,
-    successUpdate: false,
-  });
+
+  const [{ loading, error, AgentData, successDelete, categoryData }, dispatch] =
+    React.useReducer(reducer, {
+      loading: true,
+      error: "",
+      AgentData: [],
+      successDelete: false,
+      categoryData: [],
+    });
 
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
-  const [status, setStatus] = React.useState("");
+  const [status, setStatus] = React.useState(false);
   const [password, setPassword] = React.useState("");
-
+  const [selectcategory, setSelectCategory] = React.useState("");
   const handleCloseRow = () => {
     setIsModelOpen(false);
   };
 
   const handleNew = () => {
-    setSelectedRowData(null);
     setIsModelOpen(true);
-    setIsNewAgent(true);
   };
 
   const handleEdit = (userid) => {
-    const agentToEdit = AgentData.find(
-      (agent) => agent && agent._id === userid
-    );
-    setName(agentToEdit ? agentToEdit.first_name : "");
-    setEmail(agentToEdit ? agentToEdit.email : "");
-    setStatus(agentToEdit ? agentToEdit.status : "active");
-    setSelectedRowData(agentToEdit);
-    setIsModelOpen(true);
-    setIsNewAgent(false);
+    navigate(`/adminEditAgent/${userid}`);
   };
 
   React.useEffect(() => {
@@ -125,7 +114,8 @@ export default function AdminAgentListScreen() {
             _id: items._id,
             first_name: items.first_name,
             email: items.email,
-            status: items.status,
+            userStatus: items.userStatus,
+            agentCategory: items.agentCategory,
           };
         });
         dispatch({ type: "FATCH_SUCCESS", payload: rowData });
@@ -135,46 +125,36 @@ export default function AdminAgentListScreen() {
     };
     if (successDelete) {
       dispatch({ type: "DELETE_RESET" });
-    } else if (successUpdate) {
-      dispatch({ type: "UPDATE_RESET" });
     } else {
       FatchAgentData();
     }
-  }, [successDelete, successUpdate]);
+  }, [successDelete]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isNewAgent) {
-      const response = await axios.post(`/api/user/signup`, {
-        first_name: name,
-        email: email,
-        password: password,
-        role: role,
-      });
-      if (response.status === 201) {
+    try {
+      const response = await axios.post(
+        `/api/user/add`,
+        {
+          first_name: name,
+          email: email,
+          password: password,
+          role: role,
+          userStatus: status,
+          agentCategory: selectcategory,
+        },
+        { headers: { Authorization: `Bearer ${userInfo.token}` } }
+      );
+      console.log(response);
+      if (response.status === 200) {
         toast.success("Agent added Successfully !");
         const datas = response.data;
         setIsModelOpen(false);
         dispatch({ type: "FATCH_SUCCESS", payload: datas });
         dispatch({ type: "UPDATE_SUCCESS", payload: true });
       }
-    } else {
-      const response = await axios.put(
-        `/api/user/update/${selectedRowData._id}`,
-        {
-          first_name: name,
-          email: email,
-          role: role,
-        },
-
-        { headers: { Authorization: `Bearer ${userInfo.token}` } }
-      );
-
-      if (response.status === 200) {
-        toast.success(response.data);
-        setIsModelOpen(false);
-        dispatch({ type: "UPDATE_SUCCESS", payload: true });
-      }
+    } catch (error) {
+      toast.error(error.response?.data?.message);
     }
   };
 
@@ -201,26 +181,42 @@ export default function AdminAgentListScreen() {
     }
   };
 
+  React.useEffect(() => {
+    const FatchCategory = async () => {
+      try {
+        dispatch("FATCH_REQUEST");
+        const response = await axios.get(`/api/category/`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        const datas = response.data;
+        setSelectCategory(datas);
+        dispatch({ type: "FATCH_CATEGORY", payload: datas });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    FatchCategory();
+  }, []);
+
   return (
     <>
       {loading ? (
         <>
-        <div className='ThreeDot' >
-        <ThreeDots 
-height="80" 
-width="80" 
-radius="9"
-className="ThreeDot justify-content-center"
-color="#0e0e3d" 
-ariaLabel="three-dots-loading"
-wrapperStyle={{}}
-wrapperClassName=""
-visible={true}
- />
- </div>
-
+          <div className="ThreeDot">
+            <ThreeDots
+              height="80"
+              width="80"
+              radius="9"
+              className="ThreeDot justify-content-center"
+              color="#0e0e3d"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClassName=""
+              visible={true}
+            />
+          </div>
         </>
-      ) : (error ? (
+      ) : error ? (
         <div>{error}</div>
       ) : (
         <>
@@ -299,15 +295,9 @@ visible={true}
                   className="formcrossbtn"
                   onClick={handleCloseRow}
                 />
-                {isNewAgent ? (
-                  <h4 className="d-flex justify-content-center text-dark">
-                    Add new Agent Details
-                  </h4>
-                ) : (
-                  <h4 className="d-flex justify-content-center text-dark">
-                    Edit Agent Details
-                  </h4>
-                )}
+                <h4 className="d-flex justify-content-center text-dark">
+                  Add Agent
+                </h4>
                 <TextField
                   className="mb-2"
                   value={name}
@@ -321,25 +311,47 @@ visible={true}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   label="Email"
+                  type="email"
                   fullWidth
                 />
-                {isNewAgent && (
-                  <TextField
-                    className="mb-2"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    label="Password"
-                    fullWidth
-                  />
-                )}
+                <TextField
+                  className="mb-2"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  label="Password"
+                  type="password"
+                  fullWidth
+                />
 
-                <FormControl className="formselect">
+                <FormControl>
+                  <InputLabel>Choose Options</InputLabel>
                   <Select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
                   >
-                    <MenuItem value="Active">Active</MenuItem>
-                    <MenuItem value="Inactive">Inactive</MenuItem>
+                    <MenuItem value={true}>Active</MenuItem>
+                    <MenuItem value={false}>Inactive</MenuItem>
+                  </Select>
+                </FormControl>
+                {/* <select className='formselect mb-2' value={category} onChange={(e) => setCategory(e.target.value)} >
+                    <option value="" >
+                      Select a category
+                    </option>
+                    {categoryData.map((items) => (
+                      <option key={items._id} value={items._id} >{items.categoryName}</option>
+                    ))}
+                  </select> */}
+                <FormControl>
+                  <InputLabel>Choose Category</InputLabel>
+                  <Select
+                    value={selectcategory}
+                    onChange={(e) => setSelectCategory(e.target.value)}
+                  >
+                    {categoryData.map((items) => (
+                      <MenuItem key={items._id} value={items._id}>
+                        {items.categoryName}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
                 <br></br>
@@ -349,13 +361,13 @@ visible={true}
                   color="primary"
                   type="submit"
                 >
-                  {isNewAgent ? "Add Agent" : "Save Changes"}
+                  Submit
                 </Button>
               </Form>
             </Box>
           </Modal>
         </>
-      ))}
+      )}
     </>
   );
 }

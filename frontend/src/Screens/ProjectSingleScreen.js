@@ -6,6 +6,7 @@ import { Button, Form } from "react-bootstrap";
 import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { ThreeDots } from "react-loader-spinner";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -118,7 +119,21 @@ function ProjectSingleScreen() {
   return (
     <div>
       {loading ? (
-        <div>Loading ...</div>
+        <>
+          <div className="ThreeDot">
+            <ThreeDots
+              height="80"
+              width="80"
+              radius="9"
+              className="ThreeDot justify-content-center"
+              color="#0e0e3d"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClassName=""
+              visible={true}
+            />
+          </div>
+        </>
       ) : error ? (
         <div>{error}</div>
       ) : (
@@ -157,7 +172,7 @@ function ProjectSingleScreen() {
                       placeholder={placeholder}
                     />
                   </Form.Group>
-                  <div className="d-flex gap-3 mb-3">
+                  <div className="d-flex gap-3 mb-3 start-end-date">
                     <Form.Group className="w-100" controlId="duedate">
                       <Form.Label className="fw-bold">Start Date</Form.Label>
                       <Form.Control

@@ -23,7 +23,7 @@ body {
   /* background-color: rgba(0, 0, 0, 0) !important; */
   background-color: white;
 }
-.ThreeDot{
+.ThreeDot {
   display: flex;
   justify-content: center !important;
 }
@@ -83,7 +83,11 @@ body {
   background-color: #07162c;
   color: #fff !important;
 }
-
+@media (max-width: 420px) {
+  .modalRespnsive {
+    max-width: 300px;
+  }
+}
 .tableEditbtn {
   background-color: #8a9097 !important;
 }
@@ -520,5 +524,49 @@ body {
 @media (max-width: 990px) {
   .search-bar-dash-outer {
     display: none !important;
+  }
+}
+.ProfileScreen-inner {
+  max-width: 450px;
+}
+@media (max-width: 400px) {
+  .ProfileScreen-inner {
+    max-width: 330px;
+  }
+}
+@media (max-width: 380px) {
+  .input-box-inner {
+    max-width: 210px !important;
+  }
+}
+.darkTab {
+  background-color: #0b0b48;
+}
+.lightTab {
+  /* background-color: #8a9097; */
+  background-color: #0b0b48;
+}
+.nav-link.active {
+  background-color: #0d0d32 !important;
+  color: white !important;
+}
+@media (max-width: 1090px) {
+  .start-end-date {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 900px) {
+  .projectScreenCard-outer {
+    flex-direction: column;
+    max-width: 700px;
+  }
+  .start-end-date {
+    flex-direction: row;
+  }
+}
+@media (max-width: 500px) {
+  .start-end-date {
+    flex-direction: column;
   }
 }
