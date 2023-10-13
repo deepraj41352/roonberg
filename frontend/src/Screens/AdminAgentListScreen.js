@@ -200,140 +200,141 @@ export default function AdminAgentListScreen() {
 
   return (
     <>
-      {loading ? (
-        <>
-          <div className="ThreeDot">
-            <ThreeDots
-              height="80"
-              width="80"
-              radius="9"
-              className="ThreeDot justify-content-center"
-              color="#0e0e3d"
-              ariaLabel="three-dots-loading"
-              wrapperStyle={{}}
-              wrapperClassName=""
-              visible={true}
-            />
-          </div>
-        </>
-      ) : error ? (
-        <div>{error}</div>
-      ) : (
-        <>
-          <Button
-            variant="outlined"
-            className=" m-2 d-flex globalbtnColor"
-            onClick={handleNew}
-          >
-            <BiPlusMedical className="mx-2" />
-            Add Agent
-          </Button>
-          <Box sx={{ height: 400, width: "100%" }}>
-            <DataGrid
-              className={`tableBg mx-2 ${theme}DataGrid`}
-              rows={AgentData}
-              columns={[
-                ...columns,
-                {
-                  field: "action",
-                  headerName: "Action",
-                  width: 250,
-                  renderCell: (params) => {
-                    return (
-                      <Grid item xs={8}>
-                        <Button
-                          variant="contained"
-                          className="mx-2 tableEditbtn"
-                          onClick={() => handleEdit(params.row._id)}
-                          startIcon={<MdEdit />}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          className="mx-2 tableDeletebtn"
-                          onClick={() => deleteHandle(params.row._id)}
-                          startIcon={<AiFillDelete />}
-                        >
-                          Delete
-                        </Button>
-                      </Grid>
-                    );
-                  },
-                },
-              ]}
-              getRowId={(row) => row._id}
-              initialState={{
-                pagination: {
-                  paginationModel: {
-                    pageSize: 5,
-                  },
-                },
-              }}
-              pageSizeOptions={[5]}
-              checkboxSelection
-              disableRowSelectionOnClick
-            />
-          </Box>
-          <Modal open={isModelOpen} onClose={handleCloseRow}>
-            <Box
-              className="modelBg"
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                width: 400,
-                bgcolor: "background.paper",
-                boxShadow: 24,
-                p: 4,
-              }}
+      <div className="px-3 mt-3">
+        {loading ? (
+          <>
+            <div className="ThreeDot">
+              <ThreeDots
+                height="80"
+                width="80"
+                radius="9"
+                className="ThreeDot justify-content-center"
+                color="#0e0e3d"
+                ariaLabel="three-dots-loading"
+                wrapperStyle={{}}
+                wrapperClassName=""
+                visible={true}
+              />
+            </div>
+          </>
+        ) : error ? (
+          <div>{error}</div>
+        ) : (
+          <>
+            <Button
+              variant="outlined"
+              className=" m-2 d-flex globalbtnColor"
+              onClick={handleNew}
             >
-              <Form onSubmit={handleSubmit}>
-                <ImCross
-                  color="black"
-                  className="formcrossbtn"
-                  onClick={handleCloseRow}
-                />
-                <h4 className="d-flex justify-content-center text-dark">
-                  Add Agent
-                </h4>
-                <TextField
-                  className="mb-2"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  label="Username"
-                  fullWidth
-                />
+              <BiPlusMedical className="mx-2" />
+              Add Agent
+            </Button>
+            <Box sx={{ height: 400, width: "100%" }}>
+              <DataGrid
+                className={`tableBg mx-2 ${theme}DataGrid`}
+                rows={AgentData}
+                columns={[
+                  ...columns,
+                  {
+                    field: "action",
+                    headerName: "Action",
+                    width: 250,
+                    renderCell: (params) => {
+                      return (
+                        <Grid item xs={8}>
+                          <Button
+                            variant="contained"
+                            className="mx-2 tableEditbtn"
+                            onClick={() => handleEdit(params.row._id)}
+                            startIcon={<MdEdit />}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            className="mx-2 tableDeletebtn"
+                            onClick={() => deleteHandle(params.row._id)}
+                            startIcon={<AiFillDelete />}
+                          >
+                            Delete
+                          </Button>
+                        </Grid>
+                      );
+                    },
+                  },
+                ]}
+                getRowId={(row) => row._id}
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      pageSize: 5,
+                    },
+                  },
+                }}
+                pageSizeOptions={[5]}
+                checkboxSelection
+                disableRowSelectionOnClick
+              />
+            </Box>
+            <Modal open={isModelOpen} onClose={handleCloseRow}>
+              <Box
+                className="modelBg"
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: 400,
+                  bgcolor: "background.paper",
+                  boxShadow: 24,
+                  p: 4,
+                }}
+              >
+                <Form onSubmit={handleSubmit}>
+                  <ImCross
+                    color="black"
+                    className="formcrossbtn"
+                    onClick={handleCloseRow}
+                  />
+                  <h4 className="d-flex justify-content-center text-dark">
+                    Add Agent
+                  </h4>
+                  <TextField
+                    className="mb-2"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    label="Username"
+                    fullWidth
+                  />
 
-                <TextField
-                  className="mb-2"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  label="Email"
-                  type="email"
-                  fullWidth
-                />
-                <TextField
-                  className="mb-2"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  label="Password"
-                  type="password"
-                  fullWidth
-                />
+                  <TextField
+                    className="mb-2"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    label="Email"
+                    type="email"
+                    fullWidth
+                  />
+                  <TextField
+                    className="mb-2"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    label="Password"
+                    type="password"
+                    fullWidth
+                  />
 
-                <FormControl>
-                  <InputLabel>Choose Options</InputLabel>
-                  <Select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                  >
-                    <MenuItem value={true}>Active</MenuItem>
-                    <MenuItem value={false}>Inactive</MenuItem>
-                  </Select>
-                </FormControl>
-                {/* <select className='formselect mb-2' value={category} onChange={(e) => setCategory(e.target.value)} >
+                  <FormControl>
+                    <InputLabel>Choose Options</InputLabel>
+                    <Select
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
+                    >
+                      <MenuItem value={true}>Active</MenuItem>
+                      <MenuItem value={false}>Inactive</MenuItem>
+                    </Select>
+                  </FormControl>
+                  {/* <select className='formselect mb-2' value={category} onChange={(e) => setCategory(e.target.value)} >
                     <option value="" >
                       Select a category
                     </option>
@@ -341,33 +342,34 @@ export default function AdminAgentListScreen() {
                       <option key={items._id} value={items._id} >{items.categoryName}</option>
                     ))}
                   </select> */}
-                <FormControl>
-                  <InputLabel>Choose Category</InputLabel>
-                  <Select
-                    value={selectcategory}
-                    onChange={(e) => setSelectCategory(e.target.value)}
+                  <FormControl>
+                    <InputLabel>Choose Category</InputLabel>
+                    <Select
+                      value={selectcategory}
+                      onChange={(e) => setSelectCategory(e.target.value)}
+                    >
+                      {categoryData.map((items) => (
+                        <MenuItem key={items._id} value={items._id}>
+                          {items.categoryName}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <br></br>
+                  <Button
+                    className="mt-2 formbtn"
+                    variant="contained"
+                    color="primary"
+                    type="submit"
                   >
-                    {categoryData.map((items) => (
-                      <MenuItem key={items._id} value={items._id}>
-                        {items.categoryName}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <br></br>
-                <Button
-                  className="mt-2 formbtn"
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                >
-                  Submit
-                </Button>
-              </Form>
-            </Box>
-          </Modal>
-        </>
-      )}
+                    Submit
+                  </Button>
+                </Form>
+              </Box>
+            </Modal>
+          </>
+        )}
+      </div>
     </>
   );
 }

@@ -6,6 +6,7 @@ import { Button, Form } from "react-bootstrap";
 import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import { ThreeDots } from "react-loader-spinner";
 
 const reducer = (state, action) => {
@@ -34,11 +35,11 @@ const reducer = (state, action) => {
 function ProjectSingleScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
-  console.log("param:", id);
   const { state } = useContext(Store);
-  // const { userInfo } = state;
-  // const { state, dispatch: ctxDispatch } = React.useContext(Store);
   const { toggleState, userInfo } = state;
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [createdDate, setCreatedDate] = useState();
+  const [endDate, setEndDate] = useState();
   const theme = toggleState ? "dark" : "light";
   const [
     { loading, error, projectData, categoryData, successUpdate },
@@ -55,7 +56,6 @@ function ProjectSingleScreen() {
     const getConversations = async () => {
       try {
         const res = await axios.get(`/api/conversation/${id}`);
-        console.log("sharma", res.data);
         setConversation(res.data);
       } catch (err) {
         console.log(err);
@@ -71,9 +71,21 @@ function ProjectSingleScreen() {
         const response = await axios.get(`/api/project/${id}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
-        const datas = response.data;
-        console.log(datas);
-        dispatch({ type: "FETCH_SUCCESS", payload: datas });
+        const ProjectDatas = response.data;
+        console.log("ProjectDatas", ProjectDatas);
+        setEndDate(
+          ProjectDatas.endDate ? ProjectDatas.endDate.split("T")[0] : null
+        );
+        setCreatedDate(
+          ProjectDatas.createdDate
+            ? ProjectDatas.createdDate.split("T")[0]
+            : null
+        );
+        setSelectedOptions(
+          ProjectDatas.projectCategory.map((item) => item.categoryId).join(",")
+        );
+
+        dispatch({ type: "FATCH_SUCCESS", payload: ProjectDatas });
       } catch (error) {
         console.error("Error fetching project data:", error);
       }
@@ -90,7 +102,6 @@ function ProjectSingleScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const category = response.data;
-        console.log(category);
         dispatch({ type: "SUCCESS_CATEGORY", payload: category });
       } catch (error) {
         console.error("Error fetching category data:", error);
@@ -100,22 +111,68 @@ function ProjectSingleScreen() {
     fetchCategoryData();
   }, []);
 
-  const [value, setvalue] = useState("");
-  const [placeholder, setPlaceholder] = useState("Categories");
+  console.log("selectedOptions", selectedOptions);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // Construct the updated data object
+      const categoryIds = selectedOptions.split(",");
+      const projectCategory = categoryIds.map((categoryId) => {
+        const category = categoryData.find((cat) => cat._id === categoryId);
+        return {
+          categoryId,
+          categoryName: category ? category.categoryName : "Unknown Category",
+        };
+      });
 
-  const handleOnchange = (val) => {
-    console.log("val", val);
-    setvalue(val);
-    setPlaceholder("");
+      const updatedData = {
+        projectName: projectData.projectName,
+        projectDescription: projectData.projectDescription,
+        projectCategory, // Assign the constructed projectCategory array here
+        createdDate: createdDate,
+        endDate: endDate,
+      };
+
+      const response = await axios.put(
+        `/api/project/update/${id}`,
+        updatedData,
+        {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success("Project updated Successfully !");
+        console.log(response);
+      }
+    } catch (error) {
+      console.error("API Error:", error);
+    }
   };
-  console.log("categoryData", categoryData);
-  const options = {};
-  // const options = categoryData.map((item) => ({
-  //   label: item.categoryName,
-  //   value: item.categoryName,
-  // }));
-  console.log("options", options);
 
+  const options =
+    categoryData && Array.isArray(categoryData)
+      ? categoryData.map((item) => ({
+          label: item.categoryName,
+          value: item._id,
+        }))
+      : [];
+  // console.log(projectData);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    dispatch({
+      type: "FATCH_SUCCESS",
+      payload: {
+        ...projectData,
+        [name]: value,
+      },
+    });
+  };
+
+  const handleCategoryChange = (selected) => {
+    setSelectedOptions(selected);
+  };
   return (
     <div>
       {loading ? (
@@ -144,10 +201,15 @@ function ProjectSingleScreen() {
                 Project Details
               </Card.Header>
               <Card.Body className="text-start">
-                <Form className="px-3">
+                <Form className="px-3" onSubmit={handleSubmit}>
                   <Form.Group className="mb-3">
                     <Form.Label className="fw-bold">Project Name</Form.Label>
-                    <Form.Control type="text" value={projectData.projectName} />
+                    <Form.Control
+                      type="text"
+                      name="projectName"
+                      value={projectData.projectName}
+                      onChange={handleInputChange}
+                    />
                   </Form.Group>
                   <Form.Group
                     className="mb-3"
@@ -159,17 +221,18 @@ function ProjectSingleScreen() {
                     <Form.Control
                       as="textarea"
                       rows={3}
+                      name="projectDescription"
                       value={projectData.projectDescription}
+                      onChange={handleInputChange}
                     />
                   </Form.Group>
-
                   <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold">Categories</Form.Label>
+                    <Form.Label className="fw-bold">Select Options:</Form.Label>
                     <MultiSelect
                       className="categorieslist"
-                      onChange={handleOnchange}
+                      onChange={handleCategoryChange}
                       options={options}
-                      placeholder={placeholder}
+                      defaultValue={selectedOptions}
                     />
                   </Form.Group>
                   <div className="d-flex gap-3 mb-3 start-end-date">
@@ -177,17 +240,20 @@ function ProjectSingleScreen() {
                       <Form.Label className="fw-bold">Start Date</Form.Label>
                       <Form.Control
                         type="date"
-                        name="duedate"
-                        value={projectData.createdDate}
-                        placeholder="Due date"
+                        name="createdDate"
+                        value={createdDate}
+                        onChange={(e) => setCreatedDate(e.target.value)}
+                        placeholder="Start Date"
                       />
                     </Form.Group>
-                    <Form.Group className="w-100" controlId="duedate">
+                    <Form.Group className="w-100" controlId="end-date">
                       <Form.Label className="fw-bold">End Date</Form.Label>
                       <Form.Control
                         type="date"
-                        name="duedate"
-                        placeholder="Due date"
+                        name="endDate"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        placeholder="End Date"
                       />
                     </Form.Group>
                   </div>

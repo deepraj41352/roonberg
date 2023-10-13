@@ -18,7 +18,6 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateField } from "@mui/x-date-pickers/DateField";
 import { ImCross } from "react-icons/im";
-
 import MultiSelectDropdown from "./ex";
 import {
   FormControl,
@@ -37,7 +36,10 @@ const reducer = (state, action) => {
       return { ...state, projectData: action.payload, loading: false };
     case "FATCH_ERROR":
       return { ...state, error: action.payload, loading: false };
-
+    case "SUCCESS_CATEGORY":
+      return { ...state, categoryData: action.payload, loading: false };
+    case "ERROR_CATEGORY":
+      return { ...state, error: action.payload, loading: false };
     case "DELETE_SUCCESS":
       return { ...state, successDelete: action.payload };
 
@@ -68,8 +70,8 @@ const columns = [
     width: 150,
   },
   {
-    field: "projectOwner",
-    headerName: "Project Owner",
+    field: "projectCategory",
+    headerName: "project Category",
     width: 90,
   },
   {
@@ -89,7 +91,7 @@ export default function AdminProjectListScreen() {
   const { toggleState, userInfo } = state;
   const theme = toggleState ? "dark" : "light";
   const [
-    { loading, error, projectData, successDelete, successUpdate },
+    { loading, error, projectData, successDelete, successUpdate, categoryData },
     dispatch,
   ] = React.useReducer(reducer, {
     loading: true,
@@ -105,7 +107,7 @@ export default function AdminProjectListScreen() {
   const [assignedAgent, setAssignedAgent] = React.useState("");
   const [startDate, setStartDate] = React.useState();
   const [endDate, setEndDate] = React.useState();
-  // const [selectedOptions, setSelectedOptions] = React.useState([]);
+  const [selectedOptions, setSelectedOptions] = React.useState([]);
   const [selectedContractor, setSelectedContractor] = React.useState([]);
   const [selectedCategory, setselectedCategory] = React.useState([]);
   const [selectedAgent, setselectedAgent] = React.useState([]);
@@ -176,8 +178,12 @@ export default function AdminProjectListScreen() {
           _id: items._id,
           projectName: items.projectName,
           projectDescription: items.projectDescription,
-          projectOwner: items.projectOwner,
-          assignedAgent: items.assignedAgent,
+          projectCategory: items.projectCategory
+            ? items.projectCategory.map((cat) => cat.categoryName)
+            : "",
+          assignedAgent: items.assignedAgent
+            ? items.assignedAgent.map((agent) => agent.agentName)
+            : "",
         }));
         console.log("sharam", rowData);
         dispatch({ type: "FATCH_SUCCESS", payload: rowData });
@@ -193,7 +199,7 @@ export default function AdminProjectListScreen() {
     } else {
       FatchProjectData();
     }
-  }, [successDelete, successUpdate, dispatch, userInfo.token]); // Add dependencies to the dependency array
+  }, [successDelete, successUpdate, dispatch, userInfo.token]);
 
   const projectActiveData = projectData.filter((item) => {
     return item.projectStatus === "active";
@@ -208,7 +214,6 @@ export default function AdminProjectListScreen() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmiting(true);
-
     if (isNewProject) {
       const response = await axios.post(
         "/api/project/",
@@ -286,6 +291,35 @@ export default function AdminProjectListScreen() {
         toast.error("An error occurred while deleting data.");
       }
     }
+  };
+
+  React.useEffect(() => {
+    const fetchCategoryData = async () => {
+      try {
+        dispatch("FETCH_REQUEST");
+        const response = await axios.get(`/api/category`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        const categoryData = response.data;
+        const uniqueCategories = Array.from(
+          new Set(
+            categoryData.map((item) => ({
+              _id: item._id,
+              categoryName: item.categoryName,
+            }))
+          )
+        );
+        dispatch({ type: "SUCCESS_CATEGORY", payload: uniqueCategories });
+      } catch (error) {
+        console.error("Error fetching category data:", error);
+      }
+    };
+
+    fetchCategoryData();
+  }, []);
+
+  const handleChange = (event) => {
+    setSelectedOptions(event.target.value);
   };
 
   return (
@@ -429,92 +463,33 @@ export default function AdminProjectListScreen() {
                           // value={'text'}
                           // onChange={handleChange}
                         />
-                        {/* <FormControl fullWidth>
-                          <InputLabel>Choose Options</InputLabel>
+                        <FormControl fullWidth>
+                          <InputLabel>Categories</InputLabel>
                           <Select
                             required
                             multiple
                             value={selectedOptions}
                             onChange={handleChange}
-                            renderValue={(selected) => (
-                              <div>
-                                {selected.map((value) => (
-                                  <span key={value}>{value}, </span>
-                                ))}
-                              </div>
-                            )}
-                          >
-                            {options.map((option) => (
-                              <MenuItem key={option} value={option}>
-                                {option}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl> */}
-                        <FormControl fullWidth>
-                          <InputLabel>Choose Contractor</InputLabel>
-                          <Select
-                            required
-                            // multiple
-                            value={selectedContractor}
-                            onChange={handleChangeContractor}
                             // renderValue={(selected) => (
                             //   <div>
-                            //     {selected.map((value) => (
-                            //       <span key={value}>{value}, </span>
-                            //     ))}
+                            //     {categoryData && selected
+                            //       ? selected.map((value) => (
+                            //           <span key={value}>
+                            //             {categoryData.find(
+                            //               (option) => option._id === value
+                            //             ).categoryName + ','}
+                            //           </span>
+                            //         ))
+                            //       : ''}
                             //   </div>
                             // )}
                           >
-                            {ContractorOptions.map((option) => (
-                              <MenuItem key={option} value={option}>
-                                {option}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                        <FormControl fullWidth>
-                          <InputLabel>Choose Category</InputLabel>
-                          <Select
-                            required
-                            // multiple
-                            value={selectedCategory}
-                            onChange={handleChangeCategory}
-                            // renderValue={(selected) => (
-                            //   <div>
-                            //     {selected.map((value) => (
-                            //       <span key={value}>{value}, </span>
-                            //     ))}
-                            //   </div>
-                            // )}
-                          >
-                            {categoryOptions.map((option) => (
-                              <MenuItem key={option} value={option}>
-                                {option}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                        <FormControl fullWidth>
-                          <InputLabel>Choose Agent</InputLabel>
-                          <Select
-                            required
-                            // multiple
-                            value={selectedAgent}
-                            onChange={handleChangeAgent}
-                            // renderValue={(selected) => (
-                            //   <div>
-                            //     {selected.map((value) => (
-                            //       <span key={value}>{value}, </span>
-                            //     ))}
-                            //   </div>
-                            // )}
-                          >
-                            {AgentOptions.map((option) => (
-                              <MenuItem key={option} value={option}>
-                                {option}
-                              </MenuItem>
-                            ))}
+                            {categoryData &&
+                              categoryData.map((option) => (
+                                <MenuItem key={option._id} value={option._id}>
+                                  {option.categoryName}
+                                </MenuItem>
+                              ))}
                           </Select>
                         </FormControl>
 
@@ -555,7 +530,7 @@ export default function AdminProjectListScreen() {
                 <Tab className="tab-color" eventKey="Active" title="Active">
                   <Box sx={{ height: 400, width: "100%" }}>
                     <DataGrid
-                      className={`tableBg ${theme}DataGrid`}
+                      className={`tableBg mx-2 ${theme}DataGrid`}
                       rows={projectActiveData}
                       columns={[
                         ...columns,
@@ -613,7 +588,7 @@ export default function AdminProjectListScreen() {
                 >
                   <Box sx={{ height: 400, width: "100%" }}>
                     <DataGrid
-                      className={`tableBg ${theme}DataGrid`}
+                      className={`tableBg mx-2 ${theme}DataGrid`}
                       rows={projectCompleteData}
                       columns={[
                         ...columns,

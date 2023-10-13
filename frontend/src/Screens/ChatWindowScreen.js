@@ -24,13 +24,11 @@ function ChatWindowScreen() {
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
-  console.log("user", userInfo);
 
   useEffect(() => {
     const getMessages = async () => {
       try {
         const { data } = await axios.get(`/api/message/${id}`);
-        console.log("karannn", data);
         setChatMessages(data);
       } catch (err) {
         console.log(err);
@@ -40,7 +38,6 @@ function ChatWindowScreen() {
     getMessages();
   }, [conversation]);
 
-  console.log("chat", chatMessages);
   const showFontStyleBox = () => {
     setShowFontStyle(!showFontStyle);
   };
@@ -69,7 +66,6 @@ function ChatWindowScreen() {
         sender: userInfo._id,
         text: newMessage,
       });
-      console.log(data);
     } catch (err) {
       console.log(err.response?.data?.message);
     }

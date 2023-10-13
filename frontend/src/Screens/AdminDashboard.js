@@ -11,7 +11,7 @@ export default function AdminDashboard() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
   const theme = toggleState ? "dark" : "light";
-  return (
+  return userInfo.role == "superadmin" ? (
     <>
       <div className="px-4 mt-3">
         <Row className="px-2 gap-3">
@@ -82,6 +82,12 @@ export default function AdminDashboard() {
           </Col>
         </Row>
       </div>
+    </>
+  ) : (
+    <>
+      <Row>
+        <h2>Well Come {userInfo.first_name}</h2>
+      </Row>
     </>
   );
 }

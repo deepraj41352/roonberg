@@ -527,7 +527,6 @@ userRouter.post(
       console.log(data);
       const newUser = new User(data);
       const userinfo = await newUser.save();
-
       const user = await User.findOne({ email: req.body.email });
 
       if (user) {

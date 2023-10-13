@@ -10,7 +10,7 @@ import {
 import ResetPasswordScreen from "./Screens/ResetPasswordScreen";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import SignUpForm from "./Screens/SignUpScreen";
+import SignUpForm from "./Screens/SignInScreen";
 import RegistrationForm from "./Screens/RegistrationScreen";
 import AdminProjectListScreen from "./Screens/AdminProjectListScreen";
 import AdminAgentListScreen from "./Screens/AdminAgentListScreen";
@@ -111,7 +111,6 @@ function App() {
                         </InputGroup.Text>
                       </InputGroup>
                     </Form>
-                    {console.log(searchValue)}
                     <Navbar.Toggle aria-controls="navbarScroll" />
                     <Navbar.Collapse
                       className="justify-content-end"
@@ -197,7 +196,7 @@ function App() {
                     />
 
                     <Route
-                      path="/adminDashboard"
+                      path="/dashboard"
                       element={
                         <ProtectedRoute>
                           <AdminDashboard />
@@ -220,8 +219,7 @@ function App() {
                         </ProtectedRoute>
                       }
                     />
-                    <Route path="/ProfileScreen" element={<ProfileScreen />} />
-                    <Route path="/ProfileScreen" element={<ProfileScreen />} />
+                    <Route path="/profile-screen" element={<ProfileScreen />} />
                     <Route
                       path="/adminCategoriesList"
                       element={
