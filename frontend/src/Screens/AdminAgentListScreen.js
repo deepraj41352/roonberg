@@ -151,7 +151,7 @@ export default function AdminAgentListScreen() {
         const datas = response.data;
         setIsModelOpen(false);
         dispatch({ type: "FATCH_SUCCESS", payload: datas });
-        dispatch({ type: "UPDATE_SUCCESS", payload: true });
+        // dispatch({ type: "UPDATE_SUCCESS", payload: true });
       }
     } catch (error) {
       toast.error(error.response?.data?.message);

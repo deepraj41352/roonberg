@@ -81,7 +81,7 @@ const columns = [
   },
 ];
 
-export default function AdminProjectListScreen() {
+export default function AgentProjectList() {
   const [isModelOpen, setIsModelOpen] = React.useState(false);
   const [selectedRowData, setSelectedRowData] = React.useState(null);
   const [isNewProject, setIsNewProject] = React.useState(false);
@@ -353,11 +353,11 @@ export default function AdminProjectListScreen() {
           <div>{error}</div>
         ) : (
           <>
-            <div className="tabBorder mt-3">
+            <div className="">
               <Tabs
                 defaultActiveKey="All"
                 id="uncontrolled-tab-example"
-                className={`mb-0  ps-4 gap-3 tab-btn ${theme}Tab`}
+                className={`mb-3 mt-4 ps-4 gap-3 tab-btn ${theme}Tab`}
               >
                 <Tab className="tab-color" eventKey="All" title="All">
                   <Box sx={{ height: 400, width: "100%" }}>
@@ -530,7 +530,7 @@ export default function AdminProjectListScreen() {
                 <Tab className="tab-color" eventKey="Active" title="Active">
                   <Box sx={{ height: 400, width: "100%" }}>
                     <DataGrid
-                      className={`tableBg  ${theme}DataGrid`}
+                      className={`tableBg mx-2 ${theme}DataGrid`}
                       rows={projectActiveData}
                       columns={[
                         ...columns,
@@ -588,7 +588,7 @@ export default function AdminProjectListScreen() {
                 >
                   <Box sx={{ height: 400, width: "100%" }}>
                     <DataGrid
-                      className={`tableBg  ${theme}DataGrid`}
+                      className={`tableBg mx-2 ${theme}DataGrid`}
                       rows={projectCompleteData}
                       columns={[
                         ...columns,

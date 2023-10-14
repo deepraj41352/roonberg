@@ -21,6 +21,7 @@ import SearchScreen from "./Screens/SearchScreen";
 import ProjectSingleScreen from "./Screens/ProjectSingleScreen";
 import ChatWindowScreen from "./Screens/ChatWindowScreen";
 import AdminEditAgent from "./Screens/AdminEditAgentScreen";
+import AdminEditContractor from "./Screens/AdminEditContractorScreen";
 import { useContext, useState } from "react";
 import {
   Container,
@@ -262,6 +263,10 @@ function App() {
                     <Route
                       path="/adminEditAgent/:id"
                       element={<AdminEditAgent />}
+                    />
+                    <Route
+                      path="/adminEditContractor/:id"
+                      element={<AdminEditContractor />}
                     />
                   </Routes>
                 </div>

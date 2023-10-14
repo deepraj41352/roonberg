@@ -13,6 +13,7 @@ import { Store } from "../Store";
 import { toast } from "react-toastify";
 import { ImCross } from "react-icons/im";
 import { ThreeDots } from "react-loader-spinner";
+import { useNavigate } from "react-router-dom";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -78,21 +79,26 @@ export default function AdminContractorListScreen() {
     successUpdate: false,
   });
 
+  const navigate = useNavigate();
+
   const [name, setName] = React.useState("");
+  const [lastname, setLastname] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [status, setStatus] = React.useState("");
   const [password, setPassword] = React.useState("");
 
   const handleEdit = (userid) => {
-    const constractorToEdit = constructorData.find(
-      (constractor) => constractor && constractor._id === userid
-    );
-    setName(constractorToEdit ? constractorToEdit.first_name : "");
-    setEmail(constractorToEdit ? constractorToEdit.email : "");
-    setStatus(constractorToEdit ? constractorToEdit.status : "active");
-    setSelectedRowData(constractorToEdit);
-    setIsModelOpen(true);
-    setIsNewContractor(false);
+    navigate(`/adminEditContractor/${userid}`);
+    // const constractorToEdit = constructorData.find(
+    //   (constractor) => constractor && constractor._id === userid
+    // );
+    // setName(constractorToEdit ? constractorToEdit.first_name : "");
+    // setLastname(constractorToEdit ? constractorToEdit.last_name : "m");
+    // setEmail(constractorToEdit ? constractorToEdit.email : "");
+    // setStatus(constractorToEdit ? constractorToEdit.status : "active");
+    // setSelectedRowData(constractorToEdit);
+    // setIsModelOpen(true);
+    // setIsNewContractor(false);
   };
 
   const handleCloseRow = () => {
@@ -137,43 +143,71 @@ export default function AdminContractorListScreen() {
       FatchconstractorData();
     }
   }, [successDelete, successUpdate]);
+  // ----------------
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (isNewContractor) {
+  //     const response = await axios.post(`/api/user/signup`, {
+  //       first_name: name,
+  //       email: email,
+  //       password: password,
+  //       role: role,
+  //     });
+  //     if (response.status === 201) {
+  //       toast.success("constractor added Successfully !");
+  //       const datas = response.data;
+  //       setIsModelOpen(false);
+  //       dispatch({ type: "FATCH_SUCCESS", payload: datas });
+  //       dispatch({ type: "UPDATE_SUCCESS", payload: true });
+  //     }
+  //   } else {
+  //     const response = await axios.put(
+  //       `/api/user/update/${selectedRowData._id}`,
+  //       {
+  //         first_name: name,
+  //         email: email,
+  //         role: role,
+  //       },
 
+  //       { headers: { Authorization: `Bearer ${userInfo.token}` } }
+  //     );
+
+  //     if (response.status === 200) {
+  //       toast.success(response.data);
+  //       setIsModelOpen(false);
+  //       dispatch({ type: "UPDATE_SUCCESS", payload: true });
+  //     }
+  //   }
+  // };
+  // ----------------
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isNewContractor) {
-      const response = await axios.post(`/api/user/signup`, {
-        first_name: name,
-        email: email,
-        password: password,
-        role: role,
-      });
-      if (response.status === 201) {
-        toast.success("constractor added Successfully !");
+    try {
+      const response = await axios.post(
+        `/api/user/add`,
+        {
+          first_name: name,
+          last_name: lastname,
+          email: email,
+          password: password,
+          role: role,
+          userStatus: status,
+        },
+        { headers: { Authorization: `Bearer ${userInfo.token}` } }
+      );
+      console.log(response);
+      if (response.status === 200) {
+        toast.success("Contractor added Successfully !");
         const datas = response.data;
         setIsModelOpen(false);
         dispatch({ type: "FATCH_SUCCESS", payload: datas });
-        dispatch({ type: "UPDATE_SUCCESS", payload: true });
       }
-    } else {
-      const response = await axios.put(
-        `/api/user/update/${selectedRowData._id}`,
-        {
-          first_name: name,
-          email: email,
-          role: role,
-        },
-
-        { headers: { Authorization: `Bearer ${userInfo.token}` } }
-      );
-
-      if (response.status === 200) {
-        toast.success(response.data);
-        setIsModelOpen(false);
-        dispatch({ type: "UPDATE_SUCCESS", payload: true });
-      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message);
     }
   };
-
+  // --------------------------
   const deleteHandle = async (userid) => {
     if (window.confirm("Are you sure to delete?")) {
       try {
@@ -308,7 +342,14 @@ export default function AdminContractorListScreen() {
                     className="mb-2"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    label="Username"
+                    label="FirstName"
+                    fullWidth
+                  />
+                  <TextField
+                    className="mb-2"
+                    value={lastname}
+                    onChange={(e) => setLastname(e.target.value)}
+                    label="LastName"
                     fullWidth
                   />
 
@@ -334,8 +375,8 @@ export default function AdminContractorListScreen() {
                       value={status}
                       onChange={(e) => setStatus(e.target.value)}
                     >
-                      <MenuItem value="Active">Active</MenuItem>
-                      <MenuItem value="Inactive">Inactive</MenuItem>
+                      <MenuItem value={true}>Active</MenuItem>
+                      <MenuItem value={false}>Inactive</MenuItem>
                     </Select>
                   </FormControl>
                   <br></br>

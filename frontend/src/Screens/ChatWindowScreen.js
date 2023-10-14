@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   Card,
   CardBody,
@@ -18,12 +18,39 @@ import { format } from "timeago.js";
 
 function ChatWindowScreen() {
   const { id } = useParams();
+  const { state, dispatch: ctxDispatch } = useContext(Store);
+  const { toggleState, userInfo } = state;
   const [showFontStyle, setShowFontStyle] = useState(false);
   const [conversation, setConversation] = useState([]);
   const [chatMessages, setChatMessages] = useState([]);
+  const [arrivalMessage, setArrivalMessage] = useState(null);
+  const [conversationID, setConversationID] = useState();
+  const [checkstate, setCheckstate] = useState(false);
 
-  const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { toggleState, userInfo } = state;
+  const socket = useRef(io("ws://localhost:8900"));
+  const scrollRef = useRef();
+
+  useEffect(() => {
+    socket.current = io("ws://localhost:8900");
+    socket.current.on("getMessage", (data) => {
+      setArrivalMessage({
+        sender: data.senderId,
+        text: data.text,
+        createdAt: Date.now(),
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    arrivalMessage &&
+      conversationID?.members.includes(arrivalMessage.sender) &&
+      setChatMessages((prev) => [...prev, arrivalMessage]);
+  }, [arrivalMessage, conversationID]);
+
+  useEffect(() => {
+    socket.current.emit("addUser", userInfo._id);
+    socket.current.on("getUsers", (users) => {});
+  }, []);
 
   useEffect(() => {
     const getMessages = async () => {
@@ -38,28 +65,46 @@ function ChatWindowScreen() {
     getMessages();
   }, [conversation]);
 
+  useEffect(() => {
+    const getConversation = async () => {
+      try {
+        const { data } = await axios.post(`/api/conversation/${id}`);
+        setConversationID(data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    getConversation();
+  }, []);
+
   const showFontStyleBox = () => {
     setShowFontStyle(!showFontStyle);
   };
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const handleSendMessage = () => {
+    const messageObject = { text: newMessage, sender: userInfo._id };
     if (newMessage.trim() !== "") {
-      setMessages([...messages, newMessage]);
+      setChatMessages([...chatMessages, messageObject]);
       setNewMessage("");
-    }
-    if (val.trim() !== "") {
-      setMessages([...messages, val]);
-      setVal("");
     }
     submitHandler();
   };
-  const [val, setVal] = useState("");
   const onChange = (value) => {
-    setVal(value);
+    setNewMessage(value);
   };
 
   const submitHandler = async (e) => {
+    const receiverdId = conversationID.members.find(
+      (member) => member !== userInfo._id
+    );
+
+    socket.current.emit("sendMessage", {
+      senderId: userInfo._id,
+      receiverdId: receiverdId,
+      text: newMessage,
+    });
     try {
       const { data } = await axios.post("/api/message/", {
         conversationId: id,
@@ -70,6 +115,9 @@ function ChatWindowScreen() {
       console.log(err.response?.data?.message);
     }
   };
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages, newMessage]);
 
   return (
     <div className=" justify-content-center align-items-center">
@@ -77,17 +125,30 @@ function ChatWindowScreen() {
         <Card className="chatWindow mt-3">
           <CardHeader>Rohan </CardHeader>
           <CardBody className="chatWindowBody pb-0">
+            {console.log("chatMessages ", chatMessages)}
             {chatMessages.map((item) => (
               <>
                 {userInfo._id == item.sender ? (
-                  <div className="chat-receiverMsg d-flex flex-column">
-                    <p className="chat-receiverMsg-inner p-2">{item.text}</p>
-                    <div className="">{format(item.createdAt)}</div>
+                  <div
+                    ref={scrollRef}
+                    className="chat-receiverMsg d-flex flex-column"
+                  >
+                    <p
+                      className="chat-receiverMsg-inner p-2"
+                      dangerouslySetInnerHTML={{ __html: item.text }}
+                    ></p>
+                    <div className="timeago">{format(item.createdAt)}</div>
                   </div>
                 ) : (
-                  <div className="chat-senderMsg d-flex flex-column ">
-                    <p className="chat-senderMsg-inner p-2">{item.text}</p>
-                    <div className="">{format(item.createdAt)}</div>
+                  <div
+                    ref={scrollRef}
+                    className="chat-senderMsg d-flex flex-column "
+                  >
+                    <p
+                      className="chat-senderMsg-inner p-2"
+                      dangerouslySetInnerHTML={{ __html: item.text }}
+                    ></p>
+                    <div className="timeago">{format(item.createdAt)}</div>
                   </div>
                 )}
               </>
@@ -95,6 +156,7 @@ function ChatWindowScreen() {
 
             {messages.map((message) => (
               <div className="chat-receiverMsg">
+                {/* <p className="chat-receiverMsg-inner p-2">{message}</p> */}
                 <p
                   className="chat-receiverMsg-inner p-2"
                   dangerouslySetInnerHTML={{ __html: message }}
@@ -115,7 +177,11 @@ function ChatWindowScreen() {
                   onChange={(e) => setNewMessage(e.target.value)}
                 />
                 <div style={{ display: showFontStyle ? "block" : "none" }}>
-                  <MyStatefulEditor markup="" onChange={onChange} />
+                  <MyStatefulEditor
+                    markup=""
+                    value={newMessage}
+                    onChange={onChange}
+                  />
                 </div>
                 <div className="d-flex justify-content-center align-items-center ps-2 ">
                   <RxFontStyle onClick={showFontStyleBox} />

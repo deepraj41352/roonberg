@@ -9,6 +9,7 @@ import Validations from "../Components/Validations";
 function ProfileScreen() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
+  console.log("useringo", userInfo);
   const theme = toggleState ? "dark" : "light";
   const navigate = useNavigate();
 
@@ -17,13 +18,14 @@ function ProfileScreen() {
   const [email, setEmail] = useState(userInfo.email);
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  console.log("file", selectedFile);
 
   const submitHandler = async (e) => {
     e.preventDefault();
     setIsSubmiting(true);
     const formDatas = new FormData();
 
-    formDatas.append("profile_picture", selectedFile);
+    formDatas.append("file", selectedFile);
     formDatas.append("first_name", firstName);
     formDatas.append("last_name", lastName);
     formDatas.append("email", email);
@@ -33,9 +35,14 @@ function ProfileScreen() {
       const { data } = await axios.put(`/api/user/profile`, formDatas, {
         headers: {
           "content-type": "multipart/form-data",
+
           authorization: `Bearer ${userInfo.token}`,
         },
       });
+      console.log("data", data);
+      console.log("data.userdata", data.userData);
+      ctxDispatch({ type: "USER_UPDATE", payload: data.userData });
+      localStorage.setItem("userInfo", JSON.stringify(data.userData));
       toast.success(data.message);
     } catch (err) {
       toast.error(err.response?.data?.message);
@@ -54,21 +61,21 @@ function ProfileScreen() {
       <div className="ProfileScreen-inner px-4 py-3 w-100">
         <Row className="mb-3">
           <Col>
-            <h4>User Profile</h4>
+            <h4>Userr Profile</h4>
           </Col>
         </Row>
         <Row>
           <Col>
             <Card className={`${theme}CardBody`}>
               <Form onSubmit={submitHandler} className="p-4 w-100 formWidth ">
-                <Form.Group className="mb-3" controlId="formBasicPassword">
-                  <Form.Label className="mb-1">Profile Picture</Form.Label>
-                  <Form.Control
-                    className="input-box-inner"
-                    type="file"
-                    onChange={handleFileChange}
-                  />
-                </Form.Group>
+                <div className="classforprofile">
+                  <img src={userInfo.profile_picture}></img>
+                  <Form.Group className="mb-3" controlId="formBasicPassword">
+                    <Form.Label className="mb-1">Profile Picture</Form.Label>
+                    <Form.Control type="file" onChange={handleFileChange} />
+                  </Form.Group>
+                </div>
+
                 <Form.Group className="mb-3 " controlId="formBasicEmail">
                   <Form.Label className="mb-1 input-box">First Name</Form.Label>
                   <Form.Control
