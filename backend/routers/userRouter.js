@@ -474,7 +474,6 @@ export const uploadDoc = async (req) => {
       api_key: process.env.CLOUDINARY_API_KEY,
       api_secret: process.env.CLOUDINARY_API_SECRET,
     });
-
     const streamUpload = (req) => {
       return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream((error, result) => {
