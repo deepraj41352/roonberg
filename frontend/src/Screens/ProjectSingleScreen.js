@@ -39,9 +39,6 @@ function ProjectSingleScreen() {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [createdDate, setCreatedDate] = useState();
   const [endDate, setEndDate] = useState();
-  const [selectedOptions, setSelectedOptions] = useState([]);
-  const [createdDate, setCreatedDate] = useState();
-  const [endDate, setEndDate] = useState();
   const theme = toggleState ? 'dark' : 'light';
   const [
     { loading, error, projectData, categoryData, successUpdate },
@@ -53,20 +50,18 @@ function ProjectSingleScreen() {
     categoryData: {},
     successUpdate: false,
   });
-  // const [conversations, setConversation] = useState([]);
-  // useEffect(() => {
-  //   const getConversations = async () => {
-  //     try {
-  //       const res = await axios.get(`/api/conversation/${id}`);
-  //       setConversation(res.data);
-  //     } catch (err) {
-  //       console.log(err);
-
-  //     }
-  //   };
-  //   getConversations();
-  // }, []);
-  // console.log("convsrsation",conversations)
+  const [conversations, setConversation] = useState([]);
+  useEffect(() => {
+    const getConversations = async () => {
+      try {
+        const res = await axios.get(`/api/conversation/${id}`);
+        setConversation(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getConversations();
+  }, []);
 
   useEffect(() => {
     const fetchProjectData = async () => {
@@ -90,28 +85,14 @@ function ProjectSingleScreen() {
         );
 
         dispatch({ type: 'FATCH_SUCCESS', payload: ProjectDatas });
-        const ProjectDatas = response.data;
-        console.log('ProjectDatas', ProjectDatas);
-        setEndDate(
-          ProjectDatas.endDate ? ProjectDatas.endDate.split('T')[0] : null
-        );
-        setCreatedDate(
-          ProjectDatas.createdDate
-            ? ProjectDatas.createdDate.split('T')[0]
-            : null
-        );
-        setSelectedOptions(
-          ProjectDatas.projectCategory.map((item) => item.categoryId).join(',')
-        );
-
-        dispatch({ type: 'FATCH_SUCCESS', payload: ProjectDatas });
       } catch (error) {
         console.error('Error fetching project data:', error);
       }
     };
+
     fetchProjectData();
   }, []);
-  console.log('project== datass', projectData)
+
   useEffect(() => {
     const fetchCategoryData = async () => {
       try {
@@ -231,9 +212,7 @@ function ProjectSingleScreen() {
                     />
                   </Form.Group>
                   <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold">
-                      {projectData.projectDescription}
-                    </Form.Label>
+                    <Form.Label className="fw-bold">Select Options:</Form.Label>
                     <MultiSelect
                       className="categorieslist"
                       onChange={handleCategoryChange}
