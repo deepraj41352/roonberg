@@ -48,6 +48,9 @@ import AdminEditCategory from "./Screens/AdminEditCategoryScreen";
 import AdminEditAgent from "./Screens/AdminEditAgentScreen";
 import AdminEditProject from './Screens/AdminEditProjectScreen';
 import AdminEditContractor from './Screens/AdminEditContractorScreen';
+import ContractorProject from './Contractor/ContractorProjectListScreen';
+import ContractorEditProject from './Contractor/ContractorEditProjectScreen';
+import AgentProjectList from './Agent/AgentProjectListScreen';
 
 
 
@@ -281,6 +284,21 @@ function App() {
                     <Route
                       path="/adminEditContractor/:id"
                       element={<AdminEditContractor />}
+                    />
+                    {/* Contractor */}
+                    <Route
+                      path="/contractorProjectList"
+                      element={<ContractorProject />}
+                    />
+
+                    <Route
+                      path="/contractorEditProject/:id"
+                      element={<ContractorEditProject />}
+                    />
+                    {/* agent */}
+                    <Route
+                      path="/agentProjectList"
+                      element={<AgentProjectList />}
                     />
                   </Routes>
                 </div>

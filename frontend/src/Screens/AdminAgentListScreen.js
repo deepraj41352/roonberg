@@ -201,7 +201,7 @@ export default function AdminAgentListScreen() {
     setIsModelOpen(false);
   };
 
-  const handleNew = () => {
+  const handleModel = () => {
     setIsModelOpen(true);
   };
 
@@ -235,7 +235,7 @@ export default function AdminAgentListScreen() {
           <Button
             variant="outlined"
             className=" m-2 d-flex globalbtnColor"
-            onClick={handleNew}
+            onClick={handleModel}
           >
             <BiPlusMedical className="mx-2" />
             Add Agent

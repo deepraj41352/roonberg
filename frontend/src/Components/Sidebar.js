@@ -62,6 +62,12 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 Categories List
               </li>
             </Link>
+            <Link to="/adminProjectList" className="text-decoration-none">
+              <li>
+                <AiOutlineProject className="me-3 fs-5" />
+                Project List
+              </li>
+            </Link>
           </>
         ) : null}
 
@@ -72,12 +78,6 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
           </li>
         </Link>
 
-        <Link to="/adminProjectList" className="text-decoration-none">
-          <li>
-            <AiOutlineProject className="me-3 fs-5" />
-            Project List
-          </li>
-        </Link>
         <Link to="/ChatScreen" className="text-decoration-none">
           <li>
             <BsFillChatLeftQuoteFill className="me-3 fs-5" />
@@ -85,20 +85,36 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
           </li>
         </Link>
         {userInfo.role == 'contractor' ? (
-          <Link to="/add-project" className="text-decoration-none">
-            <li>
-              <AiFillHome className="me-3 fs-5" />
-              Add Project
-            </li>
-          </Link>
+          <>
+            <Link to="/contractorProjectList" className="text-decoration-none">
+              <li>
+                <AiOutlineProject className="me-3 fs-5" />
+                Project List
+              </li>
+            </Link>
+            <Link to="/add-project" className="text-decoration-none">
+              <li>
+                <AiFillHome className="me-3 fs-5" />
+                Add Project
+              </li>
+            </Link>
+          </>
         ) : null}
         {userInfo.role == 'agent' ? (
-          <Link to="/projectNotification" className="text-decoration-none">
-            <li>
-              <IoMdNotifications className="me-3 fs-5" />
-              Project Notification
-            </li>
-          </Link>
+          <>
+            <Link to="/agentProjectList" className="text-decoration-none">
+              <li>
+                <AiOutlineProject className="me-3 fs-5" />
+                Project List
+              </li>
+            </Link>
+            <Link to="/projectNotification" className="text-decoration-none">
+              <li>
+                <IoMdNotifications className="me-3 fs-5" />
+                Project Notification
+              </li>
+            </Link>
+          </>
         ) : null}
         <Link
           to="#Logout"
