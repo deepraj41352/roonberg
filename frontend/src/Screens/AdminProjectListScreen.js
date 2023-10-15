@@ -16,7 +16,7 @@ import Tabs from 'react-bootstrap/Tabs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateField } from '@mui/x-date-pickers/DateField';
-import MultiSelectDropdown from './ex';
+
 import {
   FormControl,
   InputLabel,
@@ -26,7 +26,7 @@ import {
 } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { useContext, useEffect, useReducer, useState } from 'react';
-
+import { GrSubtractCircle, GrAddCircle } from 'react-icons/gr'
 const reducer = (state, action) => {
   switch (action.type) {
     case "FATCH_REQUEST":
@@ -71,20 +71,25 @@ const columns = [
     width: 150,
   },
   {
+    field: "projectCategory",
+    headerName: "Category",
+    width: 150,
+  },
+
+  {
     field: "projectOwner",
-    headerName: "Project Owner",
+    headerName: "Contractor",
     width: 90,
   },
   {
     field: "assignedAgent",
-    headerName: "Assigned Agent",
+    headerName: "Agent",
     width: 110,
   },
 ];
 
 export default function AdminProjectListScreen() {
   const [isModelOpen, setIsModelOpen] = useState(false);
-  const [selectedRowData, setSelectedRowData] = useState(null);
   const [isNewProject, setIsNewProject] = useState(false);
   const [isSubmiting, setIsSubmiting] = useState(false);
   const { state } = useContext(Store);
@@ -110,36 +115,62 @@ export default function AdminProjectListScreen() {
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
   const navigate = useNavigate();
-  const [agents, setAgents] = useState([{ categoryid: '', agentid: '' }]);
+  const [agents, setAgents] = useState([{ categoryId: '', agentName: '', agentId: '' }]);
+  const [categories, setCategories] = useState([]);
+  const [projectStatus, setProjectStatus] = useState();
 
-  // const assignedAgentByCateHandle = () => {
-  //   if (categoryId) {
-  //     const selectedCategory1 = categoryData.find(categoryItem => categoryItem._id === categoryId);
-  //     if (selectedCategory1) {
-  //       const agentForCategory = agentData.find(agentItem => agentItem.agentCategory === selectedCategory1._id);
-  //       if (agentForCategory) {
-  //         return [agentForCategory]
-
-  //       }
-  //     }
-  //   }
-  //   return [];
-  // }
+  const assignedAgentByCateHandle = (index) => {
+    const category = agents[index].categoryId;
+    if (category) {
+      const selectedCategory1 = categoryData.find(categoryItem => categoryItem._id === category);
+      if (selectedCategory1) {
+        const agentForCategory = agentData.find(agentItem => agentItem.agentCategory === selectedCategory1._id);
+        if (agentForCategory) {
+          return [agentForCategory]
+        }
+      }
+    }
+    return [];
+  }
 
   const handleAgentChange = (index, key, value) => {
+    console.log("Value received:", value);
     const updatedAgents = [...agents];
     updatedAgents[index] = {
       ...updatedAgents[index],
       [key]: value,
     };
+
+    const agentName = agentData.find((agentItem) => agentItem._id === value);
+    if (agentName) {
+      updatedAgents[index].agentName = agentName.first_name;
+    }
+
+    if (key === 'categoryId' && value !== '') {
+
+      const selectedCategory = categoryData.find((categoryItem) => categoryItem._id === value);
+
+      if (selectedCategory) {
+
+        const categoryObject = {
+          categoryId: selectedCategory._id,
+          categoryName: selectedCategory.categoryName,
+
+        };
+        setCategories((prevCategories) => {
+          const updatedCategories = [...prevCategories];
+          updatedCategories[index] = categoryObject;
+          return updatedCategories;
+        });
+      }
+    }
+
     setAgents(updatedAgents);
   };
 
   const addAgent = () => {
-    setAgents([...agents, { categoryid: '', agentid: '' }]);
+    setAgents([...agents, { categoryId: '', agentId: '' }]);
   };
-
-  console.log(agents)
   const removeAgent = (index) => {
     const updatedAgents = [...agents];
     updatedAgents.splice(index, 1);
@@ -147,19 +178,7 @@ export default function AdminProjectListScreen() {
   };
 
   const handleEdit = (userid) => {
-
-    // const constractorToEdit = projectData.find(
-    //   (constractor) => constractor && constractor._id === userid
-    // );
-    // setProjectName(constractorToEdit ? constractorToEdit.projectName : "");
-    // setProjectDescription(
-    //   constractorToEdit ? constractorToEdit.projectDescription : ""
-    // );
-    // setProjectOwner(constractorToEdit ? constractorToEdit.projectOwner : "");
-    // // setAssignedAgent(constractorToEdit ? constractorToEdit.assignedAgent : "");
-    // setSelectedRowData(constractorToEdit);
-    // setIsModelOpen(true);
-    // setIsNewProject(false);
+    navigate(`/adminEditProject/${userid}`)
   };
 
   const handleCloseRow = () => {
@@ -167,7 +186,7 @@ export default function AdminProjectListScreen() {
   };
 
   const handleNew = () => {
-    setSelectedRowData(null);
+
     setIsModelOpen(true);
     setIsNewProject(true);
   };
@@ -192,7 +211,6 @@ export default function AdminProjectListScreen() {
       try {
         const response = await axios.post(`/api/user/`, { role: "contractor" });
         const datas = response.data;
-        console.log(datas)
         dispatch({ type: "FATCH_CONTRACTOR", payload: datas })
 
       } catch (error) {
@@ -221,21 +239,27 @@ export default function AdminProjectListScreen() {
   useEffect(() => {
     const FatchProjectData = async () => {
       try {
-        dispatch({ type: 'FATCH_REQUEST' }); // Dispatch an action instead of calling it as a function
+        dispatch({ type: 'FATCH_REQUEST' });
         const response = await axios.get('/api/project', {
-          headers: { Authorization: `Bearer ${userInfo.token}` }, // Use template literals to interpolate the token
+          headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const datas = response.data;
-        console.log('karan', datas);
-        const rowData = datas.map((items) => ({
-          ...items,
-          _id: items._id,
-          projectName: items.projectName,
-          projectDescription: items.projectDescription,
-          projectOwner: items.projectOwner,
-          assignedAgent: items.assignedAgent,
-        }));
-        console.log("sharam", rowData)
+        const rowData = datas.map((items) => {
+          const contractor = contractorData.find((contractor) => contractor._id === items.projectOwner);
+          return {
+            ...items,
+            _id: items._id,
+            projectName: items.projectName,
+            projectDescription: items.projectDescription,
+            projectCategory: items.projectCategory
+              ? items.projectCategory.map((cat) => cat.categoryName)
+              : '',
+            assignedAgent: items.assignedAgent
+              ? items.assignedAgent.map((agent) => agent.agentName)
+              : '',
+            projectOwner: contractor ? contractor.first_name : '',
+          };
+        });
         dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
       } catch (error) {
         console.log(error)
@@ -251,7 +275,7 @@ export default function AdminProjectListScreen() {
     else {
       FatchProjectData()
     }
-  }, [successDelete, successUpdate, dispatch, userInfo.token]); // Add dependencies to the dependency array
+  }, [successDelete, successUpdate, dispatch, userInfo.token]);
 
   const projectActiveData = projectData.filter((item) => {
     return item.projectStatus === 'active';
@@ -269,43 +293,48 @@ export default function AdminProjectListScreen() {
     e.preventDefault();
     setIsSubmiting(true);
     console.log("agents", agents)
-    // try {
+    console.log("categories", categories)
+    try {
 
-    //   const response = await axios.post(
-    //     '/api/project/admin/addproject',
-    //     {
-    //       projectName: projectName,
-    //       projectDescription: projectDescription,
-    //       createdDate: startDate,
-    //       endDate: endDate,
-    //       assignedAgent: agents,
-    //       // projectOwner: ,
-    //       // projectCategory: projectCategory
-    //     },
-    //     {
-    //       headers: { Authorization: `Bearer ${userInfo.token}` },
-    //     }
-    //   );
-    //   console.log(response.data.message);
-    //   console.log(response);
+      const response = await axios.post(
+        '/api/project/admin/addproject',
+        {
+          projectName: projectName,
+          projectDescription: projectDescription,
+          createdDate: startDate,
+          endDate: endDate,
+          assignedAgent: agents,
+          projectCategory: categories,
+          projectOwner: projectOwner,
+          projectStatus: projectStatus
+        },
+        {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+      console.log(response.data.message);
+      console.log(response);
 
-    //   if (response.status === 201) {
-    //     toast.success(response.data.message);
-    //     const datas = response.data;
-    //     setIsModelOpen(false);
-    //     setIsSubmiting(false);
-    //     setProjectName('');
-    //     setProjectDescription('');
-    //     startDate();
-    //     endDate();
-    //     dispatch({ type: 'UPDATE_SUCCESS', payload: true });
+      if (response.status === 201) {
+        toast.success(response.data.message);
+        const datas = response.data;
+        setIsModelOpen(false);
+        setIsSubmiting(false);
+        setProjectName('');
+        setProjectDescription('');
+        startDate();
+        endDate();
+        setAgents([{}])
+        setProjectStatus('')
+        setProjectOwner('')
+        dispatch({ type: 'UPDATE_SUCCESS', payload: true });
 
-    //   }
-    // } catch (error) {
-    //   toast.error(error.response);
-    //   console.log(error)
-    //   setIsSubmiting(false);
-    // }
+      }
+    } catch (error) {
+      toast.error(error.response);
+      console.log(error)
+      setIsSubmiting(false);
+    }
   }
 
   const deleteHandle = async (productId) => {
@@ -333,6 +362,8 @@ export default function AdminProjectListScreen() {
   const handleRedirectToContractorScreen = () => {
     navigate('/adminContractorList')
   }
+
+
   return (
     <>
       <Button
@@ -464,7 +495,7 @@ export default function AdminProjectListScreen() {
                     />
                     <FormControl >
                       <InputLabel>Choose Contractor</InputLabel>
-                      <Select >
+                      <Select value={projectOwner} onChange={(e) => setProjectOwner(e.target.value)}>
                         <MenuItem onClick={() => { handleRedirectToContractorScreen() }}>  <BiPlusMedical /> add new Contractor</MenuItem>
                         {contractorData.map((items) => (
                           <MenuItem key={items._id} value={items._id} >{items.first_name}</MenuItem>
@@ -472,22 +503,25 @@ export default function AdminProjectListScreen() {
                         ))}
                       </Select>
                     </FormControl>
-                    <div className='d-flex align-items-start'>
-                      <BiPlusMedical color="black" className='mx-2' onClick={addAgent} />
-                      <p className='text-dark'>Add more category and agent</p>
+                    <div className='d-flex align-items-center'>
+                      <GrAddCircle color="black" className='mx-2' onClick={addAgent} />
+                      <p className='text-dark m-0'>Add more category and agent</p>
                     </div>
                     {agents.map((agent, index) => (
                       <div key={index}>
                         <FormControl>
                           <InputLabel>Choose Category</InputLabel>
                           <Select
-                            value={agent.categoryid}
-                            onChange={(e) => handleAgentChange(index, 'categoryid', e.target.value)}
+                            value={agent.categoryId}
+                            onChange={(e) => handleAgentChange(index, 'categoryId', e.target.value)}
                           >
-                            <MenuItem>Select Category</MenuItem>
+                            <MenuItem disabled={agent.categoryId !== ''}>Select Category</MenuItem>
                             {categoryData.map((category) => (
-                              <MenuItem key={category._id} value={category._id}>
+                              <MenuItem key={category._id} value={category._id}
+                                disabled={agents.some((a) => a.categoryId === category._id)}
+                              >
                                 {category.categoryName}
+
                               </MenuItem>
                             ))}
                           </Select>
@@ -495,22 +529,35 @@ export default function AdminProjectListScreen() {
                         <FormControl>
                           <InputLabel>Choose Agent</InputLabel>
                           <Select
-                            value={agent.agentid}
-                            onChange={(e) => handleAgentChange(index, 'agentid', e.target.value)}
+                            value={agent.agentId}
+                            onChange={(e) => handleAgentChange(index, 'agentId', e.target.value)}
                           >
-                            <MenuItem>Select Agent</MenuItem>
-                            {agentData.map((agent) => (
-                              <MenuItem key={agent._id} value={agent._id}>
+                            <MenuItem disabled={agent.agentId !== ''}>Select Agent</MenuItem>
+                            {assignedAgentByCateHandle(index).map((agent) => (
+                              <MenuItem key={agent._id} value={agent._id}
+                                disabled={agents.some((a) => a.agentId === agent._id)}
+                              >
                                 {agent.first_name}
                               </MenuItem>
                             ))}
                           </Select>
                         </FormControl>
+                        <div className='d-flex align-items-center'>
+                          <GrSubtractCircle color="black" className='mx-2' onClick={() => removeAgent(index)} />
+                          <p className='text-dark m-0'>Remove</p>
+                        </div>
                       </div>
                     ))}
-
-
-
+                    <FormControl >
+                      <InputLabel>Choose Status</InputLabel>
+                      <Select value={projectStatus} onChange={(e) => setProjectStatus(e.target.value)}>
+                        <MenuItem value=""> Select Status </MenuItem>
+                        <MenuItem value="active">  Active </MenuItem>
+                        <MenuItem value="inactive">  inactive </MenuItem>
+                        <MenuItem value="queue">  In Proccess </MenuItem>
+                        <MenuItem value="success">  success </MenuItem>
+                      </Select>
+                    </FormControl>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DateField
                         required

@@ -80,9 +80,9 @@ function AdminEditAgent() {
                     `/api/user/${id}`);
                 const datas = response.data;
                 setFirstName(datas.first_name)
-                setLastName(datas.last_name)
+                setLastName(datas.last_name || 'Last Name')
                 setEmail(datas.email)
-                setStatus(datas.status)
+                setStatus(datas.userStatus)
 
                 // setStatus(datas.categoryStatus)
 

@@ -46,8 +46,9 @@ import AddProject from './Screens/AddProject';
 import ChatScreen from './Screens/ChatScreen';
 import AdminEditCategory from "./Screens/AdminEditCategoryScreen";
 import AdminEditAgent from "./Screens/AdminEditAgentScreen";
-import Testfile from './Screens/testfile';
-import ProjectForm from './Screens/testnew';
+import AdminEditProject from './Screens/AdminEditProjectScreen';
+import AdminEditContractor from './Screens/AdminEditContractorScreen';
+
 
 
 function App() {
@@ -257,6 +258,10 @@ function App() {
                       path="/projectSingleScreen/:id"
                       element={<ProjectSingleScreen />}
                     />
+                    <Route
+                      path="/adminEditProject/:id"
+                      element={<AdminEditProject />}
+                    />
 
                     <Route
                       path="/chatWindowScreen/:id"
@@ -272,13 +277,10 @@ function App() {
                       path="/adminEditAgent/:id"
                       element={<AdminEditAgent />}
                     />
+
                     <Route
-                      path="/test"
-                      element={<Testfile />}
-                    />
-                    <Route
-                      path="/testnew"
-                      element={<ProjectForm />}
+                      path="/adminEditContractor/:id"
+                      element={<AdminEditContractor />}
                     />
                   </Routes>
                 </div>

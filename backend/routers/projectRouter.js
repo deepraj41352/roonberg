@@ -70,36 +70,35 @@ projectRouter.post(
           assignedAgent: assignedAgent,
         });
 
-        console.log(newProject)
-        //   const project = await newProject.save();
+        const project = await newProject.save();
 
-        //   const agentEmails = await User.find({ _id: { $in: agentIds } }, 'email');
-        //   const agentEmailList = agentEmails.map((agent) => agent.email);
+        const agentEmails = await User.find({ _id: { $in: agentIds } }, 'email');
+        const agentEmailList = agentEmails.map((agent) => agent.email);
 
-        //   console.log("contractormail", user.email);
-        //   console.log("agentEmails", agentEmailList);
+        console.log("contractormail", user.email);
+        console.log("agentEmails", agentEmailList);
 
-        //   const toEmails = [user.email, ...agentEmailList];
-        //   console.log("bothmail", toEmails)
-        //   const options = {
-        //     to: toEmails,
-        //     subject: 'New Project Create✔',
-        //     template: 'CREATE-PROJECT',
-        //     projectName: req.body.projectName,
-        //     projectDescription: req.body.projectDescription,
-        //     user,
-        //   };
-        //   await sendEmailNotify(options);
+        const toEmails = [user.email, ...agentEmailList];
+        console.log("bothmail", toEmails)
+        const options = {
+          to: toEmails,
+          subject: 'New Project Create✔',
+          template: 'CREATE-PROJECT',
+          projectName: req.body.projectName,
+          projectDescription: req.body.projectDescription,
+          user,
+        };
+        await sendEmailNotify(options);
 
-        //   if (project.assignedAgent) {
-        //     const newConversation = new Conversation({
-        //       members: [project.assignedAgent, project.projectOwner],
-        //     });
-        //     await newConversation.save();
-        //   }
-        //   res.status(201).json({ message: 'Project Created', project }); 
-        // } else {
-        //   res.status(403).json({ message: 'Access denied' });
+        if (project.assignedAgent) {
+          const newConversation = new Conversation({
+            members: [project.assignedAgent, project.projectOwner],
+          });
+          await newConversation.save();
+        }
+        res.status(201).json({ message: 'Project Created', project });
+      } else {
+        res.status(403).json({ message: 'Access denied' });
       }
     } catch (error) {
       console.error(error);
