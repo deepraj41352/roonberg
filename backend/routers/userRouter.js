@@ -394,13 +394,11 @@ userRouter.post(
  *               message: Registration failed. Please try again later.
  */
 
-
-
 userRouter.post(
   '/signup',
   expressAsyncHandler(async (req, res) => {
     try {
-      const { first_name, last_name, email, role, } = req.body;
+      const { first_name, last_name, email, role } = req.body;
       const existingUser = await User.findOne({ email: email });
       if (existingUser) {
         return res
@@ -474,7 +472,6 @@ export const uploadDoc = async (req) => {
       api_key: process.env.CLOUDINARY_API_KEY,
       api_secret: process.env.CLOUDINARY_API_SECRET,
     });
-
     const streamUpload = (req) => {
       return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream((error, result) => {
@@ -501,7 +498,10 @@ userRouter.post(
   isAdminOrSelf,
   expressAsyncHandler(async (req, res) => {
     try {
-      const { first_name, last_name, email, role, agentCategory, userStatus } = req.body;
+      const { first_name, last_name, email, role, agentCategory, userStatus } =
+        req.body;
+      const { first_name, last_name, email, role, agentCategory, userStatus } =
+        req.body;
       const existingUser = await User.findOne({ email: email });
       if (existingUser) {
         return res
@@ -522,6 +522,8 @@ userRouter.post(
         role,
         agentCategory,
         userStatus,
+        userStatus,
+        agentCategory,
         // Only assign the category field if the role is "agent"
         ...(role === 'agent' ? { agentCategory } : {}),
       };
@@ -579,7 +581,7 @@ userRouter.get(
     try {
       const user = await User.findById(req.params.id);
       if (!user) {
-        res.status(400).json({ message: "user not found" });
+        res.status(400).json({ message: 'user not found' });
       }
       res.json(user);
     } catch (error) {

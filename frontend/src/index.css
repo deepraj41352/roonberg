@@ -17,7 +17,7 @@
 /* -----------priyanshu-theme-css-end------------- */
 body {
   margin: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* background-color: rgba(0, 0, 0, 0) !important; */
@@ -28,7 +28,7 @@ body {
   justify-content: center !important;
 }
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
@@ -108,7 +108,11 @@ body {
   background-color: #07162c;
   color: #fff !important;
 }
-
+@media (max-width: 420px) {
+  .modalRespnsive {
+    max-width: 300px;
+  }
+}
 .tableEditbtn {
   background-color: #8a9097 !important;
 }
@@ -182,7 +186,7 @@ body {
 
 body {
   margin: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* background-color: rgba(0, 0, 0, 0) !important; */
@@ -190,7 +194,7 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
@@ -228,7 +232,7 @@ code {
 button {
   color: white !important;
 }
-.tableBg input[type='checkbox'] {
+.tableBg input[type="checkbox"] {
   border-color: white !important;
   background-color: white !important;
 }
@@ -511,8 +515,13 @@ body {
 .chatWindowProjectInfo {
   width: 25%;
 }
+.timeago {
+  font-size: 12px;
+}
 .chat-senderMsg {
   display: flex;
+  align-items: flex-start;
+
   justify-content: start;
   max-width: 60%;
 }
@@ -521,18 +530,22 @@ body {
   border-radius: 10px;
   border-top-left-radius: 0px !important;
   text-align: start;
+  max-width: 100%;
 }
 .chat-receiverMsg {
   display: flex;
   justify-content: end;
+  align-items: end;
   max-width: 60%;
   margin-left: 40%;
 }
+
 .chat-receiverMsg-inner {
   background-color: #96df9c;
   border-radius: 10px;
   border-top-right-radius: 0px !important;
   text-align: start;
+  max-width: 100%;
 }
 .chatWindowBody {
   overflow: auto; /* Add scrollbars when content overflows */
@@ -545,6 +558,66 @@ body {
 .chat-receiverMsg-inner p {
   margin-bottom: 0px;
 }
+.search-bar-dash-outer {
+  display: flex;
+}
+@media (max-width: 990px) {
+  .search-bar-dash-outer {
+    display: none !important;
+  }
+}
+.ProfileScreen-inner {
+  max-width: 450px;
+}
+@media (max-width: 400px) {
+  .ProfileScreen-inner {
+    max-width: 330px;
+  }
+}
+@media (max-width: 380px) {
+  .input-box-inner {
+    max-width: 210px !important;
+  }
+}
+.darkTab {
+  background-color: #3c3c5a;
+}
+.lightTab {
+  /* background-color: #8a9097; */
+  background-color: #3c3c5a;
+}
+
+.nav-tabs .nav-link.active {
+  background-color: #0d0d32 !important;
+  color: white !important;
+  border: none !important;
+  min-width: 100px;
+  border-radius: none !important;
+}
+.nav-tabs .nav-link {
+  min-width: 100px;
+  border-radius: 0px !important;
+}
+@media (max-width: 1090px) {
+  .start-end-date {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 900px) {
+  .projectScreenCard-outer {
+    flex-direction: column;
+    max-width: 700px;
+  }
+  .start-end-date {
+    flex-direction: row;
+  }
+}
+@media (max-width: 500px) {
+  .start-end-date {
+    flex-direction: column;
+  }
+}
 
 /* /dipak/................. */
 .msl-chip {
@@ -552,4 +625,25 @@ body {
 }
 .msl-options {
   color: #060612;
+}
+.classforprofile {
+  display: flex;
+  gap: 20px;
+  justify-content: start;
+  align-items: center;
+}
+.classforprofile img {
+  height: 100px;
+  width: 100px;
+
+  border-radius: 50%;
+}
+.selected {
+  background-color: #0f2855;
+}
+.tabBorder {
+  /* border: 2px solid #070719; */
+}
+.dis {
+  display: none;
 }

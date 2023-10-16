@@ -70,6 +70,12 @@ const columns = [
   },
   {
     field: "userStatus",
+    field: "agentCategory",
+    headerName: "Category",
+    width: 150,
+  },
+  {
+    field: "userStatus",
     headerName: "Status",
     width: 150,
   },
@@ -147,7 +153,7 @@ export default function AdminAgentListScreen() {
     else {
       FatchAgentData();
     }
-  }, [successDelete, successUpdate]);
+  }, [successDelete]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -169,6 +175,8 @@ export default function AdminAgentListScreen() {
         dispatch({ type: "UPDATE_SUCCESS", payload: true });
         dispatch({ type: "FATCH_SUBMITTING", payload: false })
       }
+    } catch (error) {
+      toast.error(error.response?.data?.message);
     } catch (error) {
       toast.error(error.response?.data?.message);
     }

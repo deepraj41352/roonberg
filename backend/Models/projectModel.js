@@ -19,6 +19,7 @@ const projectSchema = new mongoose.Schema(
         agentId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         agentName: { type: String },
         categoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
+        categoryName: { type: String },
       },
     ],
   },

@@ -16,6 +16,8 @@ const reducer = (state, action) => {
   switch (action.type) {
     case "USER_SIGNIN":
       return { ...state, userInfo: action.payload };
+      case "USER_UPDATE":
+      return { ...state, userInfo: action.payload };
     case 'VALIDATION_MSG':
       return { ...state, validationMsg: action.payload };
     case "USER_SIGNOUT":

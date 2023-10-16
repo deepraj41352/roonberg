@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer, useState } from "react";
+import React, { useContext, useEffect, useReducer, useState } from 'react';
 import {
   Button,
   Card,
@@ -7,23 +7,23 @@ import {
   Form,
   Row,
   Toast,
-} from "react-bootstrap";
-import { Store } from "../Store";
-import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
-import axios from "axios";
+} from 'react-bootstrap';
+import { Store } from '../Store';
+import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "FATCH_REQUEST":
+    case 'FATCH_REQUEST':
       return { ...state, loading: true };
-    case "FATCH_SUCCESS":
+    case 'FATCH_SUCCESS':
       return { ...state, categoryData: action.payload, loading: false };
-    case "FATCH_ERROR":
+    case 'FATCH_ERROR':
       return { ...state, error: action.payload, loading: false };
-    case "UPDATE_SUCCESS":
+    case 'UPDATE_SUCCESS':
       return { ...state, successUpdate: action.payload };
-    case "UPDATE_RESET":
+    case 'UPDATE_RESET':
       return { ...state, successUpdate: false };
     default:
       return state;
@@ -33,27 +33,27 @@ const reducer = (state, action) => {
 function AdminEditContractor() {
   const { id } = useParams();
   if (id) {
-    console.log("id exists:", id);
+    console.log('id exists:', id);
   } else {
-    console.log("id does not exist");
+    console.log('id does not exist');
   }
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState("");
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState('');
   const [isSubmiting, setIsSubmiting] = useState(false);
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
-  const theme = toggleState ? "dark" : "light";
+  const theme = toggleState ? 'dark' : 'light';
 
   const [
     { loading, error, categoryData, successDelete, successUpdate },
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
-    error: "",
+    error: '',
     categoryData: {},
     successDelete: false,
     successUpdate: false,
@@ -65,7 +65,7 @@ function AdminEditContractor() {
   useEffect(() => {
     const FatchcategoryData = async () => {
       try {
-        dispatch("FATCH_REQUEST");
+        dispatch('FATCH_REQUEST');
         const response = await axios.get(`/api/user/${id}`);
         const datas = response.data;
         setFirstName(datas.first_name);
@@ -87,22 +87,22 @@ function AdminEditContractor() {
     setIsSubmiting(true);
     const formDatas = new FormData();
 
-    formDatas.append("first_name", firstName);
-    formDatas.append("last_name", lastName);
-    formDatas.append("email", email);
-    formDatas.append("status", status);
+    formDatas.append('first_name', firstName);
+    formDatas.append('last_name', lastName);
+    formDatas.append('email', email);
+    formDatas.append('status', status);
 
     try {
       const data = await axios.put(`/api/user/update/${id}`, formDatas, {
         headers: {
-          "content-type": "multipart/form-data",
+          'content-type': 'multipart/form-data',
 
           authorization: `Bearer ${userInfo.token}`,
         },
       });
-      dispatch({ type: "UPDATE_SUCCESS" });
+      dispatch({ type: 'UPDATE_SUCCESS' });
       toast.success(data.data);
-      navigate("/adminEditContractor");
+      navigate('/adminEditContractor');
     } catch (err) {
       toast.error(err.response?.data?.message);
     } finally {
@@ -176,7 +176,7 @@ function AdminEditContractor() {
                       type="submit"
                       disabled={isSubmiting}
                     >
-                      {isSubmiting ? "Updateing..." : "Update"}
+                      {isSubmiting ? 'Updateing...' : 'Update'}
                     </Button>
                   </div>
                 </Form>

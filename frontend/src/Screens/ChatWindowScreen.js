@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   Card,
   CardBody,
@@ -6,24 +6,51 @@ import {
   CardHeader,
   Form,
   InputGroup,
-} from 'react-bootstrap';
-import { IoSendSharp } from 'react-icons/io5';
-import { RxFontStyle } from 'react-icons/rx';
-import MyStatefulEditor from '../Components/rte_test';
-import { Store } from '../Store';
-import { Socket, io } from 'socket.io-client';
-import axios from 'axios';
-import { useParams } from 'react-router-dom';
-import { format } from 'timeago.js';
+} from "react-bootstrap";
+import { IoSendSharp } from "react-icons/io5";
+import { RxFontStyle } from "react-icons/rx";
+import MyStatefulEditor from "../Components/rte_test";
+import { Store } from "../Store";
+import { Socket, io } from "socket.io-client";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+import { format } from "timeago.js";
 
 function ChatWindowScreen() {
   const { id } = useParams();
+  const { state, dispatch: ctxDispatch } = useContext(Store);
+  const { toggleState, userInfo } = state;
   const [showFontStyle, setShowFontStyle] = useState(false);
   const [conversation, setConversation] = useState([]);
   const [chatMessages, setChatMessages] = useState([]);
+  const [arrivalMessage, setArrivalMessage] = useState(null);
+  const [conversationID, setConversationID] = useState();
+  const [checkstate, setCheckstate] = useState(false);
 
-  const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { toggleState, userInfo } = state;
+  const socket = useRef(io("ws://localhost:8900"));
+  const scrollRef = useRef();
+
+  useEffect(() => {
+    socket.current = io("ws://localhost:8900");
+    socket.current.on("getMessage", (data) => {
+      setArrivalMessage({
+        sender: data.senderId,
+        text: data.text,
+        createdAt: Date.now(),
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    arrivalMessage &&
+      conversationID?.members.includes(arrivalMessage.sender) &&
+      setChatMessages((prev) => [...prev, arrivalMessage]);
+  }, [arrivalMessage, conversationID]);
+
+  useEffect(() => {
+    socket.current.emit("addUser", userInfo._id);
+    socket.current.on("getUsers", (users) => {});
+  }, []);
 
   useEffect(() => {
     const getMessages = async () => {
@@ -38,30 +65,48 @@ function ChatWindowScreen() {
     getMessages();
   }, [conversation]);
 
+  useEffect(() => {
+    const getConversation = async () => {
+      try {
+        const { data } = await axios.post(`/api/conversation/${id}`);
+        setConversationID(data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    getConversation();
+  }, []);
+
   const showFontStyleBox = () => {
     setShowFontStyle(!showFontStyle);
   };
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
   const handleSendMessage = () => {
-    if (newMessage.trim() !== '') {
-      setMessages([...messages, newMessage]);
-      setNewMessage('');
-    }
-    if (val.trim() !== '') {
-      setMessages([...messages, val]);
-      setVal('');
+    const messageObject = { text: newMessage, sender: userInfo._id };
+    if (newMessage.trim() !== "") {
+      setChatMessages([...chatMessages, messageObject]);
+      setNewMessage("");
     }
     submitHandler();
   };
-  const [val, setVal] = useState('');
   const onChange = (value) => {
-    setVal(value);
+    setNewMessage(value);
   };
 
   const submitHandler = async (e) => {
+    const receiverdId = conversationID.members.find(
+      (member) => member !== userInfo._id
+    );
+
+    socket.current.emit("sendMessage", {
+      senderId: userInfo._id,
+      receiverdId: receiverdId,
+      text: newMessage,
+    });
     try {
-      const { data } = await axios.post('/api/message/', {
+      const { data } = await axios.post("/api/message/", {
         conversationId: id,
         sender: userInfo._id,
         text: newMessage,
@@ -70,24 +115,40 @@ function ChatWindowScreen() {
       console.log(err.response?.data?.message);
     }
   };
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages, newMessage]);
 
   return (
-    <div className=" d-flex justify-content-center align-items-center">
+    <div className=" justify-content-center align-items-center">
       <div className="d-flex justify-content-center gap-3 ">
         <Card className="chatWindow mt-3">
           <CardHeader>Rohan </CardHeader>
           <CardBody className="chatWindowBody pb-0">
+            {console.log("chatMessages ", chatMessages)}
             {chatMessages.map((item) => (
               <>
                 {userInfo._id == item.sender ? (
-                  <div className="chat-receiverMsg d-flex flex-column">
-                    <p className="chat-receiverMsg-inner p-2">{item.text}</p>
-                    <div className="">{format(item.createdAt)}</div>
+                  <div
+                    ref={scrollRef}
+                    className="chat-receiverMsg d-flex flex-column"
+                  >
+                    <p
+                      className="chat-receiverMsg-inner p-2"
+                      dangerouslySetInnerHTML={{ __html: item.text }}
+                    ></p>
+                    <div className="timeago">{format(item.createdAt)}</div>
                   </div>
                 ) : (
-                  <div className="chat-senderMsg d-flex flex-column ">
-                    <p className="chat-senderMsg-inner p-2">{item.text}</p>
-                    <div className="">{format(item.createdAt)}</div>
+                  <div
+                    ref={scrollRef}
+                    className="chat-senderMsg d-flex flex-column "
+                  >
+                    <p
+                      className="chat-senderMsg-inner p-2"
+                      dangerouslySetInnerHTML={{ __html: item.text }}
+                    ></p>
+                    <div className="timeago">{format(item.createdAt)}</div>
                   </div>
                 )}
               </>
@@ -108,15 +169,19 @@ function ChatWindowScreen() {
               <InputGroup>
                 <Form.Control
                   type="text"
-                  style={{ display: showFontStyle ? 'none' : 'block' }}
+                  style={{ display: showFontStyle ? "none" : "block" }}
                   placeholder="Type your message here..."
                   aria-label="Search"
                   aria-describedby="basic-addon2"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                 />
-                <div style={{ display: showFontStyle ? 'block' : 'none' }}>
-                  <MyStatefulEditor markup="" onChange={onChange} />
+                <div style={{ display: showFontStyle ? "block" : "none" }}>
+                  <MyStatefulEditor
+                    markup=""
+                    value={newMessage}
+                    onChange={onChange}
+                  />
                 </div>
                 <div className="d-flex justify-content-center align-items-center ps-2 ">
                   <RxFontStyle onClick={showFontStyleBox} />

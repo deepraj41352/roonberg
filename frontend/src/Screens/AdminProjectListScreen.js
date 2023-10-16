@@ -245,9 +245,9 @@ export default function AdminProjectListScreen() {
   useEffect(() => {
     const FatchProjectData = async () => {
       try {
-        dispatch({ type: 'FATCH_REQUEST' });
+        dispatch({ type: 'FATCH_REQUEST' }); // Dispatch an action instead of calling it as a function
         const response = await axios.get('/api/project', {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
+          headers: { Authorization: `Bearer ${userInfo.token}` }, // Use template literals to interpolate the token
         });
         const datas = response.data;
         const rowData = datas.map((items) => {
@@ -300,7 +300,7 @@ export default function AdminProjectListScreen() {
     console.log('categories', categories);
     try {
       const response = await axios.post(
-        '/api/project/admin/addproject',
+        '/api/project/',
         {
           projectName: projectName,
           projectDescription: projectDescription,
@@ -362,8 +362,33 @@ export default function AdminProjectListScreen() {
     }
   };
 
-  const handleRedirectToContractorScreen = () => {
-    navigate('/adminContractorList');
+  React.useEffect(() => {
+    const fetchCategoryData = async () => {
+      try {
+        dispatch('FETCH_REQUEST');
+        const response = await axios.get(`/api/category`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        const categoryData = response.data;
+        const uniqueCategories = Array.from(
+          new Set(
+            categoryData.map((item) => ({
+              _id: item._id,
+              categoryName: item.categoryName,
+            }))
+          )
+        );
+        dispatch({ type: 'SUCCESS_CATEGORY', payload: uniqueCategories });
+      } catch (error) {
+        console.error('Error fetching category data:', error);
+      }
+    };
+
+    fetchCategoryData();
+  }, []);
+
+  const handleChange = (event) => {
+    setSelectedOptions(event.target.value);
   };
 
   return (
@@ -415,15 +440,16 @@ export default function AdminProjectListScreen() {
                       renderCell: (params) => {
                         return (
                           <Grid item xs={8}>
-                            <Button
-                              variant="contained"
-                              className="mx-2 tableEditbtn"
-                              onClick={() => handleEdit(params.row._id)}
-                              startIcon={<MdEdit />}
-                            >
-                              Edit
-                            </Button>
-
+                            <Link to={`/projectSingleScreen/${params.row._id}`}>
+                              <Button
+                                variant="contained"
+                                className="mx-2 tableEditbtn"
+                                // onClick={() => handleEdit(params.row._id)}
+                                // startIcon={<MdEdit />}
+                              >
+                                Edit
+                              </Button>
+                            </Link>
                             <Button
                               variant="outlined"
                               className="mx-2 tableDeletebtn"
@@ -464,10 +490,7 @@ export default function AdminProjectListScreen() {
                     p: 4,
                   }}
                 >
-                  <Form
-                    className="scrollInAdminproject"
-                    onSubmit={handleSubmit}
-                  >
+                  <Form onSubmit={handleSubmit}>
                     {isNewProject ? (
                       <h4 className="d-flex justify-content-center">
                         Add new Project Details
@@ -495,119 +518,39 @@ export default function AdminProjectListScreen() {
                       rows={4}
                       fullWidth
                       variant="outlined"
+                      // value={'text'}
+                      // onChange={handleChange}
                     />
-                    <FormControl>
-                      <InputLabel>Choose Contractor</InputLabel>
+                    <FormControl fullWidth>
+                      <InputLabel>Categories</InputLabel>
                       <Select
-                        value={projectOwner}
-                        onChange={(e) => setProjectOwner(e.target.value)}
+                        required
+                        multiple
+                        value={selectedOptions}
+                        onChange={handleChange}
+                        // renderValue={(selected) => (
+                        //   <div>
+                        //     {categoryData && selected
+                        //       ? selected.map((value) => (
+                        //           <span key={value}>
+                        //             {categoryData.find(
+                        //               (option) => option._id === value
+                        //             ).categoryName + ','}
+                        //           </span>
+                        //         ))
+                        //       : ''}
+                        //   </div>
+                        // )}
                       >
-                        <MenuItem
-                          onClick={() => {
-                            handleRedirectToContractorScreen();
-                          }}
-                        >
-                          {' '}
-                          <BiPlusMedical /> add new Contractor
-                        </MenuItem>
-                        {contractorData.map((items) => (
-                          <MenuItem key={items._id} value={items._id}>
-                            {items.first_name}
-                          </MenuItem>
-                        ))}
+                        {categoryData &&
+                          categoryData.map((option) => (
+                            <MenuItem key={option._id} value={option._id}>
+                              {option.categoryName}
+                            </MenuItem>
+                          ))}
                       </Select>
                     </FormControl>
-                    <div className="d-flex align-items-center">
-                      <GrAddCircle
-                        color="black"
-                        className="mx-2"
-                        onClick={addAgent}
-                      />
-                      <p className="text-dark m-0">
-                        Add more category and agent
-                      </p>
-                    </div>
-                    {agents.map((agent, index) => (
-                      <div key={index}>
-                        <FormControl>
-                          <InputLabel>Choose Category</InputLabel>
-                          <Select
-                            value={agent.categoryId}
-                            onChange={(e) =>
-                              handleAgentChange(
-                                index,
-                                'categoryId',
-                                e.target.value
-                              )
-                            }
-                          >
-                            <MenuItem disabled={agent.categoryId !== ''}>
-                              Select Category
-                            </MenuItem>
-                            {categoryData.map((category) => (
-                              <MenuItem
-                                key={category._id}
-                                value={category._id}
-                                disabled={agents.some(
-                                  (a) => a.categoryId === category._id
-                                )}
-                              >
-                                {category.categoryName}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                        <FormControl>
-                          <InputLabel>Choose Agent</InputLabel>
-                          <Select
-                            value={agent.agentId}
-                            onChange={(e) =>
-                              handleAgentChange(
-                                index,
-                                'agentId',
-                                e.target.value
-                              )
-                            }
-                          >
-                            <MenuItem disabled={agent.agentId !== ''}>
-                              Select Agent
-                            </MenuItem>
-                            {assignedAgentByCateHandle(index).map((agent) => (
-                              <MenuItem
-                                key={agent._id}
-                                value={agent._id}
-                                disabled={agents.some(
-                                  (a) => a.agentId === agent._id
-                                )}
-                              >
-                                {agent.first_name}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                        <div className="d-flex align-items-center">
-                          <GrSubtractCircle
-                            color="black"
-                            className="mx-2"
-                            onClick={() => removeAgent(index)}
-                          />
-                          <p className="text-dark m-0">Remove</p>
-                        </div>
-                      </div>
-                    ))}
-                    <FormControl>
-                      <InputLabel>Choose Status</InputLabel>
-                      <Select
-                        value={projectStatus}
-                        onChange={(e) => setProjectStatus(e.target.value)}
-                      >
-                        <MenuItem value=""> Select Status </MenuItem>
-                        <MenuItem value="active"> Active </MenuItem>
-                        <MenuItem value="inactive"> inactive </MenuItem>
-                        <MenuItem value="queue"> In Proccess </MenuItem>
-                        <MenuItem value="success"> success </MenuItem>
-                      </Select>
-                    </FormControl>
+
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DateField
                         required
@@ -697,7 +640,7 @@ export default function AdminProjectListScreen() {
             <Tab className="tab-color" eventKey="Completed" title="Completed">
               <Box sx={{ height: 400, width: '100%' }}>
                 <DataGrid
-                  className={`tableBg mx-2 ${theme}DataGrid`}
+                  className={`tableBg  ${theme}DataGrid`}
                   rows={projectCompleteData}
                   columns={[
                     ...columns,
@@ -764,8 +707,8 @@ export default function AdminProjectListScreen() {
                               <Button
                                 variant="contained"
                                 className="mx-2 tableEditbtn"
-                                onClick={() => handleEdit(params.row._id)}
-                                startIcon={<MdEdit />}
+                                // onClick={() => handleEdit(params.row._id)}
+                                // startIcon={<MdEdit />}
                               >
                                 Edit
                               </Button>

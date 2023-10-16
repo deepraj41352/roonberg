@@ -7,6 +7,7 @@ import MultiSelect from 'react-multiple-select-dropdown-lite';
 import 'react-multiple-select-dropdown-lite/dist/index.css';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { ThreeDots } from 'react-loader-spinner';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -50,18 +51,20 @@ function ProjectSingleScreen() {
     categoryData: {},
     successUpdate: false,
   });
-  const [conversations, setConversation] = useState([]);
-  useEffect(() => {
-    const getConversations = async () => {
-      try {
-        const res = await axios.get(`/api/conversation/${id}`);
-        setConversation(res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    getConversations();
-  }, []);
+  // const [conversations, setConversation] = useState([]);
+  // useEffect(() => {
+  //   const getConversations = async () => {
+  //     try {
+  //       const res = await axios.get(`/api/conversation/${id}`);
+  //       setConversation(res.data);
+  //     } catch (err) {
+  //       console.log(err);
+
+  //     }
+  //   };
+  //   getConversations();
+  // }, []);
+  // console.log("convsrsation",conversations)
 
   useEffect(() => {
     const fetchProjectData = async () => {
@@ -89,10 +92,9 @@ function ProjectSingleScreen() {
         console.error('Error fetching project data:', error);
       }
     };
-
     fetchProjectData();
   }, []);
-
+  console.log('project== datass', projectData);
   useEffect(() => {
     const fetchCategoryData = async () => {
       try {
@@ -172,10 +174,25 @@ function ProjectSingleScreen() {
   const handleCategoryChange = (selected) => {
     setSelectedOptions(selected);
   };
+
   return (
     <div>
       {loading ? (
-        <div>Loading ...</div>
+        <>
+          <div className="ThreeDot">
+            <ThreeDots
+              height="80"
+              width="80"
+              radius="9"
+              className="ThreeDot justify-content-center"
+              color="#0e0e3d"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClassName=""
+              visible={true}
+            />
+          </div>
+        </>
       ) : error ? (
         <div>{error}</div>
       ) : (
@@ -222,8 +239,8 @@ function ProjectSingleScreen() {
                       defaultValue={selectedOptions}
                     />
                   </Form.Group>
-                  <div className="d-flex gap-3 mb-3">
-                    <Form.Group className="w-100" controlId="start-date">
+                  <div className="d-flex gap-3 mb-3 start-end-date">
+                    <Form.Group className="w-100" controlId="duedate">
                       <Form.Label className="fw-bold">Start Date</Form.Label>
                       <Form.Control
                         type="date"
