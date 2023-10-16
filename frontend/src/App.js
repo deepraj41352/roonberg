@@ -20,8 +20,6 @@ import AdminContractorListScreen from './Screens/AdminContractorListScreen';
 import SearchScreen from './Screens/SearchScreen';
 import ProjectSingleScreen from './Screens/ProjectSingleScreen';
 import ChatWindowScreen from './Screens/ChatWindowScreen';
-import AdminEditAgent from './Screens/AdminEditAgentScreen';
-import AdminEditContractor from './Screens/AdminEditContractorScreen';
 import { useContext, useState } from 'react';
 import {
   Container,
@@ -53,22 +51,6 @@ import AdminEditContractor from './Screens/AdminEditContractorScreen';
 import ContractorProject from './Contractor/ContractorProjectListScreen';
 import ContractorEditProject from './Contractor/ContractorEditProjectScreen';
 import AgentProjectList from './Agent/AgentProjectListScreen';
-} from "react-bootstrap";
-import Sidebar from "./Components/Sidebar";
-import { AiOutlineAlignLeft, AiOutlineCheck } from "react-icons/ai";
-import { BsFillPersonFill, BsSearch } from "react-icons/bs";
-import { BiShareAlt } from "react-icons/bi";
-import { CgProfile } from "react-icons/cg";
-import { FiClock } from "react-icons/fi";
-import { MdOutlineNotifications } from "react-icons/md";
-import { Store } from "./Store";
-import AdminDashboard from "./Screens/AdminDashboard";
-import ProtectedRoute from "./Components/protectedRoute";
-import ProfileScreen from "./Screens/ProfileScreen";
-import Theme from "./Components/Theme";
-import ProjectNotification from "./Screens/ProjectNotification";
-import AddProject from "./Screens/AddProject";
-import ChatScreen from "./Screens/ChatScreen";
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -118,7 +100,7 @@ function App() {
                         thumbnail
                       />
                     </Navbar.Brand>
-                    <Form className=" search-bar-dash-outer">
+                    <Form className="d-flex">
                       <InputGroup className="search-bar-dash">
                         <Form.Control
                           type="search"
@@ -296,6 +278,7 @@ function App() {
                       path="/adminEditAgent/:id"
                       element={<AdminEditAgent />}
                     />
+
                     <Route
                       path="/adminEditContractor/:id"
                       element={<AdminEditContractor />}

@@ -7,7 +7,6 @@ import MultiSelect from 'react-multiple-select-dropdown-lite';
 import 'react-multiple-select-dropdown-lite/dist/index.css';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { ThreeDots } from 'react-loader-spinner';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -178,21 +177,7 @@ function ProjectSingleScreen() {
   return (
     <div>
       {loading ? (
-        <>
-          <div className="ThreeDot">
-            <ThreeDots
-              height="80"
-              width="80"
-              radius="9"
-              className="ThreeDot justify-content-center"
-              color="#0e0e3d"
-              ariaLabel="three-dots-loading"
-              wrapperStyle={{}}
-              wrapperClassName=""
-              visible={true}
-            />
-          </div>
-        </>
+        <div>Loading ...</div>
       ) : error ? (
         <div>{error}</div>
       ) : (
@@ -229,9 +214,7 @@ function ProjectSingleScreen() {
                     />
                   </Form.Group>
                   <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold">
-                      Select Categories:
-                    </Form.Label>
+                    <Form.Label className="fw-bold">Select Options:</Form.Label>
                     <MultiSelect
                       className="categorieslist"
                       onChange={handleCategoryChange}
@@ -239,8 +222,8 @@ function ProjectSingleScreen() {
                       defaultValue={selectedOptions}
                     />
                   </Form.Group>
-                  <div className="d-flex gap-3 mb-3 start-end-date">
-                    <Form.Group className="w-100" controlId="duedate">
+                  <div className="d-flex gap-3 mb-3">
+                    <Form.Group className="w-100" controlId="start-date">
                       <Form.Label className="fw-bold">Start Date</Form.Label>
                       <Form.Control
                         type="date"
@@ -267,62 +250,64 @@ function ProjectSingleScreen() {
                 </Form>
               </Card.Body>
             </Card>
-            <div className="projectScreenCard2 d-flex flex-column gap-4">
-              <Card className={`projectScreenCard2 ${theme}CardBody`}>
-                <Card.Header className={`${theme}CardHeader`}>
-                  Chats
-                </Card.Header>
-                <Card.Body className="d-flex flex-wrap gap-3 ">
-                  {/* -------- */}
-                  {conversations.map((conversion) => {
-                    return (
-                      <Card className="chatboxes">
-                        <Card.Header>Chat</Card.Header>
-                        <Card.Body>
-                          <Link to={`/chatWindowScreen/${conversion._id}`}>
-                            <Button
-                              className="chatBtn"
-                              type="button"
-                              // onClick={conversionHandler(conversion._id)}
-                            >
-                              {conversion._id}
-                            </Button>
-                          </Link>
-                        </Card.Body>
-                      </Card>
-                    );
-                  })}
-                  {/* -------- */}
-                </Card.Body>
-              </Card>
-              <Card className={`projectScreenCard2 ${theme}CardBody`}>
-                <Card.Header className={`${theme}CardHeader`}>
-                  Chats
-                </Card.Header>
-                <Card.Body className="d-flex flex-wrap gap-3 ">
-                  {/* -------- */}
-                  {conversations.map((conversion) => {
-                    return (
-                      <Card className="chatboxes">
-                        <Card.Header>Chat</Card.Header>
-                        <Card.Body>
-                          <Link to={`/chatWindowScreen/${conversion._id}`}>
-                            <Button
-                              className="chatBtn"
-                              type="button"
-                              // onClick={conversionHandler(conversion._id)}
-                            >
-                              {conversion._id}
-                            </Button>
-                          </Link>
-                        </Card.Body>
-                      </Card>
-                    );
-                  })}
-                  {/* -------- */}
-                </Card.Body>
-              </Card>
-            </div>
+            <Card className={`projectScreenCard2 ${theme}CardBody`}>
+              <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
+              <Card.Body className="d-flex flex-wrap gap-3 ">
+                {projectData?.conversions?.map((conversion) => {
+                  const assignedAgent = projectData.assignedAgent.find(
+                    (assignedAgent) =>
+                      assignedAgent.agentId === conversion.members[0]
+                  );
+                  return (
+                    <>
+                      {userInfo.role == 'agent' ? (
+                        <>
+                          {conversion.members.includes(userInfo._id) && (
+                            <>
+                              <Card className="chatboxes">
+                                {/* <Card.Header>{assignedAgent.categoryId}</Card.Header> */}
+                                <Card.Body>
+                                  <Link
+                                    to={`/chatWindowScreen/${conversion._id}`}
+                                  >
+                                    <Button
+                                      className="chatBtn"
+                                      type="button"
+                                      // onClick={conversionHandler(conversion._id)}
+                                    >
+                                      Chat Now
+                                    </Button>
+                                  </Link>
+                                </Card.Body>
+                              </Card>
+                            </>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <Card className="chatboxes">
+                            <Card.Header>
+                              {assignedAgent.categoryName}
+                            </Card.Header>
+                            <Card.Body>
+                              <Link to={`/chatWindowScreen/${conversion._id}`}>
+                                <Button
+                                  className="chatBtn"
+                                  type="button"
+                                  // onClick={conversionHandler(conversion._id)}
+                                >
+                                  {assignedAgent.agentName}
+                                </Button>
+                              </Link>
+                            </Card.Body>
+                          </Card>
+                        </>
+                      )}
+                    </>
+                  );
+                })}
+              </Card.Body>
+            </Card>
           </div>
         </div>
       )}
