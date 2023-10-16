@@ -268,7 +268,20 @@ function ProjectSingleScreen() {
             <Card className={`projectScreenCard2 ${theme}CardBody`}>
               <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
               <Card.Body className="d-flex flex-wrap gap-3 ">
-                <div className="dis">No chat available</div>
+                <div
+                  className="text-center w-100"
+                  style={{
+                    display:
+                      projectData &&
+                      projectData.conversions &&
+                      projectData.conversions.length < 1
+                        ? "block"
+                        : "none",
+                  }}
+                >
+                  No Chat Available
+                </div>
+
                 {projectData?.conversions?.map((conversion) => {
                   const assignedAgent = projectData.assignedAgent.find(
                     (assignedAgent) =>
