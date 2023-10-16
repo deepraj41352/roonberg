@@ -543,3 +543,11 @@ body {
 
   border-radius: 50%;
 }
+.profile-icon{
+  height: 27px;
+  width: 27px;
+}
+.profile-icon img{
+  border-radius: 50% ;
+
+}

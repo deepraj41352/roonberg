@@ -64,7 +64,7 @@ function ProfileScreen() {
       <div className="Sign-up-container-inner px-4 py-3 w-100">
         <Row className="mb-3">
           <Col>
-            <h4>Userr Profile</h4>
+            <h4>User Profile</h4>
           </Col>
         </Row>
         <Row>

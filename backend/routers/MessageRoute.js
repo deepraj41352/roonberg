@@ -19,17 +19,16 @@ MessageRouter.post('/',
     if (req.file) {
       const image = await uploadDoc(req);
       req.body.image = image;
-
       console.log("image",req.body.image)
     }
     const newMessage = new Message({
-      $set: req.body
-      // conversationId: req.body.conversationId,
-      // sender: req.body.sender,
-      // text: req.body.text,
+      // $set: req.body
+      conversationId: req.body.conversationId,
+      sender: req.body.sender,
+      text: req.body.text,
       // // image:image,
     });
-    console.log(newMessage.conversationId);
+    console.log("conversationid",newMessage.conversationId);
 
     const savedMessage = await newMessage.save();
     res.status(200).json(savedMessage);
