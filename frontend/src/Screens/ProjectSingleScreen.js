@@ -212,7 +212,9 @@ function ProjectSingleScreen() {
                     />
                   </Form.Group>
                   <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold">Select Options:</Form.Label>
+                    <Form.Label className="fw-bold">
+                      Select Categories:
+                    </Form.Label>
                     <MultiSelect
                       className="categorieslist"
                       onChange={handleCategoryChange}
@@ -248,32 +250,62 @@ function ProjectSingleScreen() {
                 </Form>
               </Card.Body>
             </Card>
-            <Card className={`projectScreenCard2 ${theme}CardBody`}>
-              <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
-              <Card.Body className="d-flex flex-wrap gap-3 ">
-                {/* -------- */}
-                {conversations.map((conversion) => {
-                  return (
-                    <Card className="chatboxes">
-                      <Card.Header>Chat</Card.Header>
-                      <Card.Body>
-                        <Link to={`/chatWindowScreen/${conversion._id}`}>
-                          <Button
-                            className="chatBtn"
-                            type="button"
-                            // onClick={conversionHandler(conversion._id)}
-                          >
-                            {conversion._id}
-                          </Button>
-                        </Link>
-                      </Card.Body>
-                    </Card>
-                  );
-                })}
-
-                {/* -------- */}
-              </Card.Body>
-            </Card>
+            <div className="projectScreenCard2 d-flex flex-column gap-4">
+              <Card className={`projectScreenCard2 ${theme}CardBody`}>
+                <Card.Header className={`${theme}CardHeader`}>
+                  Chats
+                </Card.Header>
+                <Card.Body className="d-flex flex-wrap gap-3 ">
+                  {/* -------- */}
+                  {conversations.map((conversion) => {
+                    return (
+                      <Card className="chatboxes">
+                        <Card.Header>Chat</Card.Header>
+                        <Card.Body>
+                          <Link to={`/chatWindowScreen/${conversion._id}`}>
+                            <Button
+                              className="chatBtn"
+                              type="button"
+                              // onClick={conversionHandler(conversion._id)}
+                            >
+                              {conversion._id}
+                            </Button>
+                          </Link>
+                        </Card.Body>
+                      </Card>
+                    );
+                  })}
+                  {/* -------- */}
+                </Card.Body>
+              </Card>
+              <Card className={`projectScreenCard2 ${theme}CardBody`}>
+                <Card.Header className={`${theme}CardHeader`}>
+                  Chats
+                </Card.Header>
+                <Card.Body className="d-flex flex-wrap gap-3 ">
+                  {/* -------- */}
+                  {conversations.map((conversion) => {
+                    return (
+                      <Card className="chatboxes">
+                        <Card.Header>Chat</Card.Header>
+                        <Card.Body>
+                          <Link to={`/chatWindowScreen/${conversion._id}`}>
+                            <Button
+                              className="chatBtn"
+                              type="button"
+                              // onClick={conversionHandler(conversion._id)}
+                            >
+                              {conversion._id}
+                            </Button>
+                          </Link>
+                        </Card.Body>
+                      </Card>
+                    );
+                  })}
+                  {/* -------- */}
+                </Card.Body>
+              </Card>
+            </div>
           </div>
         </div>
       )}

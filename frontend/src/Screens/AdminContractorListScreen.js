@@ -1,18 +1,19 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import { DataGrid } from '@mui/x-data-grid';
-import { Button, FormControl, Grid, MenuItem, Select } from '@mui/material';
-import { AiFillDelete } from 'react-icons/ai';
-import { MdEdit } from 'react-icons/md';
-import Modal from '@mui/material/Modal';
-import TextField from '@mui/material/TextField';
-import { Form } from 'react-bootstrap';
-import { BiPlusMedical } from 'react-icons/bi';
-import axios from 'axios';
-import { Store } from '../Store';
-import { toast } from 'react-toastify';
-import { ImCross } from 'react-icons/im';
-import { ThreeDots } from 'react-loader-spinner';
+import Box from "@mui/material/Box";
+import { DataGrid } from "@mui/x-data-grid";
+import { Button, FormControl, Grid, MenuItem, Select } from "@mui/material";
+import { AiFillDelete } from "react-icons/ai";
+import { MdEdit } from "react-icons/md";
+import Modal from "@mui/material/Modal";
+import TextField from "@mui/material/TextField";
+import { Form } from "react-bootstrap";
+import { BiPlusMedical } from "react-icons/bi";
+import axios from "axios";
+import { Store } from "../Store";
+import { toast } from "react-toastify";
+import { ImCross } from "react-icons/im";
+import { ThreeDots } from "react-loader-spinner";
+import { useNavigate } from "react-router-dom";
+import { useContext, useEffect, useReducer, useState } from "react";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -34,78 +35,60 @@ const reducer = (state, action) => {
 
     case "UPDATE_RESET":
       return { ...state, successUpdate: false };
-
+    case "FATCH_SUBMITTING":
+      return { ...state, submitting: action.payload };
     default:
       return state;
   }
 };
 
 const columns = [
-  { field: "_id", headerName: "ID", width: 80 },
+  { field: "_id", headerName: "ID", width: 250 },
   {
     field: "first_name",
-    headerName: "constractor Name",
-    width: 100,
+    headerName: "constractor",
+    width: 150,
   },
   {
     field: "email",
     headerName: "Email",
-    width: 100,
+    width: 200,
   },
   {
-    field: "status",
+    field: "userStatus",
     headerName: "Status",
     width: 100,
   },
 ];
 
 export default function AdminContractorListScreen() {
-  const [isModelOpen, setIsModelOpen] = React.useState(false);
-  const [selectedRowData, setSelectedRowData] = React.useState(null);
-  const [isNewContractor, setIsNewContractor] = React.useState(false);
-  const role = "contractor";
-  const { state } = React.useContext(Store);
+  const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
+  const navigate = useNavigate();
+  const role = "contractor";
+  const [isModelOpen, setIsModelOpen] = useState(false);
   const theme = toggleState ? "dark" : "light";
+
+  const [name, setName] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState("");
+  const [password, setPassword] = useState("");
+
   const [
-    { loading, error, constructorData, successDelete, successUpdate },
+    { loading, error, constructorData, successDelete, successUpdate, submitting },
     dispatch,
-  ] = React.useReducer(reducer, {
+  ] = useReducer(reducer, {
     loading: true,
     error: "",
+
     constructorData: [],
     successDelete: false,
     successUpdate: false,
+    submitting: false,
   });
 
-  const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [status, setStatus] = React.useState("");
-  const [password, setPassword] = React.useState("");
-
-  const handleEdit = (userid) => {
-    const constractorToEdit = constructorData.find(
-      (constractor) => constractor && constractor._id === userid
-    );
-    setName(constractorToEdit ? constractorToEdit.first_name : "");
-    setEmail(constractorToEdit ? constractorToEdit.email : "");
-    setStatus(constractorToEdit ? constractorToEdit.status : "active");
-    setSelectedRowData(constractorToEdit);
-    setIsModelOpen(true);
-    setIsNewContractor(false);
-  };
-
-  const handleCloseRow = () => {
-    setIsModelOpen(false);
-  };
-
-  const handleNew = () => {
-    setSelectedRowData(null);
-    setIsModelOpen(true);
-    setIsNewContractor(true);
-  };
-
-  React.useEffect(() => {
+  useEffect(() => {
     const FatchconstractorData = async () => {
       try {
         dispatch("FATCH_REQUEST");
@@ -121,7 +104,7 @@ export default function AdminContractorListScreen() {
             _id: items._id,
             first_name: items.first_name,
             email: items.email,
-            status: items.status,
+            userStatus: items.userStatus ? "Active" : "Inactive",
           };
         });
         dispatch({ type: "FATCH_SUCCESS", payload: rowData });
@@ -136,41 +119,36 @@ export default function AdminContractorListScreen() {
     } else {
       FatchconstractorData();
     }
-  }, [successDelete, successUpdate]);
+  }, [successDelete, successUpdate, userInfo]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isNewContractor) {
-      const response = await axios.post(`/api/user/signup`, {
-        first_name: name,
-        email: email,
-        password: password,
-        role: role,
-      });
-      if (response.status === 201) {
-        toast.success("constractor added Successfully !");
-        const datas = response.data;
-        setIsModelOpen(false);
-        dispatch({ type: "FATCH_SUCCESS", payload: datas });
-        dispatch({ type: "UPDATE_SUCCESS", payload: true });
-      }
-    } else {
-      const response = await axios.put(
-        `/api/user/update/${selectedRowData._id}`,
+    dispatch({ type: "FATCH_SUBMITTING", payload: true })
+    try {
+      const response = await axios.post(
+        `/api/user/add`,
         {
           first_name: name,
+          last_name: lastname,
           email: email,
+          password: password,
           role: role,
+          userStatus: status,
         },
-
         { headers: { Authorization: `Bearer ${userInfo.token}` } }
       );
-
+      console.log(response);
       if (response.status === 200) {
-        toast.success(response.data);
+        toast.success("Contractor added Successfully !");
         setIsModelOpen(false);
         dispatch({ type: "UPDATE_SUCCESS", payload: true });
+        dispatch({ type: "FATCH_SUBMITTING", payload: false })
       }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message);
+      dispatch({ type: "FATCH_SUBMITTING", payload: false })
     }
   };
 
@@ -197,161 +175,180 @@ export default function AdminContractorListScreen() {
     }
   };
 
+  const handleEdit = (userid) => {
+    navigate(`/adminEditContractor/${userid}`);
+  };
+
+  const handleCloseRow = () => {
+    setIsModelOpen(false);
+  };
+
+  const handleModel = () => {
+    setIsModelOpen(true);
+  };
+
   return (
     <>
-      {loading ? (
-        <>
-          <div className='ThreeDot' >
-            <ThreeDots
-              height="80"
-              width="80"
-              radius="9"
-              className="ThreeDot justify-content-center"
-              color="#0e0e3d"
-              ariaLabel="three-dots-loading"
-              wrapperStyle={{}}
-              wrapperClassName=""
-              visible={true}
-            />
-          </div>
-
-        </>
-      ) : (error ? (
-        <div>{error}</div>
-      ) : (
-        <>
-          <Button
-            variant="outlined"
-            className=" m-2 d-flex globalbtnColor"
-            onClick={handleNew}
-          >
-            <BiPlusMedical className="mx-2" />
-            Add Contractor
-          </Button>
-          <Box sx={{ height: 400, width: "100%" }}>
-            <DataGrid
-              className={`tableBg mx-2 ${theme}DataGrid`}
-              rows={constructorData}
-              columns={[
-                ...columns,
-                {
-                  field: "action",
-                  headerName: "Action",
-                  width: 250,
-                  renderCell: (params) => {
-                    return (
-                      <Grid item xs={8}>
-                        <Button
-                          variant="contained"
-                          className="mx-2 tableEditbtn"
-                          onClick={() => handleEdit(params.row._id)}
-                          startIcon={<MdEdit />}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          className="mx-2 tableDeletebtn"
-                          onClick={() => deleteHandle(params.row._id)}
-                          startIcon={<AiFillDelete />}
-                        >
-                          Delete
-                        </Button>
-                      </Grid>
-                    );
-                  },
-                },
-              ]}
-              getRowId={(row) => row._id}
-              initialState={{
-                pagination: {
-                  paginationModel: {
-                    pageSize: 5,
-                  },
-                },
-              }}
-              pageSizeOptions={[5]}
-              checkboxSelection
-              disableRowSelectionOnClick
-            />
-          </Box>
-          <Modal open={isModelOpen} onClose={handleCloseRow}>
-            <Box
-              className="modelBg"
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                width: 400,
-                bgcolor: "background.paper",
-                boxShadow: 24,
-                p: 4,
-              }}
+      <div className="px-3 mt-3">
+        {loading ? (
+          <>
+            <div className="ThreeDot">
+              <ThreeDots
+                height="80"
+                width="80"
+                radius="9"
+                className="ThreeDot justify-content-center"
+                color="#0e0e3d"
+                ariaLabel="three-dots-loading"
+                wrapperStyle={{}}
+                wrapperClassName=""
+                visible={true}
+              />
+            </div>
+          </>
+        ) : error ? (
+          <div>{error}</div>
+        ) : (
+          <>
+            <Button
+              variant="outlined"
+              className=" m-2 d-flex globalbtnColor"
+              onClick={handleModel}
             >
-              <Form onSubmit={handleSubmit}>
-                <ImCross
-                  color="black"
-                  className="formcrossbtn"
-                  onClick={handleCloseRow}
-                />
-                {isNewContractor ? (
-                  <h4 className="d-flex justify-content-center">
-                    Add new Contractor Details
-                  </h4>
-                ) : (
-                  <h4 className="d-flex justify-content-center">
-                    Edit Contractor Details
-                  </h4>
-                )}
-                <TextField
-                  className="mb-2"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  label="Username"
-                  fullWidth
-                />
+              <BiPlusMedical className="mx-2" />
+              Add Contractor
+            </Button>
+            <Box sx={{ height: 400, width: "100%" }}>
+              <DataGrid
+                className={`tableBg mx-2 ${theme}DataGrid`}
+                rows={constructorData}
+                columns={[
+                  ...columns,
+                  {
+                    field: "action",
+                    headerName: "Action",
+                    width: 250,
+                    renderCell: (params) => {
+                      return (
+                        <Grid item xs={8}>
+                          <Button
+                            variant="contained"
+                            className="mx-2 tableEditbtn"
+                            onClick={() => handleEdit(params.row._id)}
+                            startIcon={<MdEdit />}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            className="mx-2 tableDeletebtn"
+                            onClick={() => deleteHandle(params.row._id)}
+                            startIcon={<AiFillDelete />}
+                          >
+                            Delete
+                          </Button>
+                        </Grid>
+                      );
+                    },
+                  },
+                ]}
+                getRowId={(row) => row._id}
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      pageSize: 5,
+                    },
+                  },
+                }}
+                pageSizeOptions={[5]}
+                checkboxSelection
+                disableRowSelectionOnClick
+              />
+            </Box>
+            <Modal open={isModelOpen} onClose={handleCloseRow}>
+              <Box
+                className="modelBg modalRespnsive"
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: 400,
+                  bgcolor: "background.paper",
+                  boxShadow: 24,
+                  p: 4,
+                }}
+              >
+                <Form onSubmit={handleSubmit}>
+                  <ImCross
+                    color="black"
+                    className="formcrossbtn"
+                    onClick={handleCloseRow}
+                  />
 
-                <TextField
-                  className="mb-2"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  label="Email"
-                  fullWidth
-                />
-                {isNewContractor && (
+                  <h4 className="d-flex justify-content-center">
+                    Add Contractor
+                  </h4>
+
+                  <TextField
+                    className="mb-2"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    label="FirstName"
+                    fullWidth
+                  />
+                  <TextField
+                    className="mb-2"
+                    value={lastname}
+                    onChange={(e) => setLastname(e.target.value)}
+                    label="LastName"
+                    fullWidth
+                  />
+
+                  <TextField
+                    className="mb-2"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    label="Email"
+                    type="email"
+                    fullWidth
+                  />
+
                   <TextField
                     className="mb-2"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     label="Password"
+                    type="password"
                     fullWidth
                   />
-                )}
 
-                <FormControl className="formselect">
-                  <Select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
+                  <FormControl className="formselect">
+                    <Select
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
+                    >
+                      <MenuItem value={true}>Active</MenuItem>
+                      <MenuItem value={false}>Inactive</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <br></br>
+                  <Button
+                    className="mt-2 formbtn"
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    disabled={submitting}
                   >
-                    <MenuItem value="Active">Active</MenuItem>
-                    <MenuItem value="Inactive">Inactive</MenuItem>
-                  </Select>
-                </FormControl>
-                <br></br>
-                <Button
-                  className="mt-2 formbtn"
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                >
-                  {isNewContractor ? "Add constractor" : "Save Changes"}
-                </Button>
-              </Form>
-            </Box>
-          </Modal>
-        </>
-      ))}
+                    {submitting ? "Adding Contractor..." : "Add Contractor"}
+
+                  </Button>
+                </Form>
+              </Box>
+            </Modal>
+          </>
+        )}
+      </div>
     </>
   );
 }

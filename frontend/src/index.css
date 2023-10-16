@@ -33,6 +33,10 @@ code {
 }
 
 /* Gaytri css start  */
+.scrollInAdminproject {
+  max-height: 500px;
+  overflow-y: auto;
+}
 .fullContainer {
   height: 100vh !important;
 }

@@ -1,4 +1,3 @@
-import * as React from "react";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -22,6 +21,7 @@ import { Store } from "../Store";
 import { ImCross } from "react-icons/im";
 import { ThreeDots } from 'react-loader-spinner';
 import { useNavigate } from "react-router-dom";
+import { useContext, useEffect, useReducer, useState } from "react";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -31,7 +31,8 @@ const reducer = (state, action) => {
       return { ...state, AgentData: action.payload, loading: false };
     case "FATCH_ERROR":
       return { ...state, error: action.payload, loading: false };
-
+    case "FATCH_SUBMITTING":
+      return { ...state, submitting: action.payload };
     case "DELETE_SUCCESS":
       return { ...state, successDelete: action.payload };
 
@@ -39,6 +40,12 @@ const reducer = (state, action) => {
       return { ...state, successDelete: false };
     case "FATCH_CATEGORY":
       return { ...state, categoryData: action.payload };
+    case "UPDATE_SUCCESS":
+      return { ...state, successUpdate: action.payload };
+
+    case "UPDATE_RESET":
+      return { ...state, successUpdate: false };
+
     default:
       return state;
   }
@@ -69,42 +76,48 @@ const columns = [
 ];
 
 export default function AdminAgentListScreen() {
-  const role = "agent";
-  const navigate = useNavigate();
-  const { state } = React.useContext(Store);
+  const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
+  const navigate = useNavigate();
+  const role = "agent";
   const theme = toggleState ? "dark" : "light";
-  const [isModelOpen, setIsModelOpen] = React.useState(false);
+  const [isModelOpen, setIsModelOpen] = useState(false);
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState(false);
+  const [password, setPassword] = useState("");
+  const [selectcategory, setSelectCategory] = useState('');
 
   const [
-    { loading, error, AgentData, successDelete, categoryData },
+    { loading, error, AgentData, successDelete, categoryData, successUpdate, submitting },
     dispatch,
-  ] = React.useReducer(reducer, {
+  ] = useReducer(reducer, {
     loading: true,
     error: "",
     AgentData: [],
     successDelete: false,
     categoryData: [],
+    successUpdate: false,
+    submitting: false
   });
 
-  const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [status, setStatus] = React.useState(false);
-  const [password, setPassword] = React.useState("");
-  const [selectcategory, setSelectCategory] = React.useState('');
-  const handleCloseRow = () => {
-    setIsModelOpen(false);
-  };
+  useEffect(() => {
+    const FatchCategory = async () => {
+      try {
+        dispatch("FATCH_REQUEST")
+        const response = await axios.get(`/api/category/`, { headers: { Authorization: `Bearer ${userInfo.token}` } });
+        const datas = response.data;
+        setSelectCategory(datas)
+        dispatch({ type: "FATCH_CATEGORY", payload: datas });
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    FatchCategory();
+  }, []);
 
-  const handleNew = () => {
-    setIsModelOpen(true);
-  };
-
-  const handleEdit = (userid) => {
-    navigate(`/adminEditAgent/${userid}`)
-  };
-
-  React.useEffect(() => {
+  useEffect(() => {
     const FatchAgentData = async () => {
       try {
         dispatch("FATCH_REQUEST");
@@ -116,7 +129,7 @@ export default function AdminAgentListScreen() {
             _id: items._id,
             first_name: items.first_name,
             email: items.email,
-            userStatus: items.userStatus,
+            userStatus: items.userStatus ? "Active" : "Inactive",
             agentCategory: items.agentCategory,
           };
         });
@@ -127,14 +140,18 @@ export default function AdminAgentListScreen() {
     };
     if (successDelete) {
       dispatch({ type: "DELETE_RESET" });
-    } else {
+    }
+    else if (successUpdate) {
+      dispatch({ type: "UPDATE_RESET" });
+    }
+    else {
       FatchAgentData();
     }
-  }, [successDelete]);
-
+  }, [successDelete, successUpdate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    dispatch({ type: "FATCH_SUBMITTING", payload: true })
     try {
       const response = await axios.post(`/api/user/add`, {
         first_name: name,
@@ -148,10 +165,9 @@ export default function AdminAgentListScreen() {
       console.log(response)
       if (response.status === 200) {
         toast.success("Agent added Successfully !");
-        const datas = response.data;
         setIsModelOpen(false);
-        dispatch({ type: "FATCH_SUCCESS", payload: datas });
         dispatch({ type: "UPDATE_SUCCESS", payload: true });
+        dispatch({ type: "FATCH_SUBMITTING", payload: false })
       }
     } catch (error) {
       toast.error(error.response?.data?.message);
@@ -181,20 +197,17 @@ export default function AdminAgentListScreen() {
     }
   };
 
-  React.useEffect(() => {
-    const FatchCategory = async () => {
-      try {
-        dispatch("FATCH_REQUEST")
-        const response = await axios.get(`/api/category/`, { headers: { Authorization: `Bearer ${userInfo.token}` } });
-        const datas = response.data;
-        setSelectCategory(datas)
-        dispatch({ type: "FATCH_CATEGORY", payload: datas });
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    FatchCategory();
-  }, []);
+  const handleCloseRow = () => {
+    setIsModelOpen(false);
+  };
+
+  const handleModel = () => {
+    setIsModelOpen(true);
+  };
+
+  const handleEdit = (userid) => {
+    navigate(`/adminEditAgent/${userid}`)
+  };
 
   return (
     <>
@@ -222,7 +235,7 @@ export default function AdminAgentListScreen() {
           <Button
             variant="outlined"
             className=" m-2 d-flex globalbtnColor"
-            onClick={handleNew}
+            onClick={handleModel}
           >
             <BiPlusMedical className="mx-2" />
             Add Agent
@@ -332,14 +345,6 @@ export default function AdminAgentListScreen() {
                     <MenuItem value={false}>Inactive</MenuItem>
                   </Select>
                 </FormControl>
-                {/* <select className='formselect mb-2' value={category} onChange={(e) => setCategory(e.target.value)} >
-                    <option value="" >
-                      Select a category
-                    </option>
-                    {categoryData.map((items) => (
-                      <option key={items._id} value={items._id} >{items.categoryName}</option>
-                    ))}
-                  </select> */}
                 <FormControl >
                   <InputLabel>Choose Category</InputLabel>
                   <Select
@@ -357,8 +362,9 @@ export default function AdminAgentListScreen() {
                   variant="contained"
                   color="primary"
                   type="submit"
+                  disabled={submitting}
                 >
-                  Submit
+                  {submitting ? "Adding Agent..." : "Add Agent"}
                 </Button>
               </Form>
             </Box>

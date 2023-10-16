@@ -19,6 +19,8 @@ const reducer = (state, action) => {
 
         case "UPDATE_RESET":
             return { ...state, successUpdate: false };
+        case "FATCH_CATEGORY":
+            return { ...state, categoryDatas: action.payload };
         //   case "CATEGORY_CRATED_REQ":
         //     return { ...state, isSubmiting: true }
         default:
@@ -27,6 +29,8 @@ const reducer = (state, action) => {
 };
 
 function AdminEditAgent() {
+
+    const [selectcategory, setSelectCategory] = React.useState('');
     const { id } = useParams();
     if (id) {
         console.log("id exists:", id);
@@ -39,7 +43,7 @@ function AdminEditAgent() {
     const { toggleState, userInfo } = state;
     const theme = toggleState ? "dark" : "light";
     const [
-        { loading, error, categoryData, successDelete, successUpdate, },
+        { loading, error, categoryData, categoryDatas, successDelete, successUpdate, },
         dispatch,
     ] = useReducer(reducer, {
         loading: true,
@@ -48,6 +52,7 @@ function AdminEditAgent() {
         successDelete: false,
         successUpdate: false,
         isSubmiting: false,
+        categoryDatas: []
     });
 
 
@@ -75,9 +80,9 @@ function AdminEditAgent() {
                     `/api/user/${id}`);
                 const datas = response.data;
                 setFirstName(datas.first_name)
-                setLastName(datas.last_name)
+                setLastName(datas.last_name || 'Last Name')
                 setEmail(datas.email)
-                setStatus(datas.status)
+                setStatus(datas.userStatus)
 
                 // setStatus(datas.categoryStatus)
 
@@ -88,6 +93,21 @@ function AdminEditAgent() {
 
         FatchcategoryData();
 
+    }, []);
+
+    React.useEffect(() => {
+        const FatchCategory = async () => {
+            try {
+                dispatch("FATCH_REQUEST")
+                const response = await axios.get(`/api/category/`, { headers: { Authorization: `Bearer ${userInfo.token}` } });
+                const datas = response.data;
+                setSelectCategory(datas)
+                dispatch({ type: "FATCH_CATEGORY", payload: datas });
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        FatchCategory();
     }, []);
 
     const submitHandler = async (e) => {
@@ -115,7 +135,8 @@ function AdminEditAgent() {
             );
             dispatch({ type: "UPDATE_SUCCESS" })
             toast.success(data.data);
-            navigate('/adminAgentList')
+            console.log(data)
+            // navigate('/adminAgentList')
 
         } catch (err) {
             toast.error(err.response?.data?.message);
@@ -172,6 +193,14 @@ function AdminEditAgent() {
                                             <option value="">SELECT STATUS</option>
                                             <option value="true">Active</option>
                                             <option value="false">Inactive</option>
+                                        </Form.Select>
+                                    </Form.Group>
+                                    <Form.Group className="mb-3" controlId="formBasicPassword">
+                                        <Form.Label className="mb-1">Category</Form.Label>
+                                        <Form.Select value={selectcategory} onChange={(e) => setSelectCategory(e.target.value)}>
+                                            {categoryDatas.map((items) => (
+                                                <option key={items._id} value={items._id} >{items.categoryName}</option>
+                                            ))}
                                         </Form.Select>
                                     </Form.Group>
                                     {/* <Form.Group className="mb-3" controlId="formBasicPassword">

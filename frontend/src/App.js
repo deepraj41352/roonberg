@@ -46,7 +46,11 @@ import AddProject from './Screens/AddProject';
 import ChatScreen from './Screens/ChatScreen';
 import AdminEditCategory from './Screens/AdminEditCategoryScreen';
 import AdminEditAgent from './Screens/AdminEditAgentScreen';
-import ContractorProjectScreen from './Components/Contractor/contractorProjectScreen';
+import AdminEditProject from './Screens/AdminEditProjectScreen';
+import AdminEditContractor from './Screens/AdminEditContractorScreen';
+import ContractorProject from './Contractor/ContractorProjectListScreen';
+import ContractorEditProject from './Contractor/ContractorEditProjectScreen';
+import AgentProjectList from './Agent/AgentProjectListScreen';
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -255,6 +259,10 @@ function App() {
                       path="/projectSingleScreen/:id"
                       element={<ProjectSingleScreen />}
                     />
+                    <Route
+                      path="/adminEditProject/:id"
+                      element={<AdminEditProject />}
+                    />
 
                     <Route
                       path="/chatWindowScreen/:id"
@@ -270,9 +278,25 @@ function App() {
                       path="/adminEditAgent/:id"
                       element={<AdminEditAgent />}
                     />
+
                     <Route
-                      path="/project-screen/"
-                      element={<ContractorProjectScreen />}
+                      path="/adminEditContractor/:id"
+                      element={<AdminEditContractor />}
+                    />
+                    {/* Contractor */}
+                    <Route
+                      path="/contractorProjectList"
+                      element={<ContractorProject />}
+                    />
+
+                    <Route
+                      path="/contractorEditProject/:id"
+                      element={<ContractorEditProject />}
+                    />
+                    {/* agent */}
+                    <Route
+                      path="/agentProjectList"
+                      element={<AgentProjectList />}
                     />
                   </Routes>
                 </div>
