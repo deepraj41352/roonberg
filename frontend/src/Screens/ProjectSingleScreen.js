@@ -59,7 +59,7 @@ function ProjectSingleScreen() {
   //       setConversation(res.data);
   //     } catch (err) {
   //       console.log(err);
-        
+
   //     }
   //   };
   //   getConversations();
@@ -94,7 +94,7 @@ function ProjectSingleScreen() {
     };
     fetchProjectData();
   }, []);
-console.log('project== datass',projectData)
+  console.log("project== datass", projectData);
   useEffect(() => {
     const fetchCategoryData = async () => {
       try {
@@ -174,8 +174,6 @@ console.log('project== datass',projectData)
   const handleCategoryChange = (selected) => {
     setSelectedOptions(selected);
   };
-
-
 
   return (
     <div>
@@ -270,52 +268,57 @@ console.log('project== datass',projectData)
             <Card className={`projectScreenCard2 ${theme}CardBody`}>
               <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
               <Card.Body className="d-flex flex-wrap gap-3 ">
-                
+                <div className="dis">No chat available</div>
                 {projectData?.conversions?.map((conversion) => {
-
-              const assignedAgent = projectData.assignedAgent.find((assignedAgent) => assignedAgent.agentId === conversion.members[0])
+                  const assignedAgent = projectData.assignedAgent.find(
+                    (assignedAgent) =>
+                      assignedAgent.agentId === conversion.members[0]
+                  );
                   return (
                     <>
-                    {userInfo.role == "agent" ? (
-                      <>
-                      {conversion.members.includes(userInfo._id) && (    
+                      {userInfo.role == "agent" ? (
                         <>
-                        <Card className="chatboxes">
-                        {/* <Card.Header>{assignedAgent.categoryId}</Card.Header> */}
-                        <Card.Body>
-                         <Link to={`/chatWindowScreen/${conversion._id}`}>
-                          <Button
-                            className="chatBtn"
-                            type="button"
-                            // onClick={conversionHandler(conversion._id)}
-                          >
-                          Chat Now
-                          </Button>
-                        </Link>
-                        </Card.Body>
-                        </Card>
+                          {conversion.members.includes(userInfo._id) && (
+                            <>
+                              <Card className="chatboxes">
+                                {/* <Card.Header>{assignedAgent.categoryId}</Card.Header> */}
+                                <Card.Body>
+                                  <Link
+                                    to={`/chatWindowScreen/${conversion._id}`}
+                                  >
+                                    <Button
+                                      className="chatBtn"
+                                      type="button"
+                                      // onClick={conversionHandler(conversion._id)}
+                                    >
+                                      Chat Now
+                                    </Button>
+                                  </Link>
+                                </Card.Body>
+                              </Card>
+                            </>
+                          )}
                         </>
-                      )}
-                      </>
-                      ):(
+                      ) : (
                         <>
                           <Card className="chatboxes">
-                          <Card.Header>{assignedAgent.categoryName}</Card.Header>
-                          <Card.Body>
-                           <Link to={`/chatWindowScreen/${conversion._id}`}>
-                            <Button
-                              className="chatBtn"
-                              type="button"
-                              // onClick={conversionHandler(conversion._id)}
-                            >
-                            {assignedAgent.agentName}
-                            </Button>
-                          </Link>
-                          </Card.Body>
+                            <Card.Header>
+                              {assignedAgent.categoryName}
+                            </Card.Header>
+                            <Card.Body>
+                              <Link to={`/chatWindowScreen/${conversion._id}`}>
+                                <Button
+                                  className="chatBtn"
+                                  type="button"
+                                  // onClick={conversionHandler(conversion._id)}
+                                >
+                                  {assignedAgent.agentName}
+                                </Button>
+                              </Link>
+                            </Card.Body>
                           </Card>
                         </>
-                        )}
-
+                      )}
                     </>
                   );
                 })}

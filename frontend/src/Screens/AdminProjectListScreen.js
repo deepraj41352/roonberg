@@ -357,7 +357,7 @@ export default function AdminProjectListScreen() {
               <Tabs
                 defaultActiveKey="All"
                 id="uncontrolled-tab-example"
-                className={`mb-0  ps-4 gap-3 tab-btn ${theme}Tab`}
+                className={`mb-0  tab-btn ${theme}Tab`}
               >
                 <Tab className="tab-color" eventKey="All" title="All">
                   <Box sx={{ height: 400, width: "100%" }}>
