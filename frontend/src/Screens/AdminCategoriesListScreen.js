@@ -139,7 +139,7 @@ export default function AdminContractorListScreen() {
             categoryName: items.categoryName,
             categoryDescription: items.categoryDescription,
             categoryImage: items.categoryImage,
-            categoryStatus: items.categoryStatus,
+            categoryStatus: items.categoryStatus == true ? "Active" : "Inactive",
           };
         });
 

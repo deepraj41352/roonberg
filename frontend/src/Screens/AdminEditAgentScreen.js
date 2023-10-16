@@ -67,7 +67,7 @@ function AdminEditAgent() {
 
     // State variable to hold the selected status
     const [status, setStatus] = useState('');
-
+    const [category, setCategory] = useState('');
     // useEffect to update the status when the API data changes
 
 
@@ -83,8 +83,7 @@ function AdminEditAgent() {
                 setLastName(datas.last_name || 'Last Name')
                 setEmail(datas.email)
                 setStatus(datas.userStatus)
-
-                // setStatus(datas.categoryStatus)
+                setCategory(datas.agentCategory)
 
             } catch (error) {
                 toast.error(error.response?.data?.message);
@@ -113,22 +112,18 @@ function AdminEditAgent() {
     const submitHandler = async (e) => {
         e.preventDefault();
         setIsSubmiting(true);
-        const formDatas = new FormData();
-
-        // formDatas.append("categoryImage", selectedFile);
-        formDatas.append("first_name", firstName);
-        formDatas.append("last_name", lastName);
-        formDatas.append("email", email);
-        formDatas.append("status", status);
-
         try {
             const data = await axios.put(
                 `/api/user/update/${id}`,
-                formDatas,
+                {
+                    first_name: firstName,
+                    last_name: lastName,
+                    email: email,
+                    userStatus: status,
+                    agentCategory: category
+                },
                 {
                     headers: {
-                        "content-type": "multipart/form-data",
-
                         authorization: `Bearer ${userInfo.token}`,
                     },
                 }
@@ -136,7 +131,7 @@ function AdminEditAgent() {
             dispatch({ type: "UPDATE_SUCCESS" })
             toast.success(data.data);
             console.log(data)
-            // navigate('/adminAgentList')
+            navigate('/adminAgentList')
 
         } catch (err) {
             toast.error(err.response?.data?.message);
@@ -179,12 +174,13 @@ function AdminEditAgent() {
                                         />
                                     </Form.Group>
                                     <Form.Group className="mb-3" controlId="formBasicEmail">
-                                        <Form.Label className="mb-1 input-box">Email</Form.Label>
+                                        <Form.Label className="mb-1 input-box" >Email</Form.Label>
                                         <Form.Control className="input-box-inner"
                                             onChange={(e) => setEmail(e.target.value)}
                                             type="email"
                                             value={email}
                                             required
+                                            disabled
                                         />
                                     </Form.Group>
                                     <Form.Group className="mb-3" controlId="formBasicPassword">

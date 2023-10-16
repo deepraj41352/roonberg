@@ -44,7 +44,6 @@ const reducer = (state, action) => {
 
     case 'UPDATE_SUCCESS':
       return { ...state, successUpdate: action.payload };
-
     case 'UPDATE_RESET':
       return { ...state, successUpdate: false };
     case "FATCH_CATEGORY":
@@ -80,11 +79,6 @@ const columns = [
     field: "projectOwner",
     headerName: "Contractor",
     width: 90,
-  },
-  {
-    field: "assignedAgent",
-    headerName: "Agent",
-    width: 110,
   },
 ];
 
@@ -254,9 +248,10 @@ export default function AdminProjectListScreen() {
             projectCategory: items.projectCategory
               ? items.projectCategory.map((cat) => cat.categoryName)
               : '',
-            assignedAgent: items.assignedAgent
-              ? items.assignedAgent.map((agent) => agent.agentName)
-              : '',
+            // assignedAgent: items.assignedAgent
+            //   ? items.assignedAgent.map((agent) => agent.agentName)
+            //   : '',
+            assignedAgent: items.assignedAgent.length < 0 ? 'Not Assign' : "Assign",
             projectOwner: contractor ? contractor.first_name : '',
           };
         });
@@ -328,7 +323,6 @@ export default function AdminProjectListScreen() {
         setProjectStatus('')
         setProjectOwner('')
         dispatch({ type: 'UPDATE_SUCCESS', payload: true });
-
       }
     } catch (error) {
       toast.error(error.response);
@@ -360,7 +354,11 @@ export default function AdminProjectListScreen() {
   };
 
   const handleRedirectToContractorScreen = () => {
-    navigate('/adminContractorList')
+    navigate('/adminEditProject')
+  }
+
+  const handleAssigndment = (userid) => {
+    navigate(`/AdminAssignAgent/${userid}`)
   }
 
 
@@ -435,7 +433,24 @@ export default function AdminProjectListScreen() {
                           </Grid>
                         );
                       },
+
                     },
+                    {
+                      field: 'assignedAgent',
+                      headerName: 'Assign',
+                      width: 120,
+                      renderCell: (params) => {
+                        return (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => handleAssigndment(params.row._id)}
+                          >
+                            {projectData.ag}
+                          </Button>
+                        );
+                      },
+                    }
                   ]}
                   getRowId={(row) => row._id}
                   initialState={{
@@ -465,15 +480,9 @@ export default function AdminProjectListScreen() {
                   }}
                 >
                   <Form className='scrollInAdminproject' onSubmit={handleSubmit}>
-                    {isNewProject ? (
-                      <h4 className="d-flex justify-content-center">
-                        Add new Project Details
-                      </h4>
-                    ) : (
-                      <h4 className="d-flex justify-content-center">
-                        Edit Project Details
-                      </h4>
-                    )}
+                    <h4 className="d-flex justify-content-center">
+                      Add new Project Details
+                    </h4>
                     <TextField
                       required
                       className="mb-2"
@@ -503,10 +512,6 @@ export default function AdminProjectListScreen() {
                         ))}
                       </Select>
                     </FormControl>
-                    <div className='d-flex align-items-center'>
-                      <GrAddCircle color="black" className='mx-2' onClick={addAgent} />
-                      <p className='text-dark m-0'>Add more category and agent</p>
-                    </div>
                     {agents.map((agent, index) => (
                       <div key={index}>
                         <FormControl>
@@ -548,14 +553,21 @@ export default function AdminProjectListScreen() {
                         </div>
                       </div>
                     ))}
+
+                    <div className='d-flex align-items-center'>
+
+                      <Button className='mb-2 bg-primary' onClick={addAgent}>
+                        <GrAddCircle color="white" className='mx-2' />
+                        Add Category and Agent
+                      </Button>
+                    </div>
                     <FormControl >
                       <InputLabel>Choose Status</InputLabel>
                       <Select value={projectStatus} onChange={(e) => setProjectStatus(e.target.value)}>
                         <MenuItem value=""> Select Status </MenuItem>
                         <MenuItem value="active">  Active </MenuItem>
-                        <MenuItem value="inactive">  inactive </MenuItem>
+                        <MenuItem value="inactive">  Inactive </MenuItem>
                         <MenuItem value="queue">  In Proccess </MenuItem>
-                        <MenuItem value="success">  success </MenuItem>
                       </Select>
                     </FormControl>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>

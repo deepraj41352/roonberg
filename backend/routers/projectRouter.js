@@ -198,7 +198,7 @@ projectRouter.post(
               agentId: agentId,
               agentName: user.first_name,
               categoryId: categoryId,
-              categoryName:category.categoryName,
+              categoryName: category.categoryName,
             },
           },
         },
@@ -250,7 +250,8 @@ projectRouter.put(
   expressAsyncHandler(async (req, res) => {
     try {
       const project = await Project.findById(req.params.id);
-      await project.updateOne({ $set: req.body });
+      const dataprojectupdate = await project.updateOne({ $set: req.body });
+      console.log("dataprojectupdate", dataprojectupdate)
       res.status(200).json('update successfully');
     } catch (err) {
       res.status(500).json({

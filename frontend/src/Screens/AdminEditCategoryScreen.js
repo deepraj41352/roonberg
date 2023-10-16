@@ -86,19 +86,17 @@ function AdminEditCategory() {
         setIsSubmiting(true);
         const formDatas = new FormData();
 
-        formDatas.append("categoryImage", selectedFile);
+        formDatas.append("file", selectedFile);
         formDatas.append("categoryName", category);
         formDatas.append("categoryDescription", categoryDesc);
         formDatas.append("categoryStatus", status);
-
         try {
             const data = await axios.put(
-                `/api/category/update/${id}`,
+                `/api/category/CategoryUpdate/${id}`,
                 formDatas,
                 {
                     headers: {
                         "content-type": "multipart/form-data",
-
                         authorization: `Bearer ${userInfo.token}`,
                     },
                 }
@@ -121,8 +119,6 @@ function AdminEditCategory() {
 
     return (
         <>
-
-
             <Container className="Sign-up-container-regis d-flex w-100 profileDiv  flex-column justify-content-center align-items-center">
                 <div className="ProfileScreen-inner px-4 py-3 w-100">
                     <Row className="mb-3">
