@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 import { Grid } from '@mui/material';
@@ -16,6 +15,7 @@ import Tabs from 'react-bootstrap/Tabs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateField } from '@mui/x-date-pickers/DateField';
+import MultiSelectDropdown from './ex';
 import {
   FormControl,
   InputLabel,
@@ -24,6 +24,7 @@ import {
   Button,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { useContext, useEffect, useReducer, useState } from 'react';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -48,7 +49,12 @@ const reducer = (state, action) => {
 
     case 'UPDATE_RESET':
       return { ...state, successUpdate: false };
-
+    case 'FATCH_CATEGORY':
+      return { ...state, categoryData: action.payload };
+    case 'FATCH_AGENTS':
+      return { ...state, agentData: action.payload };
+    case 'FATCH_CONTRACTOR':
+      return { ...state, contractorData: action.payload };
     default:
       return state;
   }
@@ -84,41 +90,50 @@ export default function AdminProjectListScreen() {
   const [isNewProject, setIsNewProject] = React.useState(false);
   const [isSubmiting, setIsSubmiting] = React.useState(false);
 
-  const { state } = React.useContext(Store);
+  const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
   const theme = toggleState ? 'dark' : 'light';
   const [
-    { loading, error, projectData, successDelete, successUpdate, categoryData },
+    { loading, error, projectData, successDelete, successUpdate },
     dispatch,
-  ] = React.useReducer(reducer, {
+  ] = useReducer(reducer, {
     loading: true,
     error: '',
     projectData: [],
     successDelete: false,
     successUpdate: false,
+    categoryData: [],
+    contractorData: [],
+    agentData: [],
   });
 
   const [projectName, setProjectName] = React.useState('');
   const [projectDescription, setProjectDescription] = React.useState('');
-
+  const [projectOwner, setProjectOwner] = React.useState('');
+  const [assignedAgent, setAssignedAgent] = React.useState('');
   const [startDate, setStartDate] = React.useState();
   const [endDate, setEndDate] = React.useState();
   const [selectedOptions, setSelectedOptions] = React.useState([]);
+  const options = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
 
-  // const handleEdit = (userid) => {
-  //   const constractorToEdit = projectData.find(
-  //     (constractor) => constractor && constractor._id === userid
-  //   );
-  //   setProjectName(constractorToEdit ? constractorToEdit.projectName : '');
-  //   setProjectDescription(
-  //     constractorToEdit ? constractorToEdit.projectDescription : ''
-  //   );
-  //   setProjectOwner(constractorToEdit ? constractorToEdit.projectOwner : '');
-  //   setAssignedAgent(constractorToEdit ? constractorToEdit.assignedAgent : '');
-  //   setSelectedRowData(constractorToEdit);
-  //   setIsModelOpen(true);
-  //   setIsNewProject(false);
-  // };
+  const handleChange = (event) => {
+    setSelectedOptions(event.target.value);
+  };
+
+  const handleEdit = (userid) => {
+    const constractorToEdit = projectData.find(
+      (constractor) => constractor && constractor._id === userid
+    );
+    setProjectName(constractorToEdit ? constractorToEdit.projectName : '');
+    setProjectDescription(
+      constractorToEdit ? constractorToEdit.projectDescription : ''
+    );
+    setProjectOwner(constractorToEdit ? constractorToEdit.projectOwner : '');
+    setAssignedAgent(constractorToEdit ? constractorToEdit.assignedAgent : '');
+    setSelectedRowData(constractorToEdit);
+    setIsModelOpen(true);
+    setIsNewProject(false);
+  };
 
   const handleCloseRow = () => {
     setIsModelOpen(false);
@@ -130,7 +145,50 @@ export default function AdminProjectListScreen() {
     setIsNewProject(true);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
+    const FatchCategory = async () => {
+      try {
+        dispatch('FATCH_REQUEST');
+        const response = await axios.get(`/api/category/`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        const datas = response.data;
+        setSelectCategory(datas);
+        dispatch({ type: 'FATCH_CATEGORY', payload: datas });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    FatchCategory();
+  }, []);
+
+  useEffect(() => {
+    const FatchContractorData = async () => {
+      try {
+        const response = await axios.post(`/api/user/`, { role: 'contractor' });
+        const datas = response.data;
+        console.log(datas);
+        setContractor(datas);
+        dispatch({ type: 'FATCH_CONTRACTOR', payload: datas });
+      } catch (error) {}
+    };
+    FatchContractorData();
+  }, []);
+
+  useEffect(() => {
+    const FatchAgentData = async () => {
+      try {
+        const response = await axios.post(`/api/user/`, { role: 'agent' });
+        const datas = response.data;
+
+        setAssignedAgent(datas);
+        dispatch({ type: 'FATCH_AGENTS', payload: datas });
+      } catch (error) {}
+    };
+    FatchAgentData();
+  }, []);
+
+  useEffect(() => {
     const FatchProjectData = async () => {
       try {
         dispatch({ type: 'FATCH_REQUEST' });
@@ -138,6 +196,7 @@ export default function AdminProjectListScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const datas = response.data;
+        console.log('karan', datas);
         const rowData = datas.map((items) => ({
           ...items,
           _id: items._id,
@@ -150,7 +209,7 @@ export default function AdminProjectListScreen() {
             ? items.assignedAgent.map((agent) => agent.agentName)
             : '',
         }));
-
+        console.log('sharam', rowData);
         dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
       } catch (error) {
         console.log(error);
@@ -179,6 +238,7 @@ export default function AdminProjectListScreen() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmiting(true);
+
     if (isNewProject) {
       const response = await axios.post(
         '/api/project/',
@@ -193,6 +253,8 @@ export default function AdminProjectListScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         }
       );
+      console.log(response.data.message);
+
       if (response.status === 201) {
         toast.success(response.data.message);
         const datas = response.data;
@@ -251,35 +313,6 @@ export default function AdminProjectListScreen() {
         toast.error('An error occurred while deleting data.');
       }
     }
-  };
-
-  React.useEffect(() => {
-    const fetchCategoryData = async () => {
-      try {
-        dispatch('FETCH_REQUEST');
-        const response = await axios.get(`/api/category`, {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        });
-        const categoryData = response.data;
-        const uniqueCategories = Array.from(
-          new Set(
-            categoryData.map((item) => ({
-              _id: item._id,
-              categoryName: item.categoryName,
-            }))
-          )
-        );
-        dispatch({ type: 'SUCCESS_CATEGORY', payload: uniqueCategories });
-      } catch (error) {
-        console.error('Error fetching category data:', error);
-      }
-    };
-
-    fetchCategoryData();
-  }, []);
-
-  const handleChange = (event) => {
-    setSelectedOptions(event.target.value);
   };
 
   return (
@@ -399,7 +432,6 @@ export default function AdminProjectListScreen() {
                       label="Project Name"
                       fullWidth
                     />
-
                     <TextField
                       required
                       id="outlined-multiline-static"
@@ -413,7 +445,7 @@ export default function AdminProjectListScreen() {
                       // onChange={handleChange}
                     />
                     <FormControl fullWidth>
-                      <InputLabel>Categories</InputLabel>
+                      <InputLabel>Choose Options</InputLabel>
                       <Select
                         required
                         multiple
@@ -440,8 +472,116 @@ export default function AdminProjectListScreen() {
                             </MenuItem>
                           ))}
                       </Select>
+                    </FormControl>{' '}
+                    */}
+                    <FormControl>
+                      <InputLabel>Choose Contractor</InputLabel>
+                      <Select
+                        value={contractor}
+                        onChange={(e) => setContractor(e.target.value)}
+                      >
+                        <MenuItem>Select Contractor</MenuItem>
+                        {contractorData.map((items) => (
+                          <MenuItem key={items._id} value={items._id}>
+                            {items.first_name}
+                          </MenuItem>
+                        ))}
+                      </Select>
                     </FormControl>
-
+                    <FormControl>
+                      <InputLabel>Choose Category</InputLabel>
+                      <Select
+                        value={selectCategory}
+                        onChange={(e) => setSelectCategory(e.target.value)}
+                      >
+                        <MenuItem>Select Category</MenuItem>
+                        {categoryData.map((items) => (
+                          <MenuItem key={items._id} value={items._id}>
+                            {items.categoryName}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    <FormControl>
+                      <InputLabel>Choose Agent</InputLabel>
+                      <Select
+                        value={assignedAgent}
+                        onChange={(e) => setAssignedAgent(e.target.value)}
+                      >
+                        <MenuItem>Select Agent</MenuItem>
+                        {assignedAgentByCateHandle().map((item) => (
+                          <MenuItem key={item._id} value={item._id}>
+                            {item.first_name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    <div className="d-flex align-items-start">
+                      <BiPlusMedical
+                        color="black"
+                        className="mx-2"
+                        onClick={() => {
+                          handleAddfields();
+                        }}
+                      />
+                      <p className="text-dark">Add more category and agent</p>
+                    </div>
+                    {moreFields.map((index) => (
+                      <div key={index}>
+                        <>
+                          <FormControl>
+                            <InputLabel>Choose Category</InputLabel>
+                            <Select
+                              value={selectCategory}
+                              onChange={(e) =>
+                                setSelectCategory(e.target.value)
+                              }
+                            >
+                              <MenuItem>Select Category</MenuItem>
+                              {categoryData.map((items) => (
+                                <MenuItem key={items._id} value={items._id}>
+                                  {items.categoryName}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                          <FormControl>
+                            <InputLabel>Choose Agent</InputLabel>
+                            <Select
+                              value={assignedAgent}
+                              onChange={(e) => setAssignedAgent(e.target.value)}
+                            >
+                              <MenuItem>Select Agent</MenuItem>
+                              {assignedAgentByCateHandle().map((item) => (
+                                <MenuItem key={item._id} value={item._id}>
+                                  {item.first_name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </>
+                      </div>
+                    ))}
+                    {/* {moreFields.map((index) => (
+                    <div key={index}>
+                      <>
+                        <select className='formselect mb-2' value={category} onChange={(e) => setCategory(e.target.value)} >
+                          <option value="" >
+                            Select a category
+                          </option>
+                          {categoryData.map((items) => (
+                            <option key={items._id} value={items._id} >{items.categoryName}</option>
+                          ))}
+                        </select>
+                        <select className='formselect mb-2' value={assignedAgent} onChange={(e) => setAssignedAgent(e.target.value)}>
+                          <option value="" >
+                            Select a Agent
+                          </option>
+                          {assignedAgenthandle().map((item) => (
+                            <option key={item._id} value={item._id}>
+                              {item.first_name}
+                            </option>
+                          ))} */}
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DateField
                         required

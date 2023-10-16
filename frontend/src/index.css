@@ -51,7 +51,28 @@ code {
   float: right !important;
   cursor: pointer !important;
 }
+
+.textArea {
+  width: 100% !important;
+  font-weight: 600;
+  padding: 16.5px 14px;
+  border-color: #dee2e6 !important;
+}
+
 /* ---------Priyanshu-Start------------- */
+@media (max-width: 380px) {
+  .input-box-inner {
+    max-width: 210px !important;
+  }
+}
+.ProfileScreen-inner {
+  max-width: 450px;
+}
+@media (max-width: 400px) {
+  .ProfileScreen-inner {
+    max-width: 330px;
+  }
+}
 body {
   background-color: #f8fafc !important;
 }
@@ -186,6 +207,10 @@ code {
 }
 .formselect {
   width: 335px !important;
+  padding: 16.5px 14px;
+  border-color: #dee2e6;
+  font-weight: 700px !important;
+  border-radius: 5px;
 }
 .formbtn {
   float: right !important;
@@ -225,6 +250,10 @@ body {
 
 .formWidth {
   width: 400px !important;
+}
+.scroll-form {
+  height: 400px;
+  overflow-y: auto;
 }
 /* Gaytri css end  */
 /*################################################################################# */

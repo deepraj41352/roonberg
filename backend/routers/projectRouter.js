@@ -180,6 +180,8 @@ projectRouter.post(
         projectDescription: req.body.projectDescription,
         projectCategory: projectCategorys,
         createdDate: req.body.createdDate,
+        projectCategory: req.body.projectCategory,
+        createdDate: req.body.createdDate,
         endDate: req.body.endDate,
         projectStatus: req.body.projectStatus,
         projectOwner: req.user._id,

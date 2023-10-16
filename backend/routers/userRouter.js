@@ -394,11 +394,13 @@ userRouter.post(
  *               message: Registration failed. Please try again later.
  */
 
+
+
 userRouter.post(
   '/signup',
   expressAsyncHandler(async (req, res) => {
     try {
-      const { first_name, last_name, email, role } = req.body;
+      const { first_name, last_name, email, role, } = req.body;
       const existingUser = await User.findOne({ email: email });
       if (existingUser) {
         return res
@@ -499,7 +501,7 @@ userRouter.post(
   isAdminOrSelf,
   expressAsyncHandler(async (req, res) => {
     try {
-      const { first_name, last_name, email, role, agentCategory } = req.body;
+      const { first_name, last_name, email, role, agentCategory, userStatus } = req.body;
       const existingUser = await User.findOne({ email: email });
       if (existingUser) {
         return res
@@ -518,6 +520,8 @@ userRouter.post(
         email,
         password: hashedPassword,
         role,
+        agentCategory,
+        userStatus,
         // Only assign the category field if the role is "agent"
         ...(role === 'agent' ? { agentCategory } : {}),
       };
@@ -568,5 +572,20 @@ userRouter.post(
     }
   })
 );
-
+// get single category
+userRouter.get(
+  '/:id',
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const user = await User.findById(req.params.id);
+      if (!user) {
+        res.status(400).json({ message: "user not found" });
+      }
+      res.json(user);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  })
+);
 export default userRouter;

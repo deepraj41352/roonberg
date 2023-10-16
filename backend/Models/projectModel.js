@@ -10,7 +10,9 @@ const projectSchema = new mongoose.Schema(
       default: Date.now,
     },
     endDate: { type: Date },
-    projectStatus: { type: String, default: 'active' },
+
+    projectStatus: { type: Boolean, default: true },
+
     projectOwner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     assignedAgent: [
       {
