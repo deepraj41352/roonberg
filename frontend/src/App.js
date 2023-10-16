@@ -46,6 +46,7 @@ import AddProject from './Screens/AddProject';
 import ChatScreen from './Screens/ChatScreen';
 import AdminEditCategory from './Screens/AdminEditCategoryScreen';
 import AdminEditAgent from './Screens/AdminEditAgentScreen';
+import ContractorProjectScreen from './Components/Contractor/contractorProjectScreen';
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -265,9 +266,13 @@ function App() {
                       element={<AdminEditCategory />}
                     />
 
-                    <Routes
+                    <Route
                       path="/adminEditAgent/:id"
                       element={<AdminEditAgent />}
+                    />
+                    <Route
+                      path="/project-screen/"
+                      element={<ContractorProjectScreen />}
                     />
                   </Routes>
                 </div>

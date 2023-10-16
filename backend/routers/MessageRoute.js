@@ -7,10 +7,7 @@ const MessageRouter = express.Router();
 //add
 
 MessageRouter.post('/', async (req, res) => {
-=========
-MessageRouter.post("/", async (req, res) => {
   const newMessage = new Message(req.body);
->>>>>>>>> Temporary merge branch 2
   try {
     const newMessage = new Message({
       conversationId: req.body.conversationId,

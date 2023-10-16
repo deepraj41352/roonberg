@@ -85,12 +85,20 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
           </li>
         </Link>
         {userInfo.role == 'contractor' ? (
-          <Link to="/add-project" className="text-decoration-none">
-            <li>
-              <AiFillHome className="me-3 fs-5" />
-              Add Project
-            </li>
-          </Link>
+          <>
+            <Link to="/add-project" className="text-decoration-none">
+              <li>
+                <AiFillHome className="me-3 fs-5" />
+                Add Project
+              </li>
+            </Link>
+            <Link to="/project-screen" className="text-decoration-none">
+              <li>
+                <AiOutlineProject className="me-3 fs-5" />
+                Con Project List
+              </li>
+            </Link>
+          </>
         ) : null}
         {userInfo.role == 'agent' ? (
           <Link to="/projectNotification" className="text-decoration-none">
