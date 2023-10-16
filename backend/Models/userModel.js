@@ -18,8 +18,9 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       required: true,
     },
-    status: { type: String, default: 'active' },
+    userStatus: { type: Boolean, default: true },
     passresetToken: { type: String },
+    agentCategory: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
   },
   {
     timestamps: true,

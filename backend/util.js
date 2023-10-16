@@ -1,6 +1,10 @@
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
+
+dotenv.config();
 import dotenv from 'dotenv';
+import Project from './Models/projectModel.js';
+import emailTemplate from './emailTemplate.js';
 
 dotenv.config();
 
@@ -13,13 +17,16 @@ const transporter = nodemailer.createTransport({
 });
 transporter.verify().then(console.log).catch(console.error);
 
-export const nodeMailer = (mail) => {
+export const sendEmailNotify = async (options) => {
   try {
-    const info = transporter.sendMail(mail);
-    console.log('info ', info);
+    //options.from = 'BigCommerce <abhay.vyas25@gmail.com>';
+    options.from = '"RoonBerg" <deepraj932000@gmail.com>';
+    options.html = emailTemplate(options);
+    const info = transporter.sendMail(options);
+    console.log('Email Sent ');
     return info;
   } catch (err) {
-    console.log('Error sdfd', err);
+    console.log('Email Error ', err);
     return err;
   }
 };
@@ -64,17 +71,29 @@ export const isAuth = (req, res, next) => {
   }
 };
 
-export const isAdminOrSelf = (req, res, next) => {
+export const isAdminOrSelf = async (req, res, next) => {
   const currentUser = req.user; // Current user making the request
   const userId = req.params.id; // User ID in the route parameter
+  console.log('userrole', currentUser.role);
 
-  if (
-    currentUser.role === 'superadmin' ||
-    currentUser.role === 'admin' ||
-    currentUser._id === userId
-  ) {
-    next();
-  } else {
-    res.status(401).send({ message: 'Permission Denied' });
+  try {
+    // Assuming you have a method to retrieve the project owner's ID
+    const project = await Project.findById(req.params.id);
+    const projectOwnerId = project ? project.projectOwner : null;
+    if (
+      currentUser.role === 'superadmin' ||
+      currentUser.role === 'admin' ||
+      currentUser._id === userId
+    ) {
+      next();
+    } else {
+      if (currentUser._id == projectOwnerId) {
+        next();
+      } else {
+        res.status(401).json({ message: 'Permission Denied' });
+      }
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Internal Server Error', error });
   }
 };
