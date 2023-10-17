@@ -8,11 +8,11 @@ import TextField from '@mui/material/TextField';
 import { Form, FormControl } from 'react-bootstrap';
 import { BiPlusMedical } from 'react-icons/bi';
 import { Store } from '../Store';
-import Avatar from '@mui/material/Avatar';
 import { useContext, useEffect, useReducer, useState } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import Avatar from '../Components/Avatar';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -58,9 +58,11 @@ const columns = [
     headerName: 'Image',
     width: 100,
     renderCell: (params) => {
+      console.log('params.row.categoryName', params.row.categoryName);
+
       return (
         <>
-          <Avatar src={params.formattedValue} />
+          <Avatar categoryName={params.row.categoryName} />
         </>
       );
     },
@@ -131,7 +133,8 @@ export default function AdminContractorListScreen() {
             categoryName: items.categoryName,
             categoryDescription: items.categoryDescription,
             categoryImage: items.categoryImage,
-            categoryStatus: items.categoryStatus == true ? "Active" : "Inactive",
+            categoryStatus:
+              items.categoryStatus == true ? 'Active' : 'Inactive',
           };
         });
 

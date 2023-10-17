@@ -1,52 +1,82 @@
-import React, { useContext, useEffect, useReducer, useState } from 'react';
+import Box from '@mui/material/Box';
+import { DataGrid } from '@mui/x-data-grid';
+
 import {
   Button,
-  Card,
-  Col,
-  Container,
-  Form,
-  Row,
-  Toast,
-} from 'react-bootstrap';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Store } from '../Store';
-import { toast } from 'react-toastify';
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+} from '@mui/material';
+import { AiFillDelete } from 'react-icons/ai';
+import { MdEdit } from 'react-icons/md';
+import Modal from '@mui/material/Modal';
+import TextField from '@mui/material/TextField';
+import { Form, Toast } from 'react-bootstrap';
+import { BiPlusMedical } from 'react-icons/bi';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import { Store } from '../Store';
+import { ImCross } from 'react-icons/im';
 import { ThreeDots } from 'react-loader-spinner';
+import { useNavigate } from 'react-router-dom';
+import { useContext, useEffect, useReducer, useState } from 'react';
 
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FATCH_REQUEST':
       return { ...state, loading: true };
     case 'FATCH_SUCCESS':
-      return { ...state, categoryData: action.payload, loading: false };
+      return { ...state, AgentData: action.payload, loading: false };
     case 'FATCH_ERROR':
       return { ...state, error: action.payload, loading: false };
+    case 'FATCH_SUBMITTING':
+      return { ...state, submitting: action.payload };
+    case 'DELETE_SUCCESS':
+      return { ...state, successDelete: action.payload };
+
+    case 'DELETE_RESET':
+      return { ...state, successDelete: false };
+    case 'FATCH_CATEGORY':
+      return { ...state, categoryData: action.payload };
     case 'UPDATE_SUCCESS':
       return { ...state, successUpdate: action.payload };
 
     case 'UPDATE_RESET':
       return { ...state, successUpdate: false };
-    case 'FATCH_CATEGORY':
-      return { ...state, categoryDatas: action.payload };
-    //   case "CATEGORY_CRATED_REQ":
-    //     return { ...state, isSubmiting: true }
+
     default:
       return state;
   }
 };
 
-function AdminEditAgent() {
-  const [selectcategory, setSelectCategory] = React.useState('');
-  const { id } = useParams();
-  if (id) {
-    console.log('id exists:', id);
-  } else {
-    console.log('id does not exist');
-  }
+const columns = [
+  { field: '_id', headerName: 'ID', width: 150 },
+  {
+    field: 'first_name',
+    headerName: 'Agent Name',
+    width: 150,
+  },
+  {
+    field: 'email',
+    headerName: 'Email',
+    width: 200,
+  },
+  {
+    field: 'agentCategory',
+    headerName: 'Category',
+    width: 150,
+  },
+  {
+    field: 'userStatus',
+    headerName: 'Status',
+    width: 150,
+  },
+];
 
-  const { state, dispatch: ctxDispatch } = useContext(Store);
-
+export default function AdminAgentListScreen() {
+  const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
   const navigate = useNavigate();
   const role = 'agent';
@@ -63,57 +93,24 @@ function AdminEditAgent() {
     {
       loading,
       error,
-      categoryData,
-      categoryDatas,
+      AgentData,
       successDelete,
+      categoryData,
       successUpdate,
+      submitting,
     },
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
     error: '',
-    categoryData: {},
+    AgentData: [],
     successDelete: false,
+    categoryData: [],
     successUpdate: false,
-    isSubmiting: false,
-    categoryDatas: [],
+    submitting: false,
   });
 
-  const navigate = useNavigate();
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  // const [status, setStatus] = useState(userInfo.email);
-  // const [selectedFile, setSelectedFile] = useState("");
-
-  const [isSubmiting, setIsSubmiting] = useState(false);
-
-  // State variable to hold the selected status
-  const [status, setStatus] = useState('');
-
-  // useEffect to update the status when the API data changes
-
   useEffect(() => {
-    const FatchcategoryData = async () => {
-      try {
-        dispatch('FATCH_REQUEST');
-        const response = await axios.get(`/api/user/${id}`);
-        const datas = response.data;
-        setFirstName(datas.first_name);
-        setLastName(datas.last_name || 'Last Name');
-        setEmail(datas.email);
-        setStatus(datas.userStatus);
-
-        // setStatus(datas.categoryStatus)
-      } catch (error) {
-        toast.error(error.response?.data?.message);
-      }
-    };
-
-    FatchcategoryData();
-  }, []);
-
-  React.useEffect(() => {
     const FatchCategory = async () => {
       try {
         dispatch('FATCH_REQUEST');
@@ -130,35 +127,99 @@ function AdminEditAgent() {
     FatchCategory();
   }, []);
 
-  const submitHandler = async (e) => {
+  useEffect(() => {
+    const FatchAgentData = async () => {
+      try {
+        dispatch('FATCH_REQUEST');
+        const response = await axios.post(`/api/user/`, { role: role });
+        const datas = response.data;
+        const rowData = datas.map((items) => {
+          return {
+            ...items,
+            _id: items._id,
+            first_name: items.first_name,
+            email: items.email,
+            userStatus: items.userStatus ? 'Active' : 'Inactive',
+            agentCategory: items.agentCategory,
+          };
+        });
+        dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    if (successDelete) {
+      dispatch({ type: 'DELETE_RESET' });
+    } else if (successUpdate) {
+      dispatch({ type: 'UPDATE_RESET' });
+    } else {
+      FatchAgentData();
+    }
+  }, [successDelete, successUpdate]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmiting(true);
-    const formDatas = new FormData();
-
-    // formDatas.append("categoryImage", selectedFile);
-    formDatas.append('first_name', firstName);
-    formDatas.append('last_name', lastName);
-    formDatas.append('email', email);
-    formDatas.append('status', status);
-
+    dispatch({ type: 'FATCH_SUBMITTING', payload: true });
     try {
-      const data = await axios.put(`/api/user/update/${id}`, formDatas, {
-        headers: {
-          'content-type': 'multipart/form-data',
-
-          authorization: `Bearer ${userInfo.token}`,
+      const response = await axios.post(
+        `/api/user/add`,
+        {
+          first_name: name,
+          email: email,
+          password: password,
+          role: role,
+          userStatus: status,
+          agentCategory: selectcategory,
         },
-      });
-      dispatch({ type: 'UPDATE_SUCCESS' });
-      toast.success(data.data);
-      console.log(data);
-      // navigate('/adminAgentList')
-    } catch (err) {
-      toast.error(err.response?.data?.message);
-    } finally {
-      setIsSubmiting(false);
+        { headers: { Authorization: `Bearer ${userInfo.token}` } }
+      );
+      console.log(response);
+      if (response.status === 200) {
+        toast.success('Agent added Successfully !');
+        setIsModelOpen(false);
+        dispatch({ type: 'UPDATE_SUCCESS', payload: true });
+        dispatch({ type: 'FATCH_SUBMITTING', payload: false });
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message);
     }
   };
+
+  const deleteHandle = async (userid) => {
+    if (window.confirm('Are you sure to delete?')) {
+      try {
+        const response = await axios.delete(`/api/user/${userid}`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+
+        if (response.status === 200) {
+          toast.success('Agent data deleted successfully!');
+          dispatch({
+            type: 'DELETE_SUCCESS',
+            payload: true,
+          });
+        } else {
+          toast.error('Failed to delete agent data.');
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error('An error occurred while deleting agent data.');
+      }
+    }
+  };
+
+  const handleCloseRow = () => {
+    setIsModelOpen(false);
+  };
+
+  const handleModel = () => {
+    setIsModelOpen(true);
+  };
+
+  const handleEdit = (userid) => {
+    navigate(`/adminEditAgent/${userid}`);
+  };
+
   return (
     <>
       {loading ? (
@@ -326,5 +387,3 @@ function AdminEditAgent() {
     </>
   );
 }
-
-export default AdminEditAgent;

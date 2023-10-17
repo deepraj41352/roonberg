@@ -254,7 +254,7 @@ projectRouter.put(
     try {
       const project = await Project.findById(req.params.id);
       const dataprojectupdate = await project.updateOne({ $set: req.body });
-      console.log("dataprojectupdate", dataprojectupdate)
+      console.log('dataprojectupdate', dataprojectupdate);
       res.status(200).json('update successfully');
     } catch (err) {
       res.status(500).json({
