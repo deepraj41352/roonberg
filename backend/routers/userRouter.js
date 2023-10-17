@@ -58,8 +58,11 @@ userRouter.put(
   expressAsyncHandler(async (req, res) => {
     try {
       const user = await User.findById(req.params.id);
+      console.log("user", user)
       if (user._id == req.params.id) {
-        await user.updateOne({ $set: req.body });
+
+        const data = await user.updateOne({ $set: req.body });
+        console.log("updateddata", data);
         res.status(200).json('update successfully');
       } else {
         res.status(403).json('you can not update');
