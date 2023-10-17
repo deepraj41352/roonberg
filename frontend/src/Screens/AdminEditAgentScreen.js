@@ -94,7 +94,7 @@ function AdminEditAgent() {
         setEmail(datas.email);
         setStatus(datas.userStatus);
 
-        // setStatus(datas.categoryStatus)
+        setStatus(datas.categoryStatus);
       } catch (error) {
         toast.error(error.response?.data?.message);
       }
@@ -120,6 +120,31 @@ function AdminEditAgent() {
     FatchCategory();
   }, []);
 
+  // const submitHandler = async (e) => {
+  //   e.preventDefault();
+  //   setIsSubmiting(true);
+  //   const formDatas = new FormData();
+  //   formDatas.append('first_name', firstName);
+  //   formDatas.append('last_name', lastName);
+  //   formDatas.append('email', email);
+  //   formDatas.append('status', status);
+
+  //   try {
+  //     const data = await axios.put(`/api/user/profile/${id}`, formDatas, {
+  //       headers: {
+  //         authorization: `Bearer ${userInfo.token}`,
+  //       },
+  //     });
+  //     console.log('data', data);
+  //     dispatch({ type: 'UPDATE_SUCCESS' });
+  //     toast.success(data.data);
+  //     // navigate('/adminAgentList')
+  //   } catch (err) {
+  //     console.error('Error:', err);
+  //     toast.error(err.response?.data?.message);
+  //   }
+  // };
+
   const submitHandler = async (e) => {
     e.preventDefault();
     setIsSubmiting(true);
@@ -134,15 +159,14 @@ function AdminEditAgent() {
     try {
       const data = await axios.put(`/api/user/update/${id}`, formDatas, {
         headers: {
-          'content-type': 'multipart/form-data',
-
           authorization: `Bearer ${userInfo.token}`,
         },
       });
+      console.log('data', data);
       dispatch({ type: 'UPDATE_SUCCESS' });
       toast.success(data.data);
       console.log(data);
-      // navigate('/adminAgentList')
+      navigate('/adminAgentList');
     } catch (err) {
       toast.error(err.response?.data?.message);
     } finally {

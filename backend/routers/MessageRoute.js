@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb';
 import mongoose from 'mongoose';
 
 const MessageRouter = express.Router();
-//add
+//................add message..............
 
 MessageRouter.post('/', async (req, res) => {
   try {
@@ -22,7 +22,7 @@ MessageRouter.post('/', async (req, res) => {
   }
 });
 
-//get
+//................get message..............
 
 MessageRouter.get('/:conversationId', async (req, res) => {
   try {
@@ -34,6 +34,8 @@ MessageRouter.get('/:conversationId', async (req, res) => {
     res.status(500).json(err);
   }
 });
+
+//..............delete mesage..............
 
 MessageRouter.delete('/:conversationId', async (req, res) => {
   try {

@@ -7,6 +7,7 @@ import { uploadDoc } from './userRouter.js';
 const upload = multer();
 const categoryRouter = express.Router();
 
+// ........get all category........
 categoryRouter.get(
   '/',
   expressAsyncHandler(async (req, res) => {
@@ -20,14 +21,14 @@ categoryRouter.get(
   })
 );
 
-// get single category
+//.......... get single category.............
 categoryRouter.get(
   '/:id',
   expressAsyncHandler(async (req, res) => {
     try {
       const category = await Category.findById(req.params.id);
       if (!category) {
-        res.status(400).json({ message: "category not found" });
+        res.status(400).json({ message: 'category not found' });
       }
       res.json(category);
     } catch (error) {
@@ -36,6 +37,7 @@ categoryRouter.get(
     }
   })
 );
+
 categoryRouter.post(
   '/',
   isAuth,
@@ -88,7 +90,7 @@ categoryRouter.put(
   expressAsyncHandler(async (req, res) => {
     try {
       const category = await Category.findById(req.params.id);
-      console.log("category", category);
+      console.log('category', category);
       await category.updateOne({ $set: req.body });
       res.status(200).json('Category update successfully');
     } catch (err) {

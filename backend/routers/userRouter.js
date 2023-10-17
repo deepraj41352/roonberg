@@ -13,8 +13,10 @@ import {
 } from '../util.js';
 import { v2 as cloudinary } from 'cloudinary';
 import streamifier from 'streamifier';
+
 const userRouter = express.Router();
 const upload = multer();
+
 /**
  * @swagger
  * /user/{role}:
@@ -37,16 +39,38 @@ const upload = multer();
  *         description: Server error.
  */
 
-userRouter.get('/:role', async (req, res) => {
-  const role = req.params.role;
-  try {
-    const users = await User.find({ role });
-    res.json(users);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
+userRouter.post(
+  '/',
+  expressAsyncHandler(async (req, res) => {
+    const role = req.body.role;
+    try {
+      const users = await User.find({ role }).sort({ createdAt: -1 });
+      res.json(users);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  })
+);
+
+userRouter.put(
+  '/update/:id',
+  isAuth,
+  isAdminOrSelf,
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const user = await User.findById(req.params.id);
+      if (user._id == req.params.id) {
+        await user.updateOne({ $set: req.body });
+        res.status(200).json('update successfully');
+      } else {
+        res.status(403).json('you can not update');
+      }
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  })
+);
 
 /**
  * @swagger
@@ -392,7 +416,10 @@ userRouter.post(
         role,
       });
       const user = await newUser.save();
-      res.status(201).send({ message: 'User registered successfully.', user });
+      const { password, ...other } = user._doc;
+      res
+        .status(201)
+        .send({ message: 'User registered successfully. please Login', other });
     } catch (error) {
       console.error(error);
       res
@@ -546,7 +573,9 @@ userRouter.post(
     }
   })
 );
-// get single category
+
+// get single user
+
 userRouter.get(
   '/:id',
   expressAsyncHandler(async (req, res) => {
@@ -562,4 +591,5 @@ userRouter.get(
     }
   })
 );
+
 export default userRouter;
