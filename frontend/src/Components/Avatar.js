@@ -1,33 +1,23 @@
-import React, { useEffect, useRef } from 'react';
-import html2canvas from 'html2canvas';
+import React, { useState, useRef, useEffect } from 'react';
 
-function Avatar({ name }) {
-  console.log('categoryName prop:', name);
+function Avatar({ name, bgColor }) {
+  console.log('bgColor', bgColor);
   const avatarRef = useRef(null);
-
-  useEffect(() => {
-    if (avatarRef.current) {
-      html2canvas(avatarRef.current).then((canvas) => {
-        const dataURL = canvas.toDataURL('image/png');
-        // You can now use the dataURL as needed (e.g., display, save, or send).
-        console.log(dataURL);
-      });
-    }
-  }, [name]);
 
   return (
     <div
       ref={avatarRef}
       style={{
-        width: '100px',
-        height: '100px',
+        width: '40px',
+        height: '40px',
         borderRadius: '50%',
-        backgroundColor: '#007bff',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         color: '#fff',
         fontSize: '24px',
+        textTransform: 'uppercase',
+        background: bgColor,
       }}
     >
       {name[0]}

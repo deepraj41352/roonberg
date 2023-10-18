@@ -1,31 +1,31 @@
-import React, { createContext, useReducer } from "react";
+import React, { createContext, useReducer } from 'react';
 
 export const Store = createContext();
 
 const initialValue = {
   validationMsg: null,
-  toggleState: localStorage.getItem("toggleState")
-    ? JSON.parse(localStorage.getItem("toggleState"))
+  toggleState: localStorage.getItem('toggleState')
+    ? JSON.parse(localStorage.getItem('toggleState'))
     : null,
-  userInfo: localStorage.getItem("userInfo")
-    ? JSON.parse(localStorage.getItem("userInfo"))
+  userInfo: localStorage.getItem('userInfo')
+    ? JSON.parse(localStorage.getItem('userInfo'))
     : null,
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "USER_SIGNIN":
+    case 'USER_SIGNIN':
       return { ...state, userInfo: action.payload };
-      case "USER_UPDATE":
+    case 'USER_UPDATE':
       return { ...state, userInfo: action.payload };
     case 'VALIDATION_MSG':
       return { ...state, validationMsg: action.payload };
-    case "USER_SIGNOUT":
+    case 'USER_SIGNOUT':
       return {
         ...state,
         userInfo: null,
       };
-    case "TOGGLE_BTN":
+    case 'TOGGLE_BTN':
       return {
         ...state,
         toggleState: action.payload,
