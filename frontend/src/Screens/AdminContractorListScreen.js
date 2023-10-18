@@ -1,4 +1,3 @@
-import * as React from "react";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button, FormControl, Grid, MenuItem, Select } from "@mui/material";
@@ -14,6 +13,7 @@ import { toast } from "react-toastify";
 import { ImCross } from "react-icons/im";
 import { ThreeDots } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
+import { useContext, useEffect, useReducer, useState } from "react";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -35,83 +35,67 @@ const reducer = (state, action) => {
 
     case "UPDATE_RESET":
       return { ...state, successUpdate: false };
-
+    case "FATCH_SUBMITTING":
+      return { ...state, submitting: action.payload };
     default:
       return state;
   }
 };
 
 const columns = [
-  { field: "_id", headerName: "ID", width: 80 },
+  { field: "_id", headerName: "ID", width: 250 },
   {
     field: "first_name",
-    headerName: "constractor Name",
-    width: 100,
+    headerName: "constractor",
+    width: 150,
   },
   {
     field: "email",
     headerName: "Email",
-    width: 100,
+    width: 200,
   },
   {
-    field: "status",
+    field: "userStatus",
     headerName: "Status",
     width: 100,
   },
 ];
 
 export default function AdminContractorListScreen() {
-  const [isModelOpen, setIsModelOpen] = React.useState(false);
-  const [selectedRowData, setSelectedRowData] = React.useState(null);
-  const [isNewContractor, setIsNewContractor] = React.useState(false);
-  const role = "contractor";
-  const { state } = React.useContext(Store);
+  const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
+  const navigate = useNavigate();
+  const role = "contractor";
+  const [isModelOpen, setIsModelOpen] = useState(false);
   const theme = toggleState ? "dark" : "light";
+
+  const [name, setName] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState("");
+  const [password, setPassword] = useState("");
+
   const [
-    { loading, error, constructorData, successDelete, successUpdate },
+    {
+      loading,
+      error,
+      constructorData,
+      successDelete,
+      successUpdate,
+      submitting,
+    },
     dispatch,
-  ] = React.useReducer(reducer, {
+  ] = useReducer(reducer, {
     loading: true,
     error: "",
+
     constructorData: [],
     successDelete: false,
     successUpdate: false,
+    submitting: false,
   });
 
-  const navigate = useNavigate();
-
-  const [name, setName] = React.useState("");
-  const [lastname, setLastname] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [status, setStatus] = React.useState("");
-  const [password, setPassword] = React.useState("");
-
-  const handleEdit = (userid) => {
-    navigate(`/adminEditContractor/${userid}`);
-    // const constractorToEdit = constructorData.find(
-    //   (constractor) => constractor && constractor._id === userid
-    // );
-    // setName(constractorToEdit ? constractorToEdit.first_name : "");
-    // setLastname(constractorToEdit ? constractorToEdit.last_name : "m");
-    // setEmail(constractorToEdit ? constractorToEdit.email : "");
-    // setStatus(constractorToEdit ? constractorToEdit.status : "active");
-    // setSelectedRowData(constractorToEdit);
-    // setIsModelOpen(true);
-    // setIsNewContractor(false);
-  };
-
-  const handleCloseRow = () => {
-    setIsModelOpen(false);
-  };
-
-  const handleNew = () => {
-    setSelectedRowData(null);
-    setIsModelOpen(true);
-    setIsNewContractor(true);
-  };
-
-  React.useEffect(() => {
+  useEffect(() => {
     const FatchconstractorData = async () => {
       try {
         dispatch("FATCH_REQUEST");
@@ -127,7 +111,7 @@ export default function AdminContractorListScreen() {
             _id: items._id,
             first_name: items.first_name,
             email: items.email,
-            status: items.status,
+            userStatus: items.userStatus ? "Active" : "Inactive",
           };
         });
         dispatch({ type: "FATCH_SUCCESS", payload: rowData });
@@ -142,46 +126,11 @@ export default function AdminContractorListScreen() {
     } else {
       FatchconstractorData();
     }
-  }, [successDelete, successUpdate]);
-  // ----------------
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   if (isNewContractor) {
-  //     const response = await axios.post(`/api/user/signup`, {
-  //       first_name: name,
-  //       email: email,
-  //       password: password,
-  //       role: role,
-  //     });
-  //     if (response.status === 201) {
-  //       toast.success("constractor added Successfully !");
-  //       const datas = response.data;
-  //       setIsModelOpen(false);
-  //       dispatch({ type: "FATCH_SUCCESS", payload: datas });
-  //       dispatch({ type: "UPDATE_SUCCESS", payload: true });
-  //     }
-  //   } else {
-  //     const response = await axios.put(
-  //       `/api/user/update/${selectedRowData._id}`,
-  //       {
-  //         first_name: name,
-  //         email: email,
-  //         role: role,
-  //       },
+  }, [successDelete, successUpdate, userInfo]);
 
-  //       { headers: { Authorization: `Bearer ${userInfo.token}` } }
-  //     );
-
-  //     if (response.status === 200) {
-  //       toast.success(response.data);
-  //       setIsModelOpen(false);
-  //       dispatch({ type: "UPDATE_SUCCESS", payload: true });
-  //     }
-  //   }
-  // };
-  // ----------------
   const handleSubmit = async (e) => {
     e.preventDefault();
+    dispatch({ type: "FATCH_SUBMITTING", payload: true });
     try {
       const response = await axios.post(
         `/api/user/add`,
@@ -198,13 +147,14 @@ export default function AdminContractorListScreen() {
       console.log(response);
       if (response.status === 200) {
         toast.success("Contractor added Successfully !");
-        const datas = response.data;
         setIsModelOpen(false);
-        dispatch({ type: "FATCH_SUCCESS", payload: datas });
+        dispatch({ type: "UPDATE_SUCCESS", payload: true });
+        dispatch({ type: "FATCH_SUBMITTING", payload: false });
       }
     } catch (error) {
       console.log(error);
       toast.error(error.response?.data?.message);
+      dispatch({ type: "FATCH_SUBMITTING", payload: false });
     }
   };
   // --------------------------
@@ -229,6 +179,18 @@ export default function AdminContractorListScreen() {
         toast.error("An error occurred while deleting constractor data.");
       }
     }
+  };
+
+  const handleEdit = (userid) => {
+    navigate(`/adminEditContractor/${userid}`);
+  };
+
+  const handleCloseRow = () => {
+    setIsModelOpen(false);
+  };
+
+  const handleModel = () => {
+    setIsModelOpen(true);
   };
 
   return (
@@ -257,14 +219,18 @@ export default function AdminContractorListScreen() {
             <Button
               variant="outlined"
               className=" m-2 d-flex globalbtnColor"
-              onClick={handleNew}
+              onClick={handleModel}
             >
               <BiPlusMedical className="mx-2" />
               Add Contractor
             </Button>
             <Box sx={{ height: 400, width: "100%" }}>
               <DataGrid
-                className={`tableBg mx-2 ${theme}DataGrid`}
+                className={
+                  theme == "light"
+                    ? `${theme}DataGrid mx-2`
+                    : `tableBg ${theme}DataGrid mx-2`
+                }
                 rows={constructorData}
                 columns={[
                   ...columns,
@@ -279,7 +245,7 @@ export default function AdminContractorListScreen() {
                             variant="contained"
                             className="mx-2 tableEditbtn"
                             onClick={() => handleEdit(params.row._id)}
-                            startIcon={<MdEdit />}
+                            // startIcon={<MdEdit />}
                           >
                             Edit
                           </Button>
@@ -287,7 +253,7 @@ export default function AdminContractorListScreen() {
                             variant="outlined"
                             className="mx-2 tableDeletebtn"
                             onClick={() => deleteHandle(params.row._id)}
-                            startIcon={<AiFillDelete />}
+                            // startIcon={<AiFillDelete />}
                           >
                             Delete
                           </Button>
@@ -329,15 +295,11 @@ export default function AdminContractorListScreen() {
                     className="formcrossbtn"
                     onClick={handleCloseRow}
                   />
-                  {isNewContractor ? (
-                    <h4 className="d-flex justify-content-center">
-                      Add new Contractor Details
-                    </h4>
-                  ) : (
-                    <h4 className="d-flex justify-content-center">
-                      Edit Contractor Details
-                    </h4>
-                  )}
+
+                  <h4 className="d-flex justify-content-center">
+                    Add Contractor
+                  </h4>
+
                   <TextField
                     className="mb-2"
                     value={name}
@@ -358,17 +320,18 @@ export default function AdminContractorListScreen() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     label="Email"
+                    type="email"
                     fullWidth
                   />
-                  {isNewContractor && (
-                    <TextField
-                      className="mb-2"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      label="Password"
-                      fullWidth
-                    />
-                  )}
+
+                  <TextField
+                    className="mb-2"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    label="Password"
+                    type="password"
+                    fullWidth
+                  />
 
                   <FormControl className="formselect">
                     <Select
@@ -385,8 +348,9 @@ export default function AdminContractorListScreen() {
                     variant="contained"
                     color="primary"
                     type="submit"
+                    disabled={submitting}
                   >
-                    {isNewContractor ? "Add constractor" : "Save Changes"}
+                    {submitting ? "Adding Contractor..." : "Add Contractor"}
                   </Button>
                 </Form>
               </Box>

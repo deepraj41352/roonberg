@@ -58,8 +58,10 @@ userRouter.put(
   expressAsyncHandler(async (req, res) => {
     try {
       const user = await User.findById(req.params.id);
+      console.log("user", user);
       if (user._id == req.params.id) {
-        await user.updateOne({ $set: req.body });
+        const data = await user.updateOne({ $set: req.body });
+        console.log("updateddata", data);
         res.status(200).json("update successfully");
       } else {
         res.status(403).json("you can not update");
@@ -518,8 +520,8 @@ userRouter.post(
         email,
         password: hashedPassword,
         role,
-        userStatus,
         agentCategory,
+        userStatus,
         // Only assign the category field if the role is "agent"
         ...(role === "agent" ? { agentCategory } : {}),
       };
@@ -570,5 +572,20 @@ userRouter.post(
     }
   })
 );
-
+// get single category
+userRouter.get(
+  "/:id",
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const user = await User.findById(req.params.id);
+      if (!user) {
+        res.status(400).json({ message: "user not found" });
+      }
+      res.json(user);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server error" });
+    }
+  })
+);
 export default userRouter;

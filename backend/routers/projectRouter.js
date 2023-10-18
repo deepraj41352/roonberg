@@ -52,10 +52,12 @@ projectRouter.post(
   expressAsyncHandler(async (req, res) => {
     try {
       const userRole = req.user.role;
-      const contractorId = req.body.contractorId;
-      const agentId = req.body.agentId;
-      const aget = await User.findById(agentId, 'first_name email');
+      const contractorId = req.body.projectOwner;
+      const assignedAgent = req.body.assignedAgent;
+      const agentIds = assignedAgent.map((agent) => agent.agentId);
+      console.log("agentIds", agentIds);
       const user = await User.findById(contractorId, 'first_name email');
+
       if (userRole === 'admin' || userRole === 'superadmin') {
         const newProject = new Project({
           projectName: req.body.projectName,
@@ -65,10 +67,19 @@ projectRouter.post(
           endDate: req.body.endDate,
           projectStatus: req.body.projectStatus,
           projectOwner: contractorId,
-          assignedAgent: agentId,
+          assignedAgent: assignedAgent,
         });
+
         const project = await newProject.save();
-        const toEmails = `${user.email},${aget.email}`;
+
+        const agentEmails = await User.find({ _id: { $in: agentIds } }, 'email');
+        const agentEmailList = agentEmails.map((agent) => agent.email);
+
+        console.log("contractormail", user.email);
+        console.log("agentEmails", agentEmailList);
+
+        const toEmails = [user.email, ...agentEmailList];
+        console.log("bothmail", toEmails)
         const options = {
           to: toEmails,
           subject: 'New Project Create✔',
@@ -85,59 +96,6 @@ projectRouter.post(
           });
           await newConversation.save();
         }
-
-        res.status(201).json({ message: 'Project Created', project });
-      } else {
-        res.status(403).json({ message: 'Access denied' });
-      }
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server error' });
-    }
-  })
-);
-
-projectRouter.post(
-  '/admin/addproject',
-  isAuth,
-  isAdminOrSelf,
-  expressAsyncHandler(async (req, res) => {
-    try {
-      const userRole = req.user.role;
-      const contractorId = req.body.contractorId;
-      const agentId = req.body.agentId;
-      const aget = await User.findById(agentId, 'first_name email');
-      const user = await User.findById(contractorId, 'first_name email');
-      if (userRole === 'admin' || userRole === 'superadmin') {
-        const newProject = new Project({
-          projectName: req.body.projectName,
-          projectDescription: req.body.projectDescription,
-          projectCategory: req.body.projectCategory,
-          createdDate: req.body.createdDate,
-          endDate: req.body.endDate,
-          projectStatus: req.body.projectStatus,
-          projectOwner: contractorId,
-          assignedAgent: agentId,
-        });
-        const project = await newProject.save();
-        const toEmails = `${user.email},${aget.email}`;
-        const options = {
-          to: toEmails,
-          subject: 'New Project Create✔',
-          template: 'CREATE-PROJECT',
-          projectName: req.body.projectName,
-          projectDescription: req.body.projectDescription,
-          user,
-        };
-        await sendEmailNotify(options);
-
-        if (project.assignedAgent) {
-          const newConversation = new Conversation({
-            members: [project.assignedAgent, project.projectOwner],
-          });
-          await newConversation.save();
-        }
-
         res.status(201).json({ message: 'Project Created', project });
       } else {
         res.status(403).json({ message: 'Access denied' });
@@ -240,7 +198,7 @@ projectRouter.post(
               agentId: agentId,
               agentName: user.first_name,
               categoryId: categoryId,
-              categoryName:category.categoryName,
+              categoryName: category.categoryName,
             },
           },
         },
@@ -292,7 +250,8 @@ projectRouter.put(
   expressAsyncHandler(async (req, res) => {
     try {
       const project = await Project.findById(req.params.id);
-      await project.updateOne({ $set: req.body });
+      const dataprojectupdate = await project.updateOne({ $set: req.body });
+      console.log("dataprojectupdate", dataprojectupdate)
       res.status(200).json('update successfully');
     } catch (err) {
       res.status(500).json({

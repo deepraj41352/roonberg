@@ -7,7 +7,6 @@ import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { ThreeDots } from "react-loader-spinner";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -32,7 +31,7 @@ const reducer = (state, action) => {
   }
 };
 
-function ProjectSingleScreen() {
+function ContractorEditProject() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { state } = useContext(Store);
@@ -93,7 +92,7 @@ function ProjectSingleScreen() {
 
     fetchProjectData();
   }, []);
-  console.log("project== datass", projectData);
+
   useEffect(() => {
     const fetchCategoryData = async () => {
       try {
@@ -173,25 +172,10 @@ function ProjectSingleScreen() {
   const handleCategoryChange = (selected) => {
     setSelectedOptions(selected);
   };
-
   return (
     <div>
       {loading ? (
-        <>
-          <div className="ThreeDot">
-            <ThreeDots
-              height="80"
-              width="80"
-              radius="9"
-              className="ThreeDot justify-content-center"
-              color="#0e0e3d"
-              ariaLabel="three-dots-loading"
-              wrapperStyle={{}}
-              wrapperClassName=""
-              visible={true}
-            />
-          </div>
-        </>
+        <div>Loading ...</div>
       ) : error ? (
         <div>{error}</div>
       ) : (
@@ -236,8 +220,8 @@ function ProjectSingleScreen() {
                       defaultValue={selectedOptions}
                     />
                   </Form.Group>
-                  <div className="d-flex gap-3 mb-3 start-end-date">
-                    <Form.Group className="w-100" controlId="duedate">
+                  <div className="d-flex gap-3 mb-3">
+                    <Form.Group className="w-100" controlId="start-date">
                       <Form.Label className="fw-bold">Start Date</Form.Label>
                       <Form.Control
                         type="date"
@@ -267,6 +251,7 @@ function ProjectSingleScreen() {
             <Card className={`projectScreenCard2 ${theme}CardBody`}>
               <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
               <Card.Body className="d-flex flex-wrap gap-3 ">
+                {/* -------- */}
                 <div
                   className="text-center w-100"
                   style={{
@@ -280,58 +265,22 @@ function ProjectSingleScreen() {
                 >
                   No Chat Available
                 </div>
-
-                {projectData?.conversions?.map((conversion) => {
-                  const assignedAgent = projectData.assignedAgent.find(
-                    (assignedAgent) =>
-                      assignedAgent.agentId === conversion.members[0]
-                  );
+                {conversations.map((conversion) => {
                   return (
-                    <>
-                      {userInfo.role == "agent" ? (
-                        <>
-                          {conversion.members.includes(userInfo._id) && (
-                            <>
-                              <Card className="chatboxes">
-                                {/* <Card.Header>{assignedAgent.categoryId}</Card.Header> */}
-                                <Card.Body>
-                                  <Link
-                                    to={`/chatWindowScreen/${conversion._id}`}
-                                  >
-                                    <Button
-                                      className="chatBtn"
-                                      type="button"
-                                      // onClick={conversionHandler(conversion._id)}
-                                    >
-                                      {conversion._id}
-                                    </Button>
-                                  </Link>
-                                </Card.Body>
-                              </Card>
-                            </>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          <Card className="chatboxes">
-                            <Card.Header>
-                              {assignedAgent && assignedAgent.categoryName}
-                            </Card.Header>
-                            <Card.Body>
-                              <Link to={`/chatWindowScreen/${conversion._id}`}>
-                                <Button
-                                  className="chatBtn"
-                                  type="button"
-                                  // onClick={conversionHandler(conversion._id)}
-                                >
-                                  {assignedAgent && assignedAgent.agentName}
-                                </Button>
-                              </Link>
-                            </Card.Body>
-                          </Card>
-                        </>
-                      )}
-                    </>
+                    <Card className="chatboxes">
+                      <Card.Header>Chat</Card.Header>
+                      <Card.Body>
+                        <Link to={`/chatWindowScreen/${conversion._id}`}>
+                          <Button
+                            className="chatBtn"
+                            type="button"
+                            // onClick={conversionHandler(conversion._id)}
+                          >
+                            {conversion._id}
+                          </Button>
+                        </Link>
+                      </Card.Body>
+                    </Card>
                   );
                 })}
 
@@ -345,4 +294,4 @@ function ProjectSingleScreen() {
   );
 }
 
-export default ProjectSingleScreen;
+export default ContractorEditProject;

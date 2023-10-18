@@ -33,6 +33,10 @@ code {
 }
 
 /* Gaytri css start  */
+.scrollInAdminproject {
+  max-height: 500px;
+  overflow-y: auto;
+}
 .fullContainer {
   height: 100vh !important;
 }
@@ -51,7 +55,28 @@ code {
   float: right !important;
   cursor: pointer !important;
 }
+
+.textArea {
+  width: 100% !important;
+  font-weight: 600;
+  padding: 16.5px 14px;
+  border-color: #dee2e6 !important;
+}
+
 /* ---------Priyanshu-Start------------- */
+@media (max-width: 380px) {
+  .input-box-inner {
+    max-width: 210px !important;
+  }
+}
+.ProfileScreen-inner {
+  max-width: 450px;
+}
+@media (max-width: 400px) {
+  .ProfileScreen-inner {
+    max-width: 330px;
+  }
+}
 body {
   background-color: #f8fafc !important;
 }
@@ -74,7 +99,7 @@ body {
   width: 400px !important;
 }
 
-.tableBg,
+/* .tableBg, */
 .lightmodelBg {
   background-color: #abc1e0;
   color: #fff !important;
@@ -90,6 +115,7 @@ body {
 }
 .tableEditbtn {
   background-color: #8a9097 !important;
+  color: white !important;
 }
 
 .tableDeletebtn {
@@ -190,6 +216,10 @@ code {
 }
 .formselect {
   width: 335px !important;
+  padding: 16.5px 14px;
+  border-color: #dee2e6;
+  font-weight: 700px !important;
+  border-radius: 5px;
 }
 .formbtn {
   float: right !important;
@@ -206,6 +236,12 @@ button {
 .tableBg input[type="checkbox"] {
   border-color: white !important;
   background-color: white !important;
+}
+.lightDataGrid .MuiButtonBase-root {
+  color: rgb(31, 30, 30) !important;
+}
+.darkDataGrid .MuiButtonBase-root {
+  color: white !important;
 }
 /* ---------Priyanshu-Start------------- */
 body {
@@ -229,6 +265,10 @@ body {
 
 .formWidth {
   width: 400px !important;
+}
+.scroll-form {
+  height: 400px;
+  overflow-y: auto;
 }
 /* Gaytri css end  */
 /*################################################################################# */
@@ -551,12 +591,19 @@ body {
 }
 .lightTab {
   /* background-color: #8a9097; */
-  background-color: #3c3c5a;
+  background-color: #a3a7ad;
 }
 
-.nav-tabs .nav-link.active {
+.darkTab .nav-link.active {
   background-color: #0d0d32 !important;
   color: white !important;
+  border: none !important;
+  min-width: 100px;
+  border-radius: none !important;
+}
+.lightTab .nav-link.active {
+  background-color: #8a9097 !important;
+  color: black !important;
   border: none !important;
   min-width: 100px;
   border-radius: none !important;
@@ -610,4 +657,14 @@ body {
 }
 .tabBorder {
   /* border: 2px solid #070719; */
+}
+.tableEditbtn {
+  background-color: #8a9097 !important;
+  color: white;
+}
+.loginPageNav {
+  height: 50px;
+}
+.loginPage {
+  height: calc(100vh - 95px);
 }
