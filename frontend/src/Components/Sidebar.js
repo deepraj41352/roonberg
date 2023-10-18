@@ -109,7 +109,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
           </li>
         </Link>
 
-        <Link to="/adminProjectList" className="text-decoration-none">
+        {/* <Link to="/adminProjectList" className="text-decoration-none">
           <li
             className={selectedItem === 'profileList' ? 'selected' : ''}
             onClick={() => {
@@ -119,7 +119,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
             <AiOutlineProject className="me-3 fs-5" />
             Project List
           </li>
-        </Link>
+        </Link> */}
         <Link to="/ChatScreen" className="text-decoration-none">
           <li
             className={selectedItem === 'chat' ? 'selected' : ''}

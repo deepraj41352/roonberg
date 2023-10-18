@@ -80,6 +80,11 @@ const columns = [
     headerName: 'Contractor',
     width: 90,
   },
+  {
+    field: 'assignedAgent',
+    headerName: 'Agent',
+    width: 90,
+  },
 ];
 
 export default function AdminProjectListScreen() {
@@ -252,14 +257,10 @@ export default function AdminProjectListScreen() {
         });
         const datas = response.data;
         const rowData = datas.map((items) => {
-          console.log('contractorData', contractorData);
-          console.log('items.projectOwner', items.projectOwner);
-
           const contractor = contractorData.find(
             (contractor) => contractor._id === items.projectOwner
           );
           console.log('contractor', contractor);
-          console.log('item', items);
           return {
             ...items,
             _id: items._id,
@@ -270,8 +271,7 @@ export default function AdminProjectListScreen() {
               : '',
             assignedAgent: items.assignedAgent
               ? items.assignedAgent.map((agent) => agent.agentName)
-              : '',
-            // assignedAgent: items.assignedAgent.length < 0 ? 'Not Assign' : "Assign",
+              : 'Not Assigned',
             projectOwner: contractor ? contractor.first_name : '',
           };
         });
@@ -288,7 +288,7 @@ export default function AdminProjectListScreen() {
     } else {
       FatchProjectData();
     }
-  }, [successDelete, successUpdate, dispatch, userInfo.token]);
+  }, [successDelete, successUpdate, dispatch, userInfo.token, contractorData]);
 
   const projectActiveData = projectData.filter((item) => {
     return item.projectStatus === 'active';

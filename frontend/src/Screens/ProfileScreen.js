@@ -1,16 +1,16 @@
-import React, { useContext, useState } from "react";
-import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
-import { Store } from "../Store";
-import { toast } from "react-toastify";
-import axios from "axios";
-import Validations from "../Components/Validations";
+import React, { useContext, useState } from 'react';
+import { Button, Card, Col, Container, Form, Row } from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom';
+import { Store } from '../Store';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import Validations from '../Components/Validations';
 
 function ProfileScreen() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
-  console.log("useringo", userInfo);
-  const theme = toggleState ? "dark" : "light";
+  console.log('useringo', userInfo);
+  const theme = toggleState ? 'dark' : 'light';
   const navigate = useNavigate();
 
   const [firstName, setFirstName] = useState(userInfo.first_name);
@@ -18,31 +18,31 @@ function ProfileScreen() {
   const [email, setEmail] = useState(userInfo.email);
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  console.log("file", selectedFile);
+  console.log('file', selectedFile);
 
   const submitHandler = async (e) => {
     e.preventDefault();
     setIsSubmiting(true);
     const formDatas = new FormData();
 
-    formDatas.append("file", selectedFile);
-    formDatas.append("first_name", firstName);
-    formDatas.append("last_name", lastName);
-    formDatas.append("email", email);
-    formDatas.append("_id", userInfo._id);
+    formDatas.append('file', selectedFile);
+    formDatas.append('first_name', firstName);
+    formDatas.append('last_name', lastName);
+    formDatas.append('email', email);
+    formDatas.append('_id', userInfo._id);
 
     try {
       const { data } = await axios.put(`/api/user/profile`, formDatas, {
         headers: {
-          "content-type": "multipart/form-data",
+          'content-type': 'multipart/form-data',
 
           authorization: `Bearer ${userInfo.token}`,
         },
       });
-      console.log("data", data);
-      console.log("data.userdata", data.userData);
-      ctxDispatch({ type: "USER_UPDATE", payload: data.userData });
-      localStorage.setItem("userInfo", JSON.stringify(data.userData));
+      console.log('data', data);
+      console.log('data.userdata', data.userData);
+      ctxDispatch({ type: 'USER_UPDATE', payload: data.userData });
+      localStorage.setItem('userInfo', JSON.stringify(data.userData));
       toast.success(data.message);
     } catch (err) {
       toast.error(err.response?.data?.message);
@@ -69,7 +69,7 @@ function ProfileScreen() {
             <Card className={`${theme}CardBody`}>
               <Form onSubmit={submitHandler} className="p-4 w-100 formWidth ">
                 <div className="classforprofile">
-                  <img src={userInfo.profile_picture}></img>
+                  <img src={userInfo.profile_picture} alt=""></img>
                   <Form.Group className="mb-3" controlId="formBasicPassword">
                     <Form.Label className="mb-1">Profile Picture</Form.Label>
                     <Form.Control type="file" onChange={handleFileChange} />
@@ -83,6 +83,7 @@ function ProfileScreen() {
                     onChange={(e) => setFirstName(e.target.value)}
                     type="text"
                     value={firstName}
+                    disabled={isSubmiting}
                     required
                   />
                 </Form.Group>
@@ -93,6 +94,7 @@ function ProfileScreen() {
                     onChange={(e) => setLastName(e.target.value)}
                     type="text"
                     value={lastName}
+                    disabled={isSubmiting}
                     required
                   />
                 </Form.Group>
@@ -104,6 +106,7 @@ function ProfileScreen() {
                     className="input-box-inner"
                     type="email"
                     value={email}
+                    disabled
                     onChange={(e) => {
                       setEmail(e.target.value);
                     }}
@@ -118,7 +121,7 @@ function ProfileScreen() {
                     type="submit"
                     disabled={isSubmiting}
                   >
-                    {isSubmiting ? "Updateing..." : "Update"}
+                    {isSubmiting ? 'Updateing...' : 'Update'}
                   </Button>
                 </div>
               </Form>
