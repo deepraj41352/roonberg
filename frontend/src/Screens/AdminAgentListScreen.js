@@ -22,6 +22,7 @@ import { ImCross } from 'react-icons/im';
 import { ThreeDots } from 'react-loader-spinner';
 import { useNavigate } from 'react-router-dom';
 import { useContext, useEffect, useReducer, useState } from 'react';
+import Validations from '../Components/Validations';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -85,10 +86,14 @@ export default function AdminAgentListScreen() {
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [status, setStatus] = useState();
   const [password, setPassword] = useState('');
+  const [password, setPassword] = useState('');
   const [selectcategory, setSelectCategory] = useState();
-
+  console.log('name', name);
+  console.log('password', password);
   const [
     {
       loading,
@@ -118,7 +123,7 @@ export default function AdminAgentListScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const datas = response.data;
-        setSelectCategory(datas);
+        // setSelectCategory(datas)
         dispatch({ type: 'FATCH_CATEGORY', payload: datas });
       } catch (error) {
         console.log(error);
@@ -219,7 +224,7 @@ export default function AdminAgentListScreen() {
   const handleEdit = (userid) => {
     navigate(`/adminEditAgent/${userid}`);
   };
-
+  console.log('selectcategory', selectcategory);
   return (
     <>
       {loading ? (
@@ -336,6 +341,7 @@ export default function AdminAgentListScreen() {
                   type="email"
                   fullWidth
                 />
+                <Validations type="email" value={email} />
                 <TextField
                   className="mb-2"
                   value={password}
@@ -344,7 +350,7 @@ export default function AdminAgentListScreen() {
                   type="password"
                   fullWidth
                 />
-
+                <Validations type="password" value={password} />
                 <FormControl>
                   <InputLabel>Choose Status</InputLabel>
                   <Select
@@ -361,6 +367,7 @@ export default function AdminAgentListScreen() {
                   <Select
                     value={selectcategory}
                     onChange={(e) => setSelectCategory(e.target.value)}
+                    required
                   >
                     {categoryData.map((items) => (
                       <MenuItem key={items._id} value={items._id}>

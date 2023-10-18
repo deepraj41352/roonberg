@@ -177,7 +177,7 @@ function AdminEditContractor() {
                       type="submit"
                       disabled={isSubmiting}
                     >
-                      {isSubmiting ? 'Updateing...' : 'Update'}
+                      {isSubmiting ? 'Updateing' : 'Update'}
                     </Button>
                   </div>
                 </Form>

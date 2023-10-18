@@ -115,7 +115,7 @@ export default function AdminProjectListScreen() {
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [projectOwner, setProjectOwner] = useState('');
-  const [startDate, setStartDate] = useState();
+  const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState();
   const navigate = useNavigate();
   const [agents, setAgents] = useState([
@@ -149,6 +149,13 @@ export default function AdminProjectListScreen() {
       ...updatedAgents[index],
       [key]: value,
     };
+
+    const categoryName = categoryData.find(
+      (categoryItem) => categoryItem._id === value
+    );
+    if (categoryName) {
+      updatedAgents[index].categoryName = categoryName.categoryName;
+    }
 
     const agentName = agentData.find((agentItem) => agentItem._id === value);
     if (agentName) {
@@ -245,9 +252,14 @@ export default function AdminProjectListScreen() {
         });
         const datas = response.data;
         const rowData = datas.map((items) => {
+          console.log('contractorData', contractorData);
+          console.log('items.projectOwner', items.projectOwner);
+
           const contractor = contractorData.find(
             (contractor) => contractor._id === items.projectOwner
           );
+          console.log('contractor', contractor);
+          console.log('item', items);
           return {
             ...items,
             _id: items._id,
@@ -256,11 +268,10 @@ export default function AdminProjectListScreen() {
             projectCategory: items.projectCategory
               ? items.projectCategory.map((cat) => cat.categoryName)
               : '',
-            // assignedAgent: items.assignedAgent
-            //   ? items.assignedAgent.map((agent) => agent.agentName)
-            //   : '',
-            assignedAgent:
-              items.assignedAgent.length < 0 ? 'Not Assign' : 'Assign',
+            assignedAgent: items.assignedAgent
+              ? items.assignedAgent.map((agent) => agent.agentName)
+              : '',
+            // assignedAgent: items.assignedAgent.length < 0 ? 'Not Assign' : "Assign",
             projectOwner: contractor ? contractor.first_name : '',
           };
         });
@@ -288,6 +299,9 @@ export default function AdminProjectListScreen() {
   const projectQuedData = projectData.filter((item) => {
     return item.projectStatus === 'qued';
   });
+  const assignedAgent = projectData.filter((item) => {
+    return item.assignedAgent.length === 0;
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -313,7 +327,7 @@ export default function AdminProjectListScreen() {
       );
       console.log(response.data.message);
       console.log(response);
-
+      dispatch({ type: 'UPDATE_SUCCESS', payload: true });
       if (response.status === 201) {
         toast.success(response.data.message);
         const datas = response.data;
@@ -436,22 +450,6 @@ export default function AdminProjectListScreen() {
                         );
                       },
                     },
-                    {
-                      field: 'assignedAgent',
-                      headerName: 'Assign',
-                      width: 120,
-                      renderCell: (params) => {
-                        return (
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={() => handleAssigndment(params.row._id)}
-                          >
-                            {projectData.ag}
-                          </Button>
-                        );
-                      },
-                    },
                   ]}
                   getRowId={(row) => row._id}
                   initialState={{
@@ -485,7 +483,7 @@ export default function AdminProjectListScreen() {
                     onSubmit={handleSubmit}
                   >
                     <h4 className="d-flex justify-content-center">
-                      Add new Project Details
+                      Add Project
                     </h4>
                     <TextField
                       required
@@ -497,7 +495,6 @@ export default function AdminProjectListScreen() {
                     />
 
                     <TextField
-                      required
                       id="outlined-multiline-static"
                       onChange={(e) => setProjectDescription(e.target.value)}
                       label="Project Description"
@@ -617,10 +614,11 @@ export default function AdminProjectListScreen() {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DateField
                         required
-                        label="Start Date"
+                        label="Date"
                         value={startDate}
                         onChange={(newValue) => setStartDate(newValue)}
-                        format="MM-DD-YYYY"
+                        // format="MM-DD-YYYY"
+                        // minDate={new Date()} // Prevent past dates from being selected
                       />
                       <DateField
                         required
@@ -662,16 +660,14 @@ export default function AdminProjectListScreen() {
                       renderCell: (params) => {
                         return (
                           <Grid item xs={8}>
-                            <Link to={`/projectSingleScreen/${params.row._id}`}>
-                              <Button
-                                variant="contained"
-                                className="mx-2 tableEditbtn"
-                                // onClick={() => handleEdit(params.row._id)}
-                                // startIcon={<MdEdit />}
-                              >
-                                Edit
-                              </Button>
-                            </Link>
+                            <Button
+                              variant="contained"
+                              className="mx-2 tableEditbtn"
+                              onClick={() => handleEdit(params.row._id)}
+                              startIcon={<MdEdit />}
+                            >
+                              Edit
+                            </Button>
 
                             <Button
                               variant="outlined"
@@ -718,8 +714,8 @@ export default function AdminProjectListScreen() {
                               <Button
                                 variant="contained"
                                 className="mx-2 tableEditbtn"
-                                // onClick={() => handleEdit(params.row._id)}
-                                // startIcon={<MdEdit />}
+                                onClick={() => handleEdit(params.row._id)}
+                                startIcon={<MdEdit />}
                               >
                                 Edit
                               </Button>
@@ -784,6 +780,56 @@ export default function AdminProjectListScreen() {
                             >
                               Delete
                             </Button>
+                          </Grid>
+                        );
+                      },
+                    },
+                  ]}
+                  getRowId={(row) => row._id}
+                  initialState={{
+                    pagination: {
+                      paginationModel: {
+                        pageSize: 5,
+                      },
+                    },
+                  }}
+                  pageSizeOptions={[5]}
+                  checkboxSelection
+                  disableRowSelectionOnClick
+                />
+              </Box>
+            </Tab>
+            <Tab className="tab-color" eventKey="Assigned" title="Assigned">
+              <Box sx={{ height: 400, width: '100%' }}>
+                <DataGrid
+                  className={`tableBg mx-2 ${theme}DataGrid`}
+                  rows={assignedAgent}
+                  columns={[
+                    ...columns,
+                    {
+                      field: 'action',
+                      headerName: 'Action',
+                      width: 250,
+                      renderCell: (params) => {
+                        return (
+                          <Grid item xs={8}>
+                            <Button
+                              variant="danger"
+                              className="mx-2  bg-danger"
+                              onClick={() => handleAssigndment(params.row._id)}
+                              startIcon={<MdEdit />}
+                            >
+                              Assign
+                            </Button>
+
+                            {/* <Button
+                              variant="outlined"
+                              className="mx-2 tableDeletebtn"
+                              onClick={() => deleteHandle(params.row._id)}
+                              startIcon={<AiFillDelete />}
+                            >
+                              Delete
+                            </Button> */}
                           </Grid>
                         );
                       },

@@ -1,6 +1,13 @@
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
-import { Button, FormControl, Grid, MenuItem, Select } from '@mui/material';
+import {
+  Button,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+} from '@mui/material';
 import { AiFillDelete } from 'react-icons/ai';
 import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
@@ -14,6 +21,7 @@ import { ImCross } from 'react-icons/im';
 import { ThreeDots } from 'react-loader-spinner';
 import { useNavigate } from 'react-router-dom';
 import { useContext, useEffect, useReducer, useState } from 'react';
+import Validations from '../Components/Validations';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -323,7 +331,7 @@ export default function AdminContractorListScreen() {
                     type="email"
                     fullWidth
                   />
-
+                  <Validations type="email" value={email} />
                   <TextField
                     className="mb-2"
                     value={password}
@@ -332,8 +340,9 @@ export default function AdminContractorListScreen() {
                     type="password"
                     fullWidth
                   />
-
+                  <Validations type="password" value={password} />
                   <FormControl className="formselect">
+                    <InputLabel>Choose Status</InputLabel>
                     <Select
                       value={status}
                       onChange={(e) => setStatus(e.target.value)}

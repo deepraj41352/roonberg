@@ -5,6 +5,7 @@ import { isAuth, isAdminOrSelf, sendEmailNotify } from '../util.js';
 import User from '../Models/userModel.js';
 import Conversation from '../Models/conversationModel.js';
 import Category from '../Models/categoryModel.js';
+import mongoose from 'mongoose';
 import { assign } from 'nodemailer/lib/shared/index.js';
 
 const projectRouter = express.Router();
@@ -16,7 +17,7 @@ projectRouter.get(
   isAuth,
   expressAsyncHandler(async (req, res) => {
     try {
-      // Check user's role and determine which projects to retrieve
+      // Check user's role and determine which projects to retrieve 
       const userRole = req.user.role; // Replace with the actual way you get the user's role
 
       if (userRole === 'admin' || userRole === 'superadmin') {
@@ -47,9 +48,76 @@ projectRouter.get(
     }
   })
 );
+projectRouter.put(
+  '/assign-update/:id',
+  isAuth,
+  isAdminOrSelf,
+  expressAsyncHandler(async (req, res) => {
+    try {
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Access denied' });
+      }
+      const projectId = req.params.id;
+      const contractorId = req.body.projectOwner;
+      const assignedAgent = req.body.assignedAgent;
+      const agentIds = assignedAgent.map((agent) => agent.agentId);
+      console.log("agentIds", agentIds);
+      const user = await User.findById(contractorId, 'first_name email');
 
-//................ admin create Project .....................
+      // const projectId = req.params.id;
+      // const agentId = req.body.agentId;
+      // const categoryId = req.body.categoryId;
+      // const category = await Category.findById(categoryId);
+      // const user = await User.findById(agentId, '_id first_name email');
 
+      const updateFields = {
+
+        assignedAgent,
+
+        projectName: req.body.projectName,
+        projectDescription: req.body.projectDescription,
+        projectCategory: req.body.projectCategory,
+        createdDate: req.body.createdDate,
+        endDate: req.body.endDate,
+        projectStatus: req.body.projectStatus,
+        projectOwner: contractorId,
+      };
+      console.log("updateFields", updateFields)
+
+      const updatedProject = await Project.findByIdAndUpdate(
+        projectId,
+        { $set: updateFields }, // Use $set to update the specified fields
+        { new: true }
+      );
+      const agentEmails = await User.find({ _id: { $in: agentIds } }, 'email');
+      const agentEmailList = agentEmails.map((agent) => agent.email);
+      const options = {
+        to: agentEmailList,
+        subject: 'New Project Assigned ✔',
+        template: 'ASSIGN-PROJECT',
+        projectName: updatedProject.projectName,
+        projectDescription: updatedProject.projectDescription,
+        user,
+      };
+
+      await sendEmailNotify(options);
+
+      for (const agentId of agentIds) {
+        const newConversation = new Conversation({
+          members: [agentId, contractorId],
+          projectId: projectId,
+        });
+
+        await newConversation.save();
+      }
+
+      res.status(200).json({ updatedProject, agent: user });
+    } catch (error) {
+      console.error('Error assigning the project:', error);
+      res.status(500).json({ error: 'Error assigning the project' });
+    }
+  })
+);
 projectRouter.post(
   '/admin/addproject',
   isAuth,
@@ -64,11 +132,7 @@ projectRouter.post(
       const agentIds = assignedAgent.map((agent) => agent.agentId);
       console.log('agentIds', agentIds);
       const user = await User.findById(contractorId, 'first_name email');
-      const agentuser = await User.findById(
-        assignedAgent,
-        '_id first_name email'
-      );
-      const category = await Category.findById(categoryId);
+
 
       if (userRole === 'admin' || userRole === 'superadmin') {
         const newProject = new Project({
@@ -107,10 +171,9 @@ projectRouter.post(
           user,
         };
         await sendEmailNotify(options);
-
-        if (project.assignedAgent) {
+        for (const agentId of agentIds) {
           const newConversation = new Conversation({
-            members: [user._id, updatedProject.projectOwner],
+            members: [agentId, contractorId],
             projectId: project._id,
           });
           await newConversation.save();
@@ -282,34 +345,29 @@ projectRouter.put(
         { new: true }
       );
 
-      const options = {
-        to: user.email,
-        subject: 'New Project Assigned ✔',
-        template: 'ASSIGN-PROJECT',
-        projectName: updatedProject.projectName,
-        projectDescription: updatedProject.projectDescription,
-        user,
-      };
-
-      await sendEmailNotify(options);
-
-      if (updatedProject.assignedAgent) {
-        const newConversation = new Conversation({
-          members: [user._id, updatedProject.projectOwner],
-          projectId: projectId,
-        });
-        await newConversation.save();
-      }
-
-      res.status(200).json({ updatedProject, agent: user });
-    } catch (error) {
-      console.error('Error assigning the project:', error);
-      res.status(500).json({ error: 'Error assigning the project' });
-    }
-  })
-);
-
-// ...................delete project......................
+//       const options = {
+//         to: user.email,
+//         subject: 'New Project Create ✔',
+//         template: 'CREATE-PROJECT',
+//         projectName: updatedProject.projectName,
+//         projectDescription: updatedProject.projectDescription,
+//         user,
+//       };
+//       await sendEmailNotify(options);
+//       if (updatedProject.assignedAgent) {
+//         const newConversation = new Conversation({
+//           members: [user._id, updatedProject.projectOwner],
+//           projectId: projectId,
+//         });
+//         await newConversation.save();
+//       }
+//       res.status(200).json({ updatedProject, agent: user });
+//     } catch (error) {
+//       console.error('Error assigning the project:', error);
+//       res.status(500).json({ error: 'Error assigning the project' });
+//     }
+//   })
+// );
 
 projectRouter.delete(
   '/:id',
@@ -365,5 +423,114 @@ projectRouter.get(
     }
   })
 );
+
+// gaytri
+
+// projectRouter.post(
+//   '/assign-project/:id',
+//   isAuth,
+//   isAdminOrSelf,
+//   expressAsyncHandler(async (req, res) => {
+//     try {
+//       const projectId = req.params.id;
+//       const agentId = req.body.agentId;
+//       const categoryId = req.body.categoryId;
+//       const category = await Category.findById(categoryId);
+
+//       const user = await User.findById(agentId, '_id first_name email');
+//       const updatedProject = await Project.findByIdAndUpdate(
+//         projectId,
+//         {
+//           $push: {
+//             assignedAgent: {
+//               agentId: agentId,
+//               agentName: user.first_name,
+//               categoryId: categoryId,
+//               categoryName: category.categoryName,
+//             },
+//           },
+//         },
+//         { new: true }
+//       );
+
+//       const options = {
+//         to: user.email,
+//         subject: 'New Project Create ✔',
+//         template: 'CREATE-PROJECT',
+//         projectName: updatedProject.projectName,
+//         projectDescription: updatedProject.projectDescription,
+//         user,
+//       };
+//       await sendEmailNotify(options);
+//       if (updatedProject.assignedAgent) {
+//         const newConversation = new Conversation({
+//           members: [user._id, updatedProject.projectOwner],
+//           projectId: projectId,
+//         });
+//         await newConversation.save();
+//       }
+//       res.status(200).json({ updatedProject, agent: user });
+//     } catch (error) {
+//       console.error('Error assigning the project:', error);
+//       res.status(500).json({ error: 'Error assigning the project' });
+//     }
+//   })
+// );
+
+
+projectRouter.post(
+  '/assign-project/:id',
+  isAuth,
+  isAdminOrSelf,
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const projectId = req.params.id;
+      const agent = req.body.assignedAgent;
+      const contractorId = req.body.projectOwner;
+      // const categoryId = req.body.categoryId;
+      // const category = await Category.findById(categoryId);
+      const agentIds = agent.map((agent) => agent.agentId);
+      // const user = await User.findById(agentId, '_id first_name email');
+      const updatedProject = await Project.findByIdAndUpdate(
+        projectId,
+        {
+          assignedAgent: agent
+        },
+
+        { new: true }
+      );
+      console.log(updatedProject)
+      const agentEmails = await User.find({ _id: { $in: agentIds } }, 'email');
+      const agentEmailList = agentEmails.map((agent) => agent.email);
+      const options = {
+        to: agentEmailList,
+        subject: 'New Project Create ✔',
+        template: 'CREATE-PROJECT',
+        projectName: updatedProject.projectName,
+        projectDescription: updatedProject.projectDescription,
+        agentEmailList,
+      };
+      await sendEmailNotify(options);
+      for (const agentId of agentIds) {
+        const newConversation = new Conversation({
+          members: [agentId, contractorId],
+          projectId: projectId,
+        });
+        await newConversation.save();
+        console.log(newConversation)
+      }
+
+      res.status(200).json({ updatedProject, agent: agentIds });
+
+    } catch (error) {
+      console.error('Error assigning the project:', error);
+      res.status(500).json({ error: 'Error assigning the project' });
+    }
+  })
+);
+
+
+
+
 
 export default projectRouter;
