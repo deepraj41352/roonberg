@@ -86,10 +86,7 @@ export default function AdminAgentListScreen() {
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
   const [status, setStatus] = useState();
-  const [password, setPassword] = useState('');
   const [password, setPassword] = useState('');
   const [selectcategory, setSelectCategory] = useState();
   console.log('name', name);

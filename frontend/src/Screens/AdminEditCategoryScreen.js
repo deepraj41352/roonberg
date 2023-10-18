@@ -119,6 +119,7 @@ function AdminEditCategory() {
   };
 
   const handleFileChange = (e) => {
+    setSelectedFile(categoryData.categoryImage);
     const file = e.target.files[0];
     setSelectedFile(file);
   };

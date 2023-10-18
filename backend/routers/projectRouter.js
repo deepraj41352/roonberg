@@ -17,7 +17,7 @@ projectRouter.get(
   isAuth,
   expressAsyncHandler(async (req, res) => {
     try {
-      // Check user's role and determine which projects to retrieve 
+      // Check user's role and determine which projects to retrieve
       const userRole = req.user.role; // Replace with the actual way you get the user's role
 
       if (userRole === 'admin' || userRole === 'superadmin') {
@@ -61,7 +61,7 @@ projectRouter.put(
       const contractorId = req.body.projectOwner;
       const assignedAgent = req.body.assignedAgent;
       const agentIds = assignedAgent.map((agent) => agent.agentId);
-      console.log("agentIds", agentIds);
+      console.log('agentIds', agentIds);
       const user = await User.findById(contractorId, 'first_name email');
 
       // const projectId = req.params.id;
@@ -71,7 +71,6 @@ projectRouter.put(
       // const user = await User.findById(agentId, '_id first_name email');
 
       const updateFields = {
-
         assignedAgent,
 
         projectName: req.body.projectName,
@@ -82,7 +81,7 @@ projectRouter.put(
         projectStatus: req.body.projectStatus,
         projectOwner: contractorId,
       };
-      console.log("updateFields", updateFields)
+      console.log('updateFields', updateFields);
 
       const updatedProject = await Project.findByIdAndUpdate(
         projectId,
@@ -132,7 +131,6 @@ projectRouter.post(
       const agentIds = assignedAgent.map((agent) => agent.agentId);
       console.log('agentIds', agentIds);
       const user = await User.findById(contractorId, 'first_name email');
-
 
       if (userRole === 'admin' || userRole === 'superadmin') {
         const newProject = new Project({
@@ -315,36 +313,6 @@ projectRouter.post(
 
 // update and assign project
 
-projectRouter.put(
-  '/assign-update/:id',
-  isAuth,
-  isAdminOrSelf,
-  expressAsyncHandler(async (req, res) => {
-    try {
-      if (req.user.role !== 'admin') {
-        return res.status(403).json({ error: 'Access denied' });
-      }
-
-      const projectId = req.params.id;
-      const agentId = req.body.agentId;
-      const categoryId = req.body.categoryId;
-      const category = await Category.findById(categoryId);
-      const user = await User.findById(agentId, '_id first_name email');
-      const updatedProject = await Project.findByIdAndUpdate(
-        projectId,
-        {
-          $push: {
-            assignedAgent: {
-              agentId: agentId,
-              agentName: user.first_name,
-              categoryId: categoryId,
-              categoryName: category.categoryName,
-            },
-          },
-        },
-        { new: true }
-      );
-
 //       const options = {
 //         to: user.email,
 //         subject: 'New Project Create ✔',
@@ -477,7 +445,6 @@ projectRouter.get(
 //   })
 // );
 
-
 projectRouter.post(
   '/assign-project/:id',
   isAuth,
@@ -494,12 +461,12 @@ projectRouter.post(
       const updatedProject = await Project.findByIdAndUpdate(
         projectId,
         {
-          assignedAgent: agent
+          assignedAgent: agent,
         },
 
         { new: true }
       );
-      console.log(updatedProject)
+      console.log(updatedProject);
       const agentEmails = await User.find({ _id: { $in: agentIds } }, 'email');
       const agentEmailList = agentEmails.map((agent) => agent.email);
       const options = {
@@ -517,20 +484,15 @@ projectRouter.post(
           projectId: projectId,
         });
         await newConversation.save();
-        console.log(newConversation)
+        console.log(newConversation);
       }
 
       res.status(200).json({ updatedProject, agent: agentIds });
-
     } catch (error) {
       console.error('Error assigning the project:', error);
       res.status(500).json({ error: 'Error assigning the project' });
     }
   })
 );
-
-
-
-
 
 export default projectRouter;
