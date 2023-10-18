@@ -105,21 +105,6 @@ export default function ContractorProjectScreen() {
   const [endDate, setEndDate] = useState();
   const [selectedOptions, setSelectedOptions] = useState([]);
 
-  // const handleEdit = (userid) => {
-  //   const constractorToEdit = projectData.find(
-  //     (constractor) => constractor && constractor._id === userid
-  //   );
-  //   setProjectName(constractorToEdit ? constractorToEdit.projectName : '');
-  //   setProjectDescription(
-  //     constractorToEdit ? constractorToEdit.projectDescription : ''
-  //   );
-  //   setProjectOwner(constractorToEdit ? constractorToEdit.projectOwner : '');
-  //   setAssignedAgent(constractorToEdit ? constractorToEdit.assignedAgent : '');
-  //   setSelectedRowData(constractorToEdit);
-  //   setIsModelOpen(true);
-  //   setIsNewProject(false);
-  // };
-
   const handleCloseRow = () => {
     setIsModelOpen(false);
   };
@@ -419,19 +404,6 @@ export default function ContractorProjectScreen() {
                         multiple
                         value={selectedOptions}
                         onChange={handleChange}
-                        // renderValue={(selected) => (
-                        //   <div>
-                        //     {categoryData && selected
-                        //       ? selected.map((value) => (
-                        //           <span key={value}>
-                        //             {categoryData.find(
-                        //               (option) => option._id === value
-                        //             ).categoryName + ','}
-                        //           </span>
-                        //         ))
-                        //       : ''}
-                        //   </div>
-                        // )}
                       >
                         {categoryData &&
                           categoryData.map((option) => (

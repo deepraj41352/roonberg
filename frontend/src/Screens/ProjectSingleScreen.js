@@ -50,6 +50,18 @@ function ProjectSingleScreen() {
     categoryData: {},
     successUpdate: false,
   });
+  const [conversations, setConversation] = useState([]);
+  useEffect(() => {
+    const getConversations = async () => {
+      try {
+        const res = await axios.get(`/api/conversation/${id}`);
+        setConversation(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getConversations();
+  }, []);
   // const [conversations, setConversation] = useState([]);
   // useEffect(() => {
   //   const getConversations = async () => {
@@ -91,9 +103,10 @@ function ProjectSingleScreen() {
         console.error('Error fetching project data:', error);
       }
     };
+
     fetchProjectData();
   }, []);
-  console.log('project== datass', projectData);
+
   useEffect(() => {
     const fetchCategoryData = async () => {
       try {

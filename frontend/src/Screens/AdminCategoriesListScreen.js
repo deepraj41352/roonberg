@@ -1,6 +1,13 @@
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
-import { Button, Grid, InputLabel, MenuItem, Select } from '@mui/material';
+import {
+  Avatar,
+  Button,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+} from '@mui/material';
 import { AiFillDelete } from 'react-icons/ai';
 import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
@@ -8,11 +15,11 @@ import TextField from '@mui/material/TextField';
 import { Form, FormControl } from 'react-bootstrap';
 import { BiPlusMedical } from 'react-icons/bi';
 import { Store } from '../Store';
-import Avatar from '@mui/material/Avatar';
 import { useContext, useEffect, useReducer, useState } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import AvatarImage from '../Components/Avatar';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -58,9 +65,25 @@ const columns = [
     headerName: 'Image',
     width: 100,
     renderCell: (params) => {
+      function generateColorFromAscii(str) {
+        let color = '#';
+        const combination = str
+          .split('')
+          .map((char) => char.charCodeAt(0))
+          .reduce((acc, value) => acc + value, 0);
+        color += (combination * 12345).toString(16).slice(0, 6);
+        return color;
+      }
+
+      const name = params.row.categoryName[0].toLowerCase();
+      const color = generateColorFromAscii(name);
       return (
         <>
-          <Avatar src={params.formattedValue} />
+          {params.row.categoryImage !== 'null' ? (
+            <Avatar src={params.row.categoryImage} />
+          ) : (
+            <AvatarImage name={name} bgColor={color} />
+          )}
         </>
       );
     },
@@ -131,7 +154,8 @@ export default function AdminContractorListScreen() {
             categoryName: items.categoryName,
             categoryDescription: items.categoryDescription,
             categoryImage: items.categoryImage,
-            categoryStatus: items.categoryStatus,
+            categoryStatus:
+              items.categoryStatus == true ? 'Active' : 'Inactive',
           };
         });
 

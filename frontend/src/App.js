@@ -51,6 +51,7 @@ import AdminEditContractor from './Screens/AdminEditContractorScreen';
 import ContractorProject from './Contractor/ContractorProjectListScreen';
 import ContractorEditProject from './Contractor/ContractorEditProjectScreen';
 import AgentProjectList from './Agent/AgentProjectListScreen';
+import AdminAssignAgent from './Screens/AdminAssignAgentScreen';
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -282,6 +283,11 @@ function App() {
                     <Route
                       path="/adminEditContractor/:id"
                       element={<AdminEditContractor />}
+                    />
+
+                    <Route
+                      path="/AdminAssignAgent/:id"
+                      element={<AdminAssignAgent />}
                     />
                     {/* Contractor */}
                     <Route

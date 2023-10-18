@@ -85,24 +85,24 @@ function AdminEditContractor() {
   const submitHandler = async (e) => {
     e.preventDefault();
     setIsSubmiting(true);
-    const formDatas = new FormData();
-
-    formDatas.append('first_name', firstName);
-    formDatas.append('last_name', lastName);
-    formDatas.append('email', email);
-    formDatas.append('status', status);
-
     try {
-      const data = await axios.put(`/api/user/update/${id}`, formDatas, {
-        headers: {
-          'content-type': 'multipart/form-data',
-
-          authorization: `Bearer ${userInfo.token}`,
+      const data = await axios.put(
+        `/api/user/update/${id}`,
+        {
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          userStatus: status,
         },
-      });
+        {
+          headers: {
+            authorization: `Bearer ${userInfo.token}`,
+          },
+        }
+      );
       dispatch({ type: 'UPDATE_SUCCESS' });
       toast.success(data.data);
-      navigate('/adminEditContractor');
+      navigate('/adminContractorList');
     } catch (err) {
       toast.error(err.response?.data?.message);
     } finally {
@@ -155,6 +155,7 @@ function AdminEditContractor() {
                       type="email"
                       value={email}
                       required
+                      disabled
                     />
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="formBasicPassword">
@@ -169,7 +170,7 @@ function AdminEditContractor() {
                     </Form.Select>
                   </Form.Group>
 
-                  <div className="d-flex justify-content-center mt-4">
+                  <div className="d-flex justify-content-left mt-4">
                     <Button
                       className=" py-1 w-25 globalbtnColor"
                       variant="primary"

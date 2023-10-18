@@ -80,7 +80,7 @@ function AdminEditAgent() {
 
   // State variable to hold the selected status
   const [status, setStatus] = useState('');
-
+  const [category, setCategory] = useState('');
   // useEffect to update the status when the API data changes
 
   useEffect(() => {
@@ -93,8 +93,7 @@ function AdminEditAgent() {
         setLastName(datas.last_name || 'Last Name');
         setEmail(datas.email);
         setStatus(datas.userStatus);
-
-        setStatus(datas.categoryStatus);
+        setCategory(datas.agentCategory);
       } catch (error) {
         toast.error(error.response?.data?.message);
       }
@@ -148,21 +147,22 @@ function AdminEditAgent() {
   const submitHandler = async (e) => {
     e.preventDefault();
     setIsSubmiting(true);
-    const formDatas = new FormData();
-
-    // formDatas.append("categoryImage", selectedFile);
-    formDatas.append('first_name', firstName);
-    formDatas.append('last_name', lastName);
-    formDatas.append('email', email);
-    formDatas.append('status', status);
-
     try {
-      const data = await axios.put(`/api/user/update/${id}`, formDatas, {
-        headers: {
-          authorization: `Bearer ${userInfo.token}`,
+      const data = await axios.put(
+        `/api/user/update/${id}`,
+        {
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          userStatus: status,
+          agentCategory: category,
         },
-      });
-      console.log('data', data);
+        {
+          headers: {
+            authorization: `Bearer ${userInfo.token}`,
+          },
+        }
+      );
       dispatch({ type: 'UPDATE_SUCCESS' });
       toast.success(data.data);
       console.log(data);
@@ -218,6 +218,7 @@ function AdminEditAgent() {
                       type="email"
                       value={email}
                       required
+                      disabled
                     />
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="formBasicPassword">

@@ -85,9 +85,9 @@ export default function AdminAgentListScreen() {
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState(false);
+  const [status, setStatus] = useState();
   const [password, setPassword] = useState('');
-  const [selectcategory, setSelectCategory] = useState('');
+  const [selectcategory, setSelectCategory] = useState();
 
   const [
     {
@@ -346,11 +346,12 @@ export default function AdminAgentListScreen() {
                 />
 
                 <FormControl>
-                  <InputLabel>Choose Options</InputLabel>
+                  <InputLabel>Choose Status</InputLabel>
                   <Select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
                   >
+                    <MenuItem value="">SELECT STATUS</MenuItem>
                     <MenuItem value={true}>Active</MenuItem>
                     <MenuItem value={false}>Inactive</MenuItem>
                   </Select>
@@ -361,7 +362,6 @@ export default function AdminAgentListScreen() {
                     value={selectcategory}
                     onChange={(e) => setSelectCategory(e.target.value)}
                   >
-                    <MenuItem>Select Category</MenuItem>
                     {categoryData.map((items) => (
                       <MenuItem key={items._id} value={items._id}>
                         {items.categoryName}

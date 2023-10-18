@@ -267,28 +267,18 @@ projectRouter.put(
       const categoryId = req.body.categoryId;
       const category = await Category.findById(categoryId);
       const user = await User.findById(agentId, '_id first_name email');
-
-      const updateFields = {
-        $push: {
-          assignedAgent: {
-            agentId: agentId,
-            agentName: user.first_name,
-            categoryId: categoryId,
-            categoryName: category.categoryName,
-          },
-        },
-        projectName: req.body.projectName,
-        projectDescription: req.body.projectDescription,
-        projectCategory: req.body.projectCategory,
-        createdDate: req.body.createdDate,
-        endDate: req.body.endDate,
-        projectStatus: req.body.projectStatus,
-        projectOwner: contractorId,
-      };
-
       const updatedProject = await Project.findByIdAndUpdate(
         projectId,
-        { $set: updateFields }, // Use $set to update the specified fields
+        {
+          $push: {
+            assignedAgent: {
+              agentId: agentId,
+              agentName: user.first_name,
+              categoryId: categoryId,
+              categoryName: category.categoryName,
+            },
+          },
+        },
         { new: true }
       );
 
@@ -344,7 +334,8 @@ projectRouter.put(
   expressAsyncHandler(async (req, res) => {
     try {
       const project = await Project.findById(req.params.id);
-      await project.updateOne({ $set: req.body });
+      const dataprojectupdate = await project.updateOne({ $set: req.body });
+      console.log('dataprojectupdate', dataprojectupdate);
       res.status(200).json('update successfully');
     } catch (err) {
       res.status(500).json({

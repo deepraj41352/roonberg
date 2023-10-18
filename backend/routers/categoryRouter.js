@@ -102,4 +102,34 @@ categoryRouter.put(
   })
 );
 
+categoryRouter.put(
+  '/CategoryUpdate/:id',
+  isAuth,
+  upload.single('file'),
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const categorydata = await Category.findById(req.params.id);
+      if (categorydata) {
+        if (req.file) {
+          const categoryImage = await uploadDoc(req);
+          req.body.categoryImage = categoryImage;
+        }
+        const updatedCat = await Category.findOneAndUpdate(
+          { _id: req.params.id },
+          { $set: req.body },
+          { new: true }
+        );
+
+        res.send({
+          updatedCat,
+        });
+      } else {
+        res.status(404).send({ message: 'Category not found' });
+      }
+    } catch (error) {
+      console.log('Error ', error);
+    }
+  })
+);
+
 export default categoryRouter;
