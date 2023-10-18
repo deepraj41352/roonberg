@@ -133,7 +133,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
         </Link>
         {userInfo.role == 'contractor' ? (
           <>
-            <Link to="/contractorProjectList" className="text-decoration-none">
+            <Link to="/project-list-screen" className="text-decoration-none">
               <li>
                 <AiOutlineProject className="me-3 fs-5" />
                 Project List

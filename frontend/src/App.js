@@ -48,10 +48,10 @@ import AdminEditCategory from './Screens/AdminEditCategoryScreen';
 import AdminEditAgent from './Screens/AdminEditAgentScreen';
 import AdminEditProject from './Screens/AdminEditProjectScreen';
 import AdminEditContractor from './Screens/AdminEditContractorScreen';
-import ContractorProject from './Contractor/ContractorProjectListScreen';
 import ContractorEditProject from './Contractor/ContractorEditProjectScreen';
 import AgentProjectList from './Agent/AgentProjectListScreen';
 import AdminAssignAgent from './Screens/AdminAssignAgentScreen';
+import ContractorProjectScreen from './Components/Contractor/contractorProjectScreen';
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -182,6 +182,7 @@ function App() {
               )}
               <main>
                 <div>
+                  oject
                   <Routes>
                     <Route path="/" element={<SignUpForm />} />
                     <Route
@@ -291,8 +292,8 @@ function App() {
                     />
                     {/* Contractor */}
                     <Route
-                      path="/contractorProjectList"
-                      element={<ContractorProject />}
+                      path="/project-list-screen"
+                      element={<ContractorProjectScreen />}
                     />
 
                     <Route

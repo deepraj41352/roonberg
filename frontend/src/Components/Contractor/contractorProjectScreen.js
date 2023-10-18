@@ -13,7 +13,7 @@ import { ThreeDots } from 'react-loader-spinner';
 import Tabs from 'react-bootstrap/Tabs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateField } from '@mui/x-date-pickers/DateField';
+import { DateField, DatePicker } from '@mui/x-date-pickers';
 import {
   FormControl,
   InputLabel,
@@ -24,6 +24,7 @@ import {
 import { Link } from 'react-router-dom';
 import { useContext, useEffect, useReducer, useState } from 'react';
 import { Store } from '../../Store';
+import dayjs from 'dayjs';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -103,6 +104,8 @@ export default function ContractorProjectScreen() {
 
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
+  const [startDateError, setStartDateError] = useState('');
+  const [endDateError, setEndDateError] = useState('');
   const [selectedOptions, setSelectedOptions] = useState([]);
 
   const handleCloseRow = () => {
@@ -267,6 +270,38 @@ export default function ContractorProjectScreen() {
     setSelectedOptions(event.target.value);
   };
 
+  const currentDate = dayjs();
+
+  const validateDates = (newStartDate, newEndDate) => {
+    const selectedStartDate = dayjs(newStartDate);
+    const selectedEndDate = dayjs(newEndDate);
+
+    if (
+      selectedStartDate.isAfter(currentDate, 'day') ||
+      selectedStartDate.isSame(currentDate, 'day')
+    ) {
+      setStartDate(newStartDate);
+      setStartDateError('');
+
+      if (newEndDate) {
+        if (
+          selectedEndDate.isAfter(selectedStartDate, 'day') ||
+          selectedEndDate.isSame(selectedStartDate, 'day')
+        ) {
+          setEndDate(newEndDate);
+          setEndDateError('');
+        } else {
+          setEndDateError(
+            'End date must be greater than or equal to the Start Date.'
+          );
+        }
+      }
+    } else {
+      setStartDateError(
+        'Start date must be greater than or equal to the current date.'
+      );
+    }
+  };
   return (
     <>
       <Button
@@ -419,22 +454,40 @@ export default function ContractorProjectScreen() {
                         required
                         label="Start Date"
                         value={startDate}
-                        onChange={(newValue) => setStartDate(newValue)}
+                        onChange={(newValue) =>
+                          validateDates(newValue, endDate)
+                        }
                         format="MM-DD-YYYY"
+                        renderInput={(params) => (
+                          <DatePicker
+                            {...params}
+                            inputFormat="MM-DD-YYYY"
+                            allowKeyboardControl
+                            clearable
+                          />
+                        )}
                       />
+                      {startDateError && (
+                        <div style={{ color: 'red' }}>{startDateError}</div>
+                      )}
                       <DateField
                         required
                         label="End Date"
                         value={endDate}
-                        onChange={(newValue) => setEndDate(newValue)}
+                        onChange={(newValue) =>
+                          validateDates(startDate, newValue)
+                        }
                         format="MM-DD-YYYY"
                       />
+                      {endDateError && (
+                        <div style={{ color: 'red' }}>{endDateError}</div>
+                      )}
                     </LocalizationProvider>
                     <Button
                       variant="contained"
                       color="primary"
                       type="submit"
-                      disabled={isSubmiting}
+                      disabled={startDateError || endDateError || isSubmiting}
                     >
                       {isNewProject
                         ? isSubmiting
