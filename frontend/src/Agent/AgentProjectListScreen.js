@@ -1,7 +1,8 @@
+import * as React from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 import { Grid } from '@mui/material';
-import { AiFillDelete } from 'react-icons/ai';
+// import { AiFillDelete } from "react-icons/ai";
 import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
@@ -13,9 +14,21 @@ import { toast } from 'react-toastify';
 import Tab from 'react-bootstrap/Tab';
 import { ThreeDots } from 'react-loader-spinner';
 import Tabs from 'react-bootstrap/Tabs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateField } from '@mui/x-date-pickers/DateField';
+import { ImCross } from 'react-icons/im';
 import { Link, useNavigate } from 'react-router-dom';
-import { useContext, useEffect, useReducer, useState } from 'react';
+
 import { GrSubtractCircle, GrAddCircle } from 'react-icons/gr';
+import { useContext, useEffect, useReducer, useState } from 'react';
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Button,
+} from '@mui/material';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -79,10 +92,12 @@ const columns = [
 ];
 
 export default function AgentProjectList() {
-  const [isModelOpen, setIsModelOpen] = useState(false);
-  const [isNewProject, setIsNewProject] = useState(false);
-  const [isSubmiting, setIsSubmiting] = useState(false);
-  const { state } = useContext(Store);
+  const [isModelOpen, setIsModelOpen] = React.useState(false);
+  const [selectedRowData, setSelectedRowData] = React.useState(null);
+  const [isNewProject, setIsNewProject] = React.useState(false);
+  const [isSubmiting, setIsSubmiting] = React.useState(false);
+
+  const { state } = React.useContext(Store);
   const { toggleState, userInfo } = state;
   const theme = toggleState ? 'dark' : 'light';
   const [
@@ -178,7 +193,7 @@ export default function AgentProjectList() {
       }
     };
     FatchProjectData();
-  }, []);
+  }, [contractorData]);
 
   const projectActiveData = projectData.filter((item) => {
     return item.projectStatus === 'active';
@@ -192,114 +207,138 @@ export default function AgentProjectList() {
 
   return (
     <>
-      {loading ? (
-        <>
-          <div className="ThreeDot">
-            <ThreeDots
-              height="80"
-              width="80"
-              radius="9"
-              className="ThreeDot justify-content-center"
-              color="#0e0e3d"
-              ariaLabel="three-dots-loading"
-              wrapperStyle={{}}
-              wrapperClassName=""
-              visible={true}
-            />
-          </div>
-        </>
-      ) : error ? (
-        <div>{error}</div>
-      ) : (
-        <>
-          <Tabs
-            defaultActiveKey="All"
-            id="uncontrolled-tab-example"
-            className="mb-3 mt-4 ps-4 gap-5 tab-btn"
-          >
-            <Tab className="tab-color" eventKey="All" title="All">
-              <Box sx={{ height: 400, width: '100%' }}>
-                <DataGrid
-                  className={`tableBg mx-2 ${theme}DataGrid`}
-                  rows={projectData}
-                  columns={[columns]}
-                  getRowId={(row) => row._id}
-                  initialState={{
-                    pagination: {
-                      paginationModel: {
-                        pageSize: 5,
-                      },
-                    },
-                  }}
-                  pageSizeOptions={[5]}
-                  checkboxSelection
-                  disableRowSelectionOnClick
-                />
-              </Box>
-            </Tab>
-            <Tab className="tab-color" eventKey="Active" title="Active">
-              <Box sx={{ height: 400, width: '100%' }}>
-                <DataGrid
-                  className={`tableBg mx-2 ${theme}DataGrid`}
-                  rows={projectActiveData}
-                  columns={[...columns]}
-                  getRowId={(row) => row._id}
-                  initialState={{
-                    pagination: {
-                      paginationModel: {
-                        pageSize: 5,
-                      },
-                    },
-                  }}
-                  pageSizeOptions={[5]}
-                  checkboxSelection
-                  disableRowSelectionOnClick
-                />
-              </Box>
-            </Tab>
-            <Tab className="tab-color" eventKey="Completed" title="Completed">
-              <Box sx={{ height: 400, width: '100%' }}>
-                <DataGrid
-                  className={`tableBg mx-2 ${theme}DataGrid`}
-                  rows={projectCompleteData}
-                  columns={[...columns]}
-                  getRowId={(row) => row._id}
-                  initialState={{
-                    pagination: {
-                      paginationModel: {
-                        pageSize: 5,
-                      },
-                    },
-                  }}
-                  pageSizeOptions={[5]}
-                  checkboxSelection
-                  disableRowSelectionOnClick
-                />
-              </Box>
-            </Tab>
-            <Tab className="tab-color" eventKey="Qued" title="Qued">
-              <Box sx={{ height: 400, width: '100%' }}>
-                <DataGrid
-                  className={`tableBg mx-2 ${theme}DataGrid`}
-                  rows={projectQuedData}
-                  columns={[...columns]}
-                  getRowId={(row) => row._id}
-                  initialState={{
-                    pagination: {
-                      paginationModel: {
-                        pageSize: 5,
-                      },
-                    },
-                  }}
-                  pageSizeOptions={[5]}
-                  checkboxSelection
-                  disableRowSelectionOnClick
-                />
-              </Box>
-            </Tab>
-          </Tabs>
-        </>
-      )}
+      <div className="px-4 mt-3">
+        {loading ? (
+          <>
+            <div className="ThreeDot">
+              <ThreeDots
+                height="80"
+                width="80"
+                radius="9"
+                className="ThreeDot justify-content-center"
+                color="#0e0e3d"
+                ariaLabel="three-dots-loading"
+                wrapperStyle={{}}
+                wrapperClassName=""
+                visible={true}
+              />
+            </div>
+          </>
+        ) : error ? (
+          <div>{error}</div>
+        ) : (
+          <>
+            <div className="tabBorder mt-3">
+              <Tabs
+                defaultActiveKey="All"
+                id="uncontrolled-tab-example"
+                className={`mb-0  tab-btn ${theme}Tab`}
+              >
+                <Tab className="tab-color" eventKey="All" title="All">
+                  <Box sx={{ height: 400, width: '100%' }}>
+                    <DataGrid
+                      className={
+                        theme == 'light'
+                          ? `${theme}DataGrid`
+                          : `tableBg ${theme}DataGrid`
+                      }
+                      rows={projectData}
+                      columns={[...columns]}
+                      getRowId={(row) => row._id}
+                      initialState={{
+                        pagination: {
+                          paginationModel: {
+                            pageSize: 5,
+                          },
+                        },
+                      }}
+                      pageSizeOptions={[5]}
+                      checkboxSelection
+                      disableRowSelectionOnClick
+                    />
+                  </Box>
+                </Tab>
+                <Tab className="tab-color" eventKey="Active" title="Active">
+                  <Box sx={{ height: 400, width: '100%' }}>
+                    <DataGrid
+                      className={
+                        theme == 'light'
+                          ? `${theme}DataGrid`
+                          : `tableBg ${theme}DataGrid`
+                      }
+                      rows={projectActiveData}
+                      columns={[...columns]}
+                      getRowId={(row) => row._id}
+                      initialState={{
+                        pagination: {
+                          paginationModel: {
+                            pageSize: 5,
+                          },
+                        },
+                      }}
+                      pageSizeOptions={[5]}
+                      checkboxSelection
+                      disableRowSelectionOnClick
+                    />
+                  </Box>
+                </Tab>
+                <Tab
+                  className="tab-color"
+                  eventKey="Completed"
+                  title="Completed"
+                >
+                  <Box sx={{ height: 400, width: '100%' }}>
+                    <DataGrid
+                      className={
+                        theme == 'light'
+                          ? `${theme}DataGrid`
+                          : `tableBg ${theme}DataGrid`
+                      }
+                      rows={projectCompleteData}
+                      columns={[...columns]}
+                      getRowId={(row) => row._id}
+                      initialState={{
+                        pagination: {
+                          paginationModel: {
+                            pageSize: 5,
+                          },
+                        },
+                      }}
+                      pageSizeOptions={[5]}
+                      checkboxSelection
+                      disableRowSelectionOnClick
+                    />
+                  </Box>
+                </Tab>
+                <Tab className="tab-color" eventKey="Qued" title="Qued">
+                  <Box sx={{ height: 400, width: '100%' }}>
+                    <DataGrid
+                      className={
+                        theme == 'light'
+                          ? `${theme}DataGrid`
+                          : `tableBg ${theme}DataGrid`
+                      }
+                      rows={projectQuedData}
+                      columns={[...columns]}
+                      getRowId={(row) => row._id}
+                      initialState={{
+                        pagination: {
+                          paginationModel: {
+                            pageSize: 5,
+                          },
+                        },
+                      }}
+                      pageSizeOptions={[5]}
+                      checkboxSelection
+                      disableRowSelectionOnClick
+                    />
+                  </Box>
+                </Tab>
+              </Tabs>
+            </div>
+          </>
+        )}
+      </div>
     </>
   );
 }

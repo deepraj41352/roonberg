@@ -20,6 +20,7 @@ import AdminContractorListScreen from './Screens/AdminContractorListScreen';
 import SearchScreen from './Screens/SearchScreen';
 import ProjectSingleScreen from './Screens/ProjectSingleScreen';
 import ChatWindowScreen from './Screens/ChatWindowScreen';
+import AdminEditAgent from './Screens/AdminEditAgentScreen';
 import { useContext, useState } from 'react';
 import {
   Container,
@@ -45,13 +46,12 @@ import ProjectNotification from './Screens/ProjectNotification';
 import AddProject from './Screens/AddProject';
 import ChatScreen from './Screens/ChatScreen';
 import AdminEditCategory from './Screens/AdminEditCategoryScreen';
-import AdminEditAgent from './Screens/AdminEditAgentScreen';
 import AdminEditProject from './Screens/AdminEditProjectScreen';
 import AdminEditContractor from './Screens/AdminEditContractorScreen';
+import ContractorProject from './Contractor/ContractorProjectListScreen';
 import ContractorEditProject from './Contractor/ContractorEditProjectScreen';
 import AgentProjectList from './Agent/AgentProjectListScreen';
 import AdminAssignAgent from './Screens/AdminAssignAgentScreen';
-import ContractorProjectScreen from './Components/Contractor/contractorProjectScreen';
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -153,7 +153,7 @@ function App() {
                 </Navbar>
               ) : (
                 <Navbar expand="lg" className=" main-div">
-                  <Container>
+                  <Container className="loginPageNav">
                     <Navbar.Brand href="#home">
                       <Image className="border-0" src="./logo2.png" thumbnail />
                     </Navbar.Brand>
@@ -168,7 +168,7 @@ function App() {
                       <Nav className=" login-button">
                         <Nav className="login-nav ">
                           <Link className="login-admin" to="/registration">
-                            <BsFillPersonFill className="fs-5 Icon-person " />
+                            <BsFillPersonFill className="fs-5 Icon-person me-1 " />
                             Signup
                           </Link>
                           <Link className="login-admin" href="#link">

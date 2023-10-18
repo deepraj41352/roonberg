@@ -235,7 +235,11 @@ export default function AdminListScreen() {
             </Button>
             <Box sx={{ height: 400, width: "100%" }}>
               <DataGrid
-                className={`tableBg mx-2 ${theme}DataGrid`}
+                className={
+                  theme == "light"
+                    ? `${theme}DataGrid mx-2`
+                    : `tableBg ${theme}DataGrid mx-2`
+                }
                 rows={adminData}
                 columns={[
                   ...columns,
@@ -250,7 +254,7 @@ export default function AdminListScreen() {
                             variant="contained"
                             className="mx-2 tableEditbtn"
                             onClick={() => handleEdit(params.row._id)}
-                            startIcon={<MdEdit />}
+                            // startIcon={<MdEdit />}
                           >
                             Edit
                           </Button>
@@ -258,7 +262,7 @@ export default function AdminListScreen() {
                             variant="outlined"
                             className="mx-2 tableDeletebtn"
                             onClick={() => deleteHandle(params.row._id)}
-                            startIcon={<AiFillDelete />}
+                            // startIcon={<AiFillDelete />}
                           >
                             Delete
                           </Button>

@@ -3,6 +3,19 @@ const io = require('socket.io')(8900, {
     origin: 'http://localhost:3000',
   },
 });
+const fs = require('fs')
+const path = require('path');
+const express = require("express");
+const http = require("http");
+
+const app = express();
+const port = process.env.PORT || 4500;
+const server = http.createServer(app);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+server.listen(port, () => {
+  console.log(`Server is working on port ${port}`);
+});
 
 let users =[];
 
@@ -25,6 +38,41 @@ io.on("connection", (socket) => {
       addUser(userId,socket.id)
       io.emit("getUsers",users)
     })
+
+
+    socket.on('image', (data) => {
+      // const text = data.text;
+      const base64Image = data.image;
+      const senderId = getUser(data.senderId)
+      const user = getUser(data.receiverdId)
+if(user){
+  
+      if (base64Image) {
+        // Remove the data:image/jpeg;base64 prefix and convert to a Buffer
+        const imageBuffer = Buffer.from(base64Image.replace(/^data:image\/\w+;base64,/, ''), 'base64');
+  
+        const imageFileName = `uploads/${Date.now()}.jpeg`;
+  
+        fs.writeFile(imageFileName, imageBuffer, (err) => {
+          if (err) {
+            console.error(err);
+          } else {
+            // Broadcast the image URL to all clients
+            io.to(user.socketId).emit('image', { senderId:data.senderId, image: imageFileName });
+            io.to(senderId.socketId).emit('image', { senderId:data.senderId, image: imageFileName });
+          }
+        });
+      } else {
+        // Broadcast the text message to all clients
+        io.emit('message', { text });
+      }
+    }else{
+      console.log("karan sgarma")
+    }
+
+    });
+
+
 
     // send and get message 
 socket.on("sendMessage",({senderId,receiverdId,text})=>{

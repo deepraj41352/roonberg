@@ -99,7 +99,7 @@ body {
   width: 400px !important;
 }
 
-.tableBg,
+/* .tableBg, */
 .lightmodelBg {
   background-color: #abc1e0;
   color: #fff !important;
@@ -115,6 +115,7 @@ body {
 }
 .tableEditbtn {
   background-color: #8a9097 !important;
+  color: white !important;
 }
 
 .tableDeletebtn {
@@ -235,6 +236,12 @@ button {
 .tableBg input[type="checkbox"] {
   border-color: white !important;
   background-color: white !important;
+}
+.lightDataGrid .MuiButtonBase-root {
+  color: rgb(31, 30, 30) !important;
+}
+.darkDataGrid .MuiButtonBase-root {
+  color: white !important;
 }
 /* ---------Priyanshu-Start------------- */
 body {
@@ -584,12 +591,19 @@ body {
 }
 .lightTab {
   /* background-color: #8a9097; */
-  background-color: #3c3c5a;
+  background-color: #a3a7ad;
 }
 
-.nav-tabs .nav-link.active {
+.darkTab .nav-link.active {
   background-color: #0d0d32 !important;
   color: white !important;
+  border: none !important;
+  min-width: 100px;
+  border-radius: none !important;
+}
+.lightTab .nav-link.active {
+  background-color: #8a9097 !important;
+  color: black !important;
   border: none !important;
   min-width: 100px;
   border-radius: none !important;
@@ -644,6 +658,13 @@ body {
 .tabBorder {
   /* border: 2px solid #070719; */
 }
-.dis {
-  display: none;
+.tableEditbtn {
+  background-color: #8a9097 !important;
+  color: white;
+}
+.loginPageNav {
+  height: 50px;
+}
+.loginPage {
+  height: calc(100vh - 95px);
 }

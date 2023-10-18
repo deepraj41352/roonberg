@@ -89,7 +89,14 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
               </li>
             </Link>
             <Link to="/adminProjectList" className="text-decoration-none">
-              <li>
+              <li
+                className={
+                  selectedItem === 'ProjectListAdmin' ? 'selected' : ''
+                }
+                onClick={() => {
+                  setSelectedItem('ProjectListAdmin');
+                }}
+              >
                 <AiOutlineProject className="me-3 fs-5" />
                 Project List
               </li>
@@ -109,7 +116,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
           </li>
         </Link>
 
-        <Link to="/adminProjectList" className="text-decoration-none">
+        {/* <Link to="/adminProjectList" className="text-decoration-none">
           <li
             className={selectedItem === 'profileList' ? 'selected' : ''}
             onClick={() => {
@@ -119,7 +126,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
             <AiOutlineProject className="me-3 fs-5" />
             Project List
           </li>
-        </Link>
+        </Link> */}
         <Link to="/ChatScreen" className="text-decoration-none">
           <li
             className={selectedItem === 'chat' ? 'selected' : ''}
@@ -133,14 +140,24 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
         </Link>
         {userInfo.role == 'contractor' ? (
           <>
-            <Link to="/project-list-screen" className="text-decoration-none">
-              <li>
+            <Link to="/contractorProjectList" className="text-decoration-none">
+              <li
+                className={selectedItem === 'addProjects' ? 'selected' : ''}
+                onClick={() => {
+                  setSelectedItem('addProjects');
+                }}
+              >
                 <AiOutlineProject className="me-3 fs-5" />
                 Project List
               </li>
             </Link>
             <Link to="/add-project" className="text-decoration-none">
-              <li>
+              <li
+                className={selectedItem === 'addProject' ? 'selected' : ''}
+                onClick={() => {
+                  setSelectedItem('addProject');
+                }}
+              >
                 <AiFillHome className="me-3 fs-5" />
                 Add Project
               </li>
@@ -156,7 +173,14 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
               </li>
             </Link>
             <Link to="/projectNotification" className="text-decoration-none">
-              <li>
+              <li
+                className={
+                  selectedItem === 'projectNotification' ? 'selected' : ''
+                }
+                onClick={() => {
+                  setSelectedItem('projectNotification');
+                }}
+              >
                 <IoMdNotifications className="me-3 fs-5" />
                 Project Notification
               </li>

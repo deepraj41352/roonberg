@@ -2,17 +2,29 @@ import express from 'express';
 import Message from '../Models/messageModel.js';
 import { ObjectId } from 'mongodb';
 import mongoose from 'mongoose';
+import { uploadDoc } from './userRouter.js';
+import multer from 'multer';
 
 const MessageRouter = express.Router();
+const upload = multer();
+
 //add
 
-MessageRouter.post('/', async (req, res) => {
+MessageRouter.post('/', upload.single('image'), async (req, res) => {
   try {
-    const newMessage = new Message({
-      conversationId: req.body.conversationId,
-      sender: req.body.sender,
-      text: req.body.text,
-    });
+    if (req.file) {
+      const image = await uploadDoc(req);
+      req.body.image = image;
+
+      console.log('image', req.body.image);
+    }
+    const newMessage = new Message(
+      req.body
+      // conversationId: req.body.conversationId,
+      // sender: req.body.sender,
+      // text: req.body.text,
+      // image: image,
+    );
     console.log(newMessage.conversationId);
 
     const savedMessage = await newMessage.save();

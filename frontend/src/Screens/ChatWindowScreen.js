@@ -25,13 +25,21 @@ function ChatWindowScreen() {
   const [chatMessages, setChatMessages] = useState([]);
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [conversationID, setConversationID] = useState();
-  const [checkstate, setCheckstate] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedfile, setSelectedfile] = useState(null);
 
   const socket = useRef(io("ws://localhost:8900"));
   const scrollRef = useRef();
 
   useEffect(() => {
     socket.current = io("ws://localhost:8900");
+    socket.current.on("image", (data) => {
+      setArrivalMessage({
+        sender: data.senderId,
+        image: data.image,
+        createdAt: Date.now(),
+      });
+    });
     socket.current.on("getMessage", (data) => {
       setArrivalMessage({
         sender: data.senderId,
@@ -81,7 +89,7 @@ function ChatWindowScreen() {
   const showFontStyleBox = () => {
     setShowFontStyle(!showFontStyle);
   };
-  const [messages, setMessages] = useState([]);
+  // const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const handleSendMessage = () => {
     const messageObject = { text: newMessage, sender: userInfo._id };
@@ -94,23 +102,55 @@ function ChatWindowScreen() {
   const onChange = (value) => {
     setNewMessage(value);
   };
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedfile(file);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64Image = event.target.result;
+      setSelectedImage(base64Image);
+    };
+    reader.readAsDataURL(file);
+  };
 
+  console.log("selctedfile", selectedfile);
   const submitHandler = async (e) => {
     const receiverdId = conversationID.members.find(
       (member) => member !== userInfo._id
     );
-
-    socket.current.emit("sendMessage", {
-      senderId: userInfo._id,
-      receiverdId: receiverdId,
-      text: newMessage,
-    });
-    try {
-      const { data } = await axios.post("/api/message/", {
-        conversationId: id,
-        sender: userInfo._id,
+    if (selectedImage) {
+      const messageData = {
+        // text: newMessage,
+        senderId: userInfo._id,
+        receiverdId: receiverdId,
+        image: selectedImage,
+      };
+      socket.current.emit("image", messageData);
+      // setNewMessage('');
+      setSelectedImage(null);
+    } else {
+      socket.current.emit("sendMessage", {
+        senderId: userInfo._id,
+        receiverdId: receiverdId,
         text: newMessage,
       });
+    }
+
+    const formDatas = new FormData();
+
+    formDatas.append("image", selectedfile);
+    formDatas.append("conversationId", id);
+    formDatas.append("sender", userInfo._id);
+    formDatas.append("text", newMessage);
+
+    try {
+      const { data } = await axios.post(
+        "/api/message/",
+        // conversationId: id,
+        // sender: userInfo._id,
+        // text: newMessage,
+        formDatas
+      );
     } catch (err) {
       console.log(err.response?.data?.message);
     }
@@ -118,6 +158,8 @@ function ChatWindowScreen() {
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages, newMessage]);
+
+  console.log("selected image", selectedImage);
 
   return (
     <div className=" justify-content-center align-items-center">
@@ -129,39 +171,67 @@ function ChatWindowScreen() {
             {chatMessages.map((item) => (
               <>
                 {userInfo._id == item.sender ? (
-                  <div
-                    ref={scrollRef}
-                    className="chat-receiverMsg d-flex flex-column"
-                  >
-                    <p
-                      className="chat-receiverMsg-inner p-2"
-                      dangerouslySetInnerHTML={{ __html: item.text }}
-                    ></p>
-                    <div className="timeago">{format(item.createdAt)}</div>
-                  </div>
+                  <>
+                    {item.text ? (
+                      <div
+                        ref={scrollRef}
+                        className="chat-receiverMsg d-flex flex-column"
+                      >
+                        <p
+                          className="chat-receiverMsg-inner p-2"
+                          dangerouslySetInnerHTML={{ __html: item.text }}
+                        ></p>
+                        <div className="timeago">{format(item.createdAt)}</div>
+                      </div>
+                    ) : (
+                      <div
+                        ref={scrollRef}
+                        className="chat-receiverMsg d-flex flex-column"
+                      >
+                        <img
+                          src={
+                            item.conversationId
+                              ? item.image
+                              : `http://localhost:4500/${item.image}`
+                          }
+                          className="chat-receiverMsg-inner p-2"
+                        />
+                        <div className="timeago">{format(item.createdAt)}</div>
+                      </div>
+                    )}
+                  </>
                 ) : (
-                  <div
-                    ref={scrollRef}
-                    className="chat-senderMsg d-flex flex-column "
-                  >
-                    <p
-                      className="chat-senderMsg-inner p-2"
-                      dangerouslySetInnerHTML={{ __html: item.text }}
-                    ></p>
-                    <div className="timeago">{format(item.createdAt)}</div>
-                  </div>
+                  <>
+                    {item.text ? (
+                      <div
+                        ref={scrollRef}
+                        className="chat-senderMsg d-flex flex-column "
+                      >
+                        <p
+                          className="chat-senderMsg-inner p-2"
+                          dangerouslySetInnerHTML={{ __html: item.text }}
+                        ></p>
+                        <div className="timeago">{format(item.createdAt)}</div>
+                      </div>
+                    ) : (
+                      <div
+                        ref={scrollRef}
+                        className="chat-senderMsg d-flex flex-column "
+                      >
+                        <img
+                          src={
+                            item.conversationId
+                              ? item.image
+                              : `http://localhost:4500/${item.image}`
+                          }
+                          className="chat-senderMsg-inner p-2"
+                        />
+                        <div className="timeago">{format(item.createdAt)}</div>
+                      </div>
+                    )}
+                  </>
                 )}
               </>
-            ))}
-
-            {messages.map((message) => (
-              <div className="chat-receiverMsg">
-                {/* <p className="chat-receiverMsg-inner p-2">{message}</p> */}
-                <p
-                  className="chat-receiverMsg-inner p-2"
-                  dangerouslySetInnerHTML={{ __html: message }}
-                ></p>
-              </div>
             ))}
           </CardBody>
           <CardFooter className="d-flex align-items-center">
@@ -183,6 +253,8 @@ function ChatWindowScreen() {
                     onChange={onChange}
                   />
                 </div>
+                <Form.Control onChange={handleImageChange} type="file" />
+
                 <div className="d-flex justify-content-center align-items-center ps-2 ">
                   <RxFontStyle onClick={showFontStyleBox} />
                 </div>

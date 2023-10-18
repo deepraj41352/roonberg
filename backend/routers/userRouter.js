@@ -58,12 +58,17 @@ userRouter.put(
   expressAsyncHandler(async (req, res) => {
     try {
       const user = await User.findById(req.params.id);
-      console.log("user", user)
+      console.log("user", user);
       if (user._id == req.params.id) {
+<<<<<<<<< Temporary merge branch 1
+        await user.updateOne({ $set: req.body });
+        res.status(200).json("update successfully");
+=========
 
         const data = await user.updateOne({ $set: req.body });
         console.log("updateddata", data);
         res.status(200).json('update successfully');
+>>>>>>>>> Temporary merge branch 2
       } else {
         res.status(403).json('you can not update');
       }
@@ -576,7 +581,7 @@ userRouter.post(
 );
 // get single category
 userRouter.get(
-  '/:id',
+  "/:id",
   expressAsyncHandler(async (req, res) => {
     try {
       const user = await User.findById(req.params.id);
@@ -586,7 +591,7 @@ userRouter.get(
       res.json(user);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: 'Server error' });
+      res.status(500).json({ message: "Server error" });
     }
   })
 );

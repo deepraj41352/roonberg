@@ -41,7 +41,7 @@ const reducer = (state, action) => {
 
     case 'UPDATE_RESET':
       return { ...state, successUpdate: false };
-    case 'CATEGORY_CRATED_REQ':
+    case "CATEGORY_CRATED_REQ":
       return { ...state, isSubmiting: true };
     default:
       return state;
@@ -103,9 +103,9 @@ export default function AdminContractorListScreen() {
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [isNewCategory, setIsNewCategory] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [category, setCatogry] = useState('');
-  const [status, setStatus] = useState('');
-  const [categoryDesc, setCatogryDesc] = useState('');
+  const [category, setCatogry] = useState("");
+  const [status, setStatus] = useState("");
+  const [categoryDesc, setCatogryDesc] = useState("");
   const [
     { loading, error, categoryData, successDelete, successUpdate, isSubmiting },
     dispatch,
@@ -119,6 +119,7 @@ export default function AdminContractorListScreen() {
   });
 
   const handleEdit = (rowId) => {
+    navigate(`/adminEditCategory/${rowId}`);
     navigate(`/adminEditCategory/${rowId}`);
 
     // setSelectedRowData(params);
@@ -135,15 +136,18 @@ export default function AdminContractorListScreen() {
     setIsModelOpen(true);
     setIsNewCategory(true);
   };
+  const handleSubmitNewCategory = () => {
+    setIsModelOpen(false);
+  };
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
-  const theme = toggleState ? 'dark' : 'light';
+  const theme = toggleState ? "dark" : "light";
 
   useEffect(() => {
     const FatchcategoryData = async () => {
       try {
-        dispatch('FATCH_REQUEST');
+        dispatch("FATCH_REQUEST");
         const response = await axios.get(`/api/category/`);
         const datas = response.data;
         console.log(datas);
@@ -155,7 +159,7 @@ export default function AdminContractorListScreen() {
             categoryDescription: items.categoryDescription,
             categoryImage: items.categoryImage,
             categoryStatus:
-              items.categoryStatus == true ? 'Active' : 'Inactive',
+              items.categoryStatus == true ? "Active" : "Inactive",
           };
         });
 
@@ -184,17 +188,17 @@ export default function AdminContractorListScreen() {
     formDatas.append('categoryStatus', status);
 
     try {
-      dispatch({ type: 'CATEGORY_CRATED_REQ' });
+      dispatch({ type: "CATEGORY_CRATED_REQ" });
       const { data } = await axios.post(`/api/category/`, formDatas, {
         headers: {
-          'content-type': 'multipart/form-data',
+          "content-type": "multipart/form-data",
 
           authorization: `Bearer ${userInfo.token}`,
         },
       });
       console.log(data.message);
       toast.success(data.message);
-      dispatch({ type: 'UPDATE_SUCCESS' });
+      dispatch({ type: "UPDATE_SUCCESS" });
     } catch (err) {
       toast.error(err.response?.data?.message);
     } finally {
@@ -232,101 +236,106 @@ export default function AdminContractorListScreen() {
 
   return (
     <>
-      <Button
-        variant="outlined"
-        className=" m-2 d-flex globalbtnColor"
-        onClick={handleNew}
-      >
-        <BiPlusMedical className="mx-2" />
-        Add Category
-      </Button>
-      <Box sx={{ height: 400, width: '100%' }}>
-        <DataGrid
-          className={`tableBg mx-2 ${theme}DataGrid`}
-          rows={categoryData}
-          columns={[
-            ...columns,
-            {
-              field: 'action',
-              headerName: 'Action',
-              width: 250,
-              renderCell: (params) => {
-                return (
-                  <Grid item xs={8}>
-                    <Button
-                      variant="contained"
-                      className="mx-2 tableEditbtn"
-                      onClick={() => handleEdit(params.row._id)}
-                      startIcon={<MdEdit />}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      className="mx-2 tableDeletebtn"
-                      onClick={() => deleteHandle(params.row._id)}
-                      startIcon={<AiFillDelete />}
-                    >
-                      Delete
-                    </Button>
-                  </Grid>
-                );
-              },
-            },
-          ]}
-          getRowId={getRowId}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 5,
-              },
-            },
-          }}
-          pageSizeOptions={[5]}
-          checkboxSelection
-          disableRowSelectionOnClick
-        />
-      </Box>
-      <Modal open={isModelOpen} onClose={handleCloseRow}>
-        <Box
-          className="modelBg"
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            p: 4,
-          }}
+      <div className="px-3 mt-3">
+        <Button
+          variant="outlined"
+          className=" m-2 d-flex globalbtnColor"
+          onClick={handleNew}
         >
-          <Form>
-            {isNewCategory ? (
-              <h4 className="d-flex justify-content-center">
-                Add new Category Details
-              </h4>
-            ) : (
-              <h4 className="d-flex justify-content-center">
-                Edit Category Details
-              </h4>
-            )}
-            <TextField
-              className="mb-2"
-              value={category}
-              label="Category Name"
-              fullWidth
-              onChange={(e) => setCatogry(e.target.value)}
-            />
-            <TextField
-              className="mb-2"
-              value={categoryDesc}
-              label="Add description"
-              fullWidth
-              onChange={(e) => setCatogryDesc(e.target.value)}
-            />
-            {/* <FormControl className="formselect">
-              <Select
+          <BiPlusMedical className="mx-2" />
+          Add Category
+        </Button>
+        <Box sx={{ height: 400, width: "100%" }}>
+          <DataGrid
+            className={
+              theme == "light"
+                ? `${theme}DataGrid mx-2`
+                : `tableBg ${theme}DataGrid mx-2`
+            }
+            rows={categoryData}
+            columns={[
+              ...columns,
+              {
+                field: "action",
+                headerName: "Action",
+                width: 250,
+                renderCell: (params) => {
+                  return (
+                    <Grid item xs={8}>
+                      <Button
+                        variant="contained"
+                        className="mx-2 tableEditbtn"
+                        onClick={() => handleEdit(params.row._id)}
+                        // startIcon={<MdEdit />}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        className="mx-2 tableDeletebtn"
+                        onClick={() => deleteHandle(params.row._id)}
+                        // startIcon={<AiFillDelete />}
+                      >
+                        Delete
+                      </Button>
+                    </Grid>
+                  );
+                },
+              },
+            ]}
+            getRowId={getRowId}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 5,
+                },
+              },
+            }}
+            pageSizeOptions={[5]}
+            checkboxSelection
+            disableRowSelectionOnClick
+          />
+        </Box>
+        <Modal open={isModelOpen} onClose={handleCloseRow}>
+          <Box
+            className="modelBg modalRespnsive"
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: 400,
+              bgcolor: "background.paper",
+              boxShadow: 24,
+              p: 4,
+            }}
+          >
+            <Form>
+              {isNewCategory ? (
+                <h4 className="d-flex justify-content-center">
+                  Add new Category Details
+                </h4>
+              ) : (
+                <h4 className="d-flex justify-content-center">
+                  Edit Category Details
+                </h4>
+              )}
+              <TextField
+                className="mb-2"
+                value={category}
+                label="Category Name"
+                fullWidth
+                onChange={(e) => setCatogry(e.target.value)}
+              />
+              <TextField
+                className="mb-2"
+                value={categoryDesc}
+                label="Add description"
+                fullWidth
+                onChange={(e) => setCatogryDesc(e.target.value)}
+              />
+              <select
+                className="formselect mb-2"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
               >
@@ -382,6 +391,7 @@ export default function AdminContractorListScreen() {
           </Form>
         </Box>
       </Modal>
+      </div>
     </>
   );
 }
