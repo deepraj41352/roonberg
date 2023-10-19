@@ -39,6 +39,19 @@ io.on("connection", (socket) => {
       io.emit("getUsers",users)
     })
 
+    socket.on('audio', (data) => {
+      console.log("audiodata",data)
+      const audio = data.audio;
+      const senderId = getUser(data.senderId)
+      const user = getUser(data.receiverdId)
+      if(user){
+      io.to(user.socketId).emit('audio', { senderId:data.senderId, audio });
+      io.to(senderId.socketId).emit('audio', { senderId:data.senderId, audio });
+      }
+
+      // io.emit('audio', audioData);
+    });
+
 
     socket.on('image', (data) => {
       // const text = data.text;
@@ -86,8 +99,6 @@ socket.on("sendMessage",({senderId,receiverdId,text})=>{
     console.log("karan")
   }
 })
-
-
     // when disconnect 
     socket.on("disconnect",()=>{
       console.log("a user disconnected")

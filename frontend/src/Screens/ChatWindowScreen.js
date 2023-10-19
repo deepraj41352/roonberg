@@ -15,6 +15,8 @@ import { Socket, io } from "socket.io-client";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import {format} from "timeago.js"
+import {BsFillMicFill ,BsFillMicMuteFill } from 'react-icons/bs'
+
 
 
 function ChatWindowScreen() {
@@ -28,22 +30,33 @@ function ChatWindowScreen() {
   const [conversationID, setConversationID] = useState();
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedfile, setSelectedfile] = useState(null);
-
-
-
-
+  const [audioStream, setAudioStream] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const audioChunks = useRef([]);
+  const audioRef = useRef();
 
   const socket = useRef(io("ws://localhost:8900"))
   const scrollRef = useRef()
 
   useEffect(()=>{
     socket.current= io("ws://localhost:8900")
+    socket.current.on('audio', (data) => {
+          const audioBlob = new Blob([data.audio], { type: 'audio/wav' });
+          const audioUrl = URL.createObjectURL(audioBlob);    
+      setArrivalMessage({
+        sender:data.senderId,
+        audio:audioUrl,
+        createdAt:Date.now()
+      })
+      setAudioStream(data.audio);
+    });
+
     socket.current.on('image', (data) => {
       setArrivalMessage({
         sender:data.senderId,
         image:data.image,
         createdAt:Date.now()
-
       })
     });
     socket.current.on("getMessage",data=>{
@@ -61,6 +74,65 @@ arrivalMessage  && conversationID?.members.includes(arrivalMessage.sender)&&
 
 },[arrivalMessage,conversationID])
 
+const startRecording = (e) => {
+  e.preventDefault(); // Prevent the form from submitting and the page from refreshing
+
+  navigator.mediaDevices
+    .getUserMedia({ audio: true })
+    .then((stream) => {
+      const recorder = new MediaRecorder(stream);
+      setMediaRecorder(recorder);
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunks.current.push(event.data);
+        }
+      };
+      const receiverdId = conversationID.members.find((member) => member !== userInfo._id);
+      recorder.onstop = async() => {
+        const audioBlob = new Blob(audioChunks.current, { type: 'audio/wav' });
+        console.log("audiobulb",audioBlob)
+        const messageData = {
+          senderId: userInfo._id,
+          receiverdId:receiverdId,
+          audio:audioBlob,
+        };
+        console.log("messageData",messageData)
+        socket.current.emit('audio', messageData);
+        // socket.current.emit('audio', audioBlob);
+        audioChunks.current.length = 0;
+
+        const formDatas = new FormData();
+        formDatas.append("conversationId", id);
+        formDatas.append("sender", userInfo._id);
+        formDatas.append("audio", audioBlob);
+   
+       try {
+         const { data } = await axios.post('/api/message/audio',        
+           formDatas
+         );
+       } catch (err) {
+         console.log(err.response?.data?.message);
+       }
+
+        
+      };
+
+      recorder.start();
+      setIsRecording(true);
+    })
+    .catch((error) => {
+      console.error('Error accessing the microphone:', error);
+      setIsRecording(false); // Ensure that the button is disabled in case of an error
+    });
+};
+
+const stopRecording = () => {
+  if (mediaRecorder && isRecording) {
+    mediaRecorder.stop();
+    setIsRecording(false);
+  }
+};
 
 
 useEffect(()=>{
@@ -131,13 +203,11 @@ useEffect(()=>{
     const receiverdId = conversationID.members.find((member) => member !== userInfo._id);
     if(selectedImage){
       const messageData = {
-        // text: newMessage,
         senderId: userInfo._id,
         receiverdId:receiverdId,
         image: selectedImage,
       };
       socket.current.emit('image', messageData);
-      // setNewMessage('');
       setSelectedImage(null);
   
      }else{
@@ -149,18 +219,13 @@ useEffect(()=>{
      }
 
      const formDatas = new FormData();
-
      formDatas.append("image", selectedfile);
      formDatas.append("conversationId", id);
      formDatas.append("sender", userInfo._id);
      formDatas.append("text", newMessage);
 
-
     try {
-      const { data } = await axios.post('/api/message/', 
-        // conversationId: id,
-        // sender: userInfo._id,
-        // text: newMessage,
+      const { data } = await axios.post('/api/message/',        
         formDatas
       );
     } catch (err) {
@@ -172,8 +237,6 @@ useEffect(()=>{
   },[chatMessages,newMessage])
 
   console.log("selected image",selectedImage)
-
-
 
   return (
     <div className=" d-flex justify-content-center align-items-center">
@@ -190,7 +253,16 @@ useEffect(()=>{
                   <p className="chat-receiverMsg-inner p-2" dangerouslySetInnerHTML={{ __html: item.text }}></p>
                   <div className="timeago">{format(item.createdAt)}</div>
                 </div>):(<div ref={scrollRef} className="chat-receiverMsg d-flex flex-column">
-                  <img src={`http://localhost:4500/${item.image}`} className="chat-receiverMsg-inner p-2" />
+                  {item.audio?(
+                        <audio className="chat-receiverMsg-inner w-100 p-2" controls>
+                        <source src={item.audio} type="audio/wav" />
+                      </audio>
+              ):(<img src={
+                            item.conversationId
+                              ? item.image
+                              : `http://localhost:4500/${item.image}`
+                          } className="chat-receiverMsg-inner w-100 p-2" />)}
+                  
                   <div className="timeago">{format(item.createdAt)}</div>
                 </div>)}
                 </>
@@ -199,10 +271,17 @@ useEffect(()=>{
                   <p className="chat-senderMsg-inner p-2" dangerouslySetInnerHTML={{ __html: item.text }}></p>
                   <div className="timeago">{format(item.createdAt)}</div>
                 </div>):(  <div ref={scrollRef} className="chat-senderMsg d-flex flex-column ">
-                    <img src={`http://localhost:4500/${item.image}`} className="chat-senderMsg-inner p-2" />
+                {item.audio?(
+                        <audio className="chat-senderMsg-inner w-100 p-2" controls>
+                        <source src={item.audio} type="audio/wav" />
+                      </audio>
+              ):(<img src={
+                            item.conversationId
+                              ? item.image
+                              : `http://localhost:4500/${item.image}`
+                          } className="chat-senderMsg-inner w-100 p-2" />)}
                     <div className="timeago">{format(item.createdAt)}</div>
                   </div>)}</>
-
                 )}
               </>
             ))}
@@ -223,7 +302,12 @@ useEffect(()=>{
                   <MyStatefulEditor markup="" value={newMessage}  onChange={onChange} />
                 </div>
                 <Form.Control onChange={handleImageChange} type="file"/>
-
+                <div className="App d-flex align-items-center ps-2">
+    
+      <BsFillMicFill onClick={startRecording} disabled={isRecording} style={{display:isRecording?"none":"block"}}/>
+      
+      <BsFillMicMuteFill onClick={stopRecording} disabled={!isRecording} style={{display:!isRecording?"none":"block"}}/>
+    </div>
                 <div className="d-flex justify-content-center align-items-center ps-2 ">
                   <RxFontStyle onClick={showFontStyleBox} />
                 </div>

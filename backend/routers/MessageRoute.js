@@ -21,13 +21,38 @@ MessageRouter.post('/',
       req.body.image = image;
       console.log("image",req.body.image)
     }
-    const newMessage = new Message({
-      // $set: req.body
-      conversationId: req.body.conversationId,
-      sender: req.body.sender,
-      text: req.body.text,
+    const newMessage = new Message(
+       req.body
+      // conversationId: req.body.conversationId,
+      // sender: req.body.sender,
+      // text: req.body.text,
       // // image:image,
-    });
+    );
+    console.log("conversationid",newMessage.conversationId);
+
+    const savedMessage = await newMessage.save();
+    res.status(200).json(savedMessage);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+MessageRouter.post('/audio', 
+ upload.single('audio'),
+ async (req, res) => {
+
+  try {
+    if (req.file) {
+      const audio = await uploadDoc(req);
+      req.body.audio = audio;
+      console.log("audio",req.body.audio)
+    }
+    const newMessage = new Message(
+       req.body
+      // conversationId: req.body.conversationId,
+      // sender: req.body.sender,
+      // text: req.body.text,
+      // // image:image,
+    );
     console.log("conversationid",newMessage.conversationId);
 
     const savedMessage = await newMessage.save();

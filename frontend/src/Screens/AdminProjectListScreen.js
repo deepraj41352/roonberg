@@ -282,7 +282,6 @@ export default function AdminProjectListScreen() {
   const handleChange = (event) => {
     setSelectedOptions(event.target.value);
   };
-
   return (
     <>
       <Button
