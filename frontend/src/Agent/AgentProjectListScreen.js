@@ -66,28 +66,28 @@ const columns = [
   {
     field: 'projectName',
     headerName: 'Project Name',
-    width: 150,
+    width: 100,
   },
   {
     field: 'projectDescription',
     headerName: 'Description',
-    width: 150,
+    width: 100,
   },
   {
     field: 'projectCategory',
     headerName: 'Category',
-    width: 150,
+    width: 100,
   },
 
   {
     field: 'projectOwner',
     headerName: 'Contractor',
-    width: 90,
+    width: 100,
   },
   {
     field: 'assignedAgent',
     headerName: 'Agent',
-    width: 110,
+    width: 100,
   },
 ];
 

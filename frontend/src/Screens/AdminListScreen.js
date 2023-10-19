@@ -1,7 +1,14 @@
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 import data from '../dummyData';
-import { Button, FormControl, Grid, MenuItem, Select } from '@mui/material';
+import {
+  Button,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+} from '@mui/material';
 import { AiFillDelete } from 'react-icons/ai';
 import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
@@ -16,6 +23,7 @@ import { ThreeDots } from 'react-loader-spinner';
 import { useContext, useEffect, useReducer, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Validations from '../Components/Validations';
+import { FaEye, FaRegEyeSlash } from 'react-icons/fa';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -56,6 +64,11 @@ const columns = [
     headerName: 'Email',
     width: 200,
   },
+  {
+    field: 'userStatus',
+    headerName: 'Status',
+    width: 200,
+  },
 ];
 
 export default function AdminListScreen() {
@@ -77,10 +90,12 @@ export default function AdminListScreen() {
     submitting: false,
   });
 
-  const [name, setName] = useState('');
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
   const [email, setEmail] = useState('');
-  // const [status, setStatus] = useState("");
-  const [password, setPassword] = useState('');
+  const [status, setStatus] = useState();
+  const [password, setPassword] = useState('RoonBerg@123');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleCloseRow = () => {
     setIsModelOpen(false);
@@ -110,6 +125,7 @@ export default function AdminListScreen() {
             _id: items._id,
             first_name: items.first_name,
             email: items.email,
+            userStatus: items.userStatus == true ? 'Active' : 'Inactive',
           };
         });
         dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
@@ -133,10 +149,12 @@ export default function AdminListScreen() {
       const response = await axios.post(
         `/api/user/add`,
         {
-          first_name: name,
+          first_name: firstname,
+          last_name: lastname,
           email: email,
-          password: password,
+          password: password || 'RoonBerg@123',
           role: role,
+          userStatus: status || true,
         },
         { headers: { Authorization: `Bearer ${userInfo.token}` } }
       );
@@ -173,6 +191,9 @@ export default function AdminListScreen() {
         toast.error('An error occurred while deleting admin data.');
       }
     }
+  };
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -274,12 +295,18 @@ export default function AdminListScreen() {
 
                 <TextField
                   className="mb-2"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  label="Username"
+                  value={firstname}
+                  onChange={(e) => setFirstname(e.target.value)}
+                  label="First Name"
                   fullWidth
                 />
-
+                <TextField
+                  className="mb-2"
+                  value={lastname}
+                  onChange={(e) => setLastname(e.target.value)}
+                  label="Last Name"
+                  fullWidth
+                />
                 <TextField
                   className="mb-2"
                   value={email}
@@ -289,25 +316,36 @@ export default function AdminListScreen() {
                   fullWidth
                 />
                 <Validations type="email" value={email} />
-                <TextField
-                  className="mb-2"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  label="Password"
-                  type="password"
-                  fullWidth
-                />
+                <div className="Password-input-eye">
+                  <div className=" rounded-2">
+                    <TextField
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      label="Password"
+                      className="pswd-input "
+                      type={showPassword ? 'text' : 'password'}
+                      fullWidth
+                    />
+                  </div>
+                  <div
+                    className="eye-bttn cent"
+                    onClick={togglePasswordVisibility}
+                  >
+                    {showPassword ? <FaEye /> : <FaRegEyeSlash />}
+                  </div>
+                </div>
                 <Validations type="password" value={password} />
 
-                {/* <FormControl className="formselect">
+                <FormControl className="formselect">
+                  <InputLabel>Choose Status</InputLabel>
                   <Select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
                   >
-                    <MenuItem value="Active">Active</MenuItem>
-                    <MenuItem value="Inactive">Inactive</MenuItem>
+                    <MenuItem value={true}>Active</MenuItem>
+                    <MenuItem value={false}>Inactive</MenuItem>
                   </Select>
-                </FormControl> */}
+                </FormControl>
                 <br></br>
                 <Button
                   className="mt-2 formbtn"

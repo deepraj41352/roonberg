@@ -56,22 +56,22 @@ const columns = [
   {
     field: 'first_name',
     headerName: 'Agent Name',
-    width: 150,
+    width: 100,
   },
   {
     field: 'email',
     headerName: 'Email',
-    width: 200,
+    width: 100,
   },
   {
     field: 'agentCategory',
     headerName: 'Category',
-    width: 150,
+    width: 100,
   },
   {
     field: 'userStatus',
     headerName: 'Status',
-    width: 150,
+    width: 100,
   },
 ];
 
