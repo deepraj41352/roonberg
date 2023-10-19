@@ -9,26 +9,20 @@ import multer from 'multer';
 const MessageRouter = express.Router();
 const upload = multer();
 
-//add
 
-MessageRouter.post('/', 
- upload.single('image'),
- async (req, res) => {
+// code for media all type 
 
+MessageRouter.post('/', upload.single('media'), async (req, res) => {
   try {
     if (req.file) {
-      const image = await uploadDoc(req);
-      req.body.image = image;
-      console.log("image",req.body.image)
+      const mediaType = req.body.mediaType; 
+
+      const media = await uploadDoc(req, mediaType);
+      req.body.media = media;
+      console.log("Media:", req.body.media);
     }
-    const newMessage = new Message(
-       req.body
-      // conversationId: req.body.conversationId,
-      // sender: req.body.sender,
-      // text: req.body.text,
-      // // image:image,
-    );
-    console.log("conversationid",newMessage.conversationId);
+
+    const newMessage = new Message(req.body);
 
     const savedMessage = await newMessage.save();
     res.status(200).json(savedMessage);
@@ -36,6 +30,35 @@ MessageRouter.post('/',
     res.status(500).json(err);
   }
 });
+
+
+//add
+
+// MessageRouter.post('/', 
+//  upload.single('image'),
+//  async (req, res) => {
+
+//   try {
+//     if (req.file) {
+//       const image = await uploadDoc(req);
+//       req.body.image = image;
+//       console.log("image",req.body.image)
+//     }
+//     const newMessage = new Message(
+//        req.body
+//       // conversationId: req.body.conversationId,
+//       // sender: req.body.sender,
+//       // text: req.body.text,
+//       // // image:image,
+//     );
+//     console.log("conversationid",newMessage.conversationId);
+
+//     const savedMessage = await newMessage.save();
+//     res.status(200).json(savedMessage);
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// });
 MessageRouter.post('/audio', 
  upload.single('audio'),
  async (req, res) => {
@@ -54,7 +77,6 @@ MessageRouter.post('/audio',
       // // image:image,
     );
     console.log("conversationid",newMessage.conversationId);
-
     const savedMessage = await newMessage.save();
     res.status(200).json(savedMessage);
   } catch (err) {

@@ -33,8 +33,21 @@ function ChatWindowScreen() {
   const [audioStream, setAudioStream] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [mediaType, setMediaType] = useState("image");
   const audioChunks = useRef([]);
   const audioRef = useRef();
+
+
+  useEffect(() => {
+    if (selectedfile && selectedfile.type) {
+      const mediaType = selectedfile.type.includes('video') || selectedfile.type.includes('audio')
+        ? 'video' : 'image';
+
+      console.log('Media Type:', mediaType);
+      setMediaType(mediaType)
+  
+    }
+  }, [selectedfile]);
 
   const socket = useRef(io("ws://localhost:8900"))
   const scrollRef = useRef()
@@ -114,10 +127,7 @@ const startRecording = (e) => {
        } catch (err) {
          console.log(err.response?.data?.message);
        }
-
-        
       };
-
       recorder.start();
       setIsRecording(true);
     })
@@ -155,7 +165,6 @@ useEffect(()=>{
     getMessages();
   }, [conversation]);
 
-  
   useEffect(() => {
     const getConversation = async () => {
       try {
@@ -168,6 +177,8 @@ useEffect(()=>{
 
     getConversation();
   }, []);
+
+  
 
 
 
@@ -219,7 +230,8 @@ useEffect(()=>{
      }
 
      const formDatas = new FormData();
-     formDatas.append("image", selectedfile);
+     formDatas.append("media", selectedfile);
+     formDatas.append("mediaType", mediaType);
      formDatas.append("conversationId", id);
      formDatas.append("sender", userInfo._id);
      formDatas.append("text", newMessage);
@@ -235,6 +247,9 @@ useEffect(()=>{
   useEffect(()=>{
     scrollRef.current?.scrollIntoView({behavior:"smooth"})
   },[chatMessages,newMessage])
+
+ 
+
 
   console.log("selected image",selectedImage)
 
