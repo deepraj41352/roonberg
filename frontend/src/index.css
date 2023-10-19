@@ -667,6 +667,12 @@ body {
 .editFormBtn {
   flex-basis: 174px;
 }
+.profile-icon.me-1.ms-3 {
+  width: 51px;
+}
+img.w-100.h-100 {
+  border-radius: 50%;
+}
 
 /* /sidebar css */
 .sidebar {

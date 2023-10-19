@@ -243,7 +243,32 @@ export default function AgentProjectList() {
                           : `tableBg ${theme}DataGrid`
                       }
                       rows={projectData}
-                      columns={[...columns]}
+                      columns={[
+                        ...columns,
+                        {
+                          field: 'action',
+                          headerName: 'Action',
+                          width: 250,
+                          renderCell: (params) => {
+                            return (
+                              <Grid item xs={8}>
+                                <Link
+                                  to={`/projectSingleScreen/${params.row._id}`}
+                                >
+                                  <Button
+                                    variant="contained"
+                                    className="mx-2 tableEditbtn"
+                                    // onClick={() => handleEdit(params.row._id)}
+                                    // startIcon={<MdEdit />}
+                                  >
+                                    Edit
+                                  </Button>
+                                </Link>
+                              </Grid>
+                            );
+                          },
+                        },
+                      ]}
                       getRowId={(row) => row._id}
                       initialState={{
                         pagination: {

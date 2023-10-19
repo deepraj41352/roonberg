@@ -1,34 +1,34 @@
-import axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
-import Card from "react-bootstrap/Card";
-import { Store } from "../Store";
-import { Button, Form, FormControl } from "react-bootstrap";
-import MultiSelect from "react-multiple-select-dropdown-lite";
-import "react-multiple-select-dropdown-lite/dist/index.css";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
-import { InputLabel, MenuItem, Select } from "@mui/material";
-import { GrSubtractCircle, GrAddCircle } from "react-icons/gr";
-import { AiFillDelete } from "react-icons/ai";
+import axios from 'axios';
+import React, { useContext, useEffect, useState } from 'react';
+import Card from 'react-bootstrap/Card';
+import { Store } from '../Store';
+import { Button, Form, FormControl } from 'react-bootstrap';
+import MultiSelect from 'react-multiple-select-dropdown-lite';
+import 'react-multiple-select-dropdown-lite/dist/index.css';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { InputLabel, MenuItem, Select } from '@mui/material';
+import { GrSubtractCircle, GrAddCircle } from 'react-icons/gr';
+import { AiFillDelete } from 'react-icons/ai';
 const reducer = (state, action) => {
   switch (action.type) {
-    case "FATCH_REQUEST":
+    case 'FATCH_REQUEST':
       return { ...state, loading: true };
-    case "FATCH_SUCCESS":
+    case 'FATCH_SUCCESS':
       return { ...state, projectData: action.payload, loading: false };
-    case "FATCH_ERROR":
+    case 'FATCH_ERROR':
       return { ...state, error: action.payload, loading: false };
-    case "SUCCESS_CATEGORY":
+    case 'SUCCESS_CATEGORY':
       return { ...state, categoryData: action.payload, loading: false };
-    case "ERROR_CATEGORY":
+    case 'ERROR_CATEGORY':
       return { ...state, error: action.payload, loading: false };
-    case "UPDATE_SUCCESS":
+    case 'UPDATE_SUCCESS':
       return { ...state, successUpdate: action.payload };
-    case "FATCH_AGENTS":
+    case 'FATCH_AGENTS':
       return { ...state, agentData: action.payload };
-    case "UPDATE_RESET":
+    case 'UPDATE_RESET':
       return { ...state, successUpdate: false };
-    case "FATCH_CONTRACTOR":
+    case 'FATCH_CONTRACTOR':
       return { ...state, contractorData: action.payload };
     default:
       return state;
@@ -43,7 +43,7 @@ function ProjectSingleScreen() {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [createdDate, setCreatedDate] = useState();
   const [endDate, setEndDate] = useState();
-  const theme = toggleState ? "dark" : "light";
+  const theme = toggleState ? 'dark' : 'light';
   const [
     {
       loading,
@@ -57,7 +57,7 @@ function ProjectSingleScreen() {
     dispatch,
   ] = React.useReducer(reducer, {
     loading: true,
-    error: "",
+    error: '',
     projectData: {},
     categoryData: {},
     successUpdate: false,
@@ -67,12 +67,12 @@ function ProjectSingleScreen() {
   const [conversations, setConversation] = useState([]);
   const [agentCategoryPair, setAgentCategoryPair] = useState([]);
   const [agents, setAgents] = useState([
-    { categoryId: "", agentName: "", agentId: "" },
+    { categoryId: '', agentName: '', agentId: '' },
   ]);
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [categories, setCategories] = useState([]);
-  const [projectStatus, setProjectStatus] = useState("");
-  const [projectOwner, setProjectOwner] = useState("");
+  const [projectStatus, setProjectStatus] = useState('');
+  const [projectOwner, setProjectOwner] = useState('');
 
   useEffect(() => {
     const getConversations = async () => {
@@ -106,29 +106,29 @@ function ProjectSingleScreen() {
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
-        dispatch("FETCH_REQUEST");
+        dispatch('FETCH_REQUEST');
         const response = await axios.get(`/api/project/${id}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const ProjectDatas = response.data;
-        console.log("ProjectDatas", ProjectDatas);
+        console.log('ProjectDatas', ProjectDatas);
         setEndDate(
-          ProjectDatas.endDate ? ProjectDatas.endDate.split("T")[0] : null
+          ProjectDatas.endDate ? ProjectDatas.endDate.split('T')[0] : null
         );
         setCreatedDate(
           ProjectDatas.createdDate
-            ? ProjectDatas.createdDate.split("T")[0]
+            ? ProjectDatas.createdDate.split('T')[0]
             : null
         );
         setSelectedOptions(
-          ProjectDatas.projectCategory.map((item) => item.categoryId).join(",")
+          ProjectDatas.projectCategory.map((item) => item.categoryId).join(',')
         );
         setAgents(ProjectDatas.assignedAgent);
         setProjectStatus(projectData.projectStatus);
         setProjectOwner(projectData.projectOwner);
-        dispatch({ type: "FATCH_SUCCESS", payload: ProjectDatas });
+        dispatch({ type: 'FATCH_SUCCESS', payload: ProjectDatas });
       } catch (error) {
-        console.error("Error fetching project data:", error);
+        console.error('Error fetching project data:', error);
       }
     };
 
@@ -138,32 +138,32 @@ function ProjectSingleScreen() {
   useEffect(() => {
     const fetchCategoryData = async () => {
       try {
-        dispatch("FETCH_REQUEST");
+        dispatch('FETCH_REQUEST');
         const response = await axios.get(`/api/category`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const category = response.data;
-        dispatch({ type: "SUCCESS_CATEGORY", payload: category });
+        dispatch({ type: 'SUCCESS_CATEGORY', payload: category });
       } catch (error) {
-        console.error("Error fetching category data:", error);
+        console.error('Error fetching category data:', error);
       }
     };
 
     fetchCategoryData();
   }, []);
 
-  console.log("selectedOptions", selectedOptions);
+  console.log('selectedOptions', selectedOptions);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       // Construct the updated data object
-      const categoryIds = selectedOptions.split(",");
+      const categoryIds = selectedOptions.split(',');
       const projectCategory = categoryIds.map((categoryId) => {
         const category = categoryData.find((cat) => cat._id === categoryId);
         return {
           categoryId,
-          categoryName: category ? category.categoryName : "Unknown Category",
+          categoryName: category ? category.categoryName : 'Unknown Category',
         };
       });
 
@@ -187,12 +187,12 @@ function ProjectSingleScreen() {
       );
 
       if (response.status === 200) {
-        toast.success("Project updated Successfully !");
-        navigate("/adminProjectList");
+        toast.success('Project updated Successfully !');
+        navigate('/adminProjectList');
         console.log(response);
       }
     } catch (error) {
-      console.error("API Error:", error);
+      console.error('API Error:', error);
     }
   };
 
@@ -208,7 +208,7 @@ function ProjectSingleScreen() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     dispatch({
-      type: "FATCH_SUCCESS",
+      type: 'FATCH_SUCCESS',
       payload: {
         ...projectData,
         [name]: value,
@@ -223,9 +223,9 @@ function ProjectSingleScreen() {
   useEffect(() => {
     const FatchContractorData = async () => {
       try {
-        const response = await axios.post(`/api/user/`, { role: "contractor" });
+        const response = await axios.post(`/api/user/`, { role: 'contractor' });
         const datas = response.data;
-        dispatch({ type: "FATCH_CONTRACTOR", payload: datas });
+        dispatch({ type: 'FATCH_CONTRACTOR', payload: datas });
       } catch (error) {}
     };
     FatchContractorData();
@@ -234,16 +234,16 @@ function ProjectSingleScreen() {
   useEffect(() => {
     const FatchAgentData = async () => {
       try {
-        const response = await axios.post(`/api/user/`, { role: "agent" });
+        const response = await axios.post(`/api/user/`, { role: 'agent' });
         const datas = response.data;
-        dispatch({ type: "FATCH_AGENTS", payload: datas });
+        dispatch({ type: 'FATCH_AGENTS', payload: datas });
       } catch (error) {}
     };
     FatchAgentData();
   }, []);
 
   const handleAgentChange = (index, key, value) => {
-    console.log("Value received:", value);
+    console.log('Value received:', value);
     const updatedAgents = [...agents];
     updatedAgents[index] = {
       ...updatedAgents[index],
@@ -255,7 +255,7 @@ function ProjectSingleScreen() {
       updatedAgents[index].agentName = agentName.first_name;
     }
 
-    if (key === "categoryId" && value !== "") {
+    if (key === 'categoryId' && value !== '') {
       const selectedCategory = categoryData.find(
         (categoryItem) => categoryItem._id === value
       );
@@ -277,17 +277,17 @@ function ProjectSingleScreen() {
   };
 
   const addAgent = () => {
-    setAgents([...agents, { categoryId: "", agentId: "" }]);
+    setAgents([...agents, { categoryId: '', agentId: '' }]);
   };
   const removeAgent = (index) => {
-    if (window.confirm("Are you sure to delete?")) {
+    if (window.confirm('Are you sure to delete?')) {
       const updatedAgents = [...agents];
       updatedAgents.splice(index, 1);
       setAgents(updatedAgents);
     }
   };
 
-  console.log("selectbyg", agents);
+  console.log('selectbyg', agents);
   return (
     <div>
       {loading ? (
@@ -387,7 +387,7 @@ function ProjectSingleScreen() {
                   Chats
                 </Card.Header>
                 <Card.Body className="d-flex flex-wrap gap-3 ">
-                  {/* -------- */}{" "}
+                  {/* -------- */}{' '}
                   <div
                     className="text-center w-100"
                     style={{
@@ -395,28 +395,65 @@ function ProjectSingleScreen() {
                         projectData &&
                         projectData.conversions &&
                         projectData.conversions.length < 1
-                          ? "block"
-                          : "none",
+                          ? 'block'
+                          : 'none',
                     }}
                   >
                     No Chat Available
                   </div>
-                  {conversations.map((conversion) => {
+                  {projectData?.conversions?.map((conversion) => {
+                    const assignedAgent = projectData.assignedAgent.find(
+                      (assignedAgent) =>
+                        assignedAgent.agentId === conversion.members[0]
+                    );
                     return (
-                      <Card className="chatboxes">
-                        <Card.Header>Chat</Card.Header>
-                        <Card.Body>
-                          <Link to={`/chatWindowScreen/${conversion._id}`}>
-                            <Button
-                              className="chatBtn"
-                              type="button"
-                              // onClick={conversionHandler(conversion._id)}
-                            >
-                              {conversion._id}
-                            </Button>
-                          </Link>
-                        </Card.Body>
-                      </Card>
+                      <>
+                        {userInfo.role == 'agent' ? (
+                          <>
+                            {conversion.members.includes(userInfo._id) && (
+                              <>
+                                <Card className="chatboxes">
+                                  {/* <Card.Header>{assignedAgent.categoryId}</Card.Header> */}
+                                  <Card.Body>
+                                    <Link
+                                      to={`/chatWindowScreen/${conversion._id}`}
+                                    >
+                                      <Button
+                                        className="chatBtn"
+                                        type="button"
+                                        // onClick={conversionHandler(conversion._id)}
+                                      >
+                                        Chat Now
+                                      </Button>
+                                    </Link>
+                                  </Card.Body>
+                                </Card>
+                              </>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <Card className="chatboxes">
+                              <Card.Header>
+                                {assignedAgent.categoryName}
+                              </Card.Header>
+                              <Card.Body>
+                                <Link
+                                  to={`/chatWindowScreen/${conversion._id}`}
+                                >
+                                  <Button
+                                    className="chatBtn"
+                                    type="button"
+                                    // onClick={conversionHandler(conversion._id)}
+                                  >
+                                    {assignedAgent.agentName}
+                                  </Button>
+                                </Link>
+                              </Card.Body>
+                            </Card>
+                          </>
+                        )}
+                      </>
                     );
                   })}
                   {/* -------- */}
@@ -448,7 +485,7 @@ function ProjectSingleScreen() {
                             onChange={(e) =>
                               handleAgentChange(
                                 index,
-                                "categoryId",
+                                'categoryId',
                                 e.target.value
                               )
                             }
@@ -471,7 +508,7 @@ function ProjectSingleScreen() {
                             onChange={(e) =>
                               handleAgentChange(
                                 index,
-                                "agentId",
+                                'agentId',
                                 e.target.value
                               )
                             }
