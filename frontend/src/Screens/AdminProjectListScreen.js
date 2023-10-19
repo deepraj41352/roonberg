@@ -382,7 +382,6 @@ export default function AdminProjectListScreen() {
   const handleAssigndment = (userid) => {
     navigate(`/AdminAssignAgent/${userid}`);
   };
-
   return (
     <>
       <div className="px-4 mt-3">

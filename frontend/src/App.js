@@ -133,7 +133,7 @@ function App() {
                         <div className="py-2">
                           <Theme />
                         </div>
-
+                      
                         <Nav.Link href="#action1">
                           <BiShareAlt className="fs-4 admin-btn-logo" />
                         </Nav.Link>
@@ -151,6 +151,13 @@ function App() {
                         </Nav.Link>
                       </Nav>
                     </Navbar.Collapse>
+                    <div className='profile-icon me-1 ms-3'
+                    onClick={()=>{
+                      navigate('/profile-screen');
+                    }}>
+                        <img className='w-100 h-100' src={userInfo.profile_picture}></img>
+                        </div>
+
                   </Container>
                 </Navbar>
               ) : (
