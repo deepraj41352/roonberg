@@ -458,14 +458,6 @@ export default function ContractorProjectScreen() {
                           validateDates(newValue, endDate)
                         }
                         format="MM-DD-YYYY"
-                        renderInput={(params) => (
-                          <DatePicker
-                            {...params}
-                            inputFormat="MM-DD-YYYY"
-                            allowKeyboardControl
-                            clearable
-                          />
-                        )}
                       />
                       {startDateError && (
                         <div style={{ color: 'red' }}>{startDateError}</div>

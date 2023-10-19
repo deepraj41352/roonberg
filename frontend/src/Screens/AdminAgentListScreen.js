@@ -230,17 +230,17 @@ export default function AdminAgentListScreen() {
     }
   };
 
-  const handleCloseRow = () => {
-    setIsModelOpen(false);
-  };
+  // const handleCloseRow = () => {
+  //   setIsModelOpen(false);
+  // };
 
   const handleModel = () => {
     setIsModelOpen(true);
   };
 
-  const handleEdit = (userid) => {
-    navigate(`/adminEditAgent/${userid}`);
-  };
+  // const handleEdit = (userid) => {
+  //   navigate(`/adminEditAgent/${userid}`);
+  // };
 
   return (
     <>

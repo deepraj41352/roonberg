@@ -52,6 +52,8 @@ import ContractorProject from './Contractor/ContractorProjectListScreen';
 import ContractorEditProject from './Contractor/ContractorEditProjectScreen';
 import AgentProjectList from './Agent/AgentProjectListScreen';
 import AdminAssignAgent from './Screens/AdminAssignAgentScreen';
+import ContractorProjectScreen from './Components/Contractor/contractorProjectScreen';
+import SuperadminEditAdmin from './Screens/SuperadminEditAdmin';
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -182,7 +184,6 @@ function App() {
               )}
               <main>
                 <div>
-                  oject
                   <Routes>
                     <Route path="/" element={<SignUpForm />} />
                     <Route
@@ -201,6 +202,10 @@ function App() {
                     <Route
                       path="/projectNotification"
                       element={<ProjectNotification />}
+                    />
+                    <Route
+                      path="/superadmineditadmin/:id"
+                      element={<SuperadminEditAdmin />}
                     />
 
                     <Route

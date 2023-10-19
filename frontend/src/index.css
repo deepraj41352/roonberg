@@ -17,7 +17,7 @@
 /* -----------priyanshu-theme-css-end------------- */
 body {
   margin: 0;
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* background-color: rgba(0, 0, 0, 0) !important; */
@@ -28,7 +28,7 @@ body {
   justify-content: center !important;
 }
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
@@ -187,7 +187,7 @@ body {
 
 body {
   margin: 0;
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* background-color: rgba(0, 0, 0, 0) !important; */
@@ -195,7 +195,7 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
@@ -233,7 +233,7 @@ code {
 button {
   color: white !important;
 }
-.tableBg input[type="checkbox"] {
+.tableBg input[type='checkbox'] {
   border-color: white !important;
   background-color: white !important;
 }
@@ -362,16 +362,12 @@ body {
 .search-bar-dash-inner {
   background-color: #f8f9fa !important;
 }
-.sidebar.visible {
+/* .sidebar.visible {
   width: 0px;
-  /* display: none; */
 }
 .sidebar {
-  width: 21%;
+  width: 250px;
   min-height: 100vh;
-
-  /* height: 100vh !important; */
-  /* background-color: #120c16; */
   background-color: #070719;
   color: #fff;
   white-space: nowrap;
@@ -402,7 +398,7 @@ body {
   .sidebar {
     width: 45%;
   }
-}
+} */
 .dash-list li {
   list-style: none;
   text-align: start;
@@ -667,4 +663,15 @@ body {
 }
 .loginPage {
   height: calc(100vh - 95px);
+}
+.editFormBtn {
+  flex-basis: 174px;
+}
+
+/* /sidebar css */
+.sidebar {
+  width: 250px;
+  min-height: 100vh;
+  background-color: #070719;
+  color: #fff;
 }

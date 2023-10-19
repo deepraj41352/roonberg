@@ -30,7 +30,7 @@ const reducer = (state, action) => {
   }
 };
 
-function AdminEditContractor() {
+function SuperadminEditAdmin() {
   const { id } = useParams();
   if (id) {
     console.log('id exists:', id);
@@ -39,7 +39,7 @@ function AdminEditContractor() {
   }
 
   const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('');
   const [isSubmiting, setIsSubmiting] = useState(false);
@@ -69,7 +69,7 @@ function AdminEditContractor() {
         const response = await axios.get(`/api/user/${id}`);
         const datas = response.data;
         setFirstName(datas.first_name);
-        setLastName(datas.last_name);
+
         setEmail(datas.email);
         setStatus(datas.userStatus);
 
@@ -90,7 +90,7 @@ function AdminEditContractor() {
         `/api/user/update/${id}`,
         {
           first_name: firstName,
-          last_name: lastName,
+
           email: email,
           userStatus: status,
         },
@@ -102,7 +102,7 @@ function AdminEditContractor() {
       );
       dispatch({ type: 'UPDATE_SUCCESS' });
       toast.success(data.data);
-      navigate('/adminContractorList');
+      navigate('/adminList');
     } catch (err) {
       toast.error(err.response?.data?.message);
     } finally {
@@ -135,18 +135,7 @@ function AdminEditContractor() {
                       required
                     />
                   </Form.Group>
-                  <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label className="mb-1 input-box">
-                      Last Name
-                    </Form.Label>
-                    <Form.Control
-                      className="input-box-inner"
-                      onChange={(e) => setLastName(e.target.value)}
-                      type="text"
-                      value={lastName}
-                      required
-                    />
-                  </Form.Group>
+
                   <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label className="mb-1 input-box">Email</Form.Label>
                     <Form.Control
@@ -154,29 +143,29 @@ function AdminEditContractor() {
                       onChange={(e) => setEmail(e.target.value)}
                       type="email"
                       value={email}
-                      required
                       disabled
                     />
                   </Form.Group>
-                  <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label className="mb-1">Status</Form.Label>
-                    <Form.Select
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value)}
-                    >
-                      <option value="true">Active</option>
-                      <option value="false">Inactive</option>
-                    </Form.Select>
-                  </Form.Group>
+                  {/* <Form.Group className="mb-3" controlId="formBasicPassword">
+                                        <Form.Label className="mb-1">Status</Form.Label>
+                                        <Form.Select
+                                            value={status}
+                                            onChange={(e) => setStatus(e.target.value)}
+                                        >
+                                            <option value="">SELECT STATUS</option>
+                                            <option value="true">Active</option>
+                                            <option value="false">Inactive</option>
+                                        </Form.Select>
+                                    </Form.Group> */}
 
                   <div className="d-flex justify-content-left mt-4">
                     <Button
-                      className=" py-1 w-25 globalbtnColor"
+                      className=" py-1 w-25 globalbtnColor editFormBtn"
                       variant="primary"
                       type="submit"
                       disabled={isSubmiting}
                     >
-                      {isSubmiting ? 'Updateing...' : 'Update'}
+                      {isSubmiting ? 'Updateing' : 'Update'}
                     </Button>
                   </div>
                 </Form>
@@ -189,4 +178,4 @@ function AdminEditContractor() {
   );
 }
 
-export default AdminEditContractor;
+export default SuperadminEditAdmin;

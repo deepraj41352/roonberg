@@ -140,7 +140,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
         </Link>
         {userInfo.role == 'contractor' ? (
           <>
-            <Link to="/contractorProjectList" className="text-decoration-none">
+            <Link to="/project-list-screen" className="text-decoration-none">
               <li
                 className={selectedItem === 'addProjects' ? 'selected' : ''}
                 onClick={() => {
