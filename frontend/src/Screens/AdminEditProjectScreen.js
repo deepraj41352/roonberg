@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { InputLabel, MenuItem, Select } from "@mui/material";
 import { GrSubtractCircle, GrAddCircle } from "react-icons/gr";
 import { AiFillDelete } from "react-icons/ai";
+import dayjs from "dayjs";
 const reducer = (state, action) => {
   switch (action.type) {
     case "FATCH_REQUEST":
@@ -44,6 +45,10 @@ function ProjectSingleScreen() {
   const [createdDate, setCreatedDate] = useState();
   const [endDate, setEndDate] = useState();
   const theme = toggleState ? "dark" : "light";
+
+  const [startDate, setStartDate] = useState();
+  const [startDateError, setStartDateError] = useState("");
+  const [endDateError, setEndDateError] = useState("");
   const [
     {
       loading,
@@ -288,6 +293,40 @@ function ProjectSingleScreen() {
   };
 
   console.log("selectbyg", agents);
+
+  const currentDate = dayjs();
+
+  const validateDates = (newStartDate, newEndDate) => {
+    const selectedStartDate = dayjs(newStartDate);
+    const selectedEndDate = dayjs(newEndDate);
+
+    if (
+      selectedStartDate.isAfter(currentDate, "day") ||
+      selectedStartDate.isSame(currentDate, "day")
+    ) {
+      // setStartDate(newStartDate);
+      setStartDateError("");
+      setCreatedDate(newStartDate);
+
+      if (newEndDate) {
+        if (
+          selectedEndDate.isAfter(selectedStartDate, "day") ||
+          selectedEndDate.isSame(selectedStartDate, "day")
+        ) {
+          setEndDate(newEndDate);
+          setEndDateError("");
+        } else {
+          setEndDateError(
+            "End date must be greater than or equal to the Start Date."
+          );
+        }
+      }
+    } else {
+      setStartDateError(
+        "Start date must be greater than or equal to the current date."
+      );
+    }
+  };
   return (
     <div>
       {loading ? (
@@ -360,9 +399,15 @@ function ProjectSingleScreen() {
                         type="date"
                         name="createdDate"
                         value={createdDate}
-                        onChange={(e) => setCreatedDate(e.target.value)}
+                        // onChange={(e) => setCreatedDate(e.target.value)}
+                        onChange={(newValue) =>
+                          validateDates(newValue, endDate)
+                        }
                         placeholder="Start Date"
                       />
+                      {startDateError && (
+                        <div style={{ color: "red" }}>{startDateError}</div>
+                      )}
                     </Form.Group>
                     <Form.Group className="w-100" controlId="end-date">
                       <Form.Label className="fw-bold">End Date</Form.Label>
