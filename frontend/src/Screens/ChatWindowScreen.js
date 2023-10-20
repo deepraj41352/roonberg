@@ -27,12 +27,30 @@ function ChatWindowScreen() {
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [conversationID, setConversationID] = useState();
   const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedAudio, setSelectedAudio] = useState(null);
+  const [selectedVideo, setSelectedVideo] = useState(null);
   const [selectedfile, setSelectedfile] = useState(null);
+  const [selectedFileAudio, setSelectedFileAudio] = useState(null);
+
   const [audioStream, setAudioStream] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [mediaType, setMediaType] = useState('image');
   const audioChunks = useRef([]);
   const audioRef = useRef();
+
+  useEffect(() => {
+    if (selectedfile && selectedfile.type) {
+      const mediaType =
+        selectedfile.type.includes('video') ||
+        selectedfile.type.includes('audio')
+          ? 'video'
+          : 'image';
+
+      //console.log('Media Type:', mediaType);
+      setMediaType(mediaType);
+    }
+  }, [selectedfile]);
 
   const socket = useRef(io('ws://localhost:8900'));
   const scrollRef = useRef();
@@ -40,6 +58,7 @@ function ChatWindowScreen() {
   useEffect(() => {
     socket.current = io('ws://localhost:8900');
     socket.current.on('audio', (data) => {
+      console.log('audio ', data.audio);
       const audioBlob = new Blob([data.audio], { type: 'audio/wav' });
       const audioUrl = URL.createObjectURL(audioBlob);
       setArrivalMessage({
@@ -49,8 +68,27 @@ function ChatWindowScreen() {
       });
       setAudioStream(data.audio);
     });
+    socket.current.on('audioFile', (data) => {
+      console.log('audioFile ', data.audio);
+      setArrivalMessage({
+        sender: data.senderId,
+        audio: data.audio,
+        createdAt: Date.now(),
+      });
+      setAudioStream(data.audio);
+    });
+    socket.current.on('video', (data) => {
+      console.log('vedoodile ', data.video);
+      setArrivalMessage({
+        sender: data.senderId,
+        video: data.video,
+        createdAt: Date.now(),
+      });
+      setAudioStream(data.video);
+    });
 
     socket.current.on('image', (data) => {
+      console.log('image', data);
       setArrivalMessage({
         sender: data.senderId,
         image: data.image,
@@ -93,21 +131,22 @@ function ChatWindowScreen() {
           const audioBlob = new Blob(audioChunks.current, {
             type: 'audio/wav',
           });
-          console.log('audiobulb', audioBlob);
+          //console.log('audiobulb', audioBlob);
           const messageData = {
             senderId: userInfo._id,
             receiverdId: receiverdId,
             audio: audioBlob,
           };
-          console.log('messageData', messageData);
+          //console.log('messageData', messageData);
           socket.current.emit('audio', messageData);
           // socket.current.emit('audio', audioBlob);
           audioChunks.current.length = 0;
 
           const formDatas = new FormData();
+          formDatas.append('media', audioBlob);
+          formDatas.append('mediaType', 'video');
           formDatas.append('conversationId', id);
           formDatas.append('sender', userInfo._id);
-          formDatas.append('audio', audioBlob);
 
           try {
             const { data } = await axios.post('/api/message/audio', formDatas);
@@ -143,7 +182,7 @@ function ChatWindowScreen() {
         const { data } = await axios.get(`/api/message/${id}`);
         setChatMessages(data);
       } catch (err) {
-        console.log(err);
+        //console.log(err);
       }
     };
 
@@ -156,7 +195,7 @@ function ChatWindowScreen() {
         const { data } = await axios.post(`/api/conversation/${id}`);
         setConversationID(data);
       } catch (err) {
-        console.log(err);
+        //console.log(err);
       }
     };
 
@@ -168,33 +207,58 @@ function ChatWindowScreen() {
   };
   // const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     const messageObject = { text: newMessage, sender: userInfo._id };
     if (newMessage.trim() !== '') {
       setChatMessages([...chatMessages, messageObject]);
       setNewMessage('');
     }
+
     submitHandler();
   };
   const onChange = (value) => {
     setNewMessage(value);
   };
-  const handleImageChange = (e) => {
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
-    setSelectedfile(file);
+    console.log('file ', file.type);
+
+    if (file.type.includes('image')) {
+      setSelectedfile(file);
+    } else if (file.type.includes('audio')) {
+      setSelectedFileAudio(file);
+    }
+
     const reader = new FileReader();
     reader.onload = (event) => {
-      const base64Image = event.target.result;
-      setSelectedImage(base64Image);
+      // Handle the file data based on its type
+      const base64Data = event.target.result;
+
+      //setSelectedImage(base64Data);
+      if (file.type.includes('image')) {
+        // Handle image data
+        setSelectedImage(base64Data);
+      } else if (file.type.includes('audio')) {
+        setSelectedAudio(base64Data);
+      } else if (file.type.includes('video')) {
+        console.log('videpo');
+        // Handle video data
+        setSelectedVideo(base64Data);
+      }
     };
+
     reader.readAsDataURL(file);
   };
 
-  console.log('selctedfile', selectedfile);
+  // console.log('selectedAudio', selectedAudio);
+  // console.log('selectedImage', selectedImage);
+  console.log('selectedVideo', selectedVideo);
+  // console.log('selctedfile', selectedfile);
   const submitHandler = async (e) => {
     const receiverdId = conversationID.members.find(
       (member) => member !== userInfo._id
     );
+
     if (selectedImage) {
       const messageData = {
         senderId: userInfo._id,
@@ -202,32 +266,72 @@ function ChatWindowScreen() {
         image: selectedImage,
       };
       socket.current.emit('image', messageData);
+      const formDatas = new FormData();
+      formDatas.append('media', selectedfile);
+      formDatas.append('mediaType', mediaType);
+      formDatas.append('conversationId', id);
+      formDatas.append('sender', userInfo._id);
+      formDatas.append('text', newMessage);
+      try {
+        const { data } = await axios.post('/api/message/', formDatas);
+      } catch (err) {
+        console.log(err.response?.data?.message);
+      }
+
       setSelectedImage(null);
+    } else if (selectedAudio) {
+      const messageData = {
+        senderId: userInfo._id,
+        receiverdId: receiverdId,
+        audio: selectedAudio,
+      };
+      socket.current.emit('audioFile', messageData);
+      const formDatas = new FormData();
+      formDatas.append('media', selectedFileAudio);
+      formDatas.append('mediaType', 'video');
+      formDatas.append('conversationId', id);
+      formDatas.append('sender', userInfo._id);
+      formDatas.append('text', newMessage);
+      try {
+        const { data } = await axios.post('/api/message/audio', formDatas);
+        setSelectedAudio(null);
+      } catch (err) {
+        console.log(err.response?.data?.message);
+      }
+    } else if (selectedVideo) {
+      console.log('videodataemittttttlatttfirtsttsssss');
+
+      const messageData = {
+        senderId: userInfo._id,
+        receiverdId: receiverdId,
+        video: selectedVideo,
+      };
+      socket.current.emit('video', messageData);
+      console.log('videodataemittttttlattt');
+      setSelectedVideo(null);
     } else {
       socket.current.emit('sendMessage', {
         senderId: userInfo._id,
         receiverdId: receiverdId,
         text: newMessage,
       });
-    }
-
-    const formDatas = new FormData();
-    formDatas.append('image', selectedfile);
-    formDatas.append('conversationId', id);
-    formDatas.append('sender', userInfo._id);
-    formDatas.append('text', newMessage);
-
-    try {
-      const { data } = await axios.post('/api/message/', formDatas);
-    } catch (err) {
-      console.log(err.response?.data?.message);
+      try {
+        const { data } = await axios.post('/api/message/', {
+          conversationId: id,
+          sender: userInfo._id,
+          text: newMessage,
+        });
+      } catch (err) {
+        console.log(err.response?.data?.message);
+      }
     }
   };
+
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages, newMessage]);
 
-  console.log('selected image', selectedImage);
+  //console.log('selected image', selectedImage);
 
   return (
     <div className=" justify-content-center align-items-center">
@@ -235,7 +339,6 @@ function ChatWindowScreen() {
         <Card className="chatWindow mt-3">
           <CardHeader>Rohan </CardHeader>
           <CardBody className="chatWindowBody pb-0">
-            {console.log('chatMessages ', chatMessages)}
             {chatMessages.map((item) => (
               <>
                 {userInfo._id == item.sender ? (
@@ -264,14 +367,25 @@ function ChatWindowScreen() {
                             <source src={item.audio} type="audio/wav" />
                           </audio>
                         ) : (
-                          <img
-                            src={
-                              item.conversationId
-                                ? item.image
-                                : `http://localhost:4500/${item.image}`
-                            }
-                            className="chat-receiverMsg-inner w-100 p-2"
-                          />
+                          <>
+                            {item.video ? (
+                              <video
+                                className="chat-receiverMsg-inner w-100 p-2"
+                                controls
+                              >
+                                <source src={item.video} type="video/mp4" />
+                              </video>
+                            ) : (
+                              <img
+                                src={
+                                  item.conversationId
+                                    ? item.image
+                                    : `http://localhost:4500/${item.image}`
+                                }
+                                className="chat-receiverMsg-inner w-100 p-2"
+                              />
+                            )}
+                          </>
                         )}
 
                         <div className="timeago">{format(item.createdAt)}</div>
@@ -304,14 +418,25 @@ function ChatWindowScreen() {
                             <source src={item.audio} type="audio/wav" />
                           </audio>
                         ) : (
-                          <img
-                            src={
-                              item.conversationId
-                                ? item.image
-                                : `http://localhost:4500/${item.image}`
-                            }
-                            className="chat-senderMsg-inner w-100 p-2"
-                          />
+                          <>
+                            {item.video ? (
+                              <video
+                                className="chat-senderMsg-inner w-100 p-2"
+                                controls
+                              >
+                                <source src={item.video} type="video/mp4" />
+                              </video>
+                            ) : (
+                              <img
+                                src={
+                                  item.conversationId
+                                    ? item.image
+                                    : `http://localhost:4500/${item.image}`
+                                }
+                                className="chat-senderMsg-inner w-100 p-2"
+                              />
+                            )}
+                          </>
                         )}
                         <div className="timeago">{format(item.createdAt)}</div>
                       </div>
@@ -340,7 +465,7 @@ function ChatWindowScreen() {
                     onChange={onChange}
                   />
                 </div>
-                <Form.Control onChange={handleImageChange} type="file" />
+                <Form.Control onChange={handleFileChange} type="file" />
                 <div className="App d-flex align-items-center ps-2">
                   <BsFillMicFill
                     onClick={startRecording}

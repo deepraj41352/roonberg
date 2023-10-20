@@ -8,46 +8,19 @@ import multer from 'multer';
 const MessageRouter = express.Router();
 const upload = multer();
 
-//add
+// code for alll media
 
-MessageRouter.post('/', upload.single('image'), async (req, res) => {
+MessageRouter.post('/audio', upload.single('media'), async (req, res) => {
   try {
     if (req.file) {
-      const image = await uploadDoc(req);
-      req.body.image = image;
-      console.log('image', req.body.image);
-    }
-    const newMessage = new Message(
-      req.body
-      // conversationId: req.body.conversationId,
-      // sender: req.body.sender,
-      // text: req.body.text,
-      // // image:image,
-    );
-    console.log('conversationid', newMessage.conversationId);
+      const mediaType = req.body.mediaType;
+      console.log('mediasendingtypeaudio', req.body.mediaType);
 
-    const savedMessage = await newMessage.save();
-    res.status(200).json(savedMessage);
-  } catch (err) {
-    res.status(500).json(err);
-  }
-});
-MessageRouter.post('/audio', upload.single('audio'), async (req, res) => {
-  try {
-    if (req.file) {
-      const audio = await uploadDoc(req);
-      req.body.audio = audio;
-      console.log('audio', req.body.audio);
+      const media = await uploadDoc(req, mediaType);
+      req.body.audio = media;
+      console.log('Media:', req.body.audio);
     }
-    const newMessage = new Message(
-      req.body
-      // conversationId: req.body.conversationId,
-      // sender: req.body.sender,
-      // text: req.body.text,
-      // // image:image,
-    );
-    console.log('conversationid', newMessage.conversationId);
-
+    const newMessage = new Message(req.body);
     const savedMessage = await newMessage.save();
     res.status(200).json(savedMessage);
   } catch (err) {
@@ -55,7 +28,24 @@ MessageRouter.post('/audio', upload.single('audio'), async (req, res) => {
   }
 });
 
-//get
+MessageRouter.post('/', upload.single('media'), async (req, res) => {
+  try {
+    if (req.file) {
+      const mediaType = req.body.mediaType;
+      console.log('mediasendingtype', req.body.mediaType);
+
+      const media = await uploadDoc(req, mediaType);
+      req.body.image = media;
+      console.log('Media:', req.body.image);
+    }
+
+    const newMessage = new Message(req.body);
+    const savedMessage = await newMessage.save();
+    res.status(200).json(savedMessage);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
 
 MessageRouter.get('/:conversationId', async (req, res) => {
   try {

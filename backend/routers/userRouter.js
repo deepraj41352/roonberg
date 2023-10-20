@@ -467,7 +467,7 @@ userRouter.put(
   })
 );
 
-export const uploadDoc = async (req) => {
+export const uploadDoc = async (req, mediaType) => {
   try {
     cloudinary.config({
       cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -477,13 +477,19 @@ export const uploadDoc = async (req) => {
 
     const streamUpload = (req) => {
       return new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream((error, result) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(result);
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            resource_type: mediaType, // 'video' or 'audio'
+          },
+
+          (error, result) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result);
+            }
           }
-        });
+        );
         streamifier.createReadStream(req.file.buffer).pipe(stream);
       });
     };
