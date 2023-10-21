@@ -286,516 +286,516 @@ export default function AdminProjectListScreen() {
       FatchProjectData();
     }
   }, [successDelete, successUpdate, dispatch, userInfo.token, contractorData]);
-}, [successDelete, successUpdate, dispatch, userInfo.token, contractorData]);
-
-const projectActiveData = projectData.filter((item) => {
-  return item.projectStatus === 'active';
-});
-const projectCompleteData = projectData.filter((item) => {
-  return item.projectStatus === 'complete';
-});
-const projectQuedData = projectData.filter((item) => {
-  return item.projectStatus === 'qued';
-});
-const assignedAgent = projectData.filter((item) => {
-  return item.assignedAgent.length === 0;
-});
 
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsSubmiting(true);
-  try {
-    const response = await axios.post(
-      '/api/project/admin/addproject',
-      {
-        projectName: projectName,
-        projectDescription: projectDescription,
-        createdDate: startDate,
-        endDate: endDate,
-        assignedAgent: agents,
-        projectCategory: categories,
-        projectOwner: projectOwner,
-        projectStatus: projectStatus,
-      },
-      {
-        headers: { Authorization: `Bearer ${userInfo.token}` },
-      }
-    );
-    console.log(response.data.message);
-    console.log(response);
-    dispatch({ type: 'UPDATE_SUCCESS', payload: true });
-    dispatch({ type: 'UPDATE_SUCCESS', payload: true });
-    if (response.status === 201) {
-      toast.success(response.data.message);
-      const datas = response.data;
-      setIsModelOpen(false);
-      setIsSubmiting(false);
-      setProjectName('');
-      setProjectDescription('');
-      startDate();
-      endDate();
-      setAgents([{}])
-      setProjectStatus('')
-      setProjectOwner('')
+  const projectActiveData = projectData.filter((item) => {
+    return item.projectStatus === 'active';
+  });
+  const projectCompleteData = projectData.filter((item) => {
+    return item.projectStatus === 'complete';
+  });
+  const projectQuedData = projectData.filter((item) => {
+    return item.projectStatus === 'qued';
+  });
+  const assignedAgent = projectData.filter((item) => {
+    return item.assignedAgent.length === 0;
+  });
 
-    }
 
-  } catch (error) {
-    toast.error(error.response);
-    console.log(error);
-    setIsSubmiting(false);
-  }
-};
-
-const deleteHandle = async (productId) => {
-  if (window.confirm('Are you sure to delete?')) {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmiting(true);
     try {
-      const response = await axios.delete(`/api/project/${productId}`, {
-        headers: { Authorization: `Bearer ${userInfo.token}` },
-      });
+      const response = await axios.post(
+        '/api/project/admin/addproject',
+        {
+          projectName: projectName,
+          projectDescription: projectDescription,
+          createdDate: startDate,
+          endDate: endDate,
+          assignedAgent: agents,
+          projectCategory: categories,
+          projectOwner: projectOwner,
+          projectStatus: projectStatus,
+        },
+        {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+      console.log(response.data.message);
+      console.log(response);
+      dispatch({ type: 'UPDATE_SUCCESS', payload: true });
+      dispatch({ type: 'UPDATE_SUCCESS', payload: true });
+      if (response.status === 201) {
+        toast.success(response.data.message);
+        const datas = response.data;
+        setIsModelOpen(false);
+        setIsSubmiting(false);
+        setProjectName('');
+        setProjectDescription('');
+        startDate();
+        endDate();
+        setAgents([{}])
+        setProjectStatus('')
+        setProjectOwner('')
 
-      if (response.status === 200) {
-        toast.success('Data deleted successfully!');
-        dispatch({
-          type: 'DELETE_SUCCESS',
-          payload: true,
-        });
-      } else {
-        toast.error('Failed to delete data.');
       }
+
     } catch (error) {
-      console.error(error);
-      toast.error('An error occurred while deleting data.');
+      toast.error(error.response);
+      console.log(error);
+      setIsSubmiting(false);
     }
+  };
+
+  const deleteHandle = async (productId) => {
+    if (window.confirm('Are you sure to delete?')) {
+      try {
+        const response = await axios.delete(`/api/project/${productId}`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+
+        if (response.status === 200) {
+          toast.success('Data deleted successfully!');
+          dispatch({
+            type: 'DELETE_SUCCESS',
+            payload: true,
+          });
+        } else {
+          toast.error('Failed to delete data.');
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error('An error occurred while deleting data.');
+      }
+    }
+  };
+
+  const handleRedirectToContractorScreen = () => {
+    navigate('/adminEditProject');
+  };
+
+  const handleAssigndment = (userid) => {
+    navigate(`/AdminAssignAgent/${userid}`)
   }
-};
 
-const handleRedirectToContractorScreen = () => {
-  navigate('/adminEditProject');
-};
+  return (
+    <>
+      <Button
+        variant="outlined"
+        className=" m-2 d-flex globalbtnColor"
+        onClick={handleNew}
+      >
+        <BiPlusMedical className="mx-2" />
+        Add Project
+      </Button>
+      {loading ? (
+        <>
+          <div className='ThreeDot' >
+            <ThreeDots
+              height="80"
+              width="80"
+              radius="9"
+              className="ThreeDot justify-content-center"
+              color="#0e0e3d"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClassName=""
+              visible={true}
+            />
+          </div>
 
-const handleAssigndment = (userid) => {
-  navigate(`/AdminAssignAgent/${userid}`)
-}
+        </>
+      ) : error ? (
+        <div>{error}</div>
+      ) : (
+        <>
+          <Tabs
+            defaultActiveKey="All"
+            id="uncontrolled-tab-example"
+            className="mb-3 mt-4 ps-4 gap-5 tab-btn"
+          >
+            <Tab className="tab-color" eventKey="All" title="All">
+              <Box sx={{ height: 400, width: '100%' }}>
+                <DataGrid
+                  className={`tableBg mx-2 ${theme}DataGrid`}
+                  rows={projectData}
+                  columns={[
+                    ...columns,
+                    {
+                      field: 'action',
+                      headerName: 'Action',
+                      width: 250,
+                      renderCell: (params) => {
+                        return (
+                          <Grid item xs={8}>
 
-return (
-  <>
-    <Button
-      variant="outlined"
-      className=" m-2 d-flex globalbtnColor"
-      onClick={handleNew}
-    >
-      <BiPlusMedical className="mx-2" />
-      Add Project
-    </Button>
-    {loading ? (
-      <>
-        <div className='ThreeDot' >
-          <ThreeDots
-            height="80"
-            width="80"
-            radius="9"
-            className="ThreeDot justify-content-center"
-            color="#0e0e3d"
-            ariaLabel="three-dots-loading"
-            wrapperStyle={{}}
-            wrapperClassName=""
-            visible={true}
-          />
-        </div>
+                            <Button
+                              variant="contained"
+                              className="mx-2 tableEditbtn"
+                              onClick={() => handleEdit(params.row._id)}
 
-      </>
-    ) : error ? (
-      <div>{error}</div>
-    ) : (
-      <>
-        <Tabs
-          defaultActiveKey="All"
-          id="uncontrolled-tab-example"
-          className="mb-3 mt-4 ps-4 gap-5 tab-btn"
-        >
-          <Tab className="tab-color" eventKey="All" title="All">
-            <Box sx={{ height: 400, width: '100%' }}>
-              <DataGrid
-                className={`tableBg mx-2 ${theme}DataGrid`}
-                rows={projectData}
-                columns={[
-                  ...columns,
-                  {
-                    field: 'action',
-                    headerName: 'Action',
-                    width: 250,
-                    renderCell: (params) => {
-                      return (
-                        <Grid item xs={8}>
-
-                          <Button
-                            variant="contained"
-                            className="mx-2 tableEditbtn"
-                            onClick={() => handleEdit(params.row._id)}
-
-                          >
-                            Edit
-                          </Button>
-
-                          <Button
-                            variant="outlined"
-                            className="mx-2 tableDeletebtn"
-                            onClick={() => deleteHandle(params.row._id)}
-                            startIcon={<AiFillDelete />}
-                          >
-                            Delete
-                          </Button>
-                        </Grid>
-                      );
-                    },
-
-                  },
-                ]}
-                getRowId={(row) => row._id}
-                initialState={{
-                  pagination: {
-                    paginationModel: {
-                      pageSize: 5,
-                    },
-                  },
-                }}
-                pageSizeOptions={[5]}
-                checkboxSelection
-                disableRowSelectionOnClick
-              />
-            </Box>
-            <Modal open={isModelOpen} onClose={handleCloseRow}>
-              <Box
-                className="modelBg"
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  width: 400,
-                  bgcolor: 'background.paper',
-                  boxShadow: 24,
-                  p: 4,
-                }}
-              >
-                <Form className='scrollInAdminproject' onSubmit={handleSubmit}>
-                  <h4 className="d-flex justify-content-center">
-                    Add Project
-                  </h4>
-                  <TextField
-                    required
-                    className="mb-2"
-                    value={projectName}
-                    onChange={(e) => setProjectName(e.target.value)}
-                    label="Project Name"
-                    fullWidth
-                  />
-
-                  <TextField
-
-                    id="outlined-multiline-static"
-                    onChange={(e) => setProjectDescription(e.target.value)}
-                    label="Project Description"
-                    multiline
-                    rows={4}
-                    fullWidth
-                    variant="outlined"
-                  />
-                  <FormControl >
-                    <InputLabel>Choose Contractor</InputLabel>
-                    <Select value={projectOwner} onChange={(e) => setProjectOwner(e.target.value)}>
-                      <MenuItem onClick={() => { handleRedirectToContractorScreen() }}>  <BiPlusMedical /> add new Contractor</MenuItem>
-                      {contractorData.map((items) => (
-                        <MenuItem key={items._id} value={items._id} >{items.first_name}</MenuItem>
-
-                      ))}
-                    </Select>
-                  </FormControl>
-                  {agents.map((agent, index) => (
-                    <div key={index}>
-                      <FormControl>
-                        <InputLabel>Choose Category</InputLabel>
-                        <Select
-                          value={agent.categoryId}
-                          onChange={(e) => handleAgentChange(index, 'categoryId', e.target.value)}
-                        >
-                          <MenuItem disabled={agent.categoryId !== ''}>Select Category</MenuItem>
-                          {categoryData.map((category) => (
-                            <MenuItem key={category._id} value={category._id}
-                              disabled={agents.some((a) => a.categoryId === category._id)}
                             >
-                              {category.categoryName}
+                              Edit
+                            </Button>
 
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                      <FormControl>
-                        <InputLabel>Choose Agent</InputLabel>
-                        <Select
-                          value={agent.agentId}
-                          onChange={(e) => handleAgentChange(index, 'agentId', e.target.value)}
-                        >
-                          <MenuItem disabled={agent.agentId !== ''}>Select Agent</MenuItem>
-                          {assignedAgentByCateHandle(index).map((agent) => (
-                            <MenuItem key={agent._id} value={agent._id}
-                              disabled={agents.some((a) => a.agentId === agent._id)}
+                            <Button
+                              variant="outlined"
+                              className="mx-2 tableDeletebtn"
+                              onClick={() => deleteHandle(params.row._id)}
+                              startIcon={<AiFillDelete />}
                             >
-                              {agent.first_name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                      <div className='d-flex align-items-center'>
-                        <GrSubtractCircle color="black" className='mx-2' onClick={() => removeAgent(index)} />
-                        <p className='text-dark m-0'>Remove</p>
+                              Delete
+                            </Button>
+                          </Grid>
+                        );
+                      },
+
+                    },
+                  ]}
+                  getRowId={(row) => row._id}
+                  initialState={{
+                    pagination: {
+                      paginationModel: {
+                        pageSize: 5,
+                      },
+                    },
+                  }}
+                  pageSizeOptions={[5]}
+                  checkboxSelection
+                  disableRowSelectionOnClick
+                />
+              </Box>
+              <Modal open={isModelOpen} onClose={handleCloseRow}>
+                <Box
+                  className="modelBg"
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 400,
+                    bgcolor: 'background.paper',
+                    boxShadow: 24,
+                    p: 4,
+                  }}
+                >
+                  <Form className='scrollInAdminproject' onSubmit={handleSubmit}>
+                    <h4 className="d-flex justify-content-center">
+                      Add Project
+                    </h4>
+                    <TextField
+                      required
+                      className="mb-2"
+                      value={projectName}
+                      onChange={(e) => setProjectName(e.target.value)}
+                      label="Project Name"
+                      fullWidth
+                    />
+
+                    <TextField
+
+                      id="outlined-multiline-static"
+                      onChange={(e) => setProjectDescription(e.target.value)}
+                      label="Project Description"
+                      multiline
+                      rows={4}
+                      fullWidth
+                      variant="outlined"
+                    />
+                    <FormControl >
+                      <InputLabel>Choose Contractor</InputLabel>
+                      <Select value={projectOwner} onChange={(e) => setProjectOwner(e.target.value)}>
+                        <MenuItem onClick={() => { handleRedirectToContractorScreen() }}>  <BiPlusMedical /> add new Contractor</MenuItem>
+                        {contractorData.map((items) => (
+                          <MenuItem key={items._id} value={items._id} >{items.first_name}</MenuItem>
+
+                        ))}
+                      </Select>
+                    </FormControl>
+                    {agents.map((agent, index) => (
+                      <div key={index}>
+                        <FormControl>
+                          <InputLabel>Choose Category</InputLabel>
+                          <Select
+                            value={agent.categoryId}
+                            onChange={(e) => handleAgentChange(index, 'categoryId', e.target.value)}
+                          >
+                            <MenuItem disabled={agent.categoryId !== ''}>Select Category</MenuItem>
+                            {categoryData.map((category) => (
+                              <MenuItem key={category._id} value={category._id}
+                                disabled={agents.some((a) => a.categoryId === category._id)}
+                              >
+                                {category.categoryName}
+
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                        <FormControl>
+                          <InputLabel>Choose Agent</InputLabel>
+                          <Select
+                            value={agent.agentId}
+                            onChange={(e) => handleAgentChange(index, 'agentId', e.target.value)}
+                          >
+                            <MenuItem disabled={agent.agentId !== ''}>Select Agent</MenuItem>
+                            {assignedAgentByCateHandle(index).map((agent) => (
+                              <MenuItem key={agent._id} value={agent._id}
+                                disabled={agents.some((a) => a.agentId === agent._id)}
+                              >
+                                {agent.first_name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                        <div className='d-flex align-items-center'>
+                          <GrSubtractCircle color="black" className='mx-2' onClick={() => removeAgent(index)} />
+                          <p className='text-dark m-0'>Remove</p>
+                        </div>
                       </div>
+                    ))}
+
+                    <div className='d-flex align-items-center'>
+
+                      <Button className='mb-2 bg-primary' onClick={addAgent}>
+                        <GrAddCircle color="white" className='mx-2' />
+                        Add Category and Agent
+                      </Button>
                     </div>
-                  ))}
+                    <FormControl >
+                      <InputLabel>Choose Status</InputLabel>
+                      <Select value={projectStatus} onChange={(e) => setProjectStatus(e.target.value)}>
+                        <MenuItem value=""> Select Status </MenuItem>
+                        <MenuItem value="active">  Active </MenuItem>
+                        <MenuItem value="inactive">  Inactive </MenuItem>
+                        <MenuItem value="queue">  In Proccess </MenuItem>
+                      </Select>
+                    </FormControl>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
 
-                  <div className='d-flex align-items-center'>
-
-                    <Button className='mb-2 bg-primary' onClick={addAgent}>
-                      <GrAddCircle color="white" className='mx-2' />
-                      Add Category and Agent
-                    </Button>
-                  </div>
-                  <FormControl >
-                    <InputLabel>Choose Status</InputLabel>
-                    <Select value={projectStatus} onChange={(e) => setProjectStatus(e.target.value)}>
-                      <MenuItem value=""> Select Status </MenuItem>
-                      <MenuItem value="active">  Active </MenuItem>
-                      <MenuItem value="inactive">  Inactive </MenuItem>
-                      <MenuItem value="queue">  In Proccess </MenuItem>
-                    </Select>
-                  </FormControl>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-
-                    {/* <Form.Control
+                      {/* <Form.Control
                         type="date"
                         name="startDate"
                         value={startDate}
                         onChange={handleStartDateChange}
                         placeholder="Start Date"
                       /> */}
-                    <DateField
-                      required
-                      label="Date"
-                      value={startDate}
-                      onChange={(newValue) => setStartDate(newValue)}
+                      <DateField
+                        required
+                        label="Date"
+                        value={startDate}
+                        onChange={(newValue) => setStartDate(newValue)}
 
-                    // format="MM-DD-YYYY"
-                    // minDate={new Date()} // Prevent past dates from being selected
-                    />
-                    {/* <Form.Control
+                      // format="MM-DD-YYYY"
+                      // minDate={new Date()} // Prevent past dates from being selected
+                      />
+                      {/* <Form.Control
                         type="date"
                         value={endDate}
                         onChange={(e) => setEndDate(e.target.value)}
                         placeholder="Start Date"
                       /> */}
-                    <DateField
-                      required
-                      label="End Date"
-                      value={endDate}
-                      onChange={(newValue) => setEndDate(newValue)}
-                      format="MM-DD-YYYY"
+                      <DateField
+                        required
+                        label="End Date"
+                        value={endDate}
+                        onChange={(newValue) => setEndDate(newValue)}
+                        format="MM-DD-YYYY"
 
-                    />
-                  </LocalizationProvider>
-                  <Button variant="contained" color="primary" type="submit"
-                    disabled={isSubmiting}
-                  >
-                    {isNewProject ? (isSubmiting ? "Adding Project..." : "Add Project") : (isSubmiting ? "Saving Changes..." : "Save Changes")}
-                  </Button>
-                </Form>
+                      />
+                    </LocalizationProvider>
+                    <Button variant="contained" color="primary" type="submit"
+                      disabled={isSubmiting}
+                    >
+                      {isNewProject ? (isSubmiting ? "Adding Project..." : "Add Project") : (isSubmiting ? "Saving Changes..." : "Save Changes")}
+                    </Button>
+                  </Form>
+                </Box>
+              </Modal>
+            </Tab>
+            <Tab className="tab-color" eventKey="Active" title="Active">
+              <Box sx={{ height: 400, width: '100%' }}>
+                <DataGrid
+                  className={`tableBg mx-2 ${theme}DataGrid`}
+                  rows={projectActiveData}
+                  columns={[
+                    ...columns,
+                    {
+                      field: 'action',
+                      headerName: 'Action',
+                      width: 250,
+                      renderCell: (params) => {
+                        return (
+                          <Grid item xs={8}>
+
+                            <Button
+                              variant="contained"
+                              className="mx-2 tableEditbtn"
+                              onClick={() => handleEdit(params.row._id)}
+
+                            >
+                              Edit
+                            </Button>
+
+                            <Button
+                              variant="outlined"
+                              className="mx-2 tableDeletebtn"
+                              onClick={() => deleteHandle(params.row._id)}
+                              startIcon={<AiFillDelete />}
+                            >
+                              Delete
+                            </Button>
+                          </Grid>
+                        );
+                      },
+                    },
+                  ]}
+                  getRowId={(row) => row._id}
+                  initialState={{
+                    pagination: {
+                      paginationModel: {
+                        pageSize: 5,
+                      },
+                    },
+                  }}
+                  pageSizeOptions={[5]}
+                  checkboxSelection
+                  disableRowSelectionOnClick
+                />
               </Box>
-            </Modal>
-          </Tab>
-          <Tab className="tab-color" eventKey="Active" title="Active">
-            <Box sx={{ height: 400, width: '100%' }}>
-              <DataGrid
-                className={`tableBg mx-2 ${theme}DataGrid`}
-                rows={projectActiveData}
-                columns={[
-                  ...columns,
-                  {
-                    field: 'action',
-                    headerName: 'Action',
-                    width: 250,
-                    renderCell: (params) => {
-                      return (
-                        <Grid item xs={8}>
+            </Tab>
+            <Tab className="tab-color" eventKey="Completed" title="Completed">
+              <Box sx={{ height: 400, width: '100%' }}>
+                <DataGrid
+                  className={`tableBg mx-2 ${theme}DataGrid`}
+                  rows={projectCompleteData}
+                  columns={[
+                    ...columns,
+                    {
+                      field: 'action',
+                      headerName: 'Action',
+                      width: 250,
+                      renderCell: (params) => {
+                        return (
+                          <Grid item xs={8}>
+                            <Link to={`/projectSingleScreen/${params.row._id}`}>
 
-                          <Button
-                            variant="contained"
-                            className="mx-2 tableEditbtn"
-                            onClick={() => handleEdit(params.row._id)}
+                              <Button
+                                variant="contained"
+                                className="mx-2 tableEditbtn"
+                                onClick={() => handleEdit(params.row._id)}
 
-                          >
-                            Edit
-                          </Button>
-
-                          <Button
-                            variant="outlined"
-                            className="mx-2 tableDeletebtn"
-                            onClick={() => deleteHandle(params.row._id)}
-                            startIcon={<AiFillDelete />}
-                          >
-                            Delete
-                          </Button>
-                        </Grid>
-                      );
-                    },
-                  },
-                ]}
-                getRowId={(row) => row._id}
-                initialState={{
-                  pagination: {
-                    paginationModel: {
-                      pageSize: 5,
-                    },
-                  },
-                }}
-                pageSizeOptions={[5]}
-                checkboxSelection
-                disableRowSelectionOnClick
-              />
-            </Box>
-          </Tab>
-          <Tab className="tab-color" eventKey="Completed" title="Completed">
-            <Box sx={{ height: 400, width: '100%' }}>
-              <DataGrid
-                className={`tableBg mx-2 ${theme}DataGrid`}
-                rows={projectCompleteData}
-                columns={[
-                  ...columns,
-                  {
-                    field: 'action',
-                    headerName: 'Action',
-                    width: 250,
-                    renderCell: (params) => {
-                      return (
-                        <Grid item xs={8}>
-                          <Link to={`/projectSingleScreen/${params.row._id}`}>
+                              >
+                                Edit
+                              </Button>
+                            </Link>
 
                             <Button
-                              variant="contained"
-                              className="mx-2 tableEditbtn"
-                              onClick={() => handleEdit(params.row._id)}
-
+                              variant="outlined"
+                              className="mx-2 tableDeletebtn"
+                              onClick={() => deleteHandle(params.row._id)}
+                              startIcon={<AiFillDelete />}
                             >
-                              Edit
+                              Delete
                             </Button>
-                          </Link>
+                          </Grid>
+                        );
+                      },
+                    },
+                  ]}
+                  getRowId={(row) => row._id}
+                  initialState={{
+                    pagination: {
+                      paginationModel: {
+                        pageSize: 5,
+                      },
+                    },
+                  }}
+                  pageSizeOptions={[5]}
+                  checkboxSelection
+                  disableRowSelectionOnClick
+                />
+              </Box>
+            </Tab>
+            <Tab className="tab-color" eventKey="Qued" title="Qued">
+              <Box sx={{ height: 400, width: '100%' }}>
+                <DataGrid
+                  className={`tableBg mx-2 ${theme}DataGrid`}
+                  rows={projectQuedData}
+                  columns={[
+                    ...columns,
+                    {
+                      field: 'action',
+                      headerName: 'Action',
+                      width: 250,
+                      renderCell: (params) => {
+                        return (
+                          <Grid item xs={8}>
+                            <Link to={`/projectSingleScreen/${params.row._id}`}>
 
-                          <Button
-                            variant="outlined"
-                            className="mx-2 tableDeletebtn"
-                            onClick={() => deleteHandle(params.row._id)}
-                            startIcon={<AiFillDelete />}
-                          >
-                            Delete
-                          </Button>
-                        </Grid>
-                      );
+                              <Button
+                                variant="contained"
+                                className="mx-2 tableEditbtn"
+                                onClick={() => handleEdit(params.row._id)}
+
+                              >
+                                Edit
+                              </Button>
+                            </Link>
+                            <Button
+                              variant="outlined"
+                              className="mx-2 tableDeletebtn"
+                              onClick={() => deleteHandle(params.row._id)}
+                              startIcon={<AiFillDelete />}
+                            >
+                              Delete
+                            </Button>
+                          </Grid>
+                        );
+                      },
                     },
-                  },
-                ]}
-                getRowId={(row) => row._id}
-                initialState={{
-                  pagination: {
-                    paginationModel: {
-                      pageSize: 5,
+                  ]}
+                  getRowId={(row) => row._id}
+                  initialState={{
+                    pagination: {
+                      paginationModel: {
+                        pageSize: 5,
+                      },
                     },
-                  },
-                }}
-                pageSizeOptions={[5]}
-                checkboxSelection
-                disableRowSelectionOnClick
-              />
-            </Box>
-          </Tab>
-          <Tab className="tab-color" eventKey="Qued" title="Qued">
-            <Box sx={{ height: 400, width: '100%' }}>
-              <DataGrid
-                className={`tableBg mx-2 ${theme}DataGrid`}
-                rows={projectQuedData}
-                columns={[
-                  ...columns,
-                  {
-                    field: 'action',
-                    headerName: 'Action',
-                    width: 250,
-                    renderCell: (params) => {
-                      return (
-                        <Grid item xs={8}>
-                          <Link to={`/projectSingleScreen/${params.row._id}`}>
+                  }}
+                  pageSizeOptions={[5]}
+                  checkboxSelection
+                  disableRowSelectionOnClick
+                />
+              </Box>
+            </Tab>
+            <Tab className="tab-color" eventKey="Assigned" title="Assigned">
+              <Box sx={{ height: 400, width: '100%' }}>
+                <DataGrid
+                  className={`tableBg mx-2 ${theme}DataGrid`}
+                  rows={assignedAgent}
+                  columns={[
+                    ...columns,
+                    {
+                      field: 'action',
+                      headerName: 'Action',
+                      width: 250,
+                      renderCell: (params) => {
+                        return (
+                          <Grid item xs={8}>
+
 
                             <Button
-                              variant="contained"
-                              className="mx-2 tableEditbtn"
-                              onClick={() => handleEdit(params.row._id)}
+                              variant="danger"
+                              className="mx-2  bg-danger"
+                              onClick={() => handleAssigndment(params.row._id)}
 
                             >
-                              Edit
+
+                              Assign
                             </Button>
-                          </Link>
-                          <Button
-                            variant="outlined"
-                            className="mx-2 tableDeletebtn"
-                            onClick={() => deleteHandle(params.row._id)}
-                            startIcon={<AiFillDelete />}
-                          >
-                            Delete
-                          </Button>
-                        </Grid>
-                      );
-                    },
-                  },
-                ]}
-                getRowId={(row) => row._id}
-                initialState={{
-                  pagination: {
-                    paginationModel: {
-                      pageSize: 5,
-                    },
-                  },
-                }}
-                pageSizeOptions={[5]}
-                checkboxSelection
-                disableRowSelectionOnClick
-              />
-            </Box>
-          </Tab>
-          <Tab className="tab-color" eventKey="Assigned" title="Assigned">
-            <Box sx={{ height: 400, width: '100%' }}>
-              <DataGrid
-                className={`tableBg mx-2 ${theme}DataGrid`}
-                rows={assignedAgent}
-                columns={[
-                  ...columns,
-                  {
-                    field: 'action',
-                    headerName: 'Action',
-                    width: 250,
-                    renderCell: (params) => {
-                      return (
-                        <Grid item xs={8}>
 
-
-                          <Button
-                            variant="danger"
-                            className="mx-2  bg-danger"
-                            onClick={() => handleAssigndment(params.row._id)}
-
-                          >
-
-                            Assign
-                          </Button>
-
-                          {/* <Button
+                            {/* <Button
                               variant="outlined"
                               className="mx-2 tableDeletebtn"
                               onClick={() => deleteHandle(params.row._id)}
@@ -803,28 +803,28 @@ return (
                             >
                               Delete
                             </Button> */}
-                        </Grid>
-                      );
+                          </Grid>
+                        );
+                      },
                     },
-                  },
-                ]}
-                getRowId={(row) => row._id}
-                initialState={{
-                  pagination: {
-                    paginationModel: {
-                      pageSize: 5,
+                  ]}
+                  getRowId={(row) => row._id}
+                  initialState={{
+                    pagination: {
+                      paginationModel: {
+                        pageSize: 5,
+                      },
                     },
-                  },
-                }}
-                pageSizeOptions={[5]}
-                checkboxSelection
-                disableRowSelectionOnClick
-              />
-            </Box>
-          </Tab>
-        </Tabs>
-      </>
-    )}
-  </>
-);
+                  }}
+                  pageSizeOptions={[5]}
+                  checkboxSelection
+                  disableRowSelectionOnClick
+                />
+              </Box>
+            </Tab>
+          </Tabs>
+        </>
+      )}
+    </>
+  );
 }

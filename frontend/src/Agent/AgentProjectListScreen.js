@@ -27,7 +27,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Button,
 } from '@mui/material';
 
 const reducer = (state, action) => {

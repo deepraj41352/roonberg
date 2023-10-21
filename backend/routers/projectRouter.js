@@ -140,6 +140,7 @@ projectRouter.post(
           projectOwner: contractorId,
           assignedAgent: assignedAgent,
         });
+
         const project = await newProject.save();
 
         const agentEmails = await User.find(
@@ -148,10 +149,11 @@ projectRouter.post(
         );
         const agentEmailList = agentEmails.map((agent) => agent.email);
 
-        console.log("contractormail", user.email);
-        console.log("agentEmails", agentEmailList);
+        console.log('contractormail', user.email);
+        console.log('agentEmails', agentEmailList);
 
         const toEmails = [user.email, ...agentEmailList];
+        console.log('bothmail', toEmails);
         const options = {
           to: toEmails,
           subject: 'New Project Create✔',
@@ -162,39 +164,37 @@ projectRouter.post(
         };
         await sendEmailNotify(options);
         for (const agentId of agentIds) {
-          for (const agentId of agentIds) {
-            const newConversation = new Conversation({
-              members: [agentId, contractorId],
-              projectId: project._id,
-            });
-            await newConversation.save();
-          }
-          for (const agentId of agentIds) {
-            const agentEmail = await User.findById(agentId, 'email');
-            const newCustomEmail = new CustomEmail({
-              projectId: project._id,
-              contractorEmail: user.email,
-              contractorCustomEmail: `${contractorId}_${project._id}_${new Date()
-                .toISOString()
-                .replace(/[^0-9]/g, '')}`,
-              agentEmail: agentEmail.email,
-              agentCustomEmail: `${agentId}_${project._id}_${new Date()
-                .toISOString()
-                .replace(/[^0-9]/g, '')}`,
-            });
-            await newCustomEmail.save();
-          }
-          res.status(201).json({ message: 'Project Created', project });
-        } else {
-          res.status(403).json({ message: 'Access denied' });
+          const newConversation = new Conversation({
+            members: [agentId, contractorId],
+            projectId: project._id,
+          });
+          await newConversation.save();
         }
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
+        for (const agentId of agentIds) {
+          const agentEmail = await User.findById(agentId, 'email');
+          const newCustomEmail = new CustomEmail({
+            projectId: project._id,
+            contractorEmail: user.email,
+            contractorCustomEmail: `${contractorId}_${project._id}_${new Date()
+              .toISOString()
+              .replace(/[^0-9]/g, '')}`,
+            agentEmail: agentEmail.email,
+            agentCustomEmail: `${agentId}_${project._id}_${new Date()
+              .toISOString()
+              .replace(/[^0-9]/g, '')}`,
+          });
+          await newCustomEmail.save();
+        }
+        res.status(201).json({ message: 'Project Created', project });
+      } else {
+        res.status(403).json({ message: 'Access denied' });
       }
-    })
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  })
 );
-
 //................ admin create Project .....................
 
 // projectRouter.post(

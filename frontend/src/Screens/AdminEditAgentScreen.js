@@ -1,17 +1,9 @@
-import React, { useContext, useEffect, useReducer, useState } from 'react';
-import {
-  Button,
-  Card,
-  Col,
-  Container,
-  Form,
-  Row,
-  Toast,
-} from 'react-bootstrap';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Store } from '../Store';
-import { toast } from 'react-toastify';
-import axios from 'axios';
+import React, { useContext, useEffect, useReducer, useState } from "react";
+import { Button, Card, Col, Container, Form, Row, Toast } from "react-bootstrap";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { Store } from "../Store";
+import { toast } from "react-toastify";
+import axios from "axios";
 import { ThreeDots } from 'react-loader-spinner';
 
 const reducer = (state, action) => {
@@ -25,9 +17,9 @@ const reducer = (state, action) => {
     case "UPDATE_SUCCESS":
       return { ...state, successUpdate: action.payload };
 
-    case 'UPDATE_RESET':
+    case "UPDATE_RESET":
       return { ...state, successUpdate: false };
-    case 'FATCH_CATEGORY':
+    case "FATCH_CATEGORY":
       return { ...state, categoryDatas: action.payload };
     //   case "CATEGORY_CRATED_REQ":
     //     return { ...state, isSubmiting: true }
@@ -78,23 +70,28 @@ function AdminEditAgent() {
   const [category, setCategory] = useState('');
   // useEffect to update the status when the API data changes
 
+
+
   useEffect(() => {
     const FatchcategoryData = async () => {
       try {
-        dispatch('FATCH_REQUEST');
-        const response = await axios.get(`/api/user/${id}`);
+        dispatch("FATCH_REQUEST");
+        const response = await axios.get(
+          `/api/user/${id}`);
         const datas = response.data;
-        setFirstName(datas.first_name);
-        setLastName(datas.last_name || 'Last Name');
-        setEmail(datas.email);
-        setStatus(datas.userStatus);
-        setCategory(datas.agentCategory);
+        setFirstName(datas.first_name)
+        setLastName(datas.last_name || 'Last Name')
+        setEmail(datas.email)
+        setStatus(datas.userStatus)
+        setCategory(datas.agentCategory)
+
       } catch (error) {
         toast.error(error.response?.data?.message);
       }
     };
 
     FatchcategoryData();
+
   }, []);
 
   React.useEffect(() => {

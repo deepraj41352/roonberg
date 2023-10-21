@@ -131,21 +131,9 @@ export default function AdminAgentListScreen() {
   };
 
   const handleNew = () => {
-    setSelectedRowData(null);
-    setIsModelOpen(true);
-    setIsNewAgent(true);
-  };
 
-  const handleEdit = (userid) => {
-    const agentToEdit = AgentData.find(
-      (agent) => agent && agent._id === userid
-    );
-    setName(agentToEdit ? agentToEdit.first_name : '');
-    setEmail(agentToEdit ? agentToEdit.email : '');
-    setStatus(agentToEdit ? agentToEdit.status : 'active');
-    setSelectedRowData(agentToEdit);
     setIsModelOpen(true);
-    setIsNewAgent(false);
+
   };
 
   useEffect(() => {
@@ -199,11 +187,17 @@ export default function AdminAgentListScreen() {
       if (response.status === 200) {
         toast.success('Agent added Successfully !');
         setIsModelOpen(false);
+        setName('');
+        setPassword('');
+        setStatus('');
+        setEmail('');
+        setSelectCategory('');
         dispatch({ type: 'UPDATE_SUCCESS', payload: true });
         dispatch({ type: 'FATCH_SUBMITTING', payload: false });
       }
     } catch (error) {
       toast.error(error.response?.data?.message);
+      dispatch({ type: 'FATCH_SUBMITTING', payload: false });
     }
   };
 
