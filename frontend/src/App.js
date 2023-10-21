@@ -31,7 +31,11 @@ import {
   Navbar,
 } from "react-bootstrap";
 import Sidebar from "./Components/Sidebar";
-import { AiOutlineAlignLeft, AiOutlineCheck } from "react-icons/ai";
+import {
+  AiOutlineAlignLeft,
+  AiOutlineCheck,
+  AiOutlineMenu,
+} from "react-icons/ai";
 import { BsFillPersonFill, BsSearch } from "react-icons/bs";
 import { BiShareAlt } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
@@ -56,7 +60,9 @@ import AdminAssignAgent from "./Screens/AdminAssignAgentScreen";
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { toggleState, userInfo } = state;
+  const { toggleState, userInfo, openClose } = state;
+  console.log("openClose", openClose);
+
   const theme = toggleState ? "dark" : "light";
   const [searchValue, setSearchValue] = useState("");
   const navigate = useNavigate();
@@ -70,7 +76,10 @@ function App() {
   const handleSearchScreen = () => {
     navigate("/searchScreen");
   };
-
+  const [displayFeature, setDisplayFeature] = useState(false);
+  const displayFeatureName = () => {
+    setDisplayFeature(!displayFeature);
+  };
   return (
     <div className={userInfo ? `App ${theme}` : `App`}>
       <ToastContainer position="bottom-center" limit={1} />
@@ -81,15 +90,16 @@ function App() {
               <Sidebar
                 sidebarVisible={sidebarVisible}
                 setSidebarVisible={setSidebarVisible}
+                displayFeatureName={displayFeatureName}
               />
             ) : null}
 
             <div className="px-0 w-100">
               {userInfo ? (
                 <Navbar expand="lg" className=" admin-navbar">
-                  <Container fluid>
+                  <Container fluid className="w-100 contat">
                     <div
-                      className="p-2 me-3 fs-5 admin-btn-logo"
+                      className="p-2  me-3 ms-2 fs-5 admin-btn-logo"
                       onClick={toggleSidebar}
                     >
                       <AiOutlineAlignLeft />
@@ -99,6 +109,9 @@ function App() {
                         className="Roonberg-logo me-3 ms-2"
                         src="./logo2.png"
                         thumbnail
+                        onClick={() => {
+                          navigate("/dashboard");
+                        }}
                       />
                     </Navbar.Brand>
                     <Form className=" search-bar-dash-outer">
@@ -118,34 +131,108 @@ function App() {
                         </InputGroup.Text>
                       </InputGroup>
                     </Form>
-                    <Navbar.Toggle aria-controls="navbarScroll" />
+                    <Navbar.Toggle
+                      // className="nav-toggle  fs-4"
+                      // className={openClose ? "show navbar-toggler" : ""}
+                      className={`nav-toggle index-1 fs-4 ${
+                        openClose ? "show" : ""
+                      }`}
+                      style={{ visibility: "hidden" }}
+                      onClick={() => {
+                        displayFeatureName();
+                      }}
+                      aria-controls="navbarScroll"
+                      disabled
+                    >
+                      <AiOutlineMenu />{" "}
+                    </Navbar.Toggle>
                     <Navbar.Collapse
-                      className="justify-content-end"
+                      // className="justify-content-end w-100 px-0 py-2  navBarOpen"
+                      className={`justify-content-end w-100 px-0 py-2 navBarOpen ${
+                        openClose ? "show" : ""
+                      }`}
                       id="navbarScroll"
                     >
-                      <Nav
-                        className="gap-3"
-                        style={{ maxHeight: "100px" }}
-                        navbarScroll
-                      >
-                        <div className="py-2">
+                      <Nav className="gap-3 navBarOpen-inner" navbarScroll>
+                        <div className=" d-flex justify-content-start ms-2 py-2">
                           <Theme />
+
+                          <div
+                            className={
+                              displayFeature ? "display-icon-info" : ""
+                            }
+                          >
+                            {displayFeature ? "Theme" : ""}
+                          </div>
                         </div>
 
-                        <Nav.Link href="#action1">
-                          <BiShareAlt className="fs-4 admin-btn-logo" />
+                        <Nav.Link
+                          className="text-white text-start  d-flex gap-1 ps-2"
+                          href="#action1"
+                        >
+                          <BiShareAlt className="fs-4 admin-btn-logo" />{" "}
+                          <div
+                            className={
+                              displayFeature ? "display-icon-info" : ""
+                            }
+                          >
+                            {displayFeature ? "Share" : ""}
+                          </div>
                         </Nav.Link>
-                        <Nav.Link href="#action2">
-                          <AiOutlineCheck className="fs-4 admin-btn-logo  " />
+                        <Nav.Link
+                          className="text-white text-start d-flex gap-1 ps-2"
+                          href="#action2"
+                        >
+                          <AiOutlineCheck className="fs-4 admin-btn-logo " />{" "}
+                          <div
+                            className={
+                              displayFeature ? "display-icon-info" : ""
+                            }
+                          >
+                            {displayFeature ? "Check" : ""}
+                          </div>
                         </Nav.Link>
-                        <Nav.Link href="#">
-                          <CgProfile className="fs-4 admin-btn-logo " />
+                        <Nav.Link
+                          className="text-white text-start d-flex gap-1 ps-2"
+                          href="#"
+                        >
+                          <CgProfile className="fs-4 admin-btn-logo " />{" "}
+                          {/* {displayFeature ? "Profile" : ""} */}
+                          <div
+                            className={
+                              displayFeature ? "display-icon-info" : ""
+                            }
+                          >
+                            {displayFeature ? "Profile" : ""}
+                          </div>
                         </Nav.Link>
-                        <Nav.Link href="#">
-                          <FiClock className="fs-4 admin-btn-logo " />
+                        <Nav.Link
+                          className="text-white text-start d-flex gap-1 ps-2"
+                          href="#"
+                        >
+                          <FiClock className="fs-4 admin-btn-logo " />{" "}
+                          {/* {displayFeature ? "Clock" : ""} */}
+                          <div
+                            className={
+                              displayFeature ? "display-icon-info" : ""
+                            }
+                          >
+                            {displayFeature ? "Clock" : ""}
+                          </div>
                         </Nav.Link>
-                        <Nav.Link href="#">
-                          <MdOutlineNotifications className="fs-4 admin-btn-logo  " />
+                        <Nav.Link
+                          className="text-white text-start d-flex gap-1 ps-2 "
+                          href="#"
+                        >
+                          <MdOutlineNotifications className="fs-4 admin-btn-logo  " />{" "}
+                          {/* {displayFeature ? "Notifications" : ""} */}
+                          <div
+                            className={
+                              displayFeature ? "display-icon-info" : ""
+                            }
+                          >
+                            {displayFeature ? "Notifications" : ""}
+                          </div>
                         </Nav.Link>
                       </Nav>
                     </Navbar.Collapse>

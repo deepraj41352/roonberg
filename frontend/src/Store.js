@@ -10,15 +10,16 @@ const initialValue = {
   userInfo: localStorage.getItem("userInfo")
     ? JSON.parse(localStorage.getItem("userInfo"))
     : null,
+  openClose: false,
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
     case "USER_SIGNIN":
       return { ...state, userInfo: action.payload };
-      case "USER_UPDATE":
+    case "USER_UPDATE":
       return { ...state, userInfo: action.payload };
-    case 'VALIDATION_MSG':
+    case "VALIDATION_MSG":
       return { ...state, validationMsg: action.payload };
     case "USER_SIGNOUT":
       return {
@@ -29,6 +30,11 @@ const reducer = (state, action) => {
       return {
         ...state,
         toggleState: action.payload,
+      };
+    case "SETTING_OPENCLOSE":
+      return {
+        ...state,
+        openClose: action.payload,
       };
     default:
       return state;

@@ -16,6 +16,7 @@ import Tabs from "react-bootstrap/Tabs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateField } from "@mui/x-date-pickers/DateField";
+import dayjs from "dayjs";
 
 import {
   FormControl,
@@ -121,6 +122,9 @@ export default function AdminProjectListScreen() {
   const [projectDescription, setProjectDescription] = useState("");
   const [projectOwner, setProjectOwner] = useState("");
   const [startDate, setStartDate] = useState(null);
+
+  const [startDateError, setStartDateError] = useState("");
+  const [endDateError, setEndDateError] = useState("");
   const [endDate, setEndDate] = useState();
   const navigate = useNavigate();
   const [agents, setAgents] = useState([
@@ -389,6 +393,38 @@ export default function AdminProjectListScreen() {
     navigate(`/AdminAssignAgent/${userid}`);
   };
 
+  const currentDate = dayjs();
+
+  const validateDates = (newStartDate, newEndDate) => {
+    const selectedStartDate = dayjs(newStartDate);
+    const selectedEndDate = dayjs(newEndDate);
+
+    if (
+      selectedStartDate.isAfter(currentDate, "day") ||
+      selectedStartDate.isSame(currentDate, "day")
+    ) {
+      setStartDate(newStartDate);
+      setStartDateError("");
+
+      if (newEndDate) {
+        if (
+          selectedEndDate.isAfter(selectedStartDate, "day") ||
+          selectedEndDate.isSame(selectedStartDate, "day")
+        ) {
+          setEndDate(newEndDate);
+          setEndDateError("");
+        } else {
+          setEndDateError(
+            "End date must be greater than or equal to the Start Date."
+          );
+        }
+      }
+    } else {
+      setStartDateError(
+        "Start date must be greater than or equal to the current date."
+      );
+    }
+  };
   return (
     <>
       <div className="px-4 mt-3">
@@ -400,7 +436,7 @@ export default function AdminProjectListScreen() {
           <BiPlusMedical className="mx-2" />
           Add Project
         </Button>
-        {loading ? (
+        {false ? (
           <>
             <div className="ThreeDot">
               <ThreeDots
@@ -638,17 +674,31 @@ export default function AdminProjectListScreen() {
                             required
                             label="Date"
                             value={startDate}
-                            onChange={(newValue) => setStartDate(newValue)}
+                            // onChange={(newValue) => setStartDate(newValue)}
+                            onChange={(newValue) =>
+                              validateDates(newValue, endDate)
+                            }
+
                             // format="MM-DD-YYYY"
                             // minDate={new Date()} // Prevent past dates from being selected
                           />
+                          {startDateError && (
+                            <div style={{ color: "red" }}>{startDateError}</div>
+                          )}
                           <DateField
                             required
                             label="End Date"
                             value={endDate}
-                            onChange={(newValue) => setEndDate(newValue)}
+                            onChange={(newValue) =>
+                              validateDates(startDate, newValue)
+                            }
+                            // onChange={(newValue) => setEndDate(newValue)}
                             format="MM-DD-YYYY"
                           />
+
+                          {endDateError && (
+                            <div style={{ color: "red" }}>{endDateError}</div>
+                          )}
                         </LocalizationProvider>
                         <Button
                           variant="contained"

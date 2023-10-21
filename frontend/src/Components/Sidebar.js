@@ -3,18 +3,18 @@ import { HiClipboardList } from "react-icons/hi";
 import { CiBoxList } from "react-icons/ci";
 import { FaListAlt, FaListUl } from "react-icons/fa";
 import { IoMdNotifications } from "react-icons/io";
-import { AiFillHome, AiOutlineProject } from "react-icons/ai";
+import { AiFillHome, AiOutlineProject, AiOutlineSetting } from "react-icons/ai";
 import { CgProfile } from "react-icons/cg";
 import { MdLogout } from "react-icons/md";
 import { BsFillChatLeftQuoteFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { Store } from "../Store";
 
-function Sidebar({ sidebarVisible, setSidebarVisible }) {
+function Sidebar({ sidebarVisible, setSidebarVisible, displayFeatureName }) {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
   const [selectedItem, setSelectedItem] = useState(null);
-
+  const [openClose, setOpenClose] = useState(true);
   const signoutHandler = () => {
     const userConfirm = window.confirm("Are you sure you want to logout?");
     if (userConfirm) {
@@ -24,6 +24,13 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
     }
   };
 
+  const handleOpenSetting = () => {
+    setOpenClose(!openClose);
+
+    console.log("openCloseSide", openClose);
+
+    ctxDispatch({ type: "SETTING_OPENCLOSE", payload: openClose });
+  };
   return (
     <div className={`sidebar ${sidebarVisible ? "visible" : ""} `}>
       <div className="blank-box"></div>
@@ -187,6 +194,22 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
             </Link>
           </>
         ) : null}
+        <Link
+          to="#"
+          onClick={displayFeatureName}
+          className="text-decoration-none display-icon-info"
+        >
+          <li
+            className={selectedItem === "setting" ? "selected" : ""}
+            onClick={() => {
+              setSelectedItem("setting");
+              handleOpenSetting();
+            }}
+          >
+            <AiOutlineSetting className="me-3 fs-5" />
+            Settings
+          </li>
+        </Link>
         <Link
           to="#Logout"
           onClick={signoutHandler}

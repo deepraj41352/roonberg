@@ -668,3 +668,29 @@ body {
 .loginPage {
   height: calc(100vh - 95px);
 }
+.display-icon-info {
+  display: none;
+}
+@media (max-width: 991px) {
+  .navBarOpen {
+    background-color: #0b0b31;
+    color: white;
+    z-index: 1;
+    /* height: calc(100vh - 66px); */
+  }
+  .navBarOpen-inner {
+    /* height: 100vh;   */
+  }
+  .display-icon-info {
+    display: block;
+  }
+}
+.contat {
+  padding: 0px !important;
+}
+.nav-toggle-down {
+  color: white !important;
+}
+.index-1 {
+  z-index: 5;
+}

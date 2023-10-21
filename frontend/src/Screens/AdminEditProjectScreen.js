@@ -42,7 +42,9 @@ function ProjectSingleScreen() {
   const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
   const [selectedOptions, setSelectedOptions] = useState([]);
+
   const [createdDate, setCreatedDate] = useState();
+
   const [endDate, setEndDate] = useState();
   const theme = toggleState ? "dark" : "light";
 
@@ -292,10 +294,7 @@ function ProjectSingleScreen() {
     }
   };
 
-  console.log("selectbyg", agents);
-
-  const currentDate = dayjs();
-
+  const currentDate = dayjs().format("YYYY-MM-DD");
   const validateDates = (newStartDate, newEndDate) => {
     const selectedStartDate = dayjs(newStartDate);
     const selectedEndDate = dayjs(newEndDate);
@@ -305,8 +304,8 @@ function ProjectSingleScreen() {
       selectedStartDate.isSame(currentDate, "day")
     ) {
       // setStartDate(newStartDate);
-      setStartDateError("");
       setCreatedDate(newStartDate);
+      setStartDateError("");
 
       if (newEndDate) {
         if (
@@ -401,7 +400,7 @@ function ProjectSingleScreen() {
                         value={createdDate}
                         // onChange={(e) => setCreatedDate(e.target.value)}
                         onChange={(newValue) =>
-                          validateDates(newValue, endDate)
+                          validateDates(newValue.target.value, endDate)
                         }
                         placeholder="Start Date"
                       />
@@ -415,9 +414,15 @@ function ProjectSingleScreen() {
                         type="date"
                         name="endDate"
                         value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
+                        // onChange={(e) => setEndDate(e.target.value)}
+                        onChange={(newValue) =>
+                          validateDates(startDate, newValue.target.value)
+                        }
                         placeholder="End Date"
                       />
+                      {endDateError && (
+                        <div style={{ color: "red" }}>{endDateError}</div>
+                      )}
                     </Form.Group>
                   </div>
                   <Button variant="primary" type="submit">
