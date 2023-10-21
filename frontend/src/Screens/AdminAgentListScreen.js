@@ -1,6 +1,5 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import { DataGrid } from "@mui/x-data-grid";
+import Box from '@mui/material/Box';
+import { DataGrid } from '@mui/x-data-grid';
 
 import {
   Button,
@@ -9,38 +8,42 @@ import {
   InputLabel,
   MenuItem,
   Select,
-} from "@mui/material";
-import { AiFillDelete } from "react-icons/ai";
-import { MdEdit } from "react-icons/md";
-import Modal from "@mui/material/Modal";
-import TextField from "@mui/material/TextField";
-import { Form, Toast } from "react-bootstrap";
-import { BiPlusMedical } from "react-icons/bi";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { Store } from "../Store";
-import { ImCross } from "react-icons/im";
+} from '@mui/material';
+import { AiFillDelete } from 'react-icons/ai';
+import { MdEdit } from 'react-icons/md';
+import Modal from '@mui/material/Modal';
+import TextField from '@mui/material/TextField';
+import { Form, Toast } from 'react-bootstrap';
+import { BiPlusMedical } from 'react-icons/bi';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { Store } from '../Store';
+import { ImCross } from 'react-icons/im';
 import { ThreeDots } from 'react-loader-spinner';
+import { useNavigate } from 'react-router-dom';
+import { useContext, useEffect, useReducer, useState } from 'react';
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "FATCH_REQUEST":
+    case 'FATCH_REQUEST':
       return { ...state, loading: true };
-    case "FATCH_SUCCESS":
+    case 'FATCH_SUCCESS':
       return { ...state, AgentData: action.payload, loading: false };
-    case "FATCH_ERROR":
+    case 'FATCH_ERROR':
       return { ...state, error: action.payload, loading: false };
-
-    case "DELETE_SUCCESS":
+    case 'FATCH_SUBMITTING':
+      return { ...state, submitting: action.payload };
+    case 'DELETE_SUCCESS':
       return { ...state, successDelete: action.payload };
 
-    case "DELETE_RESET":
+    case 'DELETE_RESET':
       return { ...state, successDelete: false };
-
-    case "UPDATE_SUCCESS":
+    case 'FATCH_CATEGORY':
+      return { ...state, categoryData: action.payload };
+    case 'UPDATE_SUCCESS':
       return { ...state, successUpdate: action.payload };
 
-    case "UPDATE_RESET":
+    case 'UPDATE_RESET':
       return { ...state, successUpdate: false };
 
     default:
@@ -49,47 +52,80 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: "_id", headerName: "ID", width: 150 },
+  { field: '_id', headerName: 'ID', width: 150 },
   {
-    field: "first_name",
-    headerName: "Agent Name",
-    width: 150,
+    field: 'first_name',
+    headerName: 'Agent Name',
+    width: 100,
   },
   {
-    field: "email",
-    headerName: "Email",
-    width: 200,
+    field: 'email',
+    headerName: 'Email',
+    width: 100,
   },
   {
-    field: "status",
-    headerName: "Status",
-    width: 150,
+    field: 'agentCategory',
+    headerName: 'Category',
+    width: 100,
+  },
+  {
+    field: 'userStatus',
+    headerName: 'Status',
+    width: 100,
   },
 ];
 
 export default function AdminAgentListScreen() {
-  const role = "agent";
-  const { state } = React.useContext(Store);
+  const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
-  const theme = toggleState ? "dark" : "light";
-  const [isModelOpen, setIsModelOpen] = React.useState(false);
-  const [selectedRowData, setSelectedRowData] = React.useState(null);
-  const [isNewAgent, setIsNewAgent] = React.useState(false);
+  const navigate = useNavigate();
+  const role = 'agent';
+  const theme = toggleState ? 'dark' : 'light';
+  const [isModelOpen, setIsModelOpen] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState(null);
+  const [isNewAgent, setIsNewAgent] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState('');
+  const [password, setPassword] = useState('');
+  const [selectcategory, setSelectCategory] = useState('');
   const [
-    { loading, error, AgentData, successDelete, successUpdate },
+    {
+      loading,
+      submitting,
+      categoryData,
+      error,
+      AgentData,
+      successDelete,
+      successUpdate,
+    },
     dispatch,
-  ] = React.useReducer(reducer, {
+  ] = useReducer(reducer, {
     loading: true,
-    error: "",
+    error: '',
     AgentData: [],
     successDelete: false,
+    categoryData: [],
     successUpdate: false,
+    submitting: false,
   });
 
-  const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [status, setStatus] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  useEffect(() => {
+    const FatchCategory = async () => {
+      try {
+        dispatch('FATCH_REQUEST');
+        const response = await axios.get(`/api/category/`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        const datas = response.data;
+        setSelectCategory(datas);
+        dispatch({ type: 'FATCH_CATEGORY', payload: datas });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    FatchCategory();
+  }, []);
 
   const handleCloseRow = () => {
     setIsModelOpen(false);
@@ -105,18 +141,18 @@ export default function AdminAgentListScreen() {
     const agentToEdit = AgentData.find(
       (agent) => agent && agent._id === userid
     );
-    setName(agentToEdit ? agentToEdit.first_name : "");
-    setEmail(agentToEdit ? agentToEdit.email : "");
-    setStatus(agentToEdit ? agentToEdit.status : "active");
+    setName(agentToEdit ? agentToEdit.first_name : '');
+    setEmail(agentToEdit ? agentToEdit.email : '');
+    setStatus(agentToEdit ? agentToEdit.status : 'active');
     setSelectedRowData(agentToEdit);
     setIsModelOpen(true);
     setIsNewAgent(false);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const FatchAgentData = async () => {
       try {
-        dispatch("FATCH_REQUEST");
+        dispatch('FATCH_REQUEST');
         const response = await axios.post(`/api/user/`, { role: role });
         const datas = response.data;
         const rowData = datas.map((items) => {
@@ -125,18 +161,19 @@ export default function AdminAgentListScreen() {
             _id: items._id,
             first_name: items.first_name,
             email: items.email,
-            status: items.status,
+            userStatus: items.userStatus ? 'Active' : 'Inactive',
+            agentCategory: items.agentCategory,
           };
         });
-        dispatch({ type: "FATCH_SUCCESS", payload: rowData });
+        dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
       } catch (error) {
         console.log(error);
       }
     };
     if (successDelete) {
-      dispatch({ type: "DELETE_RESET" });
+      dispatch({ type: 'DELETE_RESET' });
     } else if (successUpdate) {
-      dispatch({ type: "UPDATE_RESET" });
+      dispatch({ type: 'UPDATE_RESET' });
     } else {
       FatchAgentData();
     }
@@ -144,218 +181,237 @@ export default function AdminAgentListScreen() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isNewAgent) {
-      const response = await axios.post(`/api/user/signup`, {
-        first_name: name,
-        email: email,
-        password: password,
-        role: role,
-      });
-      if (response.status === 201) {
-        toast.success("Agent added Successfully !");
-        const datas = response.data;
-        setIsModelOpen(false);
-        dispatch({ type: "FATCH_SUCCESS", payload: datas });
-        dispatch({ type: "UPDATE_SUCCESS", payload: true });
-      }
-    } else {
-      const response = await axios.put(
-        `/api/user/update/${selectedRowData._id}`,
+    dispatch({ type: 'FATCH_SUBMITTING', payload: true });
+    try {
+      const response = await axios.post(
+        `/api/user/add`,
         {
           first_name: name,
           email: email,
+          password: password,
           role: role,
+          userStatus: status,
+          agentCategory: selectcategory,
         },
-
         { headers: { Authorization: `Bearer ${userInfo.token}` } }
       );
-
+      console.log(response);
       if (response.status === 200) {
-        toast.success(response.data);
+        toast.success('Agent added Successfully !');
         setIsModelOpen(false);
-        dispatch({ type: "UPDATE_SUCCESS", payload: true });
+        dispatch({ type: 'UPDATE_SUCCESS', payload: true });
+        dispatch({ type: 'FATCH_SUBMITTING', payload: false });
       }
+    } catch (error) {
+      toast.error(error.response?.data?.message);
     }
   };
 
   const deleteHandle = async (userid) => {
-    if (window.confirm("Are you sure to delete?")) {
+    if (window.confirm('Are you sure to delete?')) {
       try {
         const response = await axios.delete(`/api/user/${userid}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
 
         if (response.status === 200) {
-          toast.success("Agent data deleted successfully!");
+          toast.success('Agent data deleted successfully!');
           dispatch({
-            type: "DELETE_SUCCESS",
+            type: 'DELETE_SUCCESS',
             payload: true,
           });
         } else {
-          toast.error("Failed to delete agent data.");
+          toast.error('Failed to delete agent data.');
         }
       } catch (error) {
         console.error(error);
-        toast.error("An error occurred while deleting agent data.");
+        toast.error('An error occurred while deleting agent data.');
       }
     }
   };
 
+  // const handleCloseRow = () => {
+  //   setIsModelOpen(false);
+  // };
+
+  const handleModel = () => {
+    setIsModelOpen(true);
+  };
+
+  // const handleEdit = (userid) => {
+  //   navigate(`/adminEditAgent/${userid}`);
+  // };
+
   return (
     <>
-      {loading ? (
-        <>
-        <div className='ThreeDot' >
-        <ThreeDots 
-height="80" 
-width="80" 
-radius="9"
-className="ThreeDot justify-content-center"
-color="#0e0e3d" 
-ariaLabel="three-dots-loading"
-wrapperStyle={{}}
-wrapperClassName=""
-visible={true}
- />
- </div>
-
-        </>
-      ) : (error ? (
-        <div>{error}</div>
-      ) : (
-        <>
-          <Button
-            variant="outlined"
-            className=" m-2 d-flex globalbtnColor"
-            onClick={handleNew}
-          >
-            <BiPlusMedical className="mx-2" />
-            Add Agent
-          </Button>
-          <Box sx={{ height: 400, width: "100%" }}>
-            <DataGrid
-              className={`tableBg mx-2 ${theme}DataGrid`}
-              rows={AgentData}
-              columns={[
-                ...columns,
-                {
-                  field: "action",
-                  headerName: "Action",
-                  width: 250,
-                  renderCell: (params) => {
-                    return (
-                      <Grid item xs={8}>
-                        <Button
-                          variant="contained"
-                          className="mx-2 tableEditbtn"
-                          onClick={() => handleEdit(params.row._id)}
-                          startIcon={<MdEdit />}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          className="mx-2 tableDeletebtn"
-                          onClick={() => deleteHandle(params.row._id)}
-                          startIcon={<AiFillDelete />}
-                        >
-                          Delete
-                        </Button>
-                      </Grid>
-                    );
-                  },
-                },
-              ]}
-              getRowId={(row) => row._id}
-              initialState={{
-                pagination: {
-                  paginationModel: {
-                    pageSize: 5,
-                  },
-                },
-              }}
-              pageSizeOptions={[5]}
-              checkboxSelection
-              disableRowSelectionOnClick
-            />
-          </Box>
-          <Modal open={isModelOpen} onClose={handleCloseRow}>
-            <Box
-              className="modelBg"
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                width: 400,
-                bgcolor: "background.paper",
-                boxShadow: 24,
-                p: 4,
-              }}
+      <div className="px-3 mt-3">
+        {loading ? (
+          <>
+            <div className="ThreeDot">
+              <ThreeDots
+                height="80"
+                width="80"
+                radius="9"
+                className="ThreeDot justify-content-center"
+                color="#0e0e3d"
+                ariaLabel="three-dots-loading"
+                wrapperStyle={{}}
+                wrapperClassName=""
+                visible={true}
+              />
+            </div>
+          </>
+        ) : error ? (
+          <div>{error}</div>
+        ) : (
+          <>
+            <Button
+              variant="outlined"
+              className=" m-2 d-flex globalbtnColor"
+              onClick={handleModel}
             >
-              <Form onSubmit={handleSubmit}>
-                <ImCross
-                  color="black"
-                  className="formcrossbtn"
-                  onClick={handleCloseRow}
-                />
-                {isNewAgent ? (
+              <BiPlusMedical className="mx-2" />
+              Add Agent
+            </Button>
+            <Box sx={{ height: 400, width: '100%' }}>
+              <DataGrid
+                className={
+                  theme == 'light'
+                    ? `${theme}DataGrid mx-2`
+                    : `tableBg ${theme}DataGrid mx-2`
+                }
+                rows={AgentData}
+                columns={[
+                  ...columns,
+                  {
+                    field: 'action',
+                    headerName: 'Action',
+                    width: 250,
+                    renderCell: (params) => {
+                      return (
+                        <Grid item xs={8}>
+                          <Button
+                            variant="contained"
+                            className="mx-2 tableEditbtn"
+                            onClick={() => handleEdit(params.row._id)}
+                            // startIcon={<MdEdit />}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            className="mx-2 tableDeletebtn"
+                            onClick={() => deleteHandle(params.row._id)}
+                            // startIcon={<AiFillDelete />}
+                          >
+                            Delete
+                          </Button>
+                        </Grid>
+                      );
+                    },
+                  },
+                ]}
+                getRowId={(row) => row._id}
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      pageSize: 5,
+                    },
+                  },
+                }}
+                pageSizeOptions={[5]}
+                checkboxSelection
+                disableRowSelectionOnClick
+              />
+            </Box>
+            <Modal open={isModelOpen} onClose={handleCloseRow}>
+              <Box
+                className="modelBg"
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: 400,
+                  bgcolor: 'background.paper',
+                  boxShadow: 24,
+                  p: 4,
+                }}
+              >
+                <Form onSubmit={handleSubmit}>
+                  <ImCross
+                    color="black"
+                    className="formcrossbtn"
+                    onClick={handleCloseRow}
+                  />
                   <h4 className="d-flex justify-content-center text-dark">
-                    Add new Agent Details
+                    Add Agent
                   </h4>
-                ) : (
-                  <h4 className="d-flex justify-content-center text-dark">
-                    Edit Agent Details
-                  </h4>
-                )}
-                <TextField
-                  className="mb-2"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  label="Username"
-                  fullWidth
-                />
+                  <TextField
+                    className="mb-2"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    label="Username"
+                    fullWidth
+                  />
 
-                <TextField
-                  className="mb-2"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  label="Email"
-                  fullWidth
-                />
-                {isNewAgent && (
+                  <TextField
+                    className="mb-2"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    label="Email"
+                    type="email"
+                    fullWidth
+                  />
                   <TextField
                     className="mb-2"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     label="Password"
+                    type="password"
                     fullWidth
                   />
-                )}
 
-                <FormControl className="formselect">
-                  <Select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
+                  <FormControl>
+                    <InputLabel>Choose Status</InputLabel>
+                    <Select
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
+                    >
+                      <MenuItem value="">SELECT STATUS</MenuItem>
+                      <MenuItem value={true}>Active</MenuItem>
+                      <MenuItem value={false}>Inactive</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <FormControl>
+                    <InputLabel>Choose Category</InputLabel>
+                    <Select
+                      value={selectcategory}
+                      onChange={(e) => setSelectCategory(e.target.value)}
+                    >
+                      {categoryData.map((items) => (
+                        <MenuItem key={items._id} value={items._id}>
+                          {items.categoryName}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <br></br>
+                  <Button
+                    className="mt-2 formbtn"
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    disabled={submitting}
                   >
-                    <MenuItem value="Active">Active</MenuItem>
-                    <MenuItem value="Inactive">Inactive</MenuItem>
-                  </Select>
-                </FormControl>
-                <br></br>
-                <Button
-                  className="mt-2 formbtn"
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                >
-                  {isNewAgent ? "Add Agent" : "Save Changes"}
-                </Button>
-              </Form>
-            </Box>
-          </Modal>
-        </>
-      ))}
+                    {submitting ? 'Adding Agent...' : 'Add Agent'}
+                  </Button>
+                </Form>
+              </Box>
+            </Modal>
+          </>
+        )}
+      </div>
     </>
   );
 }

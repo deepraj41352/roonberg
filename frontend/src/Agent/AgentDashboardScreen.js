@@ -7,7 +7,7 @@ import data from "../dummyData";
 import Chart from "react-google-charts";
 import { Store } from "../Store";
 
-export default function AdminDashboard() {
+export default function AgentDashboard() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
   const theme = toggleState ? "dark" : "light";

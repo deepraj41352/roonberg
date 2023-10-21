@@ -70,108 +70,103 @@ app.use('/api/category', categoryRouter);
 app.use('/api/conversation', conversationRouter);
 app.use('/api/message', MessageRouter);
 
-async function callMailSenderAPI() {
-  try {
-    const imapConfig = {
-      user: "roonberg2023@gmail.com",
-      password: "oxvl ruhy hgzd pugc",
-      host: "imap.gmail.com",
-      port: 993,
-      tls: true,
-    };
-    // const imapConfig = {
-    //   user: 'read@login.roonberg.com',
-    //   password: 'pass@$123',
-    //   host: 'login.roonberg.com',
-    //   port: 143,
-    //   tls: false, // Use TLS if required
-    // };
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS_KEY,
-      },
-    });
+const transporter = nodemailer.createTransport({
+  service: 'SMTP',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS_KEY,
+  },
+});
 
-    const imap = new Imap(imapConfig);
-    // // Function to send an email
-    // const mailOptions = {
-    //   from: 'roonberg2023@gmail.com',
-    //   to: 'priynsujn01@gmail.com', // Replace with the recipient's email address
-    //   subject: 'Reset Password', // Specify the email subject
-    //   text: 'Your reset password link: https://example.com/reset-password', // Specify the email text
-    // };
-    
-    // // Send the email
-    // transporter.sendMail(mailOptions, (error, info) => {
-    //   if (error) {
-    //     console.error('Error sending email:', error);
-    //   } else {
-    //     console.log('Email sent: ' + info.response);
-    //   }
-    // });
+// Function to send an email
+function sendEmail(to, subject, message) {
+  const mailOptions = {
+    from: 'deepraj41352@email.com',
+    to,
+    subject,
+    html: message,
+  };
 
-    imap.once('ready', () => {
-      imap.openBox('INBOX', false, (err, mailbox) => {
-        if (err) throw err;
-
-        imap.search(['UNSEEN'], (err, results) => {
-          if (err) throw err;
-
-          results.forEach((emailNumber) => {
-            const emailMessage = imap.fetch(emailNumber, { bodies: '' });
-            emailMessage.on('message', (msg) => {
-              msg.on('body', (stream) => {
-                let message = '';
-                stream.on('data', (chunk) => {
-                  message += chunk.toString('utf8');
-                });
-                stream.once('end', () => {
-                  const emailMessage = message;
-                  const from = emailMessage.match(/^From: (.+)/m);
-                  const to = emailMessage.match(/^To: (.+)/m);
-                  const subject = emailMessage.match(/^Subject: (.+)/m);
-                  const textMatch = emailMessage.match(/Content-Type: text\/plain; charset="UTF-8"\r\n\r\n([\s\S]*)/);
-                  const text = textMatch ? textMatch[1] : '';
-                  console.log('From:', from ? from[1] : '');
-                  console.log('To:', to ? to[1] : '');
-                  console.log('Subject:', subject ? subject[1] : '');
-                  console.log('Text:', text);
-                  // Your processing logic here
-                
-                  // Example: Send an email reply
-                  // sendEmail(from ? from[1] : '', 'Re: ' + (subject ? subject[1] : ''), 'Your reply message goes here');
-                
-                  // Mark the email as seen
-                  imap.addFlags(emailNumber, ['\\Seen'], (err) => {
-                    if (err) console.error('Seen_error',err);
-                  });
-                });
-              });
-            });
-          });
-
-          // Close the connection
-          imap.end();
-        });
-      });
-    });
-
-    imap.once('error', (err) => {
-      console.error('IMAP Error:', err);
-    });
-
-    imap.connect();
-  } catch (error) {
-    console.error('Error making API call:', error);
-  }
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
 }
 
-cron.schedule('* * * * *', () => {
-  console.log('This task will run every minute');
-  callMailSenderAPI();
-});
+// Function to process emails
+// async function processEmails() {
+//   const imapConfig = {
+//     user: 'read@login.roonberg.com',
+//     password: 'pass@$123',
+//     host: 'login.roonberg.com',
+//     port: 993, // IMAP over SSL
+//     tls: true,
+//     authTimeout: 30000,
+//   };
+
+//   const imap = new Imap(imapConfig);
+
+//   imap.once('ready', () => {
+//     imap.openBox('INBOX', false, (err, mailbox) => {
+//       if (err) throw err;
+
+//       imap.search(['UNSEEN'], (err, results) => {
+//         if (err) throw err;
+
+//         results.forEach((emailNumber) => {
+//           const emailMessage = imap.fetch(emailNumber, { bodies: '' });
+//           emailMessage.on('message', (msg) => {
+//             msg.on('body', (stream) => {
+//               let message = '';
+//               stream.on('data', (chunk) => {
+//                 message += chunk.toString('utf8');
+//               });
+//               stream.once('end', () => {
+//                 const parser = new EmailParser(message);
+//                 const { text, from, to, subject, date } = parser.parseReply();
+
+//                 // Your processing logic here
+//                 console.log('From:', from);
+//                 console.log('To:', to);
+//                 console.log('Subject:', subject);
+//                 console.log('Text:', text);
+
+//                 // Example: Send an email reply
+//                 sendEmail(
+//                   from,
+//                   'Re: ' + subject,
+//                   'Your reply message goes here'
+//                 );
+
+//                 // Mark the email as seen
+//                 imap.addFlags(emailNumber, ['\\Seen'], (err) => {
+//                   if (err) console.error(err);
+//                 });
+//               });
+//             });
+//           });
+//         });
+
+//         // Close the connection
+//         imap.end();
+//       });
+//     });
+//   });
+
+//   imap.once('error', (err) => {
+//     console.error(err);
+//   });
+
+//   imap.connect();
+// }
+
+// cron.schedule('* * * * *', () => {
+//   console.log('This task will run every minute');
+//   processEmails();
+// });
 
 const _dirname = path.resolve();
 app.use(express.static(path.join(_dirname, 'frontend/build')));

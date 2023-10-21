@@ -20,11 +20,28 @@ categoryRouter.get(
   })
 );
 
+// get single category
+categoryRouter.get(
+  '/:id',
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const category = await Category.findById(req.params.id);
+      if (!category) {
+        res.status(400).json({ message: 'category not found' });
+      }
+      res.json(category);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  })
+);
+
 categoryRouter.post(
   '/',
   isAuth,
   isAdminOrSelf,
-  upload.single('file'),
+  upload.single('categoryImage'),
   expressAsyncHandler(async (req, res) => {
     try {
       if (req.file) {
@@ -72,7 +89,7 @@ categoryRouter.put(
   expressAsyncHandler(async (req, res) => {
     try {
       const category = await Category.findById(req.params.id);
-      console.log(category);
+      console.log('category', category);
       await category.updateOne({ $set: req.body });
       res.status(200).json('Category update successfully');
     } catch (err) {
@@ -80,6 +97,36 @@ categoryRouter.put(
         message: 'Something went wrong, please try again',
         error: err,
       });
+    }
+  })
+);
+
+categoryRouter.put(
+  '/CategoryUpdate/:id',
+  isAuth,
+  upload.single('file'),
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const categorydata = await Category.findById(req.params.id);
+      if (categorydata) {
+        if (req.file) {
+          const categoryImage = await uploadDoc(req);
+          req.body.categoryImage = categoryImage;
+        }
+        const updatedCat = await Category.findOneAndUpdate(
+          { _id: req.params.id },
+          { $set: req.body },
+          { new: true }
+        );
+
+        res.send({
+          updatedCat,
+        });
+      } else {
+        res.status(404).send({ message: 'Category not found' });
+      }
+    } catch (error) {
+      console.log('Error ', error);
     }
   })
 );

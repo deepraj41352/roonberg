@@ -1,29 +1,29 @@
-import axios from 'axios';
-import React, { useContext, useEffect, useState } from 'react';
-import Card from 'react-bootstrap/Card';
-import { Store } from '../Store';
-import { Button, Form } from 'react-bootstrap';
-import MultiSelect from 'react-multiple-select-dropdown-lite';
-import 'react-multiple-select-dropdown-lite/dist/index.css';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
+import Card from "react-bootstrap/Card";
+import { Store } from "../Store";
+import { Button, Form } from "react-bootstrap";
+import MultiSelect from "react-multiple-select-dropdown-lite";
+import "react-multiple-select-dropdown-lite/dist/index.css";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case 'FATCH_REQUEST':
+    case "FATCH_REQUEST":
       return { ...state, loading: true };
-    case 'FATCH_SUCCESS':
+    case "FATCH_SUCCESS":
       return { ...state, projectData: action.payload, loading: false };
-    case 'FATCH_ERROR':
+    case "FATCH_ERROR":
       return { ...state, error: action.payload, loading: false };
-    case 'SUCCESS_CATEGORY':
+    case "SUCCESS_CATEGORY":
       return { ...state, categoryData: action.payload, loading: false };
-    case 'ERROR_CATEGORY':
+    case "ERROR_CATEGORY":
       return { ...state, error: action.payload, loading: false };
-    case 'UPDATE_SUCCESS':
+    case "UPDATE_SUCCESS":
       return { ...state, successUpdate: action.payload };
 
-    case 'UPDATE_RESET':
+    case "UPDATE_RESET":
       return { ...state, successUpdate: false };
 
     default:
@@ -31,7 +31,7 @@ const reducer = (state, action) => {
   }
 };
 
-function ProjectSingleScreen() {
+function ContractorEditProject() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { state } = useContext(Store);
@@ -39,13 +39,13 @@ function ProjectSingleScreen() {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [createdDate, setCreatedDate] = useState();
   const [endDate, setEndDate] = useState();
-  const theme = toggleState ? 'dark' : 'light';
+  const theme = toggleState ? "dark" : "light";
   const [
     { loading, error, projectData, categoryData, successUpdate },
     dispatch,
   ] = React.useReducer(reducer, {
     loading: true,
-    error: '',
+    error: "",
     projectData: {},
     categoryData: {},
     successUpdate: false,
@@ -66,61 +66,61 @@ function ProjectSingleScreen() {
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
-        dispatch('FETCH_REQUEST');
+        dispatch("FETCH_REQUEST");
         const response = await axios.get(`/api/project/${id}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const ProjectDatas = response.data;
-        console.log('ProjectDatas', ProjectDatas);
+        console.log("ProjectDatas", ProjectDatas);
         setEndDate(
-          ProjectDatas.endDate ? ProjectDatas.endDate.split('T')[0] : null
+          ProjectDatas.endDate ? ProjectDatas.endDate.split("T")[0] : null
         );
         setCreatedDate(
           ProjectDatas.createdDate
-            ? ProjectDatas.createdDate.split('T')[0]
+            ? ProjectDatas.createdDate.split("T")[0]
             : null
         );
         setSelectedOptions(
-          ProjectDatas.projectCategory.map((item) => item.categoryId).join(',')
+          ProjectDatas.projectCategory.map((item) => item.categoryId).join(",")
         );
 
-        dispatch({ type: 'FATCH_SUCCESS', payload: ProjectDatas });
+        dispatch({ type: "FATCH_SUCCESS", payload: ProjectDatas });
       } catch (error) {
-        console.error('Error fetching project data:', error);
+        console.error("Error fetching project data:", error);
       }
     };
 
     fetchProjectData();
   }, []);
-  console.log('project== datass', projectData);
+
   useEffect(() => {
     const fetchCategoryData = async () => {
       try {
-        dispatch('FETCH_REQUEST');
+        dispatch("FETCH_REQUEST");
         const response = await axios.get(`/api/category`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const category = response.data;
-        dispatch({ type: 'SUCCESS_CATEGORY', payload: category });
+        dispatch({ type: "SUCCESS_CATEGORY", payload: category });
       } catch (error) {
-        console.error('Error fetching category data:', error);
+        console.error("Error fetching category data:", error);
       }
     };
 
     fetchCategoryData();
   }, []);
 
-  console.log('selectedOptions', selectedOptions);
+  console.log("selectedOptions", selectedOptions);
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       // Construct the updated data object
-      const categoryIds = selectedOptions.split(',');
+      const categoryIds = selectedOptions.split(",");
       const projectCategory = categoryIds.map((categoryId) => {
         const category = categoryData.find((cat) => cat._id === categoryId);
         return {
           categoryId,
-          categoryName: category ? category.categoryName : 'Unknown Category',
+          categoryName: category ? category.categoryName : "Unknown Category",
         };
       });
 
@@ -141,11 +141,11 @@ function ProjectSingleScreen() {
       );
 
       if (response.status === 200) {
-        toast.success('Project updated Successfully !');
+        toast.success("Project updated Successfully !");
         console.log(response);
       }
     } catch (error) {
-      console.error('API Error:', error);
+      console.error("API Error:", error);
     }
   };
 
@@ -161,7 +161,7 @@ function ProjectSingleScreen() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     dispatch({
-      type: 'FATCH_SUCCESS',
+      type: "FATCH_SUCCESS",
       payload: {
         ...projectData,
         [name]: value,
@@ -172,7 +172,6 @@ function ProjectSingleScreen() {
   const handleCategoryChange = (selected) => {
     setSelectedOptions(selected);
   };
-
   return (
     <div>
       {loading ? (
@@ -252,6 +251,7 @@ function ProjectSingleScreen() {
             <Card className={`projectScreenCard2 ${theme}CardBody`}>
               <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
               <Card.Body className="d-flex flex-wrap gap-3 ">
+                {/* -------- */}
                 <div
                   className="text-center w-100"
                   style={{
@@ -259,66 +259,32 @@ function ProjectSingleScreen() {
                       projectData &&
                       projectData.conversions &&
                       projectData.conversions.length < 1
-                        ? 'block'
-                        : 'none',
+                        ? "block"
+                        : "none",
                   }}
                 >
                   No Chat Available
                 </div>
-
-                {projectData?.conversions?.map((conversion) => {
-                  const assignedAgent = projectData.assignedAgent.find(
-                    (assignedAgent) =>
-                      assignedAgent.agentId === conversion.members[0]
-                  );
+                {conversations.map((conversion) => {
                   return (
-                    <>
-                      {userInfo.role == 'agent' ? (
-                        <>
-                          {conversion.members.includes(userInfo._id) && (
-                            <>
-                              <Card className="chatboxes">
-                                {/* <Card.Header>{assignedAgent.categoryId}</Card.Header> */}
-                                <Card.Body>
-                                  <Link
-                                    to={`/chatWindowScreen/${conversion._id}`}
-                                  >
-                                    <Button
-                                      className="chatBtn"
-                                      type="button"
-                                      // onClick={conversionHandler(conversion._id)}
-                                    >
-                                      Chat Now
-                                    </Button>
-                                  </Link>
-                                </Card.Body>
-                              </Card>
-                            </>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          <Card className="chatboxes">
-                            <Card.Header>
-                              {categoryData && assignedAgent.categoryName}
-                            </Card.Header>
-                            <Card.Body>
-                              <Link to={`/chatWindowScreen/${conversion._id}`}>
-                                <Button
-                                  className="chatBtn"
-                                  type="button"
-                                  // onClick={conversionHandler(conversion._id)}
-                                >
-                                  {categoryData && assignedAgent.agentName}
-                                </Button>
-                              </Link>
-                            </Card.Body>
-                          </Card>
-                        </>
-                      )}
-                    </>
+                    <Card className="chatboxes">
+                      <Card.Header>Chat</Card.Header>
+                      <Card.Body>
+                        <Link to={`/chatWindowScreen/${conversion._id}`}>
+                          <Button
+                            className="chatBtn"
+                            type="button"
+                            // onClick={conversionHandler(conversion._id)}
+                          >
+                            {conversion._id}
+                          </Button>
+                        </Link>
+                      </Card.Body>
+                    </Card>
                   );
                 })}
+
+                {/* -------- */}
               </Card.Body>
             </Card>
           </div>
@@ -328,4 +294,4 @@ function ProjectSingleScreen() {
   );
 }
 
-export default ProjectSingleScreen;
+export default ContractorEditProject;
