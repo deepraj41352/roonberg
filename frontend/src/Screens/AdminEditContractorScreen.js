@@ -18,7 +18,7 @@ const reducer = (state, action) => {
     case "FATCH_REQUEST":
       return { ...state, loading: true };
     case "FATCH_SUCCESS":
-      return { ...state, categoryData: action.payload, loading: false };
+      return { ...state, ContractorData: action.payload, loading: false };
     case "FATCH_ERROR":
       return { ...state, error: action.payload, loading: false };
     case "UPDATE_SUCCESS":
@@ -41,7 +41,7 @@ function AdminEditContractor() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState("");
+
   const [isSubmiting, setIsSubmiting] = useState(false);
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -49,17 +49,17 @@ function AdminEditContractor() {
   const theme = toggleState ? "dark" : "light";
 
   const [
-    { loading, error, categoryData, successDelete, successUpdate },
+    { loading, error, ContractorData, successDelete, successUpdate },
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
     error: "",
-    categoryData: {},
+    ContractorData: {},
     successDelete: false,
     successUpdate: false,
     isSubmiting: false,
   });
-
+  const [status, setStatus] = useState(ContractorData.userStatus);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -72,8 +72,7 @@ function AdminEditContractor() {
         setLastName(datas.last_name);
         setEmail(datas.email);
         setStatus(datas.userStatus);
-
-        // setStatus(datas.categoryStatus)
+        dispatch({ type: "FATCH_SUCCESS", payload: datas })
       } catch (error) {
         toast.error(error.response?.data?.message);
       }
@@ -131,7 +130,7 @@ function AdminEditContractor() {
                       required
                     />
                   </Form.Group>
-                  <Form.Group className="mb-3" controlId="formBasicEmail">
+                  {/* <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label className="mb-1 input-box">
                       Last Name
                     </Form.Label>
@@ -142,7 +141,7 @@ function AdminEditContractor() {
                       value={lastName}
                       required
                     />
-                  </Form.Group>
+                  </Form.Group> */}
                   <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label className="mb-1 input-box">Email</Form.Label>
                     <Form.Control
@@ -168,7 +167,7 @@ function AdminEditContractor() {
 
                   <div className="d-flex justify-content-left mt-4">
                     <Button
-                      className=" py-1 w-25 globalbtnColor"
+                      className=" py-1 w-25 globalbtnColor updatingBtn"
                       variant="primary"
                       type="submit"
                       disabled={isSubmiting}

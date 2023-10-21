@@ -2,15 +2,12 @@ import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import Card from 'react-bootstrap/Card';
 import { Store } from '../Store';
-import { Button, Form, FormControl } from 'react-bootstrap';
-import MultiSelect from 'react-multiple-select-dropdown-lite';
+import { Button, Form } from 'react-bootstrap';
 import 'react-multiple-select-dropdown-lite/dist/index.css';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { InputLabel, MenuItem, Select } from '@mui/material';
-import { GrSubtractCircle, GrAddCircle } from 'react-icons/gr';
 import { AiFillDelete } from 'react-icons/ai';
-import { MdPlaylistAdd } from 'react-icons/md';
+import MultiSelect from 'react-multiple-select-dropdown-lite';
 const reducer = (state, action) => {
     switch (action.type) {
         case 'FATCH_REQUEST':
@@ -38,7 +35,7 @@ const reducer = (state, action) => {
     }
 };
 
-function AdminEditProject() {
+function AgentEditProject() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { state } = useContext(Store);
@@ -61,9 +58,7 @@ function AdminEditProject() {
         submitting: false
     });
     const [conversations, setConversation] = useState([]);
-    const [agentCategoryPair, setAgentCategoryPair] = useState([]);
     const [agents, setAgents] = useState([{ categoryId: '', agentName: '', agentId: '' }]);
-    const [isSubmiting, setIsSubmiting] = useState(false);
     const [categories, setCategories] = useState(projectData.projectCategory);
     const [projectStatus, setProjectStatus] = useState(projectData.projectStatus);
     const [projectOwner, setProjectOwner] = useState(projectData.projectOwner);
@@ -102,6 +97,9 @@ function AdminEditProject() {
                 setAgents(ProjectDatas.assignedAgent);
                 setProjectStatus(projectData.projectStatus);
                 setProjectOwner(projectData.projectOwner);
+                setSelectedOptions(
+                    ProjectDatas.projectCategory.map((item) => item.categoryId).join(',')
+                );
                 dispatch({ type: 'FATCH_SUCCESS', payload: ProjectDatas });
             } catch (error) {
                 console.error('Error fetching project data:', error);
@@ -240,7 +238,6 @@ function AdminEditProject() {
                 value: item._id,
             }))
             : [];
-    // console.log(projectData);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -286,10 +283,6 @@ function AdminEditProject() {
         FatchAgentData();
 
     }, [])
-
-
-
-    console.log('selectbyg', agents)
     return (
         <div>
             {loading ? (
@@ -311,7 +304,7 @@ function AdminEditProject() {
                                             type="text"
                                             name="projectName"
                                             value={projectData.projectName}
-                                            onChange={handleInputChange}
+                                            disabled onChange={handleInputChange}
                                         />
                                     </Form.Group>
                                     <Form.Group
@@ -326,13 +319,22 @@ function AdminEditProject() {
                                             rows={3}
                                             name="projectDescription"
                                             value={projectData.projectDescription}
-                                            onChange={handleInputChange}
+                                            disabled onChange={handleInputChange}
+                                        />
+                                    </Form.Group>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label className="fw-bold">Select Options:</Form.Label>
+                                        <MultiSelect
+                                            className="categorieslist"
+                                            onChange={handleCategoryChange}
+                                            options={options}
+                                            defaultValue={selectedOptions} disabled
                                         />
                                     </Form.Group>
                                     <Form.Group className="mb-3" controlId="formBasicPassword">
                                         <Form.Label className="mb-1">Contractor</Form.Label>
                                         {console.log('projectOwner', projectOwner)}
-                                        <Form.Select value={projectData && projectData.projectOwner} onChange={(e) => setProjectOwner(e.target.value)}>
+                                        <Form.Select value={projectData && projectData.projectOwner} disabled onChange={(e) => setProjectOwner(e.target.value)}>
                                             <option value="">SELECT CONTRACTOR</option>
                                             {contractorData.map((items) => (
                                                 <option key={items._id} value={items._id} >{items.first_name}</option>
@@ -343,7 +345,7 @@ function AdminEditProject() {
                                     </Form.Group>
                                     <Form.Group className="mb-3" controlId="formBasicPassword">
                                         <Form.Label className="mb-1">Project Status</Form.Label>
-                                        <Form.Select value={projectStatus} onChange={(e) => setProjectStatus(e.target.value)}>
+                                        <Form.Select value={projectStatus} disabled onChange={(e) => setProjectStatus(e.target.value)}>
                                             <option value="active">Active </option>
                                             <option value="inactive">Inactive </option>
                                             <option value="queue">In Proccess </option>
@@ -356,7 +358,7 @@ function AdminEditProject() {
                                                 type="date"
                                                 name="createdDate"
                                                 value={createdDate}
-                                                onChange={(e) => setCreatedDate(e.target.value)}
+                                                disabled onChange={(e) => setCreatedDate(e.target.value)}
                                                 placeholder="Start Date"
                                             />
                                         </Form.Group>
@@ -366,14 +368,11 @@ function AdminEditProject() {
                                                 type="date"
                                                 name="endDate"
                                                 value={endDate}
-                                                onChange={(e) => setEndDate(e.target.value)}
+                                                disabled onChange={(e) => setEndDate(e.target.value)}
                                                 placeholder="End Date"
                                             />
                                         </Form.Group>
                                     </div>
-                                    <Button variant="primary" type="submit" disabled={submitting}>
-                                        {submitting ? "submitting" : "Submit"}
-                                    </Button>
                                 </Form>
                             </Card.Body>
                         </Card>
@@ -381,73 +380,27 @@ function AdminEditProject() {
                             <Card className={`projectScreenCard2 ${theme}CardBody`}>
                                 <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
                                 <Card.Body className="d-flex flex-wrap gap-3 ">
-                                    <div
-                                        className="text-center w-100"
-                                        style={{
-                                            display:
-                                                projectData &&
-                                                    projectData.conversions &&
-                                                    projectData.conversions.length < 1
-                                                    ? 'block'
-                                                    : 'none',
-                                        }}
-                                    >
-                                        No Chat Available
-                                    </div>
-
-                                    {projectData?.conversions?.map((conversion) => {
-                                        const assignedAgent = projectData.assignedAgent.find(
-                                            (assignedAgent) =>
-                                                assignedAgent.agentId === conversion.members[0]
-                                        );
+                                    {/* -------- */}
+                                    {conversations.map((conversion) => {
                                         return (
-                                            <>
-                                                {userInfo.role == 'agent' ? (
-                                                    <>
-                                                        {conversion.members.includes(userInfo._id) && (
-                                                            <>
-                                                                <Card className="chatboxes">
-                                                                    {/* <Card.Header>{assignedAgent.categoryId}</Card.Header> */}
-                                                                    <Card.Body>
-                                                                        <Link
-                                                                            to={`/chatWindowScreen/${conversion._id}`}
-                                                                        >
-                                                                            <Button
-                                                                                className="chatBtn"
-                                                                                type="button"
-                                                                            // onClick={conversionHandler(conversion._id)}
-                                                                            >
-                                                                                Chat Now
-                                                                            </Button>
-                                                                        </Link>
-                                                                    </Card.Body>
-                                                                </Card>
-                                                            </>
-                                                        )}
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <Card className="chatboxes">
-                                                            <Card.Header>
-                                                                {categoryData && assignedAgent.categoryName}
-                                                            </Card.Header>
-                                                            <Card.Body>
-                                                                <Link to={`/chatWindowScreen/${conversion._id}`}>
-                                                                    <Button
-                                                                        className="chatBtn"
-                                                                        type="button"
-                                                                    // onClick={conversionHandler(conversion._id)}
-                                                                    >
-                                                                        {categoryData && assignedAgent.agentName}
-                                                                    </Button>
-                                                                </Link>
-                                                            </Card.Body>
-                                                        </Card>
-                                                    </>
-                                                )}
-                                            </>
+                                            <Card className="chatboxes">
+                                                <Card.Header>Chat</Card.Header>
+                                                <Card.Body>
+                                                    <Link to={`/chatWindowScreen/${conversion._id}`}>
+                                                        <Button
+                                                            className="chatBtn"
+                                                            type="button"
+                                                        // onClick={conversionHandler(conversion._id)}
+                                                        >
+                                                            {conversion._id}
+                                                        </Button>
+                                                    </Link>
+                                                </Card.Body>
+                                            </Card>
                                         );
                                     })}
+
+                                    {/* -------- */}
                                 </Card.Body>
                             </Card>
                             <Card className={`projectScreenCard2 ${theme}CardBody`}>
@@ -462,7 +415,7 @@ function AdminEditProject() {
                                                     <Form.Label className="mb-1">Category</Form.Label>
                                                     <Form.Select
                                                         value={agent.categoryId || categories}
-                                                        onChange={(e) => handleAgentChange(index, 'categoryId', e.target.value)}>
+                                                        disabled onChange={(e) => handleAgentChange(index, 'categoryId', e.target.value)}>
                                                         <option value="">SELECT</option>
                                                         {Array.isArray(categoryData) ? (
                                                             categoryData.map((category) => (
@@ -478,37 +431,21 @@ function AdminEditProject() {
                                                 <Form.Group className="mb-3 mx-2" controlId="formBasicPassword">
                                                     <Form.Label className="mb-1">Agent</Form.Label>
                                                     <Form.Select value={agent.agentId}
-                                                        onChange={(e) => handleAgentChange(index, 'agentId', e.target.value)}>
+                                                        disabled onChange={(e) => handleAgentChange(index, 'agentId', e.target.value)}>
                                                         <option value="">SELECT AGENT</option>
                                                         {assignedAgentByCateHandle(index).map((agent) => (
                                                             <option key={agent._id} value={agent._id}
-                                                            // disabled={agents.some((a) => a.agentId === agent._id)}
                                                             >
                                                                 {agent.first_name}
                                                             </option>
                                                         ))}
                                                     </Form.Select>
                                                 </Form.Group>
-                                                <div className='d-flex align-items-center mx-2'>
-                                                    <Button className=' mt-2 ' onClick={() => removeAgent(index)} >
-                                                        <AiFillDelete className='mx-1' />
-                                                        Remove
-                                                    </Button>
-                                                </div>
                                             </div>
                                         ))}
-
-
-
                                         <div className='d-flex align-items-center'>
-                                            <div className='mb-2 mx-2' onClick={addAgent} >
-                                                <MdPlaylistAdd className='mx-2 fs-3' />
-                                                Add Category and Agent
-                                            </div>
                                         </div>
-
                                     </Form>
-
                                     {/* -------- */}
                                 </Card.Body>
                             </Card>
@@ -521,4 +458,6 @@ function AdminEditProject() {
     );
 }
 
-export default AdminEditProject;
+export default AgentEditProject;
+
+

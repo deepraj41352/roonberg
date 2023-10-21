@@ -102,7 +102,7 @@ function AdminEditCategory() {
                 }
             );
             dispatch({ type: "UPDATE_SUCCESS" })
-            toast.success(data.data);
+            toast.success("Category updated successfully");
             navigate('/adminCategoriesList')
 
         } catch (err) {
@@ -164,7 +164,7 @@ function AdminEditCategory() {
                                     </Form.Group>
                                     <div className="d-flex justify-content-start mt-4">
                                         <Button
-                                            className=" py-1 w-25 globalbtnColor"
+                                            className=" py-1 w-25 globalbtnColor updatingBtn"
                                             variant="primary"
                                             type="submit"
                                             disabled={isSubmiting}

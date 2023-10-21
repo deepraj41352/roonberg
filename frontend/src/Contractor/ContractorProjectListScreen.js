@@ -4,7 +4,7 @@ import { Grid } from '@mui/material';
 import { AiFillDelete } from 'react-icons/ai';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
-import { Form } from 'react-bootstrap';
+import { Card, Form } from 'react-bootstrap';
 import { BiPlusMedical } from 'react-icons/bi';
 import { Store } from '../Store';
 import axios from 'axios';
@@ -100,7 +100,6 @@ export default function ContractorProject() {
 
     const [projectName, setProjectName] = useState('');
     const [projectDescription, setProjectDescription] = useState('');
-
     const [startDate, setStartDate] = useState();
     const [endDate, setEndDate] = useState();
     const [selectedOptions, setSelectedOptions] = useState([]);
@@ -134,10 +133,9 @@ export default function ContractorProject() {
         const FatchProjectData = async () => {
             try {
                 dispatch({ type: 'FATCH_REQUEST' });
-                const response = await axios.get('/api/project', {
-                    headers: { Authorization: `Bearer ${userInfo.token}` },
-                });
-                const datas = response.data;
+                const response = await axios.get(`/api/project/getproject/${userInfo._id}`);
+
+                const datas = response.data.projects;
                 const rowData = datas.map((items) => ({
                     ...items,
                     _id: items._id,
@@ -150,10 +148,15 @@ export default function ContractorProject() {
                         ? items.assignedAgent.map((agent) => agent.agentName)
                         : '',
                 }));
-
                 dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
             } catch (error) {
-                console.log(error);
+                console.error(error);
+                dispatch({ type: "FATCH_ERROR", payload: error })
+                if (error.response && error.response.status === 404) {
+                    toast.error('You Not Have any project right now');
+                } else {
+                    toast.error('An error occurred while fetching data');
+                }
             }
         };
 
@@ -175,6 +178,7 @@ export default function ContractorProject() {
     const projectQuedData = projectData.filter((item) => {
         return item.projectStatus === 'qued';
     });
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -309,7 +313,18 @@ export default function ContractorProject() {
                     </div>
                 </>
             ) : error ? (
-                <div>{error}</div>
+                <div><Card>
+                    <Card.Text>You Don't have any project yet !</Card.Text>
+                    <Card.Text>Create a Project !</Card.Text>
+                    <Button
+                        variant="outlined"
+                        className=" m-2 d-flex globalbtnColor"
+                        onClick={handleNew}
+                    >
+                        <BiPlusMedical className="mx-2" />
+                        Add Project
+                    </Button>
+                </Card ></div>
             ) : (
                 <>
                     <Tabs

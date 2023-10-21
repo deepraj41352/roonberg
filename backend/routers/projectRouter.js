@@ -5,7 +5,6 @@ import { isAuth, isAdminOrSelf, sendEmailNotify } from '../util.js';
 import User from '../Models/userModel.js';
 import Conversation from '../Models/conversationModel.js';
 import Category from '../Models/categoryModel.js';
-import mongoose from 'mongoose';
 
 const projectRouter = express.Router();
 
@@ -115,6 +114,7 @@ projectRouter.put(
     }
   })
 );
+
 projectRouter.post(
   '/admin/addproject',
   isAuth,
@@ -124,10 +124,10 @@ projectRouter.post(
       const userRole = req.user.role;
       const contractorId = req.body.projectOwner;
       const assignedAgent = req.body.assignedAgent;
-      const agentIds = assignedAgent.map((agent) => agent.agentId);
+
+      const agentIds = assignedAgent.map((agent) => agent.agentId) || [];
       console.log("agentIds", agentIds);
       const user = await User.findById(contractorId, 'first_name email');
-
 
       if (userRole === 'admin' || userRole === 'superadmin') {
         const newProject = new Project({
@@ -140,17 +140,11 @@ projectRouter.post(
           projectOwner: contractorId,
           assignedAgent: assignedAgent,
         });
-
         const project = await newProject.save();
 
         const agentEmails = await User.find({ _id: { $in: agentIds } }, 'email');
         const agentEmailList = agentEmails.map((agent) => agent.email);
-
-        console.log("contractormail", user.email);
-        console.log("agentEmails", agentEmailList);
-
         const toEmails = [user.email, ...agentEmailList];
-        console.log("bothmail", toEmails)
         const options = {
           to: toEmails,
           subject: 'New Project Create✔',
@@ -167,6 +161,7 @@ projectRouter.post(
           });
           await newConversation.save();
         }
+
         res.status(201).json({ message: 'Project Created', project });
       } else {
         res.status(403).json({ message: 'Access denied' });
@@ -407,11 +402,41 @@ projectRouter.put(
 );
 
 projectRouter.get(
+  '/getproject/:userId',
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      console.log("userid", userId)
+      const projects = await Project.find({
+        $or: [
+          { projectOwner: userId },
+          {
+            'assignedAgent.agentId': userId
+          }
+        ]
+      });
+      if (!projects || projects.length === 0) {
+        res.status(404).json({ message: 'No projects found for this user' });
+      } else {
+        const projectIds = projects.map(project => project._id);
+        const conversations = await Conversation.find({ projectId: { $in: projectIds } });
+        res.json({ projects, conversations });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  })
+);
+
+projectRouter.get(
   '/:id',
   expressAsyncHandler(async (req, res) => {
     try {
+      const user = await Project.findById(req.params.id);
       const project = await Project.findById(req.params.id);
       if (!project) {
+        console.log(project)
         res.status(400).json({ message: 'Project not found' });
       }
       const conversions = await Conversation.find({ projectId: req.params.id });
@@ -528,9 +553,5 @@ projectRouter.post(
     }
   })
 );
-
-
-
-
 
 export default projectRouter;

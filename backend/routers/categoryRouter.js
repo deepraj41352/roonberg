@@ -25,7 +25,7 @@ categoryRouter.get(
   '/:id',
   expressAsyncHandler(async (req, res) => {
     try {
-      const category = await Category.findById(req.params.id);
+      const category = await Category.findById(req.params.id).sort({ createdAt: -1 });
       if (!category) {
         res.status(400).json({ message: "category not found" });
       }

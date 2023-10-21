@@ -9,8 +9,6 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
-import { AiFillDelete } from "react-icons/ai";
-import { MdEdit } from "react-icons/md";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import { Form, Toast } from "react-bootstrap";
@@ -110,7 +108,6 @@ export default function AdminAgentListScreen() {
         dispatch("FATCH_REQUEST")
         const response = await axios.get(`/api/category/`, { headers: { Authorization: `Bearer ${userInfo.token}` } });
         const datas = response.data;
-        // setSelectCategory(datas)
         dispatch({ type: "FATCH_CATEGORY", payload: datas });
       } catch (error) {
         console.log(error)
@@ -126,13 +123,14 @@ export default function AdminAgentListScreen() {
         const response = await axios.post(`/api/user/`, { role: role });
         const datas = response.data;
         const rowData = datas.map((items) => {
+          const categoryName = categoryData.find((category) => category._id === items.agentCategory);
           return {
             ...items,
             _id: items._id,
             first_name: items.first_name,
             email: items.email,
             userStatus: items.userStatus ? "Active" : "Inactive",
-            agentCategory: items.agentCategory,
+            agentCategory: categoryName ? categoryName.categoryName : '',
           };
         });
         dispatch({ type: "FATCH_SUCCESS", payload: rowData });
@@ -149,7 +147,7 @@ export default function AdminAgentListScreen() {
     else {
       FatchAgentData();
     }
-  }, [successDelete, successUpdate]);
+  }, [successDelete, successUpdate, categoryData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -259,7 +257,7 @@ export default function AdminAgentListScreen() {
                           variant="contained"
                           className="mx-2 tableEditbtn"
                           onClick={() => handleEdit(params.row._id)}
-                          startIcon={<MdEdit />}
+
                         >
                           Edit
                         </Button>
@@ -267,7 +265,7 @@ export default function AdminAgentListScreen() {
                           variant="outlined"
                           className="mx-2 tableDeletebtn"
                           onClick={() => deleteHandle(params.row._id)}
-                          startIcon={<AiFillDelete />}
+
                         >
                           Delete
                         </Button>

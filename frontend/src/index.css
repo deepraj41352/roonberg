@@ -62,6 +62,9 @@ code {
   padding: 16.5px 14px;
   border-color: #dee2e6 !important;
 }
+.editFormBtn {
+  flex-basis: 174px;
+}
 
 /* ---------Priyanshu-Start------------- */
 @media (max-width: 380px) {
@@ -111,6 +114,7 @@ body {
 
 .tableEditbtn {
   background-color: #8a9097 !important;
+  color: white !important;
 }
 
 .tableDeletebtn {
@@ -232,7 +236,40 @@ button {
   border-color: white !important;
   background-color: white !important;
 }
+.lightDataGrid .MuiButtonBase-root {
+  color: rgb(31, 30, 30) !important;
+}
+.darkDataGrid .MuiButtonBase-root {
+  color: white !important;
+}
 /* ---------Priyanshu-Start------------- */
+.darkTab {
+  background-color: #3c3c5a;
+}
+.lightTab {
+  /* background-color: #8a9097; */
+  background-color: #a3a7ad;
+}
+
+.darkTab .nav-link.active {
+  background-color: #0d0d32 !important;
+  color: white !important;
+  border: none !important;
+  min-width: 100px;
+  border-radius: none !important;
+}
+.lightTab .nav-link.active {
+  background-color: #8a9097 !important;
+  color: black !important;
+  border: none !important;
+  min-width: 100px;
+  border-radius: none !important;
+}
+.nav-tabs .nav-link {
+  min-width: 100px;
+  border-radius: 0px !important;
+}
+
 body {
   background-color: #f8fafc !important;
 }
@@ -258,6 +295,9 @@ body {
 .scroll-form {
   height: 400px;
   overflow-y: auto;
+}
+.updatingBtn {
+  flex-basis: 150px;
 }
 /* Gaytri css end  */
 /*################################################################################# */
@@ -511,7 +551,7 @@ body {
 .chatWindowProjectInfo {
   width: 25%;
 }
-.timeago{
+.timeago {
   font-size: 12px;
 }
 .chat-senderMsg {
@@ -564,15 +604,46 @@ body {
 .msl-options {
   color: #060612;
 }
-.classforprofile{
+.classforprofile {
   display: flex;
   gap: 20px;
   justify-content: start;
   align-items: center;
 }
-.classforprofile img{
+.classforprofile img {
   height: 100px;
   width: 100px;
 
   border-radius: 50%;
+}
+
+.sidebarCrossBtn {
+  position: absolute;
+  top: 25px;
+  right: 10px;
+  display: none;
+}
+
+/* saidbar responsive */
+@media only screen and (max-width: 1179px) {
+  .sidebar.visible {
+    width: 55%;
+
+    /* display: none; */
+  }
+  .sidebar {
+    position: fixed;
+    top: 0;
+    width: 0px;
+    height: 100%;
+    transition: left 0.3s;
+    z-index: 999;
+    transition: width 0.5s ease-in-out;
+    max-width: 300px;
+  }
+
+  .sidebarCrossBtn {
+    display: block !important;
+    cursor: pointer;
+  }
 }

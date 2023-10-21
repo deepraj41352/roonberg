@@ -1,8 +1,7 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 import data from '../dummyData';
-import { Button, FormControl, Grid, MenuItem, Select } from '@mui/material';
+import { Button, FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
 import { AiFillDelete } from 'react-icons/ai';
 import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
@@ -14,6 +13,9 @@ import { Store } from '../Store';
 import { toast } from 'react-toastify';
 import { ImCross } from 'react-icons/im';
 import { ThreeDots } from 'react-loader-spinner';
+import { useContext, useEffect, useReducer, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Validations from '../Components/Validations';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -35,7 +37,8 @@ const reducer = (state, action) => {
 
     case "UPDATE_RESET":
       return { ...state, successUpdate: false };
-
+    case "FATCH_SUBMITTING":
+      return { ...state, submitting: action.payload };
     default:
       return state;
   }
@@ -54,59 +57,50 @@ const columns = [
     width: 200,
   },
   {
-    field: "status",
+    field: "userStatus",
     headerName: "Status",
-    width: 150,
+    width: 200,
   },
 ];
 
 export default function AdminListScreen() {
-  const [isModelOpen, setIsModelOpen] = React.useState(false);
-  const [selectedRowData, setSelectedRowData] = React.useState(null);
-  const [isNewAdmin, setIsNewAdmin] = React.useState(false);
+  const [isModelOpen, setIsModelOpen] = useState(false);
   const role = "admin";
-  const { state } = React.useContext(Store);
+  const navigate = useNavigate();
+  const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
   const theme = toggleState ? "dark" : "light";
   const [
-    { loading, error, adminData, successDelete, successUpdate },
+    { loading, error, adminData, successDelete, successUpdate, submitting },
     dispatch,
-  ] = React.useReducer(reducer, {
+  ] = useReducer(reducer, {
     loading: true,
     error: "",
     adminData: [],
     successDelete: false,
     successUpdate: false,
+    submitting: false
   });
 
-  const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [status, setStatus] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState();
+  const [password, setPassword] = useState("");
 
   const handleCloseRow = () => {
     setIsModelOpen(false);
   };
 
   const handleNew = () => {
-    setSelectedRowData(null);
     setIsModelOpen(true);
-    setIsNewAdmin(true);
   };
 
   const handleEdit = (userid) => {
-    const adminToEdit = adminData.find(
-      (admin) => admin && admin._id === userid
-    );
-    setName(adminToEdit ? adminToEdit.first_name : "");
-    setEmail(adminToEdit ? adminToEdit.email : "");
-    setStatus(adminToEdit ? adminToEdit.status : "active");
-    setSelectedRowData(adminToEdit);
-    setIsModelOpen(true);
-    setIsNewAdmin(false);
+    navigate(`/superadmineditadmin/${userid}`)
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const FatchadminData = async () => {
       try {
         dispatch("FATCH_REQUEST");
@@ -122,7 +116,7 @@ export default function AdminListScreen() {
             _id: items._id,
             first_name: items.first_name,
             email: items.email,
-            status: items.status,
+            userStatus: items.userStatus == true ? "Active" : "Inactive"
           };
         });
         dispatch({ type: "FATCH_SUCCESS", payload: rowData });
@@ -141,39 +135,27 @@ export default function AdminListScreen() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isNewAdmin) {
-      const response = await axios.post(`/api/user/signup`, {
-        first_name: name,
+    dispatch({ type: "FATCH_SUBMITTING", payload: true })
+    try {
+      const response = await axios.post(`/api/user/add`, {
+        first_name: firstname,
+        last_name: lastname,
         email: email,
-        password: password,
+        password: password || 'RoonBerg@123',
         role: role,
-      });
-      if (response.status === 201) {
-        toast.success("admin added Successfully !");
-        const datas = response.data;
-        setIsModelOpen(false);
-        dispatch({ type: "FATCH_SUCCESS", payload: datas });
-        dispatch({ type: "UPDATE_SUCCESS", payload: true });
-      }
-    } else {
-      const response = await axios.put(
-        `/api/user/update/${selectedRowData._id}`,
-        {
-          first_name: name,
-          email: email,
-          role: role,
-        },
-
-        { headers: { Authorization: `Bearer ${userInfo.token}` } }
-      );
-
+        userStatus: status || true
+      }, { headers: { Authorization: `Bearer ${userInfo.token}` }, });
+      console.log(response)
       if (response.status === 200) {
-        toast.success(response.data);
+        toast.success("Agent added Successfully !");
         setIsModelOpen(false);
         dispatch({ type: "UPDATE_SUCCESS", payload: true });
+        dispatch({ type: "FATCH_SUBMITTING", payload: false })
       }
+    } catch (error) {
+      toast.error(error.response?.data?.message);
     }
-  };
+  }
 
   const deleteHandle = async (userid) => {
     if (window.confirm("Are you sure to delete?")) {
@@ -198,27 +180,24 @@ export default function AdminListScreen() {
     }
   };
 
-  const handleSubmitNewAdmin = () => {
-    setIsModelOpen(false);
-  };
 
   return (
     <>
       {loading ? (
         <>
-        <div className='ThreeDot' >
-        <ThreeDots 
-height="80" 
-width="80" 
-radius="9"
-className="ThreeDot justify-content-center"
-color="#0e0e3d" 
-ariaLabel="three-dots-loading"
-wrapperStyle={{}}
-wrapperClassName=""
-visible={true}
- />
- </div>
+          <div className='ThreeDot' >
+            <ThreeDots
+              height="80"
+              width="80"
+              radius="9"
+              className="ThreeDot justify-content-center"
+              color="#0e0e3d"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClassName=""
+              visible={true}
+            />
+          </div>
 
         </>
       ) : (error ? (
@@ -250,7 +229,7 @@ visible={true}
                           variant="contained"
                           className="mx-2 tableEditbtn"
                           onClick={() => handleEdit(params.row._id)}
-                          startIcon={<MdEdit />}
+
                         >
                           Edit
                         </Button>
@@ -258,7 +237,7 @@ visible={true}
                           variant="outlined"
                           className="mx-2 tableDeletebtn"
                           onClick={() => deleteHandle(params.row._id)}
-                          startIcon={<AiFillDelete />}
+
                         >
                           Delete
                         </Button>
@@ -300,47 +279,51 @@ visible={true}
                   className="formcrossbtn"
                   onClick={handleCloseRow}
                 />
-                {isNewAdmin ? (
-                  <h4 className="d-flex justify-content-center">
-                    Add new Admin Details
-                  </h4>
-                ) : (
-                  <h4 className="d-flex justify-content-center">
-                    Edit Admin Details
-                  </h4>
-                )}
+                <h4 className="d-flex justify-content-center">
+                  Add Admin
+                </h4>
+
                 <TextField
                   className="mb-2"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  label="Username"
+                  value={firstname}
+                  onChange={(e) => setFirstname(e.target.value)}
+                  label="First Name"
                   fullWidth
                 />
-
+                <TextField
+                  className="mb-2"
+                  value={lastname}
+                  onChange={(e) => setLastname(e.target.value)}
+                  label="Last Name"
+                  fullWidth
+                />
                 <TextField
                   className="mb-2"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   label="Email"
+                  type='email'
                   fullWidth
                 />
-                {isNewAdmin && (
-                  <TextField
-                    className="mb-2"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    label="Password"
-                    fullWidth
-                  />
-                )}
+                <Validations type="email" value={email} />
+                <TextField
+                  className="mb-2"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  label="Password"
+                  type='password'
+                  fullWidth
+                />
+                <Validations type="password" value={password} />
 
                 <FormControl className="formselect">
+                  <InputLabel>Choose Status</InputLabel>
                   <Select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
                   >
-                    <MenuItem value="Active">Active</MenuItem>
-                    <MenuItem value="Inactive">Inactive</MenuItem>
+                    <MenuItem value={true}>Active</MenuItem>
+                    <MenuItem value={false}>Inactive</MenuItem>
                   </Select>
                 </FormControl>
                 <br></br>
@@ -349,8 +332,9 @@ visible={true}
                   variant="contained"
                   color="primary"
                   type="submit"
+                  disabled={submitting}
                 >
-                  {isNewAdmin ? "Add admin" : "Save Changes"}
+                  {submitting ? "Submitting" : "Submit"}
                 </Button>
               </Form>
             </Box>

@@ -52,7 +52,7 @@ function SignUpForm() {
       ctxDispatch({ type: 'USER_SIGNIN', payload: data });
       localStorage.setItem('userInfo', JSON.stringify(data));
 
-      toast.success('SignUp successful');
+      toast.success('Login successful');
       navigate('/dashboard');
     } catch (err) {
       toast.error(err.response?.data?.message);

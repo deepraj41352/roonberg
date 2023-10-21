@@ -1,8 +1,6 @@
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button, Grid, InputLabel, MenuItem, Select } from "@mui/material";
-import { AiFillDelete } from "react-icons/ai";
-import { MdEdit } from "react-icons/md";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import { Form, FormControl } from "react-bootstrap";
@@ -35,7 +33,9 @@ const reducer = (state, action) => {
     case "UPDATE_RESET":
       return { ...state, successUpdate: false };
     case "CATEGORY_CRATED_REQ":
-      return { ...state, isSubmiting: true }
+      return { ...state, isSubmiting: true };
+    case "FATCH_SUBMITTING":
+      return { ...state, submitting: action.payload };
     default:
       return state;
   }
@@ -85,7 +85,7 @@ export default function AdminContractorListScreen() {
   const [status, setStatus] = useState("");
   const [categoryDesc, setCatogryDesc] = useState('');
   const [
-    { loading, error, categoryData, successDelete, successUpdate, isSubmiting },
+    { loading, error, categoryData, successDelete, successUpdate, isSubmiting, submitting },
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
@@ -94,6 +94,7 @@ export default function AdminContractorListScreen() {
     successDelete: false,
     successUpdate: false,
     isSubmiting: false,
+    submitting: false
   });
 
 
@@ -144,6 +145,7 @@ export default function AdminContractorListScreen() {
         });
 
         dispatch({ type: "FATCH_SUCCESS", payload: rowData });
+
       } catch (error) {
         console.log(error);
       }
@@ -159,7 +161,7 @@ export default function AdminContractorListScreen() {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-
+    dispatch({ type: "FATCH_SUBMITTING", payload: true })
     const formDatas = new FormData();
 
     formDatas.append("categoryImage", selectedFile);
@@ -183,6 +185,7 @@ export default function AdminContractorListScreen() {
       console.log(data.message)
       toast.success(data.message);
       dispatch({ type: "UPDATE_SUCCESS" })
+      dispatch({ type: "FATCH_SUBMITTING", payload: false })
     } catch (err) {
       toast.error(err.response?.data?.message);
     } finally {
@@ -247,7 +250,7 @@ export default function AdminContractorListScreen() {
                       variant="contained"
                       className="mx-2 tableEditbtn"
                       onClick={() => handleEdit(params.row._id)}
-                      startIcon={<MdEdit />}
+
                     >
                       Edit
                     </Button>
@@ -255,7 +258,7 @@ export default function AdminContractorListScreen() {
                       variant="outlined"
                       className="mx-2 tableDeletebtn"
                       onClick={() => deleteHandle(params.row._id)}
-                      startIcon={<AiFillDelete />}
+
                     >
                       Delete
                     </Button>
@@ -292,15 +295,10 @@ export default function AdminContractorListScreen() {
           }}
         >
           <Form>
-            {isNewCategory ? (
-              <h4 className="d-flex justify-content-center">
-                Add new Category Details
-              </h4>
-            ) : (
-              <h4 className="d-flex justify-content-center">
-                Edit Category Details
-              </h4>
-            )}
+
+            <h4 className="d-flex justify-content-center">
+              Add Category
+            </h4>
             <TextField
               className="mb-2"
               value={category}
@@ -367,9 +365,9 @@ export default function AdminContractorListScreen() {
               variant="contained"
               color="primary"
               onClick={submitHandler}
-
+              disabled={submitting}
             >
-              submit
+              {submitting ? 'Submiting' : 'submit'}
             </Button>
           </Form>
         </Box>

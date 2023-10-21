@@ -5,7 +5,7 @@ import { AiFillDelete } from 'react-icons/ai';
 import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
-import { Form } from 'react-bootstrap';
+import { Button, Card, Form } from 'react-bootstrap';
 import { BiPlusMedical } from 'react-icons/bi';
 import { Store } from '../Store';
 import axios from 'axios';
@@ -49,7 +49,7 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: "_id", headerName: "ID", width: 90 },
+  { field: "_id", headerName: "ID", width: 200 },
   {
     field: "projectName",
     headerName: "Project Name",
@@ -69,21 +69,15 @@ const columns = [
   {
     field: "projectOwner",
     headerName: "Contractor",
-    width: 90,
+    width: 100,
   },
-  {
-    field: "assignedAgent",
-    headerName: "Agent",
-    width: 110,
-  },
+
 ];
 
 export default function AgentProjectList() {
-  const [isModelOpen, setIsModelOpen] = useState(false);
-  const [isNewProject, setIsNewProject] = useState(false);
-  const [isSubmiting, setIsSubmiting] = useState(false);
   const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
+  console.log("userInfo", userInfo._id)
   const theme = toggleState ? "dark" : "light";
   const [
     { loading, error, projectData, successDelete, successUpdate, categoryData, agentData, contractorData },
@@ -148,10 +142,9 @@ export default function AgentProjectList() {
     const FatchProjectData = async () => {
       try {
         dispatch({ type: 'FATCH_REQUEST' });
-        const response = await axios.get('/api/project', {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        });
-        const datas = response.data;
+        const response = await axios.get(`/api/project/getproject/${userInfo._id}`);
+        const datas = response.data.projects;
+        console.log("agentdata", datas)
         const rowData = datas.map((items) => {
           const contractor = contractorData.find((contractor) => contractor._id === items.projectOwner);
           return {
@@ -169,12 +162,19 @@ export default function AgentProjectList() {
           };
         });
         dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
+
       } catch (error) {
-        console.log(error)
+        console.error(error);
+        dispatch({ type: "FATCH_ERROR", payload: error })
+        if (error.response && error.response.status === 404) {
+          toast.error('No projects have been assigned to you yet');
+        } else {
+          toast.error('An error occurred while fetching data');
+        }
       }
     };
     FatchProjectData()
-  }, []);
+  }, [contractorData]);
 
   const projectActiveData = projectData.filter((item) => {
     return item.projectStatus === 'active';
@@ -188,121 +188,231 @@ export default function AgentProjectList() {
 
   return (
     <>
-      {loading ? (
-        <>
-          <div className='ThreeDot' >
-            <ThreeDots
-              height="80"
-              width="80"
-              radius="9"
-              className="ThreeDot justify-content-center"
-              color="#0e0e3d"
-              ariaLabel="three-dots-loading"
-              wrapperStyle={{}}
-              wrapperClassName=""
-              visible={true}
-            />
-          </div>
+      <div className="px-4 mt-3">
+        {loading ? (
+          <>
+            <div className='ThreeDot' >
+              <ThreeDots
+                height="80"
+                width="80"
+                radius="9"
+                className="ThreeDot justify-content-center"
+                color="#0e0e3d"
+                ariaLabel="three-dots-loading"
+                wrapperStyle={{}}
+                wrapperClassName=""
+                visible={true}
+              />
+            </div>
 
-        </>
-      ) : error ? (
-        <div>{error}</div>
-      ) : (
-        <>
-          <Tabs
-            defaultActiveKey="All"
-            id="uncontrolled-tab-example"
-            className="mb-3 mt-4 ps-4 gap-5 tab-btn"
-          >
-            <Tab className="tab-color" eventKey="All" title="All">
-              <Box sx={{ height: 400, width: '100%' }}>
-                <DataGrid
-                  className={`tableBg mx-2 ${theme}DataGrid`}
-                  rows={projectData}
-                  columns={[columns]}
-                  getRowId={(row) => row._id}
-                  initialState={{
-                    pagination: {
-                      paginationModel: {
-                        pageSize: 5,
-                      },
-                    },
-                  }}
-                  pageSizeOptions={[5]}
-                  checkboxSelection
-                  disableRowSelectionOnClick
-                />
-              </Box>
-            </Tab>
-            <Tab className="tab-color" eventKey="Active" title="Active">
-              <Box sx={{ height: 400, width: '100%' }}>
-                <DataGrid
-                  className={`tableBg mx-2 ${theme}DataGrid`}
-                  rows={projectActiveData}
-                  columns={[
-                    ...columns
-                  ]}
-                  getRowId={(row) => row._id}
-                  initialState={{
-                    pagination: {
-                      paginationModel: {
-                        pageSize: 5,
-                      },
-                    },
-                  }}
-                  pageSizeOptions={[5]}
-                  checkboxSelection
-                  disableRowSelectionOnClick
-                />
-              </Box>
-            </Tab>
-            <Tab className="tab-color" eventKey="Completed" title="Completed">
-              <Box sx={{ height: 400, width: '100%' }}>
-                <DataGrid
-                  className={`tableBg mx-2 ${theme}DataGrid`}
-                  rows={projectCompleteData}
-                  columns={[
-                    ...columns,
-                  ]}
-                  getRowId={(row) => row._id}
-                  initialState={{
-                    pagination: {
-                      paginationModel: {
-                        pageSize: 5,
-                      },
-                    },
-                  }}
-                  pageSizeOptions={[5]}
-                  checkboxSelection
-                  disableRowSelectionOnClick
-                />
-              </Box>
-            </Tab>
-            <Tab className="tab-color" eventKey="Qued" title="Qued">
-              <Box sx={{ height: 400, width: '100%' }}>
-                <DataGrid
-                  className={`tableBg mx-2 ${theme}DataGrid`}
-                  rows={projectQuedData}
-                  columns={[
-                    ...columns,
-                  ]}
-                  getRowId={(row) => row._id}
-                  initialState={{
-                    pagination: {
-                      paginationModel: {
-                        pageSize: 5,
-                      },
-                    },
-                  }}
-                  pageSizeOptions={[5]}
-                  checkboxSelection
-                  disableRowSelectionOnClick
-                />
-              </Box>
-            </Tab>
-          </Tabs>
-        </>
-      )}
+          </>
+        ) : projectData.length < 0 || error ? (
+          <div>
+            <Card>
+              <Card.Text>No projects have been assigned to you yet</Card.Text>
+            </Card >
+          </div>
+        ) : (
+          <>
+            <div className="tabBorder mt-3">
+              <Tabs
+                defaultActiveKey="All"
+                id="uncontrolled-tab-example"
+                className={`mb-0  tab-btn ${theme}Tab`}
+              >
+                <Tab className="tab-color" eventKey="All" title="All">
+                  <Box sx={{ height: 400, width: '100%' }}>
+                    <DataGrid
+                      className={
+                        theme == "light"
+                          ? `${theme}DataGrid`
+                          : `tableBg ${theme}DataGrid`
+                      }
+                      rows={projectData}
+                      columns={[...columns,
+                      {
+
+                        field: 'action',
+                        headerName: 'Action',
+                        width: 250,
+                        renderCell: (params) => {
+                          return (
+                            <Grid item xs={8}>
+                              <Link to={`/agentEditProject/${params.row._id}`}>
+                                <Button
+                                  variant="contained"
+                                  className="mx-2 tableEditbtn"
+                                // onClick={() => handleEdit(params.row._id)}
+                                // startIcon={<MdEdit />}
+                                >
+                                  Edit
+                                </Button>
+                              </Link>
+                            </Grid>
+                          );
+                        },
+                      }]}
+                      getRowId={(row) => row._id}
+                      initialState={{
+                        pagination: {
+                          paginationModel: {
+                            pageSize: 5,
+                          },
+                        },
+                      }}
+                      pageSizeOptions={[5]}
+                      checkboxSelection
+                      disableRowSelectionOnClick
+                    />
+                  </Box>
+                </Tab>
+                <Tab className="tab-color" eventKey="Active" title="Active">
+                  <Box sx={{ height: 400, width: '100%' }}>
+                    <DataGrid
+                      className={
+                        theme == "light"
+                          ? `${theme}DataGrid`
+                          : `tableBg ${theme}DataGrid`
+                      }
+                      rows={projectActiveData}
+                      columns={[
+                        ...columns,
+                        {
+                          field: 'action',
+                          headerName: 'Action',
+                          width: 250,
+                          renderCell: (params) => {
+                            return (
+                              <Grid item xs={8}>
+                                <Link to={`/agentEditProject/${params.row._id}`}>
+                                  <Button
+                                    variant="contained"
+                                    className="mx-2 tableEditbtn"
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
+                                  >
+                                    Edit
+                                  </Button>
+                                </Link>
+                              </Grid>
+                            );
+                          },
+                        },
+                      ]}
+                      getRowId={(row) => row._id}
+                      initialState={{
+                        pagination: {
+                          paginationModel: {
+                            pageSize: 5,
+                          },
+                        },
+                      }}
+                      pageSizeOptions={[5]}
+                      checkboxSelection
+                      disableRowSelectionOnClick
+                    />
+                  </Box>
+                </Tab>
+                <Tab className="tab-color" eventKey="Completed" title="Completed">
+                  <Box sx={{ height: 400, width: '100%' }}>
+                    <DataGrid
+                      className={
+                        theme == "light"
+                          ? `${theme}DataGrid`
+                          : `tableBg ${theme}DataGrid`
+                      }
+                      rows={projectCompleteData}
+                      columns={[
+                        ...columns,
+                        {
+                          field: 'action',
+                          headerName: 'Action',
+                          width: 250,
+                          renderCell: (params) => {
+                            return (
+                              <Grid item xs={8}>
+                                <Link to={`/agentEditProject/${params.row._id}`}>
+                                  <Button
+                                    variant="contained"
+                                    className="mx-2 tableEditbtn"
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
+                                  >
+                                    Edit
+                                  </Button>
+                                </Link>
+                              </Grid>
+                            );
+                          },
+                        },
+                      ]}
+                      getRowId={(row) => row._id}
+                      initialState={{
+                        pagination: {
+                          paginationModel: {
+                            pageSize: 5,
+                          },
+                        },
+                      }}
+                      pageSizeOptions={[5]}
+                      checkboxSelection
+                      disableRowSelectionOnClick
+                    />
+                  </Box>
+                </Tab>
+                <Tab className="tab-color" eventKey="Qued" title="Qued">
+                  <Box sx={{ height: 400, width: '100%' }}>
+                    <DataGrid
+                      className={
+                        theme == "light"
+                          ? `${theme}DataGrid`
+                          : `tableBg ${theme}DataGrid`
+                      }
+                      rows={projectQuedData}
+                      columns={[
+                        ...columns,
+                        {
+                          field: 'action',
+                          headerName: 'Action',
+                          width: 250,
+                          renderCell: (params) => {
+                            return (
+                              <Grid item xs={8}>
+                                <Link to={`/agentEditProject/${params.row._id}`}>
+                                  <Button
+                                    variant="contained"
+                                    className="mx-2 tableEditbtn"
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
+                                  >
+                                    Edit
+                                  </Button>
+                                </Link>
+                              </Grid>
+                            );
+                          },
+                        },
+                      ]}
+                      getRowId={(row) => row._id}
+                      initialState={{
+                        pagination: {
+                          paginationModel: {
+                            pageSize: 5,
+                          },
+                        },
+                      }}
+                      pageSizeOptions={[5]}
+                      checkboxSelection
+                      disableRowSelectionOnClick
+                    />
+                  </Box>
+                </Tab>
+              </Tabs>
+            </div>
+          </>
+        )
+        }
+      </div>
     </>
   );
 }

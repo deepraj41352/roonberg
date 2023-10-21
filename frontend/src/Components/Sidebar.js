@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { HiClipboardList } from 'react-icons/hi';
 import { CiBoxList } from 'react-icons/ci';
 import { FaListAlt, FaListUl } from 'react-icons/fa';
@@ -9,11 +9,11 @@ import { MdLogout } from 'react-icons/md';
 import { BsFillChatLeftQuoteFill } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
 import { Store } from '../Store';
-
+import { ImCross } from 'react-icons/im';
 function Sidebar({ sidebarVisible, setSidebarVisible }) {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
-
+  const [isSmallScreen, setIsSmallScreen] = useState(true);
   const signoutHandler = () => {
     const userConfirm = window.confirm('Are you sure you want to logout?');
     if (userConfirm) {
@@ -22,12 +22,33 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
       window.location.href = '/';
     }
   };
-
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth < 1179);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+  const handleResponsiveSidebarVisable = () => {
+    setSidebarVisible(!sidebarVisible);
+  };
+  const handlSmallScreeneClick = () => {
+    if (isSmallScreen) {
+      setSidebarVisible(!sidebarVisible);
+    }
+  };
   return (
     <div className={`sidebar ${sidebarVisible ? 'visible' : ''} `}>
       <div className="blank-box"></div>
+      <ImCross
+        className="sidebarCrossBtn"
+        onClick={handleResponsiveSidebarVisable}
+      />
       <ul className="dash-list ">
-        <Link to="/dashboard" className="text-decoration-none">
+        <Link to="/dashboard" className="text-decoration-none" onClick={handlSmallScreeneClick}>
           <li>
             <AiFillHome className="me-3 fs-5" />
             Dashboard

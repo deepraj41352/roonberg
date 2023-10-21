@@ -16,7 +16,6 @@ import Tabs from 'react-bootstrap/Tabs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateField } from '@mui/x-date-pickers/DateField';
-
 import {
   FormControl,
   InputLabel,
@@ -80,6 +79,11 @@ const columns = [
     headerName: "Contractor",
     width: 90,
   },
+  {
+    field: 'assignedAgent',
+    headerName: 'Assigned Agent',
+    width: 110,
+  },
 ];
 
 export default function AdminProjectListScreen() {
@@ -106,7 +110,7 @@ export default function AdminProjectListScreen() {
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [projectOwner, setProjectOwner] = useState('');
-  const [startDate, setStartDate] = useState(null);
+  const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
   const navigate = useNavigate();
   const [agents, setAgents] = useState([{ categoryId: '', agentName: '', agentId: '' }]);
@@ -117,11 +121,9 @@ export default function AdminProjectListScreen() {
     const category = agents[index].categoryId;
     if (category) {
       const selectedCategory1 = categoryData.find(categoryItem => categoryItem._id === category);
-      if (selectedCategory1) {
-        const agentForCategory = agentData.find(agentItem => agentItem.agentCategory === selectedCategory1._id);
-        if (agentForCategory) {
-          return [agentForCategory]
-        }
+      const agentsForCategory = agentData.filter(agentItem => agentItem.agentCategory === selectedCategory1._id);
+      if (agentsForCategory.length > 0) {
+        return agentsForCategory;
       }
     }
     return [];
@@ -245,12 +247,10 @@ export default function AdminProjectListScreen() {
         });
         const datas = response.data;
         const rowData = datas.map((items) => {
-          console.log('contractorData', contractorData)
-          console.log('items.projectOwner', items.projectOwner)
+
 
           const contractor = contractorData.find((contractor) => contractor._id === items.projectOwner);
-          console.log('contractor', contractor)
-          console.log('item', items)
+
           return {
             ...items,
             _id: items._id,
@@ -262,7 +262,6 @@ export default function AdminProjectListScreen() {
             assignedAgent: items.assignedAgent
               ? items.assignedAgent.map((agent) => agent.agentName)
               : '',
-            // assignedAgent: items.assignedAgent.length < 0 ? 'Not Assign' : "Assign",
             projectOwner: contractor ? contractor.first_name : '',
           };
         });
@@ -281,7 +280,7 @@ export default function AdminProjectListScreen() {
     else {
       FatchProjectData()
     }
-  }, [successDelete, successUpdate, dispatch, userInfo.token]);
+  }, [successDelete, successUpdate, dispatch, userInfo.token, contractorData]);
 
   const projectActiveData = projectData.filter((item) => {
     return item.projectStatus === 'active';
@@ -300,8 +299,6 @@ export default function AdminProjectListScreen() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmiting(true);
-    console.log("agents", agents)
-    console.log("categories", categories)
     try {
 
       const response = await axios.post(
@@ -375,7 +372,6 @@ export default function AdminProjectListScreen() {
     navigate(`/AdminAssignAgent/${userid}`)
   }
 
-
   return (
     <>
       <Button
@@ -431,7 +427,7 @@ export default function AdminProjectListScreen() {
                               variant="contained"
                               className="mx-2 tableEditbtn"
                               onClick={() => handleEdit(params.row._id)}
-                              startIcon={<MdEdit />}
+
                             >
                               Edit
                             </Button>
@@ -569,14 +565,29 @@ export default function AdminProjectListScreen() {
                       </Select>
                     </FormControl>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
+
+                      {/* <Form.Control
+                        type="date"
+                        name="startDate"
+                        value={startDate}
+                        onChange={handleStartDateChange}
+                        placeholder="Start Date"
+                      /> */}
                       <DateField
                         required
                         label="Date"
                         value={startDate}
                         onChange={(newValue) => setStartDate(newValue)}
+
                       // format="MM-DD-YYYY"
                       // minDate={new Date()} // Prevent past dates from being selected
                       />
+                      {/* <Form.Control
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        placeholder="Start Date"
+                      /> */}
                       <DateField
                         required
                         label="End Date"
@@ -614,7 +625,7 @@ export default function AdminProjectListScreen() {
                               variant="contained"
                               className="mx-2 tableEditbtn"
                               onClick={() => handleEdit(params.row._id)}
-                              startIcon={<MdEdit />}
+
                             >
                               Edit
                             </Button>
@@ -666,7 +677,7 @@ export default function AdminProjectListScreen() {
                                 variant="contained"
                                 className="mx-2 tableEditbtn"
                                 onClick={() => handleEdit(params.row._id)}
-                                startIcon={<MdEdit />}
+
                               >
                                 Edit
                               </Button>
@@ -719,7 +730,7 @@ export default function AdminProjectListScreen() {
                                 variant="contained"
                                 className="mx-2 tableEditbtn"
                                 onClick={() => handleEdit(params.row._id)}
-                                startIcon={<MdEdit />}
+
                               >
                                 Edit
                               </Button>
@@ -771,7 +782,7 @@ export default function AdminProjectListScreen() {
                               variant="danger"
                               className="mx-2  bg-danger"
                               onClick={() => handleAssigndment(params.row._id)}
-                              startIcon={<MdEdit />}
+
                             >
 
                               Assign

@@ -52,6 +52,8 @@ import ContractorProject from './Contractor/ContractorProjectListScreen';
 import ContractorEditProject from './Contractor/ContractorEditProjectScreen';
 import AgentProjectList from './Agent/AgentProjectListScreen';
 import AdminAssignAgent from './Screens/AdminAssignAgentScreen';
+import SuperadminEditAdmin from './Screens/SuperadminEditAdmin';
+import AgentEditProject from './Agent/AgentEditProjectScreen';
 
 
 
@@ -288,6 +290,11 @@ function App() {
                     />
 
                     <Route
+                      path="/superadmineditadmin/:id"
+                      element={<SuperadminEditAdmin />}
+                    />
+
+                    <Route
                       path="/AdminAssignAgent/:id"
                       element={<AdminAssignAgent />}
                     />
@@ -305,6 +312,10 @@ function App() {
                     <Route
                       path="/agentProjectList"
                       element={<AgentProjectList />}
+                    />
+                    <Route
+                      path="/agentEditProject/:id"
+                      element={<AgentEditProject />}
                     />
                   </Routes>
                 </div>

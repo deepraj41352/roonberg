@@ -70,7 +70,7 @@ export default function AdminContractorListScreen() {
   const [isModelOpen, setIsModelOpen] = useState(false);
   const theme = toggleState ? "dark" : "light";
 
-  const [name, setName] = useState("");
+  const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("");
@@ -130,7 +130,7 @@ export default function AdminContractorListScreen() {
       const response = await axios.post(
         `/api/user/add`,
         {
-          first_name: name,
+          first_name: firstname,
           last_name: lastname,
           email: email,
           password: password,
@@ -236,7 +236,6 @@ export default function AdminContractorListScreen() {
                             variant="contained"
                             className="mx-2 tableEditbtn"
                             onClick={() => handleEdit(params.row._id)}
-                            startIcon={<MdEdit />}
                           >
                             Edit
                           </Button>
@@ -244,7 +243,6 @@ export default function AdminContractorListScreen() {
                             variant="outlined"
                             className="mx-2 tableDeletebtn"
                             onClick={() => deleteHandle(params.row._id)}
-                            startIcon={<AiFillDelete />}
                           >
                             Delete
                           </Button>
@@ -293,18 +291,18 @@ export default function AdminContractorListScreen() {
 
                   <TextField
                     className="mb-2"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    label="FirstName"
+                    value={firstname}
+                    onChange={(e) => setFirstname(e.target.value)}
+                    label="Name"
                     fullWidth
                   />
-                  <TextField
+                  {/* <TextField
                     className="mb-2"
                     value={lastname}
                     onChange={(e) => setLastname(e.target.value)}
                     label="LastName"
                     fullWidth
-                  />
+                  /> */}
 
                   <TextField
                     className="mb-2"
@@ -337,13 +335,13 @@ export default function AdminContractorListScreen() {
                   </FormControl>
                   <br></br>
                   <Button
-                    className="mt-2 formbtn"
+                    className="mt-2 formbtn updatingBtn"
                     variant="contained"
                     color="primary"
                     type="submit"
                     disabled={submitting}
                   >
-                    {submitting ? "Adding Contractor..." : "Add Contractor"}
+                    {submitting ? "Adding Contractor" : "Add Contractor"}
 
                   </Button>
                 </Form>
