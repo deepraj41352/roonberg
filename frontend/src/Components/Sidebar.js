@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+
 import { HiClipboardList } from 'react-icons/hi';
 import { CiBoxList } from 'react-icons/ci';
 import { FaListAlt, FaListUl } from 'react-icons/fa';
@@ -10,10 +11,13 @@ import { BsFillChatLeftQuoteFill } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
 import { Store } from '../Store';
 import { ImCross } from 'react-icons/im';
+
 function Sidebar({ sidebarVisible, setSidebarVisible }) {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
+  const [selectedItem, setSelectedItem] = useState(null);
   const [isSmallScreen, setIsSmallScreen] = useState(true);
+
   const signoutHandler = () => {
     const userConfirm = window.confirm('Are you sure you want to logout?');
     if (userConfirm) {
@@ -40,6 +44,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
       setSidebarVisible(!sidebarVisible);
     }
   };
+
   return (
     <div className={`sidebar ${sidebarVisible ? 'visible' : ''} `}>
       <div className="blank-box"></div>
@@ -48,15 +53,33 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
         onClick={handleResponsiveSidebarVisable}
       />
       <ul className="dash-list ">
-        <Link to="/dashboard" className="text-decoration-none" onClick={handlSmallScreeneClick}>
-          <li>
+        <Link
+          to="/dashboard"
+          className="text-decoration-none"
+          onClick={handlSmallScreeneClick}
+        >
+          <li
+            className={selectedItem === 'dashboard' ? 'selected' : ''}
+            onClick={() => {
+              setSelectedItem('dashboard');
+            }}
+          >
             <AiFillHome className="me-3 fs-5" />
             Dashboard
           </li>
         </Link>
         {userInfo.role == 'superadmin' ? (
-          <Link to="/adminList" className="text-decoration-none">
-            <li>
+          <Link
+            to="/adminList"
+            className="text-decoration-none"
+            onClick={handlSmallScreeneClick}
+          >
+            <li
+              className={selectedItem === 'adminList' ? 'selected' : ''}
+              onClick={() => {
+                setSelectedItem('adminList');
+              }}
+            >
               <HiClipboardList className="me-3 fs-5" />
               Admin List
             </li>
@@ -65,26 +88,64 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
 
         {userInfo.role === 'admin' || userInfo.role === 'superadmin' ? (
           <>
-            <Link to="/adminAgentList" className="text-decoration-none">
-              <li>
+            <Link
+              to="/adminAgentList"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
+              <li
+                className={selectedItem === 'agentList' ? 'selected' : ''}
+                onClick={() => {
+                  setSelectedItem('agentList');
+                }}
+              >
                 <FaListAlt className="me-3 fs-5" />
                 Agent List
               </li>
             </Link>
-            <Link to="/adminContractorList" className="text-decoration-none">
-              <li>
+            <Link
+              to="/adminContractorList"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
+              <li
+                className={selectedItem === 'contractorList' ? 'selected' : ''}
+                onClick={() => {
+                  setSelectedItem('contractorList');
+                }}
+              >
                 <FaListUl className="me-3 fs-5" />
                 Contractor List
               </li>
             </Link>
-            <Link to="/adminCategoriesList" className="text-decoration-none">
-              <li>
+            <Link
+              to="/adminCategoriesList"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
+              <li
+                className={selectedItem === 'categoriesList' ? 'selected' : ''}
+                onClick={() => {
+                  setSelectedItem('categoriesList');
+                }}
+              >
                 <CiBoxList className="me-3 fs-5" />
                 Categories List
               </li>
             </Link>
-            <Link to="/adminProjectList" className="text-decoration-none">
-              <li>
+            <Link
+              to="/adminProjectList"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
+              <li
+                className={
+                  selectedItem === 'ProjectListAdmin' ? 'selected' : ''
+                }
+                onClick={() => {
+                  setSelectedItem('ProjectListAdmin');
+                }}
+              >
                 <AiOutlineProject className="me-3 fs-5" />
                 Project List
               </li>
@@ -92,29 +153,76 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
           </>
         ) : null}
 
-        <Link to="/profile-screen" className="text-decoration-none">
-          <li>
+        <Link
+          to="/profile-screen"
+          className="text-decoration-none"
+          onClick={handlSmallScreeneClick}
+        >
+          <li
+            className={selectedItem === 'profile' ? 'selected' : ''}
+            onClick={() => {
+              setSelectedItem('profile');
+            }}
+          >
             <CgProfile className="me-3 fs-5" />
             Profile
           </li>
         </Link>
 
-        <Link to="/ChatScreen" className="text-decoration-none">
-          <li>
+        {/* <Link to="/adminProjectList" className="text-decoration-none">
+          <li
+            className={selectedItem === 'profileList' ? 'selected' : ''}
+            onClick={() => {
+              setSelectedItem('profileList');
+            }}
+          >
+            <AiOutlineProject className="me-3 fs-5" />
+            Project List
+          </li>
+        </Link> */}
+        <Link
+          to="/ChatScreen"
+          className="text-decoration-none"
+          onClick={handlSmallScreeneClick}
+        >
+          <li
+            className={selectedItem === 'chat' ? 'selected' : ''}
+            onClick={() => {
+              setSelectedItem('chat');
+            }}
+          >
             <BsFillChatLeftQuoteFill className="me-3 fs-5" />
             Chat
           </li>
         </Link>
         {userInfo.role == 'contractor' ? (
           <>
-            <Link to="/contractorProjectList" className="text-decoration-none">
-              <li>
+            <Link
+              to="/project-list-screen"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
+              <li
+                className={selectedItem === 'addProjects' ? 'selected' : ''}
+                onClick={() => {
+                  setSelectedItem('addProjects');
+                }}
+              >
                 <AiOutlineProject className="me-3 fs-5" />
                 Project List
               </li>
             </Link>
-            <Link to="/add-project" className="text-decoration-none">
-              <li>
+            <Link
+              to="/add-project"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
+              <li
+                className={selectedItem === 'addProject' ? 'selected' : ''}
+                onClick={() => {
+                  setSelectedItem('addProject');
+                }}
+              >
                 <AiFillHome className="me-3 fs-5" />
                 Add Project
               </li>
@@ -123,14 +231,29 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
         ) : null}
         {userInfo.role == 'agent' ? (
           <>
-            <Link to="/agentProjectList" className="text-decoration-none">
+            <Link
+              to="/agentProjectList"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
               <li>
                 <AiOutlineProject className="me-3 fs-5" />
                 Project List
               </li>
             </Link>
-            <Link to="/projectNotification" className="text-decoration-none">
-              <li>
+            <Link
+              to="/projectNotification"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
+              <li
+                className={
+                  selectedItem === 'projectNotification' ? 'selected' : ''
+                }
+                onClick={() => {
+                  setSelectedItem('projectNotification');
+                }}
+              >
                 <IoMdNotifications className="me-3 fs-5" />
                 Project Notification
               </li>
@@ -142,7 +265,12 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
           onClick={signoutHandler}
           className="text-decoration-none"
         >
-          <li>
+          <li
+            className={selectedItem === 'logout' ? 'selected' : ''}
+            onClick={() => {
+              setSelectedItem('logout');
+            }}
+          >
             <MdLogout className="me-3 fs-5" />
             Logout
           </li>

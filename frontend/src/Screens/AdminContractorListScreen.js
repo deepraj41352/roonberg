@@ -18,25 +18,25 @@ import Validations from "../Components/Validations";
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "FATCH_REQUEST":
+    case 'FATCH_REQUEST':
       return { ...state, loading: true };
-    case "FATCH_SUCCESS":
+    case 'FATCH_SUCCESS':
       return { ...state, constructorData: action.payload, loading: false };
-    case "FATCH_ERROR":
+    case 'FATCH_ERROR':
       return { ...state, error: action.payload, loading: false };
 
-    case "DELETE_SUCCESS":
+    case 'DELETE_SUCCESS':
       return { ...state, successDelete: action.payload };
 
-    case "DELETE_RESET":
+    case 'DELETE_RESET':
       return { ...state, successDelete: false };
 
-    case "UPDATE_SUCCESS":
+    case 'UPDATE_SUCCESS':
       return { ...state, successUpdate: action.payload };
 
-    case "UPDATE_RESET":
+    case 'UPDATE_RESET':
       return { ...state, successUpdate: false };
-    case "FATCH_SUBMITTING":
+    case 'FATCH_SUBMITTING':
       return { ...state, submitting: action.payload };
     default:
       return state;
@@ -44,20 +44,20 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: "_id", headerName: "ID", width: 250 },
+  { field: '_id', headerName: 'ID', width: 250 },
   {
-    field: "first_name",
-    headerName: "constractor",
+    field: 'first_name',
+    headerName: 'constractor',
     width: 150,
   },
   {
-    field: "email",
-    headerName: "Email",
+    field: 'email',
+    headerName: 'Email',
     width: 200,
   },
   {
-    field: "userStatus",
-    headerName: "Status",
+    field: 'userStatus',
+    headerName: 'Status',
     width: 100,
   },
 ];
@@ -66,9 +66,9 @@ export default function AdminContractorListScreen() {
   const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
   const navigate = useNavigate();
-  const role = "contractor";
+  const role = 'contractor';
   const [isModelOpen, setIsModelOpen] = useState(false);
-  const theme = toggleState ? "dark" : "light";
+  const theme = toggleState ? 'dark' : 'light';
 
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
@@ -77,11 +77,18 @@ export default function AdminContractorListScreen() {
   const [password, setPassword] = useState("");
 
   const [
-    { loading, error, constructorData, successDelete, successUpdate, submitting },
+    {
+      loading,
+      error,
+      constructorData,
+      successDelete,
+      successUpdate,
+      submitting,
+    },
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
-    error: "",
+    error: '',
 
     constructorData: [],
     successDelete: false,
@@ -92,7 +99,7 @@ export default function AdminContractorListScreen() {
   useEffect(() => {
     const FatchconstractorData = async () => {
       try {
-        dispatch("FATCH_REQUEST");
+        dispatch('FATCH_REQUEST');
         const response = await axios.post(
           `/api/user/`,
           { role: role },
@@ -105,73 +112,76 @@ export default function AdminContractorListScreen() {
             _id: items._id,
             first_name: items.first_name,
             email: items.email,
-            userStatus: items.userStatus ? "Active" : "Inactive",
+            userStatus: items.userStatus ? 'Active' : 'Inactive',
           };
         });
-        dispatch({ type: "FATCH_SUCCESS", payload: rowData });
+        dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
       } catch (error) {
         console.log(error);
       }
     };
     if (successDelete) {
-      dispatch({ type: "DELETE_RESET" });
+      dispatch({ type: 'DELETE_RESET' });
     } else if (successUpdate) {
-      dispatch({ type: "UPDATE_RESET" });
+      dispatch({ type: 'UPDATE_RESET' });
     } else {
       FatchconstractorData();
     }
   }, [successDelete, successUpdate, userInfo]);
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch({ type: "FATCH_SUBMITTING", payload: true })
+    dispatch({ type: 'FATCH_SUBMITTING', payload: true });
     try {
       const response = await axios.post(
         `/api/user/add`,
         {
           first_name: firstname,
           last_name: lastname,
+          last_name: lastname,
           email: email,
           password: password,
+          password: password,
           role: role,
+          userStatus: status,
           userStatus: status,
         },
         { headers: { Authorization: `Bearer ${userInfo.token}` } }
       );
       console.log(response);
+      console.log(response);
       if (response.status === 200) {
-        toast.success("Contractor added Successfully !");
+        toast.success('Contractor added Successfully !');
         setIsModelOpen(false);
-        dispatch({ type: "UPDATE_SUCCESS", payload: true });
-        dispatch({ type: "FATCH_SUBMITTING", payload: false })
+        dispatch({ type: 'UPDATE_SUCCESS', payload: true });
+        dispatch({ type: 'FATCH_SUBMITTING', payload: false });
       }
     } catch (error) {
       console.log(error);
       toast.error(error.response?.data?.message);
-      dispatch({ type: "FATCH_SUBMITTING", payload: false })
+      dispatch({ type: 'FATCH_SUBMITTING', payload: false });
     }
   };
-
+  // --------------------------
   const deleteHandle = async (userid) => {
-    if (window.confirm("Are you sure to delete?")) {
+    if (window.confirm('Are you sure to delete?')) {
       try {
         const response = await axios.delete(`/api/user/${userid}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
 
         if (response.status === 200) {
-          toast.success("constractor data deleted successfully!");
+          toast.success('constractor data deleted successfully!');
           dispatch({
-            type: "DELETE_SUCCESS",
+            type: 'DELETE_SUCCESS',
             payload: true,
           });
         } else {
-          toast.error("Failed to delete constractor data.");
+          toast.error('Failed to delete constractor data.');
         }
       } catch (error) {
         console.error(error);
-        toast.error("An error occurred while deleting constractor data.");
+        toast.error('An error occurred while deleting constractor data.');
       }
     }
   };
@@ -219,15 +229,19 @@ export default function AdminContractorListScreen() {
               <BiPlusMedical className="mx-2" />
               Add Contractor
             </Button>
-            <Box sx={{ height: 400, width: "100%" }}>
+            <Box sx={{ height: 400, width: '100%' }}>
               <DataGrid
-                className={`tableBg mx-2 ${theme}DataGrid`}
+                className={
+                  theme == 'light'
+                    ? `${theme}DataGrid mx-2`
+                    : `tableBg ${theme}DataGrid mx-2`
+                }
                 rows={constructorData}
                 columns={[
                   ...columns,
                   {
-                    field: "action",
-                    headerName: "Action",
+                    field: 'action',
+                    headerName: 'Action',
                     width: 250,
                     renderCell: (params) => {
                       return (
@@ -268,12 +282,12 @@ export default function AdminContractorListScreen() {
               <Box
                 className="modelBg modalRespnsive"
                 sx={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
                   width: 400,
-                  bgcolor: "background.paper",
+                  bgcolor: 'background.paper',
                   boxShadow: 24,
                   p: 4,
                 }}

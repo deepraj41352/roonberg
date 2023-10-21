@@ -68,11 +68,11 @@ function SignUpForm() {
   }, [userInfo, navigate]);
 
   return (
-    <Container className="Sign-up-container d-flex  flex-column justify-content-center align-items-center">
+    <Container className="loginPage d-flex  flex-column justify-content-center align-items-center">
       <div className="Sign-up-container-inner px-4 py-3">
-        <Row className="mb-3">
+        <Row className="mb-3 ">
           <Col>
-            <h4>Login</h4>
+            <h3>Login</h3>
           </Col>
         </Row>
         <Row>

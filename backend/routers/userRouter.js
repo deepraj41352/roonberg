@@ -58,11 +58,10 @@ userRouter.put(
   expressAsyncHandler(async (req, res) => {
     try {
       const user = await User.findById(req.params.id);
-      console.log("user", user)
+      console.log('user', user);
       if (user._id == req.params.id) {
-
         const data = await user.updateOne({ $set: req.body });
-        console.log("updateddata", data);
+        console.log('updateddata', data);
         res.status(200).json('update successfully');
       } else {
         res.status(403).json('you can not update');
@@ -397,13 +396,11 @@ userRouter.post(
  *               message: Registration failed. Please try again later.
  */
 
-
-
 userRouter.post(
   '/signup',
   expressAsyncHandler(async (req, res) => {
     try {
-      const { first_name, last_name, email, role, } = req.body;
+      const { first_name, last_name, email, role } = req.body;
       const existingUser = await User.findOne({ email: email });
       if (existingUser) {
         return res
@@ -470,22 +467,29 @@ userRouter.put(
   })
 );
 
-export const uploadDoc = async (req) => {
+export const uploadDoc = async (req, mediaType) => {
   try {
     cloudinary.config({
       cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
       api_key: process.env.CLOUDINARY_API_KEY,
       api_secret: process.env.CLOUDINARY_API_SECRET,
     });
+
     const streamUpload = (req) => {
       return new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream((error, result) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(result);
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            resource_type: mediaType, // 'video' or 'audio'
+          },
+
+          (error, result) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result);
+            }
           }
-        });
+        );
         streamifier.createReadStream(req.file.buffer).pipe(stream);
       });
     };
@@ -503,7 +507,8 @@ userRouter.post(
   isAdminOrSelf,
   expressAsyncHandler(async (req, res) => {
     try {
-      const { first_name, last_name, email, role, agentCategory, userStatus } = req.body;
+      const { first_name, last_name, email, role, agentCategory, userStatus } =
+        req.body;
       const existingUser = await User.findOne({ email: email });
       if (existingUser) {
         return res
@@ -581,7 +586,7 @@ userRouter.get(
     try {
       const user = await User.findById(req.params.id);
       if (!user) {
-        res.status(400).json({ message: "user not found" });
+        res.status(400).json({ message: 'user not found' });
       }
       res.json(user);
     } catch (error) {

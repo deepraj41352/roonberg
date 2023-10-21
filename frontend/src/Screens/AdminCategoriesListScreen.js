@@ -1,36 +1,45 @@
-import Box from "@mui/material/Box";
-import { DataGrid } from "@mui/x-data-grid";
-import { Button, Grid, InputLabel, MenuItem, Select } from "@mui/material";
-import Modal from "@mui/material/Modal";
-import TextField from "@mui/material/TextField";
-import { Form, FormControl } from "react-bootstrap";
-import { BiPlusMedical } from "react-icons/bi";
-import { Store } from "../Store";
-import Avatar from "@mui/material/Avatar";
-import { useContext, useEffect, useReducer, useState } from "react";
-import { toast } from "react-toastify";
-import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import Box from '@mui/material/Box';
+import { DataGrid } from '@mui/x-data-grid';
+import {
+  Avatar,
+  Button,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+} from '@mui/material';
+import { AiFillDelete } from 'react-icons/ai';
+import { MdEdit } from 'react-icons/md';
+import Modal from '@mui/material/Modal';
+import TextField from '@mui/material/TextField';
+import { Form, FormControl } from 'react-bootstrap';
+import { BiPlusMedical } from 'react-icons/bi';
+import { Store } from '../Store';
+import { useContext, useEffect, useReducer, useState } from 'react';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
+import AvatarImage from '../Components/Avatar';
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "FATCH_REQUEST":
+    case 'FATCH_REQUEST':
       return { ...state, loading: true };
-    case "FATCH_SUCCESS":
+    case 'FATCH_SUCCESS':
       return { ...state, categoryData: action.payload, loading: false };
-    case "FATCH_ERROR":
+    case 'FATCH_ERROR':
       return { ...state, error: action.payload, loading: false };
 
-    case "DELETE_SUCCESS":
+    case 'DELETE_SUCCESS':
       return { ...state, successDelete: action.payload };
 
-    case "DELETE_RESET":
+    case 'DELETE_RESET':
       return { ...state, successDelete: false };
 
-    case "UPDATE_SUCCESS":
+    case 'UPDATE_SUCCESS':
       return { ...state, successUpdate: action.payload };
 
-    case "UPDATE_RESET":
+    case 'UPDATE_RESET':
       return { ...state, successUpdate: false };
     case "CATEGORY_CRATED_REQ":
       return { ...state, isSubmiting: true };
@@ -42,36 +51,51 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: "_id", headerName: "ID", width: 250 },
+  { field: '_id', headerName: 'ID', width: 250 },
   {
-    field: "categoryName",
-    headerName: "categoryName",
+    field: 'categoryName',
+    headerName: 'categoryName',
     width: 100,
   },
   {
-    field: "categoryDescription",
-    headerName: "categoryDescription",
+    field: 'categoryDescription',
+    headerName: 'categoryDescription',
     width: 150,
   },
   {
-    field: "categoryImage",
-    headerName: "Image",
+    field: 'categoryImage',
+    headerName: 'Image',
     width: 100,
     renderCell: (params) => {
+      function generateColorFromAscii(str) {
+        let color = '#';
+        const combination = str
+          .split('')
+          .map((char) => char.charCodeAt(0))
+          .reduce((acc, value) => acc + value, 0);
+        color += (combination * 12345).toString(16).slice(0, 6);
+        return color;
+      }
+
+      const name = params.row.categoryName[0].toLowerCase();
+      const color = generateColorFromAscii(name);
       return (
         <>
-          <Avatar src={params.formattedValue} />
+          {params.row.categoryImage !== 'null' ? (
+            <Avatar src={params.row.categoryImage} />
+          ) : (
+            <AvatarImage name={name} bgColor={color} />
+          )}
         </>
       );
-    }
+    },
   },
   {
-    field: "categoryStatus",
-    headerName: "categoryStatus",
+    field: 'categoryStatus',
+    headerName: 'categoryStatus',
     width: 100,
   },
 ];
-
 
 const getRowId = (row) => row._id;
 
@@ -82,14 +106,14 @@ export default function AdminContractorListScreen() {
   const [isNewCategory, setIsNewCategory] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [category, setCatogry] = useState('');
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState('');
   const [categoryDesc, setCatogryDesc] = useState('');
   const [
     { loading, error, categoryData, successDelete, successUpdate, isSubmiting, submitting },
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
-    error: "",
+    error: '',
     categoryData: [],
     successDelete: false,
     successUpdate: false,
@@ -97,12 +121,9 @@ export default function AdminContractorListScreen() {
     submitting: false
   });
 
-
-
-
-
   const handleEdit = (rowId) => {
-    navigate(`/adminEditCategory/${rowId}`)
+    navigate(`/adminEditCategory/${rowId}`);
+
 
     // setSelectedRowData(params);
     // setIsModelOpen(true);
@@ -118,21 +139,21 @@ export default function AdminContractorListScreen() {
     setIsModelOpen(true);
     setIsNewCategory(true);
   };
-
+  const handleSubmitNewCategory = () => {
+    setIsModelOpen(false);
+  };
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
-  const theme = toggleState ? "dark" : "light";
-
+  const theme = toggleState ? 'dark' : 'light';
 
   useEffect(() => {
     const FatchcategoryData = async () => {
       try {
-        dispatch("FATCH_REQUEST");
-        const response = await axios.get(
-          `/api/category/`);
+        dispatch('FATCH_REQUEST');
+        const response = await axios.get(`/api/category/`);
         const datas = response.data;
-        console.log(datas)
+        console.log(datas);
         const rowData = datas.map((items) => {
           return {
             ...items,
@@ -140,20 +161,20 @@ export default function AdminContractorListScreen() {
             categoryName: items.categoryName,
             categoryDescription: items.categoryDescription,
             categoryImage: items.categoryImage,
-            categoryStatus: items.categoryStatus == true ? "Active" : "Inactive",
+            categoryStatus:
+              items.categoryStatus == true ? 'Active' : 'Inactive',
           };
         });
 
-        dispatch({ type: "FATCH_SUCCESS", payload: rowData });
-
+        dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
       } catch (error) {
         console.log(error);
       }
     };
     if (successDelete) {
-      dispatch({ type: "DELETE_RESET" });
+      dispatch({ type: 'DELETE_RESET' });
     } else if (successUpdate) {
-      dispatch({ type: "UPDATE_RESET" });
+      dispatch({ type: 'UPDATE_RESET' });
     } else {
       FatchcategoryData();
     }
@@ -164,25 +185,21 @@ export default function AdminContractorListScreen() {
     dispatch({ type: "FATCH_SUBMITTING", payload: true })
     const formDatas = new FormData();
 
-    formDatas.append("categoryImage", selectedFile);
-    formDatas.append("categoryName", category);
-    formDatas.append("categoryDescription", categoryDesc);
-    formDatas.append("categoryStatus", status);
+    formDatas.append('categoryImage', selectedFile);
+    formDatas.append('categoryName', category);
+    formDatas.append('categoryDescription', categoryDesc);
+    formDatas.append('categoryStatus', status);
 
     try {
-      dispatch({ type: "CATEGORY_CRATED_REQ" })
-      const { data } = await axios.post(
-        `/api/category/`,
-        formDatas,
-        {
-          headers: {
-            "content-type": "multipart/form-data",
+      dispatch({ type: 'CATEGORY_CRATED_REQ' });
+      const { data } = await axios.post(`/api/category/`, formDatas, {
+        headers: {
+          'content-type': 'multipart/form-data',
 
-            authorization: `Bearer ${userInfo.token}`,
-          },
-        }
-      );
-      console.log(data.message)
+          authorization: `Bearer ${userInfo.token}`,
+        },
+      });
+      console.log(data.message);
       toast.success(data.message);
       dispatch({ type: "UPDATE_SUCCESS" })
       dispatch({ type: "FATCH_SUBMITTING", payload: false })
@@ -190,7 +207,6 @@ export default function AdminContractorListScreen() {
       toast.error(err.response?.data?.message);
     } finally {
       setIsModelOpen(false);
-
     }
   };
 
@@ -200,24 +216,24 @@ export default function AdminContractorListScreen() {
   };
 
   const deleteHandle = async (userid) => {
-    if (window.confirm("Are you sure to delete?")) {
+    if (window.confirm('Are you sure to delete?')) {
       try {
         const response = await axios.delete(`/api/category/${userid}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
 
         if (response.status === 200) {
-          toast.success("Category data deleted successfully!");
+          toast.success('Category data deleted successfully!');
           dispatch({
-            type: "DELETE_SUCCESS",
+            type: 'DELETE_SUCCESS',
             payload: true,
           });
         } else {
-          toast.error("Failed to delete constractor data.");
+          toast.error('Failed to delete constractor data.');
         }
       } catch (error) {
         console.error(error);
-        toast.error("An error occurred while deleting constractor data.");
+        toast.error('An error occurred while deleting constractor data.');
       }
     }
   };
@@ -234,7 +250,12 @@ export default function AdminContractorListScreen() {
       </Button>
       <Box sx={{ height: 400, width: "100%" }}>
         <DataGrid
-          className={`tableBg mx-2 ${theme}DataGrid`}
+          className={
+            theme == 'light'
+              ? `${theme}DataGrid mx-2`
+              : `tableBg ${theme}DataGrid mx-2`
+          }
+
           rows={categoryData}
           columns={[
             ...columns,
@@ -250,7 +271,7 @@ export default function AdminContractorListScreen() {
                       variant="contained"
                       className="mx-2 tableEditbtn"
                       onClick={() => handleEdit(params.row._id)}
-
+                      startIcon={<MdEdit />}
                     >
                       Edit
                     </Button>
@@ -258,7 +279,7 @@ export default function AdminContractorListScreen() {
                       variant="outlined"
                       className="mx-2 tableDeletebtn"
                       onClick={() => deleteHandle(params.row._id)}
-
+                      startIcon={<AiFillDelete />}
                     >
                       Delete
                     </Button>
@@ -297,8 +318,9 @@ export default function AdminContractorListScreen() {
           <Form>
 
             <h4 className="d-flex justify-content-center">
-              Add Category
+              add Category
             </h4>
+
             <TextField
               className="mb-2"
               value={category}
@@ -315,14 +337,15 @@ export default function AdminContractorListScreen() {
             />
             {/* <FormControl className="formselect">
               <Select
+                className="formselect mb-2"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
               >
                 <MenuItem value="true">Active</MenuItem>
                 <MenuItem value="false">Inactive</MenuItem>
               </Select>
-            </FormControl> */}
-            {/* <FormControl fullWidth>
+
+              {/* <FormControl fullWidth>
               <InputLabel>Choose Options</InputLabel>
               <Select
                 required
@@ -347,8 +370,11 @@ export default function AdminContractorListScreen() {
                 ))}
               </Select>
             </FormControl> */}
-            <select className="formselect mb-2" value={status}
-              onChange={(e) => setStatus(e.target.value)}>
+            <select
+              className="formselect mb-2"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+            >
               <option value="">SELECT STATUS</option>
               <option value={true}>Active</option>
               <option value={false}>Inactive</option>

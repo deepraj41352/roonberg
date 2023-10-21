@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer, useState } from "react";
+import React, { useContext, useEffect, useReducer, useState } from 'react';
 import {
   Button,
   Card,
@@ -7,23 +7,23 @@ import {
   Form,
   Row,
   Toast,
-} from "react-bootstrap";
-import { Store } from "../Store";
-import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
-import axios from "axios";
+} from 'react-bootstrap';
+import { Store } from '../Store';
+import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "FATCH_REQUEST":
+    case 'FATCH_REQUEST':
       return { ...state, loading: true };
     case "FATCH_SUCCESS":
       return { ...state, ContractorData: action.payload, loading: false };
     case "FATCH_ERROR":
       return { ...state, error: action.payload, loading: false };
-    case "UPDATE_SUCCESS":
+    case 'UPDATE_SUCCESS':
       return { ...state, successUpdate: action.payload };
-    case "UPDATE_RESET":
+    case 'UPDATE_RESET':
       return { ...state, successUpdate: false };
     default:
       return state;
@@ -33,20 +33,20 @@ const reducer = (state, action) => {
 function AdminEditContractor() {
   const { id } = useParams();
   if (id) {
-    console.log("id exists:", id);
+    console.log('id exists:', id);
   } else {
-    console.log("id does not exist");
+    console.log('id does not exist');
   }
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState('');
   const [isSubmiting, setIsSubmiting] = useState(false);
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
-  const theme = toggleState ? "dark" : "light";
+  const theme = toggleState ? 'dark' : 'light';
 
   const [
     { loading, error, ContractorData, successDelete, successUpdate },
@@ -65,7 +65,7 @@ function AdminEditContractor() {
   useEffect(() => {
     const FatchcategoryData = async () => {
       try {
-        dispatch("FATCH_REQUEST");
+        dispatch('FATCH_REQUEST');
         const response = await axios.get(`/api/user/${id}`);
         const datas = response.data;
         setFirstName(datas.first_name);
@@ -85,19 +85,23 @@ function AdminEditContractor() {
     e.preventDefault();
     setIsSubmiting(true);
     try {
-      const data = await axios.put(`/api/user/update/${id}`, {
-        first_name: firstName,
-        last_name: lastName,
-        email: email,
-        userStatus: status,
-      }, {
-        headers: {
-          authorization: `Bearer ${userInfo.token}`,
+      const data = await axios.put(
+        `/api/user/update/${id}`,
+        {
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          userStatus: status,
         },
-      });
-      dispatch({ type: "UPDATE_SUCCESS" });
+        {
+          headers: {
+            authorization: `Bearer ${userInfo.token}`,
+          },
+        }
+      );
+      dispatch({ type: 'UPDATE_SUCCESS' });
       toast.success(data.data);
-      navigate("/adminContractorList");
+      navigate('/adminContractorList');
     } catch (err) {
       toast.error(err.response?.data?.message);
     } finally {
@@ -159,7 +163,6 @@ function AdminEditContractor() {
                       value={status}
                       onChange={(e) => setStatus(e.target.value)}
                     >
-                      <option value="">SELECT STATUS</option>
                       <option value="true">Active</option>
                       <option value="false">Inactive</option>
                     </Form.Select>

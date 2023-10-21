@@ -1,7 +1,8 @@
+import * as React from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 import { Grid } from '@mui/material';
-import { AiFillDelete } from 'react-icons/ai';
+// import { AiFillDelete } from "react-icons/ai";
 import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
@@ -13,18 +14,30 @@ import { toast } from 'react-toastify';
 import Tab from 'react-bootstrap/Tab';
 import { ThreeDots } from 'react-loader-spinner';
 import Tabs from 'react-bootstrap/Tabs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateField } from '@mui/x-date-pickers/DateField';
+import { ImCross } from 'react-icons/im';
 import { Link, useNavigate } from 'react-router-dom';
-import { useContext, useEffect, useReducer, useState } from 'react';
+
 import { GrSubtractCircle, GrAddCircle } from 'react-icons/gr';
+import { useContext, useEffect, useReducer, useState } from 'react';
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Button,
+} from '@mui/material';
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "FATCH_REQUEST":
-      return { ...state, loading: true }
-    case "FATCH_SUCCESS":
-      return { ...state, projectData: action.payload, loading: false }
-    case "FATCH_ERROR":
-      return { ...state, error: action.payload, loading: false }
+    case 'FATCH_REQUEST':
+      return { ...state, loading: true };
+    case 'FATCH_SUCCESS':
+      return { ...state, projectData: action.payload, loading: false };
+    case 'FATCH_ERROR':
+      return { ...state, error: action.payload, loading: false };
 
     case 'DELETE_SUCCESS':
       return { ...state, successDelete: action.payload };
@@ -37,11 +50,11 @@ const reducer = (state, action) => {
 
     case 'UPDATE_RESET':
       return { ...state, successUpdate: false };
-    case "FATCH_CATEGORY":
+    case 'FATCH_CATEGORY':
       return { ...state, categoryData: action.payload };
-    case "FATCH_AGENTS":
+    case 'FATCH_AGENTS':
       return { ...state, agentData: action.payload };
-    case "FATCH_CONTRACTOR":
+    case 'FATCH_CONTRACTOR':
       return { ...state, contractorData: action.payload };
     default:
       return state;
@@ -51,19 +64,19 @@ const reducer = (state, action) => {
 const columns = [
   { field: "_id", headerName: "ID", width: 200 },
   {
-    field: "projectName",
-    headerName: "Project Name",
-    width: 150,
+    field: 'projectName',
+    headerName: 'Project Name',
+    width: 100,
   },
   {
-    field: "projectDescription",
-    headerName: "Description",
-    width: 150,
+    field: 'projectDescription',
+    headerName: 'Description',
+    width: 100,
   },
   {
-    field: "projectCategory",
-    headerName: "Category",
-    width: 150,
+    field: 'projectCategory',
+    headerName: 'Category',
+    width: 100,
   },
 
   {
@@ -77,14 +90,22 @@ const columns = [
 export default function AgentProjectList() {
   const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
-  console.log("userInfo", userInfo._id)
   const theme = toggleState ? "dark" : "light";
   const [
-    { loading, error, projectData, successDelete, successUpdate, categoryData, agentData, contractorData },
+    {
+      loading,
+      error,
+      projectData,
+      successDelete,
+      successUpdate,
+      categoryData,
+      agentData,
+      contractorData,
+    },
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
-    error: "",
+    error: '',
     projectData: [],
     successDelete: false,
     successUpdate: false,
@@ -96,47 +117,40 @@ export default function AgentProjectList() {
   useEffect(() => {
     const FatchCategory = async () => {
       try {
-        dispatch("FATCH_REQUEST")
-        const response = await axios.get(`/api/category/`, { headers: { Authorization: `Bearer ${userInfo.token}` } });
+        dispatch('FATCH_REQUEST');
+        const response = await axios.get(`/api/category/`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
         const datas = response.data;
-        dispatch({ type: "FATCH_CATEGORY", payload: datas });
+        dispatch({ type: 'FATCH_CATEGORY', payload: datas });
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-    }
+    };
     FatchCategory();
   }, []);
 
   useEffect(() => {
-
     const FatchContractorData = async () => {
       try {
-        const response = await axios.post(`/api/user/`, { role: "contractor" });
+        const response = await axios.post(`/api/user/`, { role: 'contractor' });
         const datas = response.data;
-        dispatch({ type: "FATCH_CONTRACTOR", payload: datas })
-
-      } catch (error) {
-      }
-    }
+        dispatch({ type: 'FATCH_CONTRACTOR', payload: datas });
+      } catch (error) { }
+    };
     FatchContractorData();
-
-  }, [])
+  }, []);
 
   useEffect(() => {
-
     const FatchAgentData = async () => {
       try {
-        const response = await axios.post(`/api/user/`, { role: "agent" });
+        const response = await axios.post(`/api/user/`, { role: 'agent' });
         const datas = response.data;
-        dispatch({ type: "FATCH_AGENTS", payload: datas })
-
-      } catch (error) {
-      }
-    }
+        dispatch({ type: 'FATCH_AGENTS', payload: datas });
+      } catch (error) { }
+    };
     FatchAgentData();
-
-  }, [])
-
+  }, []);
 
   useEffect(() => {
     const FatchProjectData = async () => {
@@ -146,7 +160,9 @@ export default function AgentProjectList() {
         const datas = response.data.projects;
         console.log("agentdata", datas)
         const rowData = datas.map((items) => {
-          const contractor = contractorData.find((contractor) => contractor._id === items.projectOwner);
+          const contractor = contractorData.find(
+            (contractor) => contractor._id === items.projectOwner
+          );
           return {
             ...items,
             _id: items._id,

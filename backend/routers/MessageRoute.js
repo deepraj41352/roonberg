@@ -2,12 +2,25 @@ import express from 'express';
 import Message from '../Models/messageModel.js';
 import { ObjectId } from 'mongodb';
 import mongoose from 'mongoose';
+import { uploadDoc } from './userRouter.js';
+import multer from 'multer';
 
 const MessageRouter = express.Router();
-//add
+const upload = multer();
 
-MessageRouter.post('/', async (req, res) => {
+// code for alll media
+
+MessageRouter.post('/audio', upload.single('media'), async (req, res) => {
   try {
+    if (req.file) {
+      const mediaType = req.body.mediaType;
+      console.log('mediasendingtypeaudio', req.body.mediaType);
+
+      const media = await uploadDoc(req, mediaType);
+      req.body.audio = media;
+      console.log('Media:', req.body.audio);
+    }
+    const newMessage = new Message(req.body);
     const savedMessage = await newMessage.save();
     res.status(200).json(savedMessage);
   } catch (err) {
@@ -15,7 +28,24 @@ MessageRouter.post('/', async (req, res) => {
   }
 });
 
-//get
+MessageRouter.post('/', upload.single('media'), async (req, res) => {
+  try {
+    if (req.file) {
+      const mediaType = req.body.mediaType;
+      console.log('mediasendingtype', req.body.mediaType);
+
+      const media = await uploadDoc(req, mediaType);
+      req.body.image = media;
+      console.log('Media:', req.body.image);
+    }
+
+    const newMessage = new Message(req.body);
+    const savedMessage = await newMessage.save();
+    res.status(200).json(savedMessage);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
 
 MessageRouter.get('/:conversationId', async (req, res) => {
   try {

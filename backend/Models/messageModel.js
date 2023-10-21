@@ -10,6 +10,9 @@ const MessageSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
+    image: { type: String },
+    audio: { type: String },
+    video: { type: String },
     text: {
       type: String,
     },

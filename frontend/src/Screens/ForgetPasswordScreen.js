@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import Form from 'react-bootstrap/Form';
-import { Button, Card, Col, Container, Row } from 'react-bootstrap';
-import Validations from '../Components/Validations';
-import { toast } from 'react-toastify';
-import axios from 'axios';
+import React, { useState } from "react";
+import Form from "react-bootstrap/Form";
+import { Button, Card, Col, Container, Row } from "react-bootstrap";
+import Validations from "../Components/Validations";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 export default function ForgetPassword() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [submited, setSubmited] = useState(false);
 
@@ -14,7 +14,7 @@ export default function ForgetPassword() {
     e.preventDefault();
     setIsSubmiting(true);
     try {
-      const { data } = await axios.post('/api/user/forget-password', { email });
+      const { data } = await axios.post("/api/user/forget-password", { email });
       toast.success(data.message);
       setSubmited(true);
     } catch (err) {
@@ -25,7 +25,7 @@ export default function ForgetPassword() {
   };
 
   return !submited ? (
-    <Container className="fullContainer d-flex flex-column justify-content-center align-items-center forget-container">
+    <Container className=" loginPage d-flex flex-column justify-content-center align-items-center forget-container">
       <Row>
         <Col>
           <h4 className="mb-3 heading4">Forget Password</h4>
@@ -36,7 +36,8 @@ export default function ForgetPassword() {
           <Card className="p-4 formColor">
             <Form
               onSubmit={handleSubmit}
-              className="formWidth d-flex flex-column">
+              className="formWidth d-flex flex-column"
+            >
               <Form.Label className="textLeft text-left">
                 Email Address
               </Form.Label>
@@ -51,8 +52,9 @@ export default function ForgetPassword() {
               <Button
                 type="submit"
                 className="globalbtnColor px-5 py-1"
-                disabled={isSubmiting}>
-                {isSubmiting ? 'Submiting...' : 'Submit'}
+                disabled={isSubmiting}
+              >
+                {isSubmiting ? "Submiting..." : "Submit"}
               </Button>
             </Form>
           </Card>
@@ -72,8 +74,9 @@ export default function ForgetPassword() {
               onClick={handleSubmit}
               type="submit"
               className="globalbtnColor btn-resend px-5 py-1"
-              disabled={isSubmiting}>
-              {isSubmiting ? 'Resending...' : 'Resend'}
+              disabled={isSubmiting}
+            >
+              {isSubmiting ? "Resending..." : "Resend"}
             </Button>
           </Card>
         </Col>

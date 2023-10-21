@@ -102,7 +102,7 @@ body {
   width: 400px !important;
 }
 
-.tableBg,
+/* .tableBg, */
 .lightmodelBg {
   background-color: #abc1e0;
   color: #fff !important;
@@ -111,7 +111,11 @@ body {
   background-color: #07162c;
   color: #fff !important;
 }
-
+@media (max-width: 420px) {
+  .modalRespnsive {
+    max-width: 300px;
+  }
+}
 .tableEditbtn {
   background-color: #8a9097 !important;
   color: white !important;
@@ -393,14 +397,11 @@ body {
 }
 .sidebar.visible {
   width: 0px;
-  /* display: none; */
 }
 .sidebar {
-  width: 21%;
+  width: 250px;
   min-height: 100vh;
 
-  /* height: 100vh !important; */
-  /* background-color: #120c16; */
   background-color: #070719;
   color: #fff;
   white-space: nowrap;
@@ -566,8 +567,7 @@ body {
   border-radius: 10px;
   border-top-left-radius: 0px !important;
   text-align: start;
-  margin-bottom: 0;
-  margin-top: 20px;
+  max-width: 100%;
 }
 .chat-receiverMsg {
   display: flex;
@@ -582,8 +582,7 @@ body {
   border-radius: 10px;
   border-top-right-radius: 0px !important;
   text-align: start;
-  margin-bottom: 0;
-  margin-top: 20px;
+  max-width: 100%;
 }
 .chatWindowBody {
   overflow: auto; /* Add scrollbars when content overflows */
@@ -595,6 +594,73 @@ body {
 }
 .chat-receiverMsg-inner p {
   margin-bottom: 0px;
+}
+.search-bar-dash-outer {
+  display: flex;
+}
+@media (max-width: 990px) {
+  .search-bar-dash-outer {
+    display: none !important;
+  }
+}
+.ProfileScreen-inner {
+  max-width: 450px;
+}
+@media (max-width: 400px) {
+  .ProfileScreen-inner {
+    max-width: 330px;
+  }
+}
+@media (max-width: 380px) {
+  .input-box-inner {
+    max-width: 210px !important;
+  }
+}
+.darkTab {
+  background-color: #3c3c5a;
+}
+.lightTab {
+  /* background-color: #8a9097; */
+  background-color: #a3a7ad;
+}
+
+.darkTab .nav-link.active {
+  background-color: #0d0d32 !important;
+  color: white !important;
+  border: none !important;
+  min-width: 100px;
+  border-radius: none !important;
+}
+.lightTab .nav-link.active {
+  background-color: #8a9097 !important;
+  color: black !important;
+  border: none !important;
+  min-width: 100px;
+  border-radius: none !important;
+}
+.nav-tabs .nav-link {
+  min-width: 100px;
+  border-radius: 0px !important;
+}
+@media (max-width: 1090px) {
+  .start-end-date {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 900px) {
+  .projectScreenCard-outer {
+    flex-direction: column;
+    max-width: 700px;
+  }
+  .start-end-date {
+    flex-direction: row;
+  }
+}
+@media (max-width: 500px) {
+  .start-end-date {
+    flex-direction: column;
+  }
 }
 
 /* /dipak/................. */
@@ -615,35 +681,4 @@ body {
   width: 100px;
 
   border-radius: 50%;
-}
-
-.sidebarCrossBtn {
-  position: absolute;
-  top: 25px;
-  right: 10px;
-  display: none;
-}
-
-/* saidbar responsive */
-@media only screen and (max-width: 1179px) {
-  .sidebar.visible {
-    width: 55%;
-
-    /* display: none; */
-  }
-  .sidebar {
-    position: fixed;
-    top: 0;
-    width: 0px;
-    height: 100%;
-    transition: left 0.3s;
-    z-index: 999;
-    transition: width 0.5s ease-in-out;
-    max-width: 300px;
-  }
-
-  .sidebarCrossBtn {
-    display: block !important;
-    cursor: pointer;
-  }
 }

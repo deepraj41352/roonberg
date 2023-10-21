@@ -9,7 +9,7 @@ import Validations from "../Components/Validations";
 function ProfileScreen() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
-  console.log("useringo",userInfo)
+  console.log("useringo", userInfo);
   const theme = toggleState ? "dark" : "light";
   const navigate = useNavigate();
 
@@ -18,7 +18,7 @@ function ProfileScreen() {
   const [email, setEmail] = useState(userInfo.email);
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  console.log("file",selectedFile)
+  console.log("file", selectedFile);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -29,23 +29,20 @@ function ProfileScreen() {
     formDatas.append("first_name", firstName);
     formDatas.append("last_name", lastName);
     formDatas.append("email", email);
+    formDatas.append("_id", userInfo._id);
 
     try {
-      const { data } = await axios.put(
-        `/api/user/profile`,
-        formDatas,
-        {
-          headers: {
-            "content-type": "multipart/form-data",
+      const { data } = await axios.put(`/api/user/profile`, formDatas, {
+        headers: {
+          "content-type": "multipart/form-data",
 
-            authorization: `Bearer ${userInfo.token}`,
-          },
-        }
-      );
-      console.log("data",data)
-      console.log("data.userdata",data.userData)
-      ctxDispatch({ type: 'USER_UPDATE', payload: data.userData });
-      localStorage.setItem('userInfo', JSON.stringify(data.userData));
+          authorization: `Bearer ${userInfo.token}`,
+        },
+      });
+      console.log("data", data);
+      console.log("data.userdata", data.userData);
+      ctxDispatch({ type: "USER_UPDATE", payload: data.userData });
+      localStorage.setItem("userInfo", JSON.stringify(data.userData));
       toast.success(data.message);
     } catch (err) {
       toast.error(err.response?.data?.message);
@@ -61,7 +58,7 @@ function ProfileScreen() {
 
   return (
     <Container className="Sign-up-container-regis d-flex w-100 profileDiv  flex-column justify-content-center align-items-center">
-      <div className="Sign-up-container-inner px-4 py-3 w-100">
+      <div className="ProfileScreen-inner px-4 py-3 w-100">
         <Row className="mb-3">
           <Col>
             <h4>User Profile</h4>
@@ -71,20 +68,28 @@ function ProfileScreen() {
           <Col>
             <Card className={`${theme}CardBody`}>
               <Form onSubmit={submitHandler} className="p-4 w-100 formWidth ">
-<div className="classforprofile">
-                <img src={userInfo.profile_picture}></img>
-              <Form.Group className="mb-3" controlId="formBasicPassword">
-                  <Form.Label className="mb-1">Profile Picture</Form.Label>
-                  <Form.Control type="file"                     
-                             onChange={handleFileChange} />
-                </Form.Group>
+                <div className="classforprofile">
+                  <Form.Group className="mb-2" controlId="formBasicPassword">
+                    <div className="d-flex gap-3">
+                      <div>
+                        <Form.Label className="mb-1">
+                          <img src={userInfo.profile_picture}></img>
+                        </Form.Label>
+                      </div>
+                      <div>
+                        <Form.Label className="mb-1">
+                          Profile Picture
+                        </Form.Label>
+                        <Form.Control type="file" onChange={handleFileChange} />
+                      </div>
+                    </div>
+                  </Form.Group>
                 </div>
-
-
 
                 <Form.Group className="mb-3 " controlId="formBasicEmail">
                   <Form.Label className="mb-1 input-box">First Name</Form.Label>
                   <Form.Control
+                    className="input-box-inner"
                     onChange={(e) => setFirstName(e.target.value)}
                     type="text"
                     value={firstName}
@@ -92,8 +97,9 @@ function ProfileScreen() {
                   />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
-                  <Form.Label className="mb-1 input-box">Last Name</Form.Label>
+                  <Form.Label className="mb-1 input-box ">Last Name</Form.Label>
                   <Form.Control
+                    className="input-box-inner"
                     onChange={(e) => setLastName(e.target.value)}
                     type="text"
                     value={lastName}
@@ -105,17 +111,20 @@ function ProfileScreen() {
                     Email address
                   </Form.Label>
                   <Form.Control
+                    className="input-box-inner"
                     type="email"
                     value={email}
+                    disabled
                     onChange={(e) => {
                       setEmail(e.target.value);
                     }}
                   />
                   <Validations type="email" value={email} />
                 </Form.Group>
-                <div className="d-flex justify-content-center mt-4">
+
+                <div className="d-flex justify-content-start mt-4">
                   <Button
-                    className=" py-1 w-25 globalbtnColor"
+                    className=" py-1  globalbtnColor"
                     variant="primary"
                     type="submit"
                     disabled={isSubmiting}

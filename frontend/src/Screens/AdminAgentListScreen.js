@@ -1,5 +1,5 @@
-import Box from "@mui/material/Box";
-import { DataGrid } from "@mui/x-data-grid";
+import Box from '@mui/material/Box';
+import { DataGrid } from '@mui/x-data-grid';
 
 import {
   Button,
@@ -24,25 +24,25 @@ import Validations from "../Components/Validations";
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "FATCH_REQUEST":
+    case 'FATCH_REQUEST':
       return { ...state, loading: true };
-    case "FATCH_SUCCESS":
+    case 'FATCH_SUCCESS':
       return { ...state, AgentData: action.payload, loading: false };
-    case "FATCH_ERROR":
+    case 'FATCH_ERROR':
       return { ...state, error: action.payload, loading: false };
-    case "FATCH_SUBMITTING":
+    case 'FATCH_SUBMITTING':
       return { ...state, submitting: action.payload };
-    case "DELETE_SUCCESS":
+    case 'DELETE_SUCCESS':
       return { ...state, successDelete: action.payload };
 
-    case "DELETE_RESET":
+    case 'DELETE_RESET':
       return { ...state, successDelete: false };
-    case "FATCH_CATEGORY":
+    case 'FATCH_CATEGORY':
       return { ...state, categoryData: action.payload };
-    case "UPDATE_SUCCESS":
+    case 'UPDATE_SUCCESS':
       return { ...state, successUpdate: action.payload };
 
-    case "UPDATE_RESET":
+    case 'UPDATE_RESET':
       return { ...state, successUpdate: false };
 
     default:
@@ -51,26 +51,26 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: "_id", headerName: "ID", width: 150 },
+  { field: '_id', headerName: 'ID', width: 150 },
   {
-    field: "first_name",
-    headerName: "Agent Name",
-    width: 150,
+    field: 'first_name',
+    headerName: 'Agent Name',
+    width: 100,
   },
   {
-    field: "email",
-    headerName: "Email",
-    width: 200,
+    field: 'email',
+    headerName: 'Email',
+    width: 100,
   },
   {
-    field: "agentCategory",
-    headerName: "Category",
-    width: 150,
+    field: 'agentCategory',
+    headerName: 'Category',
+    width: 100,
   },
   {
-    field: "userStatus",
-    headerName: "Status",
-    width: 150,
+    field: 'userStatus',
+    headerName: 'Status',
+    width: 100,
   },
 ];
 
@@ -78,8 +78,8 @@ export default function AdminAgentListScreen() {
   const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
   const navigate = useNavigate();
-  const role = "agent";
-  const theme = toggleState ? "dark" : "light";
+  const role = 'agent';
+  const theme = toggleState ? 'dark' : 'light';
   const [isModelOpen, setIsModelOpen] = useState(false);
 
   const [name, setName] = useState('');
@@ -90,36 +90,68 @@ export default function AdminAgentListScreen() {
   console.log("name", name)
   console.log("password", password)
   const [
-    { loading, error, AgentData, successDelete, categoryData, successUpdate, submitting },
+    {
+      loading,
+      submitting,
+      categoryData,
+      error,
+      AgentData,
+      successDelete,
+      successUpdate,
+    },
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
-    error: "",
+    error: '',
     AgentData: [],
     successDelete: false,
     categoryData: [],
     successUpdate: false,
-    submitting: false
+    submitting: false,
   });
 
   useEffect(() => {
     const FatchCategory = async () => {
       try {
-        dispatch("FATCH_REQUEST")
-        const response = await axios.get(`/api/category/`, { headers: { Authorization: `Bearer ${userInfo.token}` } });
+        dispatch('FATCH_REQUEST');
+        const response = await axios.get(`/api/category/`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
         const datas = response.data;
         dispatch({ type: "FATCH_CATEGORY", payload: datas });
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-    }
+    };
     FatchCategory();
   }, []);
+
+  const handleCloseRow = () => {
+    setIsModelOpen(false);
+  };
+
+  const handleNew = () => {
+    setSelectedRowData(null);
+    setIsModelOpen(true);
+    setIsNewAgent(true);
+  };
+
+  const handleEdit = (userid) => {
+    const agentToEdit = AgentData.find(
+      (agent) => agent && agent._id === userid
+    );
+    setName(agentToEdit ? agentToEdit.first_name : '');
+    setEmail(agentToEdit ? agentToEdit.email : '');
+    setStatus(agentToEdit ? agentToEdit.status : 'active');
+    setSelectedRowData(agentToEdit);
+    setIsModelOpen(true);
+    setIsNewAgent(false);
+  };
 
   useEffect(() => {
     const FatchAgentData = async () => {
       try {
-        dispatch("FATCH_REQUEST");
+        dispatch('FATCH_REQUEST');
         const response = await axios.post(`/api/user/`, { role: role });
         const datas = response.data;
         const rowData = datas.map((items) => {
@@ -133,73 +165,74 @@ export default function AdminAgentListScreen() {
             agentCategory: categoryName ? categoryName.categoryName : '',
           };
         });
-        dispatch({ type: "FATCH_SUCCESS", payload: rowData });
+        dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
       } catch (error) {
         console.log(error);
       }
     };
     if (successDelete) {
-      dispatch({ type: "DELETE_RESET" });
-    }
-    else if (successUpdate) {
-      dispatch({ type: "UPDATE_RESET" });
-    }
-    else {
+      dispatch({ type: 'DELETE_RESET' });
+    } else if (successUpdate) {
+      dispatch({ type: 'UPDATE_RESET' });
+    } else {
       FatchAgentData();
     }
   }, [successDelete, successUpdate, categoryData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch({ type: "FATCH_SUBMITTING", payload: true })
+    dispatch({ type: 'FATCH_SUBMITTING', payload: true });
     try {
-      const response = await axios.post(`/api/user/add`, {
-        first_name: name,
-        email: email,
-        password: password,
-        role: role,
-        userStatus: status,
-        agentCategory: selectcategory,
-
-      }, { headers: { Authorization: `Bearer ${userInfo.token}` }, });
-      console.log(response)
+      const response = await axios.post(
+        `/api/user/add`,
+        {
+          first_name: name,
+          email: email,
+          password: password,
+          role: role,
+          userStatus: status,
+          agentCategory: selectcategory,
+        },
+        { headers: { Authorization: `Bearer ${userInfo.token}` } }
+      );
+      console.log(response);
       if (response.status === 200) {
-        toast.success("Agent added Successfully !");
+        toast.success('Agent added Successfully !');
         setIsModelOpen(false);
-        dispatch({ type: "UPDATE_SUCCESS", payload: true });
-        dispatch({ type: "FATCH_SUBMITTING", payload: false })
+        dispatch({ type: 'UPDATE_SUCCESS', payload: true });
+        dispatch({ type: 'FATCH_SUBMITTING', payload: false });
       }
     } catch (error) {
       toast.error(error.response?.data?.message);
     }
-  }
+  };
 
   const deleteHandle = async (userid) => {
-    if (window.confirm("Are you sure to delete?")) {
+    if (window.confirm('Are you sure to delete?')) {
       try {
         const response = await axios.delete(`/api/user/${userid}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
 
         if (response.status === 200) {
-          toast.success("Agent data deleted successfully!");
+          toast.success('Agent data deleted successfully!');
           dispatch({
-            type: "DELETE_SUCCESS",
+            type: 'DELETE_SUCCESS',
             payload: true,
           });
         } else {
-          toast.error("Failed to delete agent data.");
+          toast.error('Failed to delete agent data.');
         }
       } catch (error) {
         console.error(error);
-        toast.error("An error occurred while deleting agent data.");
+        toast.error('An error occurred while deleting agent data.');
       }
     }
   };
 
-  const handleCloseRow = () => {
-    setIsModelOpen(false);
-  };
+  // const handleCloseRow = () => {
+  //   setIsModelOpen(false);
+  // };
 
   const handleModel = () => {
     setIsModelOpen(true);

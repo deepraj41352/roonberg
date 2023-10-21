@@ -16,28 +16,29 @@ import { ThreeDots } from 'react-loader-spinner';
 import { useContext, useEffect, useReducer, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Validations from '../Components/Validations';
+import { FaEye, FaRegEyeSlash } from 'react-icons/fa';
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "FATCH_REQUEST":
+    case 'FATCH_REQUEST':
       return { ...state, loading: true };
-    case "FATCH_SUCCESS":
+    case 'FATCH_SUCCESS':
       return { ...state, adminData: action.payload, loading: false };
-    case "FATCH_ERROR":
+    case 'FATCH_ERROR':
       return { ...state, error: action.payload, loading: false };
 
-    case "DELETE_SUCCESS":
+    case 'DELETE_SUCCESS':
       return { ...state, successDelete: action.payload };
 
-    case "DELETE_RESET":
+    case 'DELETE_RESET':
       return { ...state, successDelete: false };
 
-    case "UPDATE_SUCCESS":
+    case 'UPDATE_SUCCESS':
       return { ...state, successUpdate: action.payload };
 
-    case "UPDATE_RESET":
+    case 'UPDATE_RESET':
       return { ...state, successUpdate: false };
-    case "FATCH_SUBMITTING":
+    case 'FATCH_SUBMITTING':
       return { ...state, submitting: action.payload };
     default:
       return state;
@@ -45,48 +46,50 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: "_id", headerName: "ID", width: 80 },
+  { field: '_id', headerName: 'ID', width: 80 },
   {
-    field: "first_name",
-    headerName: "Admin Name",
+    field: 'first_name',
+    headerName: 'Admin Name',
     width: 150,
   },
   {
-    field: "email",
-    headerName: "Email",
+    field: 'email',
+    headerName: 'Email',
     width: 200,
   },
   {
-    field: "userStatus",
-    headerName: "Status",
+    field: 'userStatus',
+    headerName: 'Status',
     width: 200,
   },
 ];
 
 export default function AdminListScreen() {
   const [isModelOpen, setIsModelOpen] = useState(false);
-  const role = "admin";
+  const role = 'admin';
   const navigate = useNavigate();
   const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
-  const theme = toggleState ? "dark" : "light";
+  const theme = toggleState ? 'dark' : 'light';
   const [
     { loading, error, adminData, successDelete, successUpdate, submitting },
     dispatch,
   ] = useReducer(reducer, {
+  ] = useReducer(reducer, {
     loading: true,
-    error: "",
+    error: '',
     adminData: [],
     successDelete: false,
     successUpdate: false,
-    submitting: false
+    submitting: false,
   });
 
-  const [firstname, setFirstname] = useState("");
-  const [lastname, setLastname] = useState("");
-  const [email, setEmail] = useState("");
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [email, setEmail] = useState('');
   const [status, setStatus] = useState();
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState('RoonBerg@123');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleCloseRow = () => {
     setIsModelOpen(false);
@@ -97,13 +100,13 @@ export default function AdminListScreen() {
   };
 
   const handleEdit = (userid) => {
-    navigate(`/superadmineditadmin/${userid}`)
+    navigate(`/superadmineditadmin/${userid}`);
   };
 
   useEffect(() => {
     const FatchadminData = async () => {
       try {
-        dispatch("FATCH_REQUEST");
+        dispatch('FATCH_REQUEST');
         const response = await axios.post(
           `/api/user/`,
           { role: role },
@@ -116,18 +119,18 @@ export default function AdminListScreen() {
             _id: items._id,
             first_name: items.first_name,
             email: items.email,
-            userStatus: items.userStatus == true ? "Active" : "Inactive"
+            userStatus: items.userStatus == true ? 'Active' : 'Inactive',
           };
         });
-        dispatch({ type: "FATCH_SUCCESS", payload: rowData });
+        dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
       } catch (error) {
         console.log(error);
       }
     };
     if (successDelete) {
-      dispatch({ type: "DELETE_RESET" });
+      dispatch({ type: 'DELETE_RESET' });
     } else if (successUpdate) {
-      dispatch({ type: "UPDATE_RESET" });
+      dispatch({ type: 'UPDATE_RESET' });
     } else {
       FatchadminData();
     }
@@ -135,57 +138,65 @@ export default function AdminListScreen() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch({ type: "FATCH_SUBMITTING", payload: true })
+    dispatch({ type: 'FATCH_SUBMITTING', payload: true });
     try {
-      const response = await axios.post(`/api/user/add`, {
-        first_name: firstname,
-        last_name: lastname,
-        email: email,
-        password: password || 'RoonBerg@123',
-        role: role,
-        userStatus: status || true
-      }, { headers: { Authorization: `Bearer ${userInfo.token}` }, });
-      console.log(response)
+      const response = await axios.post(
+        `/api/user/add`,
+        {
+          first_name: firstname,
+          last_name: lastname,
+          email: email,
+          password: password || 'RoonBerg@123',
+          role: role,
+          userStatus: status || true,
+        },
+        { headers: { Authorization: `Bearer ${userInfo.token}` } }
+      );
+      console.log(response);
       if (response.status === 200) {
-        toast.success("Agent added Successfully !");
+        toast.success('Agent added Successfully !');
         setIsModelOpen(false);
-        dispatch({ type: "UPDATE_SUCCESS", payload: true });
-        dispatch({ type: "FATCH_SUBMITTING", payload: false })
+        dispatch({ type: 'UPDATE_SUCCESS', payload: true });
+        dispatch({ type: 'FATCH_SUBMITTING', payload: false });
       }
+    } catch (error) {
+      toast.error(error.response?.data?.message);
     } catch (error) {
       toast.error(error.response?.data?.message);
     }
   }
 
   const deleteHandle = async (userid) => {
-    if (window.confirm("Are you sure to delete?")) {
+    if (window.confirm('Are you sure to delete?')) {
       try {
         const response = await axios.delete(`/api/user/${userid}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
 
         if (response.status === 200) {
-          toast.success("admin data deleted successfully!");
+          toast.success('admin data deleted successfully!');
           dispatch({
-            type: "DELETE_SUCCESS",
+            type: 'DELETE_SUCCESS',
             payload: true,
           });
         } else {
-          toast.error("Failed to delete admin data.");
+          toast.error('Failed to delete admin data.');
         }
       } catch (error) {
         console.error(error);
-        toast.error("An error occurred while deleting admin data.");
+        toast.error('An error occurred while deleting admin data.');
       }
     }
   };
-
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
     <>
       {loading ? (
         <>
-          <div className='ThreeDot' >
+          <div className="ThreeDot">
             <ThreeDots
               height="80"
               width="80"
@@ -198,9 +209,8 @@ export default function AdminListScreen() {
               visible={true}
             />
           </div>
-
         </>
-      ) : (error ? (
+      ) : error ? (
         <div>{error}</div>
       ) : (
         <>
@@ -212,15 +222,15 @@ export default function AdminListScreen() {
             <BiPlusMedical className="mx-2" />
             Add Admin
           </Button>
-          <Box sx={{ height: 400, width: "100%" }}>
+          <Box sx={{ height: 400, width: '100%' }}>
             <DataGrid
               className={`tableBg mx-2 ${theme}DataGrid`}
               rows={adminData}
               columns={[
                 ...columns,
                 {
-                  field: "action",
-                  headerName: "Action",
+                  field: 'action',
+                  headerName: 'Action',
                   width: 250,
                   renderCell: (params) => {
                     return (
@@ -229,7 +239,6 @@ export default function AdminListScreen() {
                           variant="contained"
                           className="mx-2 tableEditbtn"
                           onClick={() => handleEdit(params.row._id)}
-
                         >
                           Edit
                         </Button>
@@ -237,7 +246,6 @@ export default function AdminListScreen() {
                           variant="outlined"
                           className="mx-2 tableDeletebtn"
                           onClick={() => deleteHandle(params.row._id)}
-
                         >
                           Delete
                         </Button>
@@ -263,12 +271,12 @@ export default function AdminListScreen() {
             <Box
               className="modelBg"
               sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
                 width: 400,
-                bgcolor: "background.paper",
+                bgcolor: 'background.paper',
                 boxShadow: 24,
                 p: 4,
               }}
@@ -295,6 +303,9 @@ export default function AdminListScreen() {
                   value={lastname}
                   onChange={(e) => setLastname(e.target.value)}
                   label="Last Name"
+                  value={lastname}
+                  onChange={(e) => setLastname(e.target.value)}
+                  label="Last Name"
                   fullWidth
                 />
                 <TextField
@@ -303,25 +314,39 @@ export default function AdminListScreen() {
                   onChange={(e) => setEmail(e.target.value)}
                   label="Email"
                   type='email'
+                  type="email"
                   fullWidth
                 />
                 <Validations type="email" value={email} />
-                <TextField
-                  className="mb-2"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  label="Password"
-                  type='password'
-                  fullWidth
-                />
+                <div className="Password-input-eye">
+                  <div className=" rounded-2">
+                    <TextField
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      label="Password"
+                      className="pswd-input "
+                      type={showPassword ? 'text' : 'password'}
+                      fullWidth
+                    />
+                  </div>
+                  <div
+                    className="eye-bttn cent"
+                    onClick={togglePasswordVisibility}
+                  >
+                    {showPassword ? <FaEye /> : <FaRegEyeSlash />}
+                  </div>
+                </div>
                 <Validations type="password" value={password} />
 
                 <FormControl className="formselect">
+                  <InputLabel>Choose Status</InputLabel>
                   <InputLabel>Choose Status</InputLabel>
                   <Select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
                   >
+                    <MenuItem value={true}>Active</MenuItem>
+                    <MenuItem value={false}>Inactive</MenuItem>
                     <MenuItem value={true}>Active</MenuItem>
                     <MenuItem value={false}>Inactive</MenuItem>
                   </Select>
@@ -333,6 +358,7 @@ export default function AdminListScreen() {
                   color="primary"
                   type="submit"
                   disabled={submitting}
+
                 >
                   {submitting ? "Submitting" : "Submit"}
                 </Button>
@@ -340,7 +366,7 @@ export default function AdminListScreen() {
             </Box>
           </Modal>
         </>
-      ))}
+      )}
     </>
   );
 }

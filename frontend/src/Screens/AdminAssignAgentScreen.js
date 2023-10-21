@@ -1,7 +1,13 @@
 import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import Card from 'react-bootstrap/Card';
+import React, { useContext, useEffect, useState } from 'react';
+import Card from 'react-bootstrap/Card';
 import { Store } from '../Store';
+import { Button, Form, FormControl } from 'react-bootstrap';
+import MultiSelect from 'react-multiple-select-dropdown-lite';
+import 'react-multiple-select-dropdown-lite/dist/index.css';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Form, FormControl } from 'react-bootstrap';
 import MultiSelect from 'react-multiple-select-dropdown-lite';
 import 'react-multiple-select-dropdown-lite/dist/index.css';
@@ -38,6 +44,7 @@ const reducer = (state, action) => {
 
 function AdminAssignAgent() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const navigate = useNavigate();
   const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
@@ -116,33 +123,45 @@ function AdminAssignAgent() {
         dispatch({ type: 'FATCH_SUCCESS', payload: ProjectDatas });
       } catch (error) {
         console.error('Error fetching project data:', error);
+        console.error('Error fetching project data:', error);
       }
     };
     if (successUpdate) {
-      dispatch({ type: "UPDATE_RESET" })
-    }
-    else {
+      dispatch({ type: 'UPDATE_RESET' });
+    } else {
       fetchProjectData();
     }
-
   }, [successUpdate]);
 
   useEffect(() => {
     const fetchCategoryData = async () => {
-      try {
-        dispatch('FETCH_REQUEST');
-        const response = await axios.get(`/api/category`, {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        });
-        const category = response.data;
-        dispatch({ type: 'SUCCESS_CATEGORY', payload: category });
-      } catch (error) {
-        console.error('Error fetching category data:', error);
-      }
+      const fetchCategoryData = async () => {
+        try {
+          dispatch('FETCH_REQUEST');
+          const response = await axios.get(`/api/category`, {
+            headers: { Authorization: `Bearer ${userInfo.token}` },
+          });
+          const category = response.data;
+          dispatch({ type: 'SUCCESS_CATEGORY', payload: category });
+          dispatch('FETCH_REQUEST');
+          const response = await axios.get(`/api/category`, {
+            headers: { Authorization: `Bearer ${userInfo.token}` },
+          });
+          const category = response.data;
+          dispatch({ type: 'SUCCESS_CATEGORY', payload: category });
+        } catch (error) {
+          console.error('Error fetching category data:', error);
+          console.error('Error fetching category data:', error);
+        }
+      };
+
+      fetchCategoryData();
     };
 
     fetchCategoryData();
   }, []);
+
+  console.log('selectedOptions', selectedOptions);
 
   console.log('selectedOptions', selectedOptions);
 
@@ -153,8 +172,11 @@ function AdminAssignAgent() {
       const updatedData = {
         assignedAgent: agents,
         projectOwner: projectData.projectOwner,
+        assignedAgent: agents,
+        projectOwner: projectData.projectOwner,
       };
 
+      const response = await axios.post(
       const response = await axios.post(
         `/api/project/assign-project/${id}`,
         updatedData,
@@ -164,6 +186,7 @@ function AdminAssignAgent() {
       );
 
       if (response.status === 200) {
+        toast.success('Agent Assign Successfully !');
         toast.success('Agent Assign Successfully !');
         console.log(response);
         dispatch({ type: "UPDATE_SUCCESS", payload: true })
@@ -304,106 +327,127 @@ function AdminAssignAgent() {
                       value={projectData.projectName}
                       onChange={handleInputChange}
                       disabled
-                    />
-                  </Form.Group>
-                  <Form.Group
-                    className="mb-3"
-                    controlId="exampleForm.ControlTextarea1"
-                  >
-                    <Form.Label className="fw-bold">
-                      Project Description
-                    </Form.Label>
-                    <Form.Control
-                      as="textarea"
-                      rows={3}
-                      name="projectDescription"
-                      value={projectData.projectDescription}
-                      onChange={handleInputChange}
-                      disabled
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label className="mb-1">Contractor</Form.Label>
-                    {console.log('projectOwner', projectOwner)}
-                    <Form.Select disabled value={projectData && projectData.projectOwner} onChange={(e) => setProjectOwner(e.target.value)}>
-                      <option value="">SELECT CONTRACTOR</option>
-                      {contractorData.map((items) => (
-                        <option key={items._id} value={items._id} >{items.first_name}</option>
+                      {loading ? (
+                        <div>Loading ...</div>
+                      ) : error ? (
+                        <div>{error}</div>
+                      ) : (
+                        <div>
+                          <div className="d-flex w-100 my-3 gap-4 justify-content-center align-item-center projectScreenCard-outer ">
+                            <Card className={`projectScreenCard ${theme}CardBody`}>
+                              <Card.Header className={`${theme}CardHeader`}>
+                                Project Details
+                              </Card.Header>
+                              <Card.Body className="text-start">
+                                <Form className="px-3" onSubmit={handleSubmit}>
+                                  <Form.Group className="mb-3">
+                                    <Form.Label className="fw-bold">Project Name</Form.Label>
+                                    <Form.Control
+                                      type="text"
+                                      name="projectName"
+                                      value={projectData.projectName}
+                                      onChange={handleInputChange}
+                                      disabled
+                                    />
+                                  </Form.Group>
+                                  <Form.Group
+                                    className="mb-3"
+                                    controlId="exampleForm.ControlTextarea1"
+                                  >
+                                    <Form.Label className="fw-bold">
+                                      Project Description
+                                    </Form.Label>
+                                    <Form.Control
+                                      as="textarea"
+                                      rows={3}
+                                      name="projectDescription"
+                                      value={projectData.projectDescription}
+                                      onChange={handleInputChange}
+                                      disabled
+                                    />
+                                  </Form.Group>
+                                  <Form.Group className="mb-3" controlId="formBasicPassword">
+                                    <Form.Label className="mb-1">Contractor</Form.Label>
+                                    {console.log('projectOwner', projectOwner)}
+                                    <Form.Select disabled value={projectData && projectData.projectOwner} onChange={(e) => setProjectOwner(e.target.value)}>
+                                      <option value="">SELECT CONTRACTOR</option>
+                                      {contractorData.map((items) => (
+                                        <option key={items._id} value={items._id} >{items.first_name}</option>
 
-                      ))}
+                                      ))}
 
-                    </Form.Select>
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label className="mb-1">Project Status</Form.Label>
-                    <Form.Select disabled value={projectData && projectData.projectStatus} onChange={(e) => setProjectStatus(e.target.value)}>
-                      <option value="active">Active </option>
-                      <option value="inactive">Inactive </option>
-                      <option value="queue">In Proccess </option>
-                    </Form.Select>
-                  </Form.Group>
-                  <div className="d-flex gap-3 mb-3">
-                    <Form.Group className="w-100" controlId="start-date">
-                      <Form.Label className="fw-bold">Start Date</Form.Label>
-                      <Form.Control
-                        type="date"
-                        name="createdDate"
-                        value={createdDate}
-                        onChange={(e) => setCreatedDate(e.target.value)}
-                        placeholder="Start Date"
-                        disabled
-                      />
-                    </Form.Group>
-                    <Form.Group className="w-100" controlId="end-date">
-                      <Form.Label className="fw-bold">End Date</Form.Label>
-                      <Form.Control
-                        type="date"
-                        name="endDate"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        placeholder="End Date"
-                        disabled
-                      />
-                    </Form.Group>
-                  </div>
+                                    </Form.Select>
+                                  </Form.Group>
+                                  <Form.Group className="mb-3" controlId="formBasicPassword">
+                                    <Form.Label className="mb-1">Project Status</Form.Label>
+                                    <Form.Select disabled value={projectData && projectData.projectStatus} onChange={(e) => setProjectStatus(e.target.value)}>
+                                      <option value="active">Active </option>
+                                      <option value="inactive">Inactive </option>
+                                      <option value="queue">In Proccess </option>
+                                    </Form.Select>
+                                  </Form.Group>
+                                  <div className="d-flex gap-3 mb-3">
+                                    <Form.Group className="w-100" controlId="start-date">
+                                      <Form.Label className="fw-bold">Start Date</Form.Label>
+                                      <Form.Control
+                                        type="date"
+                                        name="createdDate"
+                                        value={createdDate}
+                                        onChange={(e) => setCreatedDate(e.target.value)}
+                                        placeholder="Start Date"
+                                        disabled
+                                      />
+                                    </Form.Group>
+                                    <Form.Group className="w-100" controlId="end-date">
+                                      <Form.Label className="fw-bold">End Date</Form.Label>
+                                      <Form.Control
+                                        type="date"
+                                        name="endDate"
+                                        value={endDate}
+                                        onChange={(e) => setEndDate(e.target.value)}
+                                        placeholder="End Date"
+                                        disabled
+                                      />
+                                    </Form.Group>
+                                  </div>
 
-                </Form>
-              </Card.Body>
-            </Card>
-            <div className='projectScreenCard2 d-flex flex-column gap-4'>
-              <Card className={`projectScreenCard2 ${theme}CardBody`}>
-                <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
-                <Card.Body className="d-flex flex-wrap gap-3 ">
-                  {/* -------- */}
-                  {conversations.map((conversion) => {
-                    return (
-                      <Card className="chatboxes">
-                        <Card.Header>Chat</Card.Header>
-                        <Card.Body>
-                          <Link to={`/chatWindowScreen/${conversion._id}`}>
-                            <Button
-                              className="chatBtn"
-                              type="button"
-                            // onClick={conversionHandler(conversion._id)}
-                            >
-                              {conversion._id}
-                            </Button>
-                          </Link>
-                        </Card.Body>
-                      </Card>
-                    );
-                  })}
+                                </Form>
+                              </Card.Body>
+                            </Card>
+                            <div className='projectScreenCard2 d-flex flex-column gap-4'>
+                              <Card className={`projectScreenCard2 ${theme}CardBody`}>
+                                <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
+                                <Card.Body className="d-flex flex-wrap gap-3 ">
+                                  {/* -------- */}
+                                  {conversations.map((conversion) => {
+                                    return (
+                                      <Card className="chatboxes">
+                                        <Card.Header>Chat</Card.Header>
+                                        <Card.Body>
+                                          <Link to={`/chatWindowScreen/${conversion._id}`}>
+                                            <Button
+                                              className="chatBtn"
+                                              type="button"
+                                            // onClick={conversionHandler(conversion._id)}
+                                            >
+                                              {conversion._id}
+                                            </Button>
+                                          </Link>
+                                        </Card.Body>
+                                      </Card>
+                                    );
+                                  })}
 
-                  {/* -------- */}
-                </Card.Body>
-              </Card>
-              <Card className={`projectScreenCard2 ${theme}CardBody`}>
-                <Card.Header className={`${theme}CardHeader`}>Assigned</Card.Header>
-                <Card.Body className="d-flex justify-content-center flex-wrap gap-3 ">
-                  {/* -------- */}
+                                  {/* -------- */}
+                                </Card.Body>
+                              </Card>
+                              <Card className={`projectScreenCard2 ${theme}CardBody`}>
+                                <Card.Header className={`${theme}CardHeader`}>Assigned</Card.Header>
+                                <Card.Body className="d-flex justify-content-center flex-wrap gap-3 ">
+                                  {/* -------- */}
 
-                  <Form className='scrollInAdminproject' onSubmit={handleSubmit}>
-                    {agents.map((agent, index) => (
+                                  <Form className='scrollInAdminproject' onSubmit={handleSubmit}>
+                                    {agents.map((agent, index) => (
                       <div key={index} className='d-flex justify-content-between align-items-center'>
                         <Form.Group className="mb-3 mx-2" controlId="formBasicPassword">
                           <Form.Label className="mb-1">Category</Form.Label>
@@ -415,6 +459,7 @@ function AdminAssignAgent() {
                               <option key={category._id} value={category._id}
                               >
                                 {category.categoryName}
+                              </option>
                               </option>
                             ))}
                           </Form.Select>
@@ -431,41 +476,40 @@ function AdminAssignAgent() {
                                 {agent.first_name}
                               </option>
                             ))}
-                          </Form.Select>
-                        </Form.Group>
+                          </Select>
+                        </FormControl>
                         <div className='d-flex align-items-center'>
-                          <Button className=' mt-2 bg-primary' onClick={() => removeAgent(index)} >
-                            <AiFillDelete className='mx-2' />
-                            Remove
-                          </Button>
+                          <GrSubtractCircle color="black" className='mx-2' onClick={() => removeAgent(index)} />
+                          <p className='text-dark m-0'>Remove</p>
                         </div>
                       </div>
                     ))}
-                    <div className='d-flex align-items-center'>
+                                  <div className='d-flex align-items-center'>
 
 
-                      <div className='mb-2 mx-2' onClick={addAgent} >
-                        <GrAddCircle className='mx-2' style={{ backgroundColor: 'white' }} />
-                        Assign Agent
-                      </div>
-                      <Button className='mb-2 mx-2 bg-primary' type='submit' >
+                                    <div className='mb-2 mx-2' onClick={addAgent} >
+                                      <GrAddCircle className='mx-2' style={{ backgroundColor: 'white' }} />
+                                      Assign Agent
+                                    </div>
+                                    <Button className='mb-2 mx-2 bg-primary' type='submit' >
 
-                        Submit
-                      </Button>
-                    </div>
+                                      Submit
+                                    </Button>
+                                  </div>
 
-                  </Form>
+                                </Form>
 
-                  {/* -------- */}
-                </Card.Body>
-              </Card>
-            </div>
+                                {/* -------- */}
+                              </Card.Body>
+                            </Card>
+                          </div>
 
-          </div>
+                        </div>
         </div>
       )}
-    </div>
-  );
+                </div>
+                );
+                );
 }
 
-export default AdminAssignAgent;
+                export default AdminAssignAgent;
