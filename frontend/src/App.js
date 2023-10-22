@@ -56,6 +56,7 @@ import AgentEditProject from './Agent/AgentEditProjectScreen';
 import ContractorProjectScreen from './Components/Contractor/contractorProjectScreen';
 import SuperadminEditAdmin from './Screens/SuperadminEditAdmin';
 
+
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -159,8 +160,8 @@ function App() {
                       }}
                     >
                       <img
-                        className="w-100 h-100"
-                        src={userInfo.profile_picture}
+                        className="w-100 h-100 profile-icon-inner"
+                        src={userInfo.profile_picture} alt="userimg"
                       ></img>
                     </div>
                   </Container>
@@ -261,6 +262,7 @@ function App() {
                         </ProtectedRoute>
                       }
                     />
+
                     <Route
                       path="/adminContractorList"
                       element={
@@ -315,7 +317,7 @@ function App() {
                     {/* Contractor */}
                     <Route
                       path="/project-list-screen"
-                      element={<ContractorProjectScreen />}
+                      element={<ContractorProject />}
                     />
 
                     <Route

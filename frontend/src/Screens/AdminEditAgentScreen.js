@@ -60,16 +60,9 @@ function AdminEditAgent() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  // const [status, setStatus] = useState(userInfo.email);
-  // const [selectedFile, setSelectedFile] = useState("");
-
   const [isSubmiting, setIsSubmiting] = useState(false);
-
-  // State variable to hold the selected status
   const [status, setStatus] = useState('');
-  const [category, setCategory] = useState('');
-  // useEffect to update the status when the API data changes
-
+  const [category, setCategory] = useState(agentData.agentCategory);
 
 
   useEffect(() => {
@@ -120,7 +113,7 @@ function AdminEditAgent() {
           last_name: lastName,
           email: email,
           userStatus: status,
-          agentCategory: selectcategory || agentData.agentCategory
+          agentCategory: category || agentData.agentCategory
         },
         {
           headers: {
@@ -129,8 +122,7 @@ function AdminEditAgent() {
         }
       );
       dispatch({ type: "UPDATE_SUCCESS" })
-      toast.success(data.data);
-      console.log(data)
+      toast.success("Agent updated Successfully !");
       navigate('/adminAgentList')
 
     } catch (err) {
@@ -152,25 +144,24 @@ function AdminEditAgent() {
             <Col>
               <Card className={`${theme}CardBody`}>
                 <Form onSubmit={submitHandler} className="p-4 w-100 formWidth ">
-                  <Form.Group className="mb-3 " controlId="formBasicEmail">
+                  <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label className="mb-1 input-box">Name</Form.Label>
                     <Form.Control className="input-box-inner"
                       onChange={(e) => setFirstName(e.target.value)}
                       type="text"
                       value={firstName}
-
                       required
                     />
                   </Form.Group>
-                  {/* <Form.Group className="mb-3" controlId="formBasicEmail">
-                                        <Form.Label className="mb-1 input-box">Last Name</Form.Label>
-                                        <Form.Control className="input-box-inner"
-                                            onChange={(e) => setLastName(e.target.value)}
-                                            type="text"
-                                            value={lastName}
-                                            required
-                                        />
-                                    </Form.Group> */}
+                  <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Label className="mb-1 input-box">Last Name</Form.Label>
+                    <Form.Control className="input-box-inner"
+                      onChange={(e) => setLastName(e.target.value)}
+                      type="text"
+                      value={lastName}
+                      required
+                    />
+                  </Form.Group>
                   <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label className="mb-1 input-box" >Email</Form.Label>
                     <Form.Control className="input-box-inner"
@@ -204,7 +195,7 @@ function AdminEditAgent() {
                       type="submit"
                       disabled={isSubmiting}
                     >
-                      {isSubmiting ? "Updateing" : "Update"}
+                      {isSubmiting ? "Updating" : "Update"}
                     </Button>
                   </div>
                 </Form>

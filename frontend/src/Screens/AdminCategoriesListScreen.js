@@ -8,11 +8,12 @@ import {
   MenuItem,
   Select,
 } from '@mui/material';
-import { AiFillDelete } from 'react-icons/ai';
-import { MdEdit } from 'react-icons/md';
+// import { AiFillDelete } from 'react-icons/ai';
+// import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
-import { Form, FormControl } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
+import { FormControl } from '@mui/material';
 import { BiPlusMedical } from 'react-icons/bi';
 import { Store } from '../Store';
 import { useContext, useEffect, useReducer, useState } from 'react';
@@ -54,12 +55,12 @@ const columns = [
   { field: '_id', headerName: 'ID', width: 250 },
   {
     field: 'categoryName',
-    headerName: 'categoryName',
+    headerName: 'category',
     width: 100,
   },
   {
     field: 'categoryDescription',
-    headerName: 'categoryDescription',
+    headerName: 'Description',
     width: 150,
   },
   {
@@ -92,7 +93,7 @@ const columns = [
   },
   {
     field: 'categoryStatus',
-    headerName: 'categoryStatus',
+    headerName: 'Status',
     width: 100,
   },
 ];
@@ -159,7 +160,7 @@ export default function AdminContractorListScreen() {
             ...items,
             _id: items._id,
             categoryName: items.categoryName,
-            categoryDescription: items.categoryDescription,
+            categoryDescription: items.categoryDescription == '' ? 'No description' : items.categoryDescription,
             categoryImage: items.categoryImage,
             categoryStatus:
               items.categoryStatus == true ? 'Active' : 'Inactive',
@@ -200,11 +201,16 @@ export default function AdminContractorListScreen() {
         },
       });
       console.log(data.message);
-      toast.success(data.message);
+      toast.success("Category Created Successfully !");
       dispatch({ type: "UPDATE_SUCCESS" })
       dispatch({ type: "FATCH_SUBMITTING", payload: false })
+      setCatogry('');
+      setCatogryDesc('');
+      setSelectedFile(null)
+      setStatus('')
     } catch (err) {
       toast.error(err.response?.data?.message);
+      dispatch({ type: "FATCH_SUBMITTING", payload: false })
     } finally {
       setIsModelOpen(false);
     }
@@ -223,7 +229,7 @@ export default function AdminContractorListScreen() {
         });
 
         if (response.status === 200) {
-          toast.success('Category data deleted successfully!');
+          toast.success('Category deleted successfully!');
           dispatch({
             type: 'DELETE_SUCCESS',
             payload: true,
@@ -271,7 +277,7 @@ export default function AdminContractorListScreen() {
                       variant="contained"
                       className="mx-2 tableEditbtn"
                       onClick={() => handleEdit(params.row._id)}
-                      startIcon={<MdEdit />}
+
                     >
                       Edit
                     </Button>
@@ -279,7 +285,7 @@ export default function AdminContractorListScreen() {
                       variant="outlined"
                       className="mx-2 tableDeletebtn"
                       onClick={() => deleteHandle(params.row._id)}
-                      startIcon={<AiFillDelete />}
+
                     >
                       Delete
                     </Button>
@@ -318,70 +324,35 @@ export default function AdminContractorListScreen() {
           <Form>
 
             <h4 className="d-flex justify-content-center">
-              add Category
+              Add Category
             </h4>
 
             <TextField
-              className="mb-2"
+              className="mb-3"
               value={category}
               label="Category Name"
               fullWidth
               onChange={(e) => setCatogry(e.target.value)}
             />
             <TextField
-              className="mb-2"
+              className="mb-3"
               value={categoryDesc}
               label="Add description"
               fullWidth
               onChange={(e) => setCatogryDesc(e.target.value)}
             />
-            {/* <FormControl className="formselect">
+            <FormControl className="mb-3">
+              <InputLabel>Select Status</InputLabel>
               <Select
-                className="formselect mb-2"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
               >
-                <MenuItem value="true">Active</MenuItem>
-                <MenuItem value="false">Inactive</MenuItem>
+                <MenuItem value={true} >Active</MenuItem>
+                <MenuItem value={false}>Inactive</MenuItem>
               </Select>
-
-              {/* <FormControl fullWidth>
-              <InputLabel>Choose Options</InputLabel>
-              <Select
-                required
-                multiple
-                value={status}
-                onChange={handleChange}
-                renderValue={(selected) => (
-                  <div>
-                    {selected.map((value) => (
-                      <span key={value}>{value}, </span>
-                    ))}
-                  </div>
-                )}
-              >
-                {categoryData.map((option) => (
-                  <MenuItem
-                    key={option.categoryName}
-                    value={option._id}
-                  >
-                    {option.categoryName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl> */}
-            <select
-              className="formselect mb-2"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-            >
-              <option value="">SELECT STATUS</option>
-              <option value={true}>Active</option>
-              <option value={false}>Inactive</option>
-            </select>
-
+            </FormControl>
             <TextField
-              className="mb-2"
+              className="mb-3"
               type="file"
               fullWidth
               onChange={handleFileChange}
@@ -393,7 +364,7 @@ export default function AdminContractorListScreen() {
               onClick={submitHandler}
               disabled={submitting}
             >
-              {submitting ? 'Submiting' : 'submit'}
+              {submitting ? 'submitting' : 'Submit'}
             </Button>
           </Form>
         </Box>

@@ -647,3 +647,14 @@ body {
     cursor: pointer;
   }
 }
+.profile-icon {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+}
+.profile-icon-inner {
+  border-radius: 50%;
+
+  object-fit: cover;
+  /* background-position: center; */
+}
