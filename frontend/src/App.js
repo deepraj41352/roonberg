@@ -153,13 +153,13 @@ function App() {
                       </Nav>
                     </Navbar.Collapse>
                     <div
-                      className="profile-icon me-1 ms-3"
+                      className=" me-1 ms-3"
                       onClick={() => {
                         navigate('/profile-screen');
                       }}
                     >
                       <img
-                        className="w-100 h-100"
+                        className="profile-icon"
                         src={userInfo.profile_picture}
                       ></img>
                     </div>
