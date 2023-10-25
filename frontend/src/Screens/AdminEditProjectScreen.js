@@ -11,6 +11,9 @@ import { InputLabel, MenuItem, Select } from "@mui/material";
 import { GrSubtractCircle, GrAddCircle } from "react-icons/gr";
 import { AiFillDelete } from "react-icons/ai";
 import dayjs from "dayjs";
+import { MdPlaylistAdd } from "react-icons/md";
+import { ThreeDots } from "react-loader-spinner";
+
 const reducer = (state, action) => {
   switch (action.type) {
     case "FATCH_REQUEST":
@@ -31,12 +34,14 @@ const reducer = (state, action) => {
       return { ...state, successUpdate: false };
     case "FATCH_CONTRACTOR":
       return { ...state, contractorData: action.payload };
+    case "FATCH_SUBMITTING":
+      return { ...state, submitting: action.payload };
     default:
       return state;
   }
 };
 
-function ProjectSingleScreen() {
+function AdminEditProject() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { state } = useContext(Store);
@@ -60,6 +65,7 @@ function ProjectSingleScreen() {
       successUpdate,
       agentData,
       contractorData,
+      submitting,
     },
     dispatch,
   ] = React.useReducer(reducer, {
@@ -70,6 +76,7 @@ function ProjectSingleScreen() {
     successUpdate: false,
     agentData: [],
     contractorData: [],
+    submitting: false,
   });
   const [conversations, setConversation] = useState([]);
   const [agentCategoryPair, setAgentCategoryPair] = useState([]);
@@ -77,9 +84,9 @@ function ProjectSingleScreen() {
     { categoryId: "", agentName: "", agentId: "" },
   ]);
   const [isSubmiting, setIsSubmiting] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [projectStatus, setProjectStatus] = useState("");
-  const [projectOwner, setProjectOwner] = useState("");
+  const [categories, setCategories] = useState(projectData.projectCategory);
+  const [projectStatus, setProjectStatus] = useState(projectData.projectStatus);
+  const [projectOwner, setProjectOwner] = useState(projectData.projectOwner);
 
   useEffect(() => {
     const getConversations = async () => {
@@ -93,23 +100,6 @@ function ProjectSingleScreen() {
     getConversations();
   }, []);
 
-  const assignedAgentByCateHandle = (index) => {
-    const category = agents[index].categoryId;
-    if (category) {
-      const selectedCategory1 = categoryData.find(
-        (categoryItem) => categoryItem._id === category
-      );
-      if (selectedCategory1) {
-        const agentForCategory = agentData.find(
-          (agentItem) => agentItem.agentCategory === selectedCategory1._id
-        );
-        if (agentForCategory) {
-          return [agentForCategory];
-        }
-      }
-    }
-    return [];
-  };
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
@@ -127,8 +117,10 @@ function ProjectSingleScreen() {
             ? ProjectDatas.createdDate.split("T")[0]
             : null
         );
-        setSelectedOptions(
-          ProjectDatas.projectCategory.map((item) => item.categoryId).join(",")
+        setCategories(ProjectDatas.projectCategory);
+        console.log(
+          "ProjectDatas.projectCategory",
+          ProjectDatas.projectCategory
         );
         setAgents(ProjectDatas.assignedAgent);
         setProjectStatus(projectData.projectStatus);
@@ -142,6 +134,108 @@ function ProjectSingleScreen() {
     fetchProjectData();
   }, []);
 
+  const handleAgentChange = (index, key, value) => {
+    console.log("Value received:", value);
+    const updatedAgents = [...agents];
+    updatedAgents[index] = {
+      ...updatedAgents[index],
+      [key]: value,
+    };
+
+    const agentName = agentData.find((agentItem) => agentItem._id === value);
+    if (agentName) {
+      updatedAgents[index].agentName = agentName.first_name;
+    }
+
+    const categoryName = categoryData.find(
+      (categoryItem) => categoryItem._id === value
+    );
+    if (categoryName) {
+      updatedAgents[index].categoryName = categoryName.categoryName;
+    }
+    if (key === "categoryId" && value !== "") {
+      const selectedCategory = categoryData.find(
+        (categoryItem) => categoryItem._id === value
+      );
+
+      if (selectedCategory) {
+        const categoryObject = {
+          categoryId: selectedCategory._id,
+          categoryName: selectedCategory.categoryName,
+        };
+        setCategories((prevCategories) => {
+          const updatedCategories = [...prevCategories];
+          updatedCategories[index] = categoryObject;
+          return updatedCategories;
+        });
+      }
+    }
+
+    setAgents(updatedAgents);
+  };
+
+  const addAgent = () => {
+    setAgents([...agents, { categoryId: "", agentId: "" }]);
+  };
+  const removeAgent = (index) => {
+    if (window.confirm("Are you sure to delete?")) {
+      const updatedAgents = [...agents];
+      updatedAgents.splice(index, 1);
+      setAgents(updatedAgents);
+    }
+  };
+  const assignedAgentByCateHandle = (index) => {
+    const category = agents[index].categoryId;
+    if (Array.isArray(categoryData)) {
+      if (category) {
+        const selectedCategory1 = categoryData.find(
+          (categoryItem) => categoryItem._id === category
+        );
+        if (selectedCategory1) {
+          const agentForCategory = agentData.filter(
+            (agentItem) => agentItem.agentCategory === selectedCategory1._id
+          );
+          if (agentForCategory) {
+            return agentForCategory;
+          }
+        }
+      }
+    }
+    return [];
+  };
+
+  const currentDate = dayjs().format("YYYY-MM-DD");
+  const validateDates = (newStartDate, newEndDate) => {
+    const selectedStartDate = dayjs(newStartDate);
+    const selectedEndDate = dayjs(newEndDate);
+
+    if (
+      selectedStartDate.isAfter(currentDate, "day") ||
+      selectedStartDate.isSame(currentDate, "day")
+    ) {
+      // setStartDate(newStartDate);
+      setCreatedDate(newStartDate);
+      setStartDateError("");
+
+      if (newEndDate) {
+        if (
+          selectedEndDate.isAfter(selectedStartDate, "day") ||
+          selectedEndDate.isSame(selectedStartDate, "day")
+        ) {
+          setEndDate(newEndDate);
+          setEndDateError("");
+        } else {
+          setEndDateError(
+            "End date must be greater than or equal to the Start Date."
+          );
+        }
+      }
+    } else {
+      setStartDateError(
+        "Start date must be greater than or equal to the current date."
+      );
+    }
+  };
   useEffect(() => {
     const fetchCategoryData = async () => {
       try {
@@ -163,30 +257,23 @@ function ProjectSingleScreen() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("categoryid", categories);
+    dispatch({ type: "FATCH_SUBMITTING", payload: true });
     try {
-      // Construct the updated data object
-      const categoryIds = selectedOptions.split(",");
-      const projectCategory = categoryIds.map((categoryId) => {
-        const category = categoryData.find((cat) => cat._id === categoryId);
-        return {
-          categoryId,
-          categoryName: category ? category.categoryName : "Unknown Category",
-        };
-      });
-
+      console.log("categoryid", categories);
       const updatedData = {
         projectName: projectData.projectName,
         projectDescription: projectData.projectDescription,
-        projectCategory: categories, // Assign the constructed projectCategory array here
+        projectCategory: categories || projectData.projectCategory, // Assign the constructed projectCategory array here
         createdDate: createdDate,
         endDate: endDate,
         assignedAgent: agents,
-        projectStatus: projectStatus,
-        projectOwner: projectOwner,
+        projectStatus: projectStatus || projectData.projectStatus,
+        projectOwner: projectOwner || projectData.projectOwner,
       };
 
       const response = await axios.put(
-        `/api/project/update/${id}`,
+        `/api/project/assign-update/${id}`,
         updatedData,
         {
           headers: { Authorization: `Bearer ${userInfo.token}` },
@@ -196,6 +283,7 @@ function ProjectSingleScreen() {
       if (response.status === 200) {
         toast.success("Project updated Successfully !");
         navigate("/adminProjectList");
+        dispatch({ type: "FATCH_SUBMITTING", payload: false });
         console.log(response);
       }
     } catch (error) {
@@ -249,87 +337,25 @@ function ProjectSingleScreen() {
     FatchAgentData();
   }, []);
 
-  const handleAgentChange = (index, key, value) => {
-    console.log("Value received:", value);
-    const updatedAgents = [...agents];
-    updatedAgents[index] = {
-      ...updatedAgents[index],
-      [key]: value,
-    };
-
-    const agentName = agentData.find((agentItem) => agentItem._id === value);
-    if (agentName) {
-      updatedAgents[index].agentName = agentName.first_name;
-    }
-
-    if (key === "categoryId" && value !== "") {
-      const selectedCategory = categoryData.find(
-        (categoryItem) => categoryItem._id === value
-      );
-
-      if (selectedCategory) {
-        const categoryObject = {
-          categoryId: selectedCategory._id,
-          categoryName: selectedCategory.categoryName,
-        };
-        setCategories((prevCategories) => {
-          const updatedCategories = [...prevCategories];
-          updatedCategories[index] = categoryObject;
-          return updatedCategories;
-        });
-      }
-    }
-
-    setAgents(updatedAgents);
-  };
-
-  const addAgent = () => {
-    setAgents([...agents, { categoryId: "", agentId: "" }]);
-  };
-  const removeAgent = (index) => {
-    if (window.confirm("Are you sure to delete?")) {
-      const updatedAgents = [...agents];
-      updatedAgents.splice(index, 1);
-      setAgents(updatedAgents);
-    }
-  };
-
-  const currentDate = dayjs().format("YYYY-MM-DD");
-  const validateDates = (newStartDate, newEndDate) => {
-    const selectedStartDate = dayjs(newStartDate);
-    const selectedEndDate = dayjs(newEndDate);
-
-    if (
-      selectedStartDate.isAfter(currentDate, "day") ||
-      selectedStartDate.isSame(currentDate, "day")
-    ) {
-      // setStartDate(newStartDate);
-      setCreatedDate(newStartDate);
-      setStartDateError("");
-
-      if (newEndDate) {
-        if (
-          selectedEndDate.isAfter(selectedStartDate, "day") ||
-          selectedEndDate.isSame(selectedStartDate, "day")
-        ) {
-          setEndDate(newEndDate);
-          setEndDateError("");
-        } else {
-          setEndDateError(
-            "End date must be greater than or equal to the Start Date."
-          );
-        }
-      }
-    } else {
-      setStartDateError(
-        "Start date must be greater than or equal to the current date."
-      );
-    }
-  };
+  console.log("selectbyg", agents);
   return (
     <div>
       {loading ? (
-        <div>Loading ...</div>
+        <>
+          <div className="ThreeDot">
+            <ThreeDots
+              height="80"
+              width="80"
+              radius="9"
+              className="ThreeDot justify-content-center"
+              color="#0e0e3d"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClassName=""
+              visible={true}
+            />
+          </div>
+        </>
       ) : error ? (
         <div>{error}</div>
       ) : (
@@ -366,9 +392,10 @@ function ProjectSingleScreen() {
                     />
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label className="mb-1">Contractor</Form.Label>
+                    <Form.Label className="mb-1 fw-bold">Contractor</Form.Label>
+                    {console.log("projectOwner", projectOwner)}
                     <Form.Select
-                      value={projectOwner}
+                      value={projectData && projectData.projectOwner}
                       onChange={(e) => setProjectOwner(e.target.value)}
                     >
                       <option value="">SELECT CONTRACTOR</option>
@@ -380,12 +407,13 @@ function ProjectSingleScreen() {
                     </Form.Select>
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label className="mb-1">Project Status</Form.Label>
+                    <Form.Label className="mb-1 fw-bold">
+                      Project Status
+                    </Form.Label>
                     <Form.Select
                       value={projectStatus}
                       onChange={(e) => setProjectStatus(e.target.value)}
                     >
-                      <option value="">SELECT STATUS</option>
                       <option value="active">Active </option>
                       <option value="inactive">Inactive </option>
                       <option value="queue">In Proccess </option>
@@ -425,8 +453,8 @@ function ProjectSingleScreen() {
                       )}
                     </Form.Group>
                   </div>
-                  <Button variant="primary" type="submit">
-                    Submit
+                  <Button variant="primary" type="submit" disabled={submitting}>
+                    {submitting ? "submitting" : "Submit"}
                   </Button>
                 </Form>
               </Card.Body>
@@ -437,7 +465,6 @@ function ProjectSingleScreen() {
                   Chats
                 </Card.Header>
                 <Card.Body className="d-flex flex-wrap gap-3 ">
-                  {/* -------- */}{" "}
                   <div
                     className="text-center w-100"
                     style={{
@@ -451,25 +478,62 @@ function ProjectSingleScreen() {
                   >
                     No Chat Available
                   </div>
-                  {conversations.map((conversion) => {
+
+                  {projectData?.conversions?.map((conversion) => {
+                    const assignedAgent = projectData.assignedAgent.find(
+                      (assignedAgent) =>
+                        assignedAgent.agentId === conversion.members[0]
+                    );
                     return (
-                      <Card className="chatboxes">
-                        <Card.Header>Chat</Card.Header>
-                        <Card.Body>
-                          <Link to={`/chatWindowScreen/${conversion._id}`}>
-                            <Button
-                              className="chatBtn"
-                              type="button"
-                              // onClick={conversionHandler(conversion._id)}
-                            >
-                              {conversion._id}
-                            </Button>
-                          </Link>
-                        </Card.Body>
-                      </Card>
+                      <>
+                        {userInfo.role == "agent" ? (
+                          <>
+                            {conversion.members.includes(userInfo._id) && (
+                              <>
+                                <Card className="chatboxes">
+                                  {/* <Card.Header>{assignedAgent.categoryId}</Card.Header> */}
+                                  <Card.Body>
+                                    <Link
+                                      to={`/chatWindowScreen/${conversion._id}`}
+                                    >
+                                      <Button
+                                        className="chatBtn"
+                                        type="button"
+                                        // onClick={conversionHandler(conversion._id)}
+                                      >
+                                        Chat Now
+                                      </Button>
+                                    </Link>
+                                  </Card.Body>
+                                </Card>
+                              </>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <Card className="chatboxes">
+                              <Card.Header>
+                                {categoryData && assignedAgent.categoryName}
+                              </Card.Header>
+                              <Card.Body>
+                                <Link
+                                  to={`/chatWindowScreen/${conversion._id}`}
+                                >
+                                  <Button
+                                    className="chatBtn"
+                                    type="button"
+                                    // onClick={conversionHandler(conversion._id)}
+                                  >
+                                    {categoryData && assignedAgent.agentName}
+                                  </Button>
+                                </Link>
+                              </Card.Body>
+                            </Card>
+                          </>
+                        )}
+                      </>
                     );
                   })}
-                  {/* -------- */}
                 </Card.Body>
               </Card>
               <Card className={`projectScreenCard2 ${theme}CardBody`}>
@@ -489,12 +553,14 @@ function ProjectSingleScreen() {
                         className="d-flex justify-content-between align-items-center"
                       >
                         <Form.Group
-                          className="mb-3"
+                          className="mb-3 mx-2"
                           controlId="formBasicPassword"
                         >
-                          <Form.Label className="mb-1">Category</Form.Label>
+                          <Form.Label className="mb-1 fw-bold">
+                            Category
+                          </Form.Label>
                           <Form.Select
-                            value={agent.categoryId}
+                            value={agent.categoryId || categories}
                             onChange={(e) =>
                               handleAgentChange(
                                 index,
@@ -503,19 +569,25 @@ function ProjectSingleScreen() {
                               )
                             }
                           >
-                            <option value="">SELECT CATEGORY</option>
-                            {categoryData.map((category) => (
-                              <option key={category._id} value={category._id}>
-                                {category.categoryName}
-                              </option>
-                            ))}
+                            <option value="">SELECT</option>
+                            {Array.isArray(categoryData) ? (
+                              categoryData.map((category) => (
+                                <option key={category._id} value={category._id}>
+                                  {category.categoryName}
+                                </option>
+                              ))
+                            ) : (
+                              <option value="">Loading categories...</option>
+                            )}
                           </Form.Select>
                         </Form.Group>
                         <Form.Group
-                          className="mb-3"
+                          className="mb-3 mx-2"
                           controlId="formBasicPassword"
                         >
-                          <Form.Label className="mb-1">Agent</Form.Label>
+                          <Form.Label className="mb-1  fw-bold">
+                            Agent
+                          </Form.Label>
                           <Form.Select
                             value={agent.agentId}
                             onChange={(e) =>
@@ -538,21 +610,23 @@ function ProjectSingleScreen() {
                             ))}
                           </Form.Select>
                         </Form.Group>
-                        <div className="d-flex align-items-center">
+                        <div className="d-flex align-items-center mx-2">
                           <Button
-                            className=" mt-2 bg-primary"
+                            className=" mt-2 "
                             onClick={() => removeAgent(index)}
                           >
-                            <AiFillDelete className="mx-2" />
+                            <AiFillDelete className="mx-1" />
                             Remove
                           </Button>
                         </div>
                       </div>
                     ))}
+
                     <div className="d-flex align-items-center">
-                      <Button className="mb-2 bg-primary" onClick={addAgent}>
+                      <div className="mb-2 mx-2" onClick={addAgent}>
+                        <MdPlaylistAdd className="mx-2 fs-3" />
                         Add Category and Agent
-                      </Button>
+                      </div>
                     </div>
                   </Form>
 
@@ -567,4 +641,4 @@ function ProjectSingleScreen() {
   );
 }
 
-export default ProjectSingleScreen;
+export default AdminEditProject;

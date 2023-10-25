@@ -1,6 +1,13 @@
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
-import { Button, FormControl, Grid, MenuItem, Select } from "@mui/material";
+import {
+  Button,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import { AiFillDelete } from "react-icons/ai";
 import { MdEdit } from "react-icons/md";
 import Modal from "@mui/material/Modal";
@@ -14,6 +21,7 @@ import { ImCross } from "react-icons/im";
 import { ThreeDots } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useReducer, useState } from "react";
+import Validations from "../Components/Validations";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -69,7 +77,7 @@ export default function AdminContractorListScreen() {
   const [isModelOpen, setIsModelOpen] = useState(false);
   const theme = toggleState ? "dark" : "light";
 
-  const [name, setName] = useState("");
+  const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("");
@@ -135,7 +143,7 @@ export default function AdminContractorListScreen() {
       const response = await axios.post(
         `/api/user/add`,
         {
-          first_name: name,
+          first_name: firstname,
           last_name: lastname,
           email: email,
           password: password,
@@ -144,15 +152,17 @@ export default function AdminContractorListScreen() {
         },
         { headers: { Authorization: `Bearer ${userInfo.token}` } }
       );
-      console.log(response);
       if (response.status === 200) {
         toast.success("Contractor added Successfully !");
         setIsModelOpen(false);
         dispatch({ type: "UPDATE_SUCCESS", payload: true });
         dispatch({ type: "FATCH_SUBMITTING", payload: false });
+        setFirstname("");
+        setLastname("");
+        setStatus("");
+        setEmail("");
       }
     } catch (error) {
-      console.log(error);
       toast.error(error.response?.data?.message);
       dispatch({ type: "FATCH_SUBMITTING", payload: false });
     }
@@ -166,7 +176,7 @@ export default function AdminContractorListScreen() {
         });
 
         if (response.status === 200) {
-          toast.success("constractor data deleted successfully!");
+          toast.success("constractor deleted successfully!");
           dispatch({
             type: "DELETE_SUCCESS",
             payload: true,
@@ -222,7 +232,7 @@ export default function AdminContractorListScreen() {
               onClick={handleModel}
             >
               <BiPlusMedical className="mx-2" />
-              Add Contractor
+              Add ContractorF
             </Button>
             <Box sx={{ height: 400, width: "100%" }}>
               <DataGrid
@@ -245,7 +255,6 @@ export default function AdminContractorListScreen() {
                             variant="contained"
                             className="mx-2 tableEditbtn"
                             onClick={() => handleEdit(params.row._id)}
-                            // startIcon={<MdEdit />}
                           >
                             Edit
                           </Button>
@@ -253,7 +262,6 @@ export default function AdminContractorListScreen() {
                             variant="outlined"
                             className="mx-2 tableDeletebtn"
                             onClick={() => deleteHandle(params.row._id)}
-                            // startIcon={<AiFillDelete />}
                           >
                             Delete
                           </Button>
@@ -301,39 +309,31 @@ export default function AdminContractorListScreen() {
                   </h4>
 
                   <TextField
-                    className="mb-2"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    label="FirstName"
+                    className="mb-3"
+                    value={firstname}
+                    onChange={(e) => setFirstname(e.target.value)}
+                    label="First Name"
                     fullWidth
                   />
                   <TextField
-                    className="mb-2"
+                    className="mb-3"
                     value={lastname}
                     onChange={(e) => setLastname(e.target.value)}
-                    label="LastName"
+                    label="Last Name"
                     fullWidth
                   />
 
                   <TextField
-                    className="mb-2"
+                    className="mb-3"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     label="Email"
                     type="email"
                     fullWidth
                   />
-
-                  <TextField
-                    className="mb-2"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    label="Password"
-                    type="password"
-                    fullWidth
-                  />
-
+                  <Validations type="email" value={email} />
                   <FormControl className="formselect">
+                    <InputLabel>Select Status</InputLabel>
                     <Select
                       value={status}
                       onChange={(e) => setStatus(e.target.value)}
@@ -344,13 +344,13 @@ export default function AdminContractorListScreen() {
                   </FormControl>
                   <br></br>
                   <Button
-                    className="mt-2 formbtn"
+                    className="mt-2 formbtn updatingBtn"
                     variant="contained"
                     color="primary"
                     type="submit"
                     disabled={submitting}
                   >
-                    {submitting ? "Adding Contractor..." : "Add Contractor"}
+                    {submitting ? "submitting" : "Submit"}
                   </Button>
                 </Form>
               </Box>

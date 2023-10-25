@@ -1,4 +1,5 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+
 import { HiClipboardList } from "react-icons/hi";
 import { CiBoxList } from "react-icons/ci";
 import { FaListAlt, FaListUl } from "react-icons/fa";
@@ -9,11 +10,13 @@ import { MdLogout } from "react-icons/md";
 import { BsFillChatLeftQuoteFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { Store } from "../Store";
+import { ImCross } from "react-icons/im";
 
 function Sidebar({ sidebarVisible, setSidebarVisible, displayFeatureName }) {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
   const [selectedItem, setSelectedItem] = useState(null);
+  const [isSmallScreen, setIsSmallScreen] = useState(true);
   const [openClose, setOpenClose] = useState(true);
   const signoutHandler = () => {
     const userConfirm = window.confirm("Are you sure you want to logout?");
@@ -21,6 +24,24 @@ function Sidebar({ sidebarVisible, setSidebarVisible, displayFeatureName }) {
       ctxDispatch({ type: "USER_SIGNOUT" });
       localStorage.removeItem("userInfo");
       window.location.href = "/";
+    }
+  };
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth < 1179);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+  const handleResponsiveSidebarVisable = () => {
+    setSidebarVisible(!sidebarVisible);
+  };
+  const handlSmallScreeneClick = () => {
+    if (isSmallScreen) {
+      setSidebarVisible(!sidebarVisible);
     }
   };
 
@@ -31,11 +52,20 @@ function Sidebar({ sidebarVisible, setSidebarVisible, displayFeatureName }) {
 
     ctxDispatch({ type: "SETTING_OPENCLOSE", payload: openClose });
   };
+  console.log(selectedItem, "selectedItem");
   return (
     <div className={`sidebar ${sidebarVisible ? "visible" : ""} `}>
       <div className="blank-box"></div>
+      <ImCross
+        className="sidebarCrossBtn"
+        onClick={handleResponsiveSidebarVisable}
+      />
       <ul className="dash-list ">
-        <Link to="/dashboard" className="text-decoration-none">
+        <Link
+          to="/dashboard"
+          className="text-decoration-none"
+          onClick={handlSmallScreeneClick}
+        >
           <li
             className={selectedItem === "dashboard" ? "selected" : ""}
             onClick={() => {
@@ -47,7 +77,11 @@ function Sidebar({ sidebarVisible, setSidebarVisible, displayFeatureName }) {
           </li>
         </Link>
         {userInfo.role == "superadmin" ? (
-          <Link to="/adminList" className="text-decoration-none">
+          <Link
+            to="/adminList"
+            className="text-decoration-none"
+            onClick={handlSmallScreeneClick}
+          >
             <li
               className={selectedItem === "adminList" ? "selected" : ""}
               onClick={() => {
@@ -62,7 +96,11 @@ function Sidebar({ sidebarVisible, setSidebarVisible, displayFeatureName }) {
 
         {userInfo.role === "admin" || userInfo.role === "superadmin" ? (
           <>
-            <Link to="/adminAgentList" className="text-decoration-none">
+            <Link
+              to="/adminAgentList"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
               <li
                 className={selectedItem === "agentList" ? "selected" : ""}
                 onClick={() => {
@@ -73,7 +111,11 @@ function Sidebar({ sidebarVisible, setSidebarVisible, displayFeatureName }) {
                 Agent List
               </li>
             </Link>
-            <Link to="/adminContractorList" className="text-decoration-none">
+            <Link
+              to="/adminContractorList"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
               <li
                 className={selectedItem === "contractorList" ? "selected" : ""}
                 onClick={() => {
@@ -84,7 +126,11 @@ function Sidebar({ sidebarVisible, setSidebarVisible, displayFeatureName }) {
                 Contractor List
               </li>
             </Link>
-            <Link to="/adminCategoriesList" className="text-decoration-none">
+            <Link
+              to="/adminCategoriesList"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
               <li
                 className={selectedItem === "categoriesList" ? "selected" : ""}
                 onClick={() => {
@@ -95,7 +141,11 @@ function Sidebar({ sidebarVisible, setSidebarVisible, displayFeatureName }) {
                 Categories List
               </li>
             </Link>
-            <Link to="/adminProjectList" className="text-decoration-none">
+            <Link
+              to="/adminProjectList"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
               <li
                 className={
                   selectedItem === "ProjectListAdmin" ? "selected" : ""
@@ -111,43 +161,13 @@ function Sidebar({ sidebarVisible, setSidebarVisible, displayFeatureName }) {
           </>
         ) : null}
 
-        <Link to="/profile-screen" className="text-decoration-none">
-          <li
-            className={selectedItem === "profile" ? "selected" : ""}
-            onClick={() => {
-              setSelectedItem("profile");
-            }}
-          >
-            <CgProfile className="me-3 fs-5" />
-            Profile
-          </li>
-        </Link>
-
-        {/* <Link to="/adminProjectList" className="text-decoration-none">
-          <li
-            className={selectedItem === "profileList" ? "selected" : ""}
-            onClick={() => {
-              setSelectedItem("profileList");
-            }}
-          >
-            <AiOutlineProject className="me-3 fs-5" />
-            Project List
-          </li>
-        </Link> */}
-        <Link to="/ChatScreen" className="text-decoration-none">
-          <li
-            className={selectedItem === "chat" ? "selected" : ""}
-            onClick={() => {
-              setSelectedItem("chat");
-            }}
-          >
-            <BsFillChatLeftQuoteFill className="me-3 fs-5" />
-            Chat
-          </li>
-        </Link>
         {userInfo.role == "contractor" ? (
           <>
-            <Link to="/contractorProjectList" className="text-decoration-none">
+            <Link
+              to="/project-list-screen"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
               <li
                 className={selectedItem === "addProjects" ? "selected" : ""}
                 onClick={() => {
@@ -158,7 +178,11 @@ function Sidebar({ sidebarVisible, setSidebarVisible, displayFeatureName }) {
                 Project List
               </li>
             </Link>
-            <Link to="/add-project" className="text-decoration-none">
+            <Link
+              to="/add-project"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
               <li
                 className={selectedItem === "addProject" ? "selected" : ""}
                 onClick={() => {
@@ -173,13 +197,21 @@ function Sidebar({ sidebarVisible, setSidebarVisible, displayFeatureName }) {
         ) : null}
         {userInfo.role == "agent" ? (
           <>
-            <Link to="/agentProjectList" className="text-decoration-none">
+            <Link
+              to="/agentProjectList"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
               <li>
                 <AiOutlineProject className="me-3 fs-5" />
                 Project List
               </li>
             </Link>
-            <Link to="/projectNotification" className="text-decoration-none">
+            <Link
+              to="/projectNotification"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
               <li
                 className={
                   selectedItem === "projectNotification" ? "selected" : ""
@@ -194,20 +226,46 @@ function Sidebar({ sidebarVisible, setSidebarVisible, displayFeatureName }) {
             </Link>
           </>
         ) : null}
-        <Link
-          to="#"
-          onClick={displayFeatureName}
-          className="text-decoration-none display-icon-info"
-        >
+
+        {/* <Link to="/adminProjectList" className="text-decoration-none">
           <li
-            className={selectedItem === "setting" ? "selected" : ""}
+            className={selectedItem === 'profileList' ? 'selected' : ''}
             onClick={() => {
-              setSelectedItem("setting");
-              handleOpenSetting();
+              setSelectedItem('profileList');
             }}
           >
-            <AiOutlineSetting className="me-3 fs-5" />
-            Settings
+            <AiOutlineProject className="me-3 fs-5" />
+            Project List
+          </li>
+        </Link> */}
+        <Link
+          to="/profile-screen"
+          className="text-decoration-none"
+          onClick={handlSmallScreeneClick}
+        >
+          <li
+            className={selectedItem === "profile" ? "selected" : ""}
+            onClick={() => {
+              setSelectedItem("profile");
+            }}
+          >
+            <CgProfile className="me-3 fs-5" />
+            Profile
+          </li>
+        </Link>
+        <Link
+          to="/ChatScreen"
+          className="text-decoration-none"
+          onClick={handlSmallScreeneClick}
+        >
+          <li
+            className={selectedItem === "chat" ? "selected" : ""}
+            onClick={() => {
+              setSelectedItem("chat");
+            }}
+          >
+            <BsFillChatLeftQuoteFill className="me-3 fs-5" />
+            Chat
           </li>
         </Link>
         <Link

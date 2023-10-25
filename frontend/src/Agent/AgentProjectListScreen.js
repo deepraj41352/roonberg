@@ -1,60 +1,59 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import { DataGrid } from "@mui/x-data-grid";
-import { Grid } from "@mui/material";
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import { DataGrid } from '@mui/x-data-grid';
+import { Grid } from '@mui/material';
 // import { AiFillDelete } from "react-icons/ai";
-import { MdEdit } from "react-icons/md";
-import Modal from "@mui/material/Modal";
-import TextField from "@mui/material/TextField";
-import { Form } from "react-bootstrap";
-import { BiPlusMedical } from "react-icons/bi";
-import { Store } from "../Store";
-import axios from "axios";
-import { toast } from "react-toastify";
-import Tab from "react-bootstrap/Tab";
-import { ThreeDots } from "react-loader-spinner";
-import Tabs from "react-bootstrap/Tabs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DateField } from "@mui/x-date-pickers/DateField";
-import { ImCross } from "react-icons/im";
-import { Link, useNavigate } from "react-router-dom";
+import { MdEdit } from 'react-icons/md';
+import Modal from '@mui/material/Modal';
+import TextField from '@mui/material/TextField';
+import { Button, Card, Form } from 'react-bootstrap';
+import { BiPlusMedical } from 'react-icons/bi';
+import { Store } from '../Store';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import Tab from 'react-bootstrap/Tab';
+import { ThreeDots } from 'react-loader-spinner';
+import Tabs from 'react-bootstrap/Tabs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateField } from '@mui/x-date-pickers/DateField';
+import { ImCross } from 'react-icons/im';
+import { Link, useNavigate } from 'react-router-dom';
 
-import { GrSubtractCircle, GrAddCircle } from "react-icons/gr";
-import { useContext, useEffect, useReducer, useState } from "react";
+import { GrSubtractCircle, GrAddCircle } from 'react-icons/gr';
+import { useContext, useEffect, useReducer, useState } from 'react';
 import {
   FormControl,
   InputLabel,
   Select,
   MenuItem,
-  Button,
-} from "@mui/material";
+} from '@mui/material';
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "FATCH_REQUEST":
+    case 'FATCH_REQUEST':
       return { ...state, loading: true };
-    case "FATCH_SUCCESS":
+    case 'FATCH_SUCCESS':
       return { ...state, projectData: action.payload, loading: false };
-    case "FATCH_ERROR":
+    case 'FATCH_ERROR':
       return { ...state, error: action.payload, loading: false };
 
-    case "DELETE_SUCCESS":
+    case 'DELETE_SUCCESS':
       return { ...state, successDelete: action.payload };
 
-    case "DELETE_RESET":
+    case 'DELETE_RESET':
       return { ...state, successDelete: false };
 
-    case "UPDATE_SUCCESS":
+    case 'UPDATE_SUCCESS':
       return { ...state, successUpdate: action.payload };
 
-    case "UPDATE_RESET":
+    case 'UPDATE_RESET':
       return { ...state, successUpdate: false };
-    case "FATCH_CATEGORY":
+    case 'FATCH_CATEGORY':
       return { ...state, categoryData: action.payload };
-    case "FATCH_AGENTS":
+    case 'FATCH_AGENTS':
       return { ...state, agentData: action.payload };
-    case "FATCH_CONTRACTOR":
+    case 'FATCH_CONTRACTOR':
       return { ...state, contractorData: action.payload };
     default:
       return state;
@@ -62,42 +61,33 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: "_id", headerName: "ID", width: 90 },
+  { field: "_id", headerName: "ID", width: 200 },
   {
-    field: "projectName",
-    headerName: "Project Name",
-    width: 150,
+    field: 'projectName',
+    headerName: 'Project Name',
+    width: 100,
   },
   {
-    field: "projectDescription",
-    headerName: "Description",
-    width: 150,
+    field: 'projectDescription',
+    headerName: 'Description',
+    width: 100,
   },
   {
-    field: "projectCategory",
-    headerName: "Category",
-    width: 150,
+    field: 'projectCategory',
+    headerName: 'Category',
+    width: 100,
   },
 
   {
     field: "projectOwner",
     headerName: "Contractor",
-    width: 90,
+    width: 100,
   },
-  {
-    field: "assignedAgent",
-    headerName: "Agent",
-    width: 110,
-  },
+
 ];
 
 export default function AgentProjectList() {
-  const [isModelOpen, setIsModelOpen] = React.useState(false);
-  const [selectedRowData, setSelectedRowData] = React.useState(null);
-  const [isNewProject, setIsNewProject] = React.useState(false);
-  const [isSubmiting, setIsSubmiting] = React.useState(false);
-
-  const { state } = React.useContext(Store);
+  const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
   const theme = toggleState ? "dark" : "light";
   const [
@@ -114,7 +104,7 @@ export default function AgentProjectList() {
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
-    error: "",
+    error: '',
     projectData: [],
     successDelete: false,
     successUpdate: false,
@@ -126,12 +116,12 @@ export default function AgentProjectList() {
   useEffect(() => {
     const FatchCategory = async () => {
       try {
-        dispatch("FATCH_REQUEST");
+        dispatch('FATCH_REQUEST');
         const response = await axios.get(`/api/category/`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const datas = response.data;
-        dispatch({ type: "FATCH_CATEGORY", payload: datas });
+        dispatch({ type: 'FATCH_CATEGORY', payload: datas });
       } catch (error) {
         console.log(error);
       }
@@ -142,10 +132,10 @@ export default function AgentProjectList() {
   useEffect(() => {
     const FatchContractorData = async () => {
       try {
-        const response = await axios.post(`/api/user/`, { role: "contractor" });
+        const response = await axios.post(`/api/user/`, { role: 'contractor' });
         const datas = response.data;
-        dispatch({ type: "FATCH_CONTRACTOR", payload: datas });
-      } catch (error) {}
+        dispatch({ type: 'FATCH_CONTRACTOR', payload: datas });
+      } catch (error) { }
     };
     FatchContractorData();
   }, []);
@@ -153,10 +143,10 @@ export default function AgentProjectList() {
   useEffect(() => {
     const FatchAgentData = async () => {
       try {
-        const response = await axios.post(`/api/user/`, { role: "agent" });
+        const response = await axios.post(`/api/user/`, { role: 'agent' });
         const datas = response.data;
-        dispatch({ type: "FATCH_AGENTS", payload: datas });
-      } catch (error) {}
+        dispatch({ type: 'FATCH_AGENTS', payload: datas });
+      } catch (error) { }
     };
     FatchAgentData();
   }, []);
@@ -164,11 +154,10 @@ export default function AgentProjectList() {
   useEffect(() => {
     const FatchProjectData = async () => {
       try {
-        dispatch({ type: "FATCH_REQUEST" });
-        const response = await axios.get("/api/project", {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        });
-        const datas = response.data;
+        dispatch({ type: 'FATCH_REQUEST' });
+        const response = await axios.get(`/api/project/getproject/${userInfo._id}`);
+        const datas = response.data.projects;
+        console.log("agentdata", datas)
         const rowData = datas.map((items) => {
           const contractor = contractorData.find(
             (contractor) => contractor._id === items.projectOwner
@@ -180,29 +169,36 @@ export default function AgentProjectList() {
             projectDescription: items.projectDescription,
             projectCategory: items.projectCategory
               ? items.projectCategory.map((cat) => cat.categoryName)
-              : "",
+              : '',
             assignedAgent: items.assignedAgent
               ? items.assignedAgent.map((agent) => agent.agentName)
-              : "",
-            projectOwner: contractor ? contractor.first_name : "",
+              : '',
+            projectOwner: contractor ? contractor.first_name : '',
           };
         });
-        dispatch({ type: "FATCH_SUCCESS", payload: rowData });
+        dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
+
       } catch (error) {
-        console.log(error);
+        console.error(error);
+        dispatch({ type: "FATCH_ERROR", payload: error })
+        if (error.response && error.response.status === 404) {
+          toast.error('No projects have been assigned to you yet');
+        } else {
+          toast.error('An error occurred while fetching data');
+        }
       }
     };
-    FatchProjectData();
+    FatchProjectData()
   }, [contractorData]);
 
   const projectActiveData = projectData.filter((item) => {
-    return item.projectStatus === "active";
+    return item.projectStatus === 'active';
   });
   const projectCompleteData = projectData.filter((item) => {
-    return item.projectStatus === "complete";
+    return item.projectStatus === 'complete';
   });
   const projectQuedData = projectData.filter((item) => {
-    return item.projectStatus === "qued";
+    return item.projectStatus === 'qued';
   });
 
   return (
@@ -210,7 +206,7 @@ export default function AgentProjectList() {
       <div className="px-4 mt-3">
         {loading ? (
           <>
-            <div className="ThreeDot">
+            <div className='ThreeDot' >
               <ThreeDots
                 height="80"
                 width="80"
@@ -223,9 +219,14 @@ export default function AgentProjectList() {
                 visible={true}
               />
             </div>
+
           </>
-        ) : error ? (
-          <div>{error}</div>
+        ) : projectData.length < 0 || error ? (
+          <div>
+            <Card>
+              <Card.Text>No projects have been assigned to you yet</Card.Text>
+            </Card >
+          </div>
         ) : (
           <>
             <div className="tabBorder mt-3">
@@ -235,7 +236,7 @@ export default function AgentProjectList() {
                 className={`mb-0  tab-btn ${theme}Tab`}
               >
                 <Tab className="tab-color" eventKey="All" title="All">
-                  <Box sx={{ height: 400, width: "100%" }}>
+                  <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
                         theme == "light"
@@ -243,7 +244,29 @@ export default function AgentProjectList() {
                           : `tableBg ${theme}DataGrid`
                       }
                       rows={projectData}
-                      columns={[...columns]}
+                      columns={[...columns,
+                      {
+
+                        field: 'action',
+                        headerName: 'Action',
+                        width: 250,
+                        renderCell: (params) => {
+                          return (
+                            <Grid item xs={8}>
+                              <Link to={`/agentEditProject/${params.row._id}`}>
+                                <Button
+                                  variant="contained"
+                                  className="mx-2 tableEditbtn"
+                                // onClick={() => handleEdit(params.row._id)}
+                                // startIcon={<MdEdit />}
+                                >
+                                  Edit
+                                </Button>
+                              </Link>
+                            </Grid>
+                          );
+                        },
+                      }]}
                       getRowId={(row) => row._id}
                       initialState={{
                         pagination: {
@@ -259,7 +282,7 @@ export default function AgentProjectList() {
                   </Box>
                 </Tab>
                 <Tab className="tab-color" eventKey="Active" title="Active">
-                  <Box sx={{ height: 400, width: "100%" }}>
+                  <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
                         theme == "light"
@@ -267,7 +290,30 @@ export default function AgentProjectList() {
                           : `tableBg ${theme}DataGrid`
                       }
                       rows={projectActiveData}
-                      columns={[...columns]}
+                      columns={[
+                        ...columns,
+                        {
+                          field: 'action',
+                          headerName: 'Action',
+                          width: 250,
+                          renderCell: (params) => {
+                            return (
+                              <Grid item xs={8}>
+                                <Link to={`/agentEditProject/${params.row._id}`}>
+                                  <Button
+                                    variant="contained"
+                                    className="mx-2 tableEditbtn"
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
+                                  >
+                                    Edit
+                                  </Button>
+                                </Link>
+                              </Grid>
+                            );
+                          },
+                        },
+                      ]}
                       getRowId={(row) => row._id}
                       initialState={{
                         pagination: {
@@ -282,12 +328,8 @@ export default function AgentProjectList() {
                     />
                   </Box>
                 </Tab>
-                <Tab
-                  className="tab-color"
-                  eventKey="Completed"
-                  title="Completed"
-                >
-                  <Box sx={{ height: 400, width: "100%" }}>
+                <Tab className="tab-color" eventKey="Completed" title="Completed">
+                  <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
                         theme == "light"
@@ -295,7 +337,30 @@ export default function AgentProjectList() {
                           : `tableBg ${theme}DataGrid`
                       }
                       rows={projectCompleteData}
-                      columns={[...columns]}
+                      columns={[
+                        ...columns,
+                        {
+                          field: 'action',
+                          headerName: 'Action',
+                          width: 250,
+                          renderCell: (params) => {
+                            return (
+                              <Grid item xs={8}>
+                                <Link to={`/agentEditProject/${params.row._id}`}>
+                                  <Button
+                                    variant="contained"
+                                    className="mx-2 tableEditbtn"
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
+                                  >
+                                    Edit
+                                  </Button>
+                                </Link>
+                              </Grid>
+                            );
+                          },
+                        },
+                      ]}
                       getRowId={(row) => row._id}
                       initialState={{
                         pagination: {
@@ -311,7 +376,7 @@ export default function AgentProjectList() {
                   </Box>
                 </Tab>
                 <Tab className="tab-color" eventKey="Qued" title="Qued">
-                  <Box sx={{ height: 400, width: "100%" }}>
+                  <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
                         theme == "light"
@@ -319,7 +384,30 @@ export default function AgentProjectList() {
                           : `tableBg ${theme}DataGrid`
                       }
                       rows={projectQuedData}
-                      columns={[...columns]}
+                      columns={[
+                        ...columns,
+                        {
+                          field: 'action',
+                          headerName: 'Action',
+                          width: 250,
+                          renderCell: (params) => {
+                            return (
+                              <Grid item xs={8}>
+                                <Link to={`/agentEditProject/${params.row._id}`}>
+                                  <Button
+                                    variant="contained"
+                                    className="mx-2 tableEditbtn"
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
+                                  >
+                                    Edit
+                                  </Button>
+                                </Link>
+                              </Grid>
+                            );
+                          },
+                        },
+                      ]}
                       getRowId={(row) => row._id}
                       initialState={{
                         pagination: {
@@ -337,7 +425,8 @@ export default function AgentProjectList() {
               </Tabs>
             </div>
           </>
-        )}
+        )
+        }
       </div>
     </>
   );

@@ -19,7 +19,7 @@ const reducer = (state, action) => {
     case "FATCH_REQUEST":
       return { ...state, loading: true };
     case "FATCH_SUCCESS":
-      return { ...state, categoryData: action.payload, loading: false };
+      return { ...state, agentData: action.payload, loading: false };
     case "FATCH_ERROR":
       return { ...state, error: action.payload, loading: false };
     case "UPDATE_SUCCESS":
@@ -37,7 +37,7 @@ const reducer = (state, action) => {
 };
 
 function AdminEditAgent() {
-  const [selectcategory, setSelectCategory] = React.useState("");
+  const [selectcategory, setSelectCategory] = React.useState();
   const { id } = useParams();
   if (id) {
     console.log("id exists:", id);
@@ -50,19 +50,12 @@ function AdminEditAgent() {
   const { toggleState, userInfo } = state;
   const theme = toggleState ? "dark" : "light";
   const [
-    {
-      loading,
-      error,
-      categoryData,
-      categoryDatas,
-      successDelete,
-      successUpdate,
-    },
+    { loading, error, agentData, categoryDatas, successDelete, successUpdate },
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
     error: "",
-    categoryData: {},
+    agentData: {},
     successDelete: false,
     successUpdate: false,
     isSubmiting: false,
@@ -73,15 +66,9 @@ function AdminEditAgent() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  // const [status, setStatus] = useState(userInfo.email);
-  // const [selectedFile, setSelectedFile] = useState("");
-
   const [isSubmiting, setIsSubmiting] = useState(false);
-
-  // State variable to hold the selected status
   const [status, setStatus] = useState("");
-  const [category, setCategory] = useState("");
-  // useEffect to update the status when the API data changes
+  const [category, setCategory] = useState(agentData.agentCategory);
 
   useEffect(() => {
     const FatchcategoryData = async () => {
@@ -110,7 +97,7 @@ function AdminEditAgent() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const datas = response.data;
-        setSelectCategory(datas);
+
         dispatch({ type: "FATCH_CATEGORY", payload: datas });
       } catch (error) {
         console.log(error);
@@ -130,7 +117,7 @@ function AdminEditAgent() {
           last_name: lastName,
           email: email,
           userStatus: status,
-          agentCategory: category,
+          agentCategory: category || agentData.agentCategory,
         },
         {
           headers: {
@@ -139,8 +126,7 @@ function AdminEditAgent() {
         }
       );
       dispatch({ type: "UPDATE_SUCCESS" });
-      toast.success(data.data);
-      console.log(data);
+      toast.success("Agent updated Successfully !");
       navigate("/adminAgentList");
     } catch (err) {
       toast.error(err.response?.data?.message);
@@ -161,7 +147,7 @@ function AdminEditAgent() {
             <Col>
               <Card className={`${theme}CardBody`}>
                 <Form onSubmit={submitHandler} className="p-4 w-100 formWidth ">
-                  <Form.Group className="mb-3 " controlId="formBasicEmail">
+                  <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label className="mb-1 input-box">
                       First Name
                     </Form.Label>
@@ -202,7 +188,9 @@ function AdminEditAgent() {
                       value={status}
                       onChange={(e) => setStatus(e.target.value)}
                     >
-                      <option value="">SELECT STATUS</option>
+                      <option value="" disabled>
+                        SELECT STATUS
+                      </option>
                       <option value="true">Active</option>
                       <option value="false">Inactive</option>
                     </Form.Select>
@@ -210,8 +198,8 @@ function AdminEditAgent() {
                   <Form.Group className="mb-3" controlId="formBasicPassword">
                     <Form.Label className="mb-1">Category</Form.Label>
                     <Form.Select
-                      value={selectcategory}
-                      onChange={(e) => setSelectCategory(e.target.value)}
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
                     >
                       {categoryDatas.map((items) => (
                         <option key={items._id} value={items._id}>
@@ -220,32 +208,14 @@ function AdminEditAgent() {
                       ))}
                     </Form.Select>
                   </Form.Group>
-                  {/* <Form.Group className="mb-3" controlId="formBasicPassword">
-                                        <Form.Label className="mb-1">Status</Form.Label>
-                                        <select className="formselect mb-2" value={status}
-                                            onChange={(e) => setStatus(e.target.value)}>
-                                            <option value="">SELECT STATUS</option>
-                                            <option value="true">Active</option>
-                                            <option value="false">Inactive</option>
-                                        </select>
-                                    </Form.Group> */}
-                  {/* <Form.Group className="mb-3" controlId="formBasicEmail">
-                                    <Form.Control
-                                        type="text"
-                                        value={status}
-                                        onChange={(e) => {
-                                            setStatus(e.target.value);
-                                        }}
-                                    />
-                                </Form.Group> */}
                   <div className="d-flex justify-content-start mt-4">
                     <Button
-                      className=" py-1 w-25 globalbtnColor"
+                      className=" py-1 w-25 globalbtnColor updatingBtn"
                       variant="primary"
                       type="submit"
                       disabled={isSubmiting}
                     >
-                      {isSubmiting ? "Updateing..." : "Update"}
+                      {isSubmiting ? "Updating" : "Update"}
                     </Button>
                   </div>
                 </Form>

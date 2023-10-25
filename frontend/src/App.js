@@ -56,13 +56,14 @@ import ContractorProject from "./Contractor/ContractorProjectListScreen";
 import ContractorEditProject from "./Contractor/ContractorEditProjectScreen";
 import AgentProjectList from "./Agent/AgentProjectListScreen";
 import AdminAssignAgent from "./Screens/AdminAssignAgentScreen";
+import AgentEditProject from "./Agent/AgentEditProjectScreen";
+import ContractorProjectScreen from "./Components/Contractor/contractorProjectScreen";
+import SuperadminEditAdmin from "./Screens/SuperadminEditAdmin";
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo, openClose } = state;
-  console.log("openClose", openClose);
-
   const theme = toggleState ? "dark" : "light";
   const [searchValue, setSearchValue] = useState("");
   const navigate = useNavigate();
@@ -114,7 +115,7 @@ function App() {
                         }}
                       />
                     </Navbar.Brand>
-                    <Form className=" search-bar-dash-outer">
+                    <Form className="d-flex">
                       <InputGroup className="search-bar-dash">
                         <Form.Control
                           type="search"
@@ -236,6 +237,18 @@ function App() {
                         </Nav.Link>
                       </Nav>
                     </Navbar.Collapse>
+                    <div
+                      className="profile-icon me-1 ms-3"
+                      onClick={() => {
+                        navigate("/profile-screen");
+                      }}
+                    >
+                      <img
+                        className=" profile-icon-inner"
+                        src={userInfo.profile_picture}
+                        alt="userimg"
+                      ></img>
+                    </div>
                   </Container>
                 </Navbar>
               ) : (
@@ -288,6 +301,10 @@ function App() {
                       path="/projectNotification"
                       element={<ProjectNotification />}
                     />
+                    <Route
+                      path="/superadmineditadmin/:id"
+                      element={<SuperadminEditAdmin />}
+                    />
 
                     <Route
                       path="/dashboard"
@@ -330,6 +347,7 @@ function App() {
                         </ProtectedRoute>
                       }
                     />
+
                     <Route
                       path="/adminContractorList"
                       element={
@@ -373,12 +391,17 @@ function App() {
                     />
 
                     <Route
+                      path="/superadmineditadmin/:id"
+                      element={<SuperadminEditAdmin />}
+                    />
+
+                    <Route
                       path="/AdminAssignAgent/:id"
                       element={<AdminAssignAgent />}
                     />
                     {/* Contractor */}
                     <Route
-                      path="/contractorProjectList"
+                      path="/project-list-screen"
                       element={<ContractorProject />}
                     />
 
@@ -390,6 +413,10 @@ function App() {
                     <Route
                       path="/agentProjectList"
                       element={<AgentProjectList />}
+                    />
+                    <Route
+                      path="/agentEditProject/:id"
+                      element={<AgentEditProject />}
                     />
                   </Routes>
                 </div>

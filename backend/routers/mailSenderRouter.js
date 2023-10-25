@@ -2,6 +2,8 @@ import Imap from "node-imap";
 import nodemailer from "nodemailer";
 import EmailParser from "email-reply-parser";
 import express from "express";
+import expressAsyncHandler from "express-async-handler";
+import { transporter } from "../util.js";
 
 const mailSenderRouter = express.Router();
 
@@ -13,20 +15,12 @@ const imapConfig = {
   tls: false, // Use TLS if required
 };
 
-const transporter = nodemailer.createTransport({
-  service: "SMTP", // Change to your SMTP service
-  auth: {
-    user: "your-email@example.com", // Change to your email address
-    pass: "your-password", // Change to your email password
-  },
-});
-
 const imap = new Imap(imapConfig);
 
 // Function to send an email
 function sendEmail(to, subject, message) {
   const mailOptions = {
-    from: "your-email@example.com", // Change to your email address
+    from: "deepraj41352@email.com",
     to,
     subject,
     html: message,

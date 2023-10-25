@@ -1,18 +1,18 @@
-import express from "express";
-import User from "../Models/userModel.js";
-import expressAsyncHandler from "express-async-handler";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import multer from "multer";
+import express from 'express';
+import User from '../Models/userModel.js';
+import expressAsyncHandler from 'express-async-handler';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import multer from 'multer';
 import {
   generateToken,
   sendEmailNotify,
   isAuth,
   isAdminOrSelf,
   baseUrl,
-} from "../util.js";
-import { v2 as cloudinary } from "cloudinary";
-import streamifier from "streamifier";
+} from '../util.js';
+import { v2 as cloudinary } from 'cloudinary';
+import streamifier from 'streamifier';
 const userRouter = express.Router();
 const upload = multer();
 /**
@@ -38,7 +38,7 @@ const upload = multer();
  */
 
 userRouter.post(
-  "/",
+  '/',
   expressAsyncHandler(async (req, res) => {
     const role = req.body.role;
     try {
@@ -46,25 +46,25 @@ userRouter.post(
       res.json(users);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error" });
+      res.status(500).json({ message: 'Server error' });
     }
   })
 );
 
 userRouter.put(
-  "/update/:id",
+  '/update/:id',
   isAuth,
   isAdminOrSelf,
   expressAsyncHandler(async (req, res) => {
     try {
       const user = await User.findById(req.params.id);
-      console.log("user", user);
+      console.log('user', user);
       if (user._id == req.params.id) {
         const data = await user.updateOne({ $set: req.body });
-        console.log("updateddata", data);
-        res.status(200).json("update successfully");
+        console.log('updateddata', data);
+        res.status(200).json('update successfully');
       } else {
-        res.status(403).json("you can not update");
+        res.status(403).json('you can not update');
       }
     } catch (err) {
       res.status(500).json(err);
@@ -107,13 +107,13 @@ userRouter.put(
  *           description: Internal Server Error.
  */
 userRouter.delete(
-  "/:id",
+  '/:id',
   isAuth,
   isAdminOrSelf,
   expressAsyncHandler(async (req, res) => {
     try {
       await User.findByIdAndDelete(req.params.id);
-      res.status(200).json("Account has been deleted");
+      res.status(200).json('Account has been deleted');
     } catch (err) {
       return res.status(500).json(err);
     }
@@ -162,13 +162,13 @@ userRouter.delete(
  */
 
 userRouter.post(
-  "/forget-password",
+  '/forget-password',
   expressAsyncHandler(async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
 
     if (user) {
       const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
+        expiresIn: '1h',
       });
 
       user.passresetToken = token;
@@ -179,8 +179,8 @@ userRouter.post(
 
       const options = {
         to: `<${user.email}>`,
-        subject: "Reset Password ✔",
-        template: "RESET-PASS",
+        subject: 'Reset Password ✔',
+        template: 'RESET-PASS',
         resetLink,
       };
 
@@ -192,10 +192,10 @@ userRouter.post(
           message: `We sent a reset password link to your email.`,
         });
       } else {
-        res.status(404).send({ message: "Email sending failed" });
+        res.status(404).send({ message: 'Email sending failed' });
       }
     } else {
-      res.status(404).send({ message: "User not found" });
+      res.status(404).send({ message: 'User not found' });
     }
   })
 );
@@ -246,11 +246,11 @@ userRouter.post(
  */
 
 userRouter.post(
-  "/reset-password",
+  '/reset-password',
   expressAsyncHandler(async (req, res) => {
     jwt.verify(req.body.token, process.env.JWT_SECRET, async (err, decode) => {
       if (err) {
-        res.status(401).send({ message: "Invalid Token" });
+        res.status(401).send({ message: 'Invalid Token' });
       } else {
         const user = await User.findOne({ passresetToken: req.body.token });
         if (user) {
@@ -258,11 +258,11 @@ userRouter.post(
             user.password = bcrypt.hashSync(req.body.password, 8);
             await user.save();
             res.send({
-              message: "Password reseted successfully",
+              message: 'Password reseted successfully',
             });
           }
         } else {
-          res.status(404).send({ message: "User not found" });
+          res.status(404).send({ message: 'User not found' });
         }
       }
     });
@@ -319,7 +319,7 @@ userRouter.post(
  */
 
 userRouter.post(
-  "/signin",
+  '/signin',
   expressAsyncHandler(async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
     if (user) {
@@ -330,11 +330,11 @@ userRouter.post(
         res.send(userData);
         return;
       } else {
-        res.status(401).send({ message: "Incorrect password" });
+        res.status(401).send({ message: 'Incorrect password' });
         return;
       }
     }
-    res.status(401).send({ message: "User not found" });
+    res.status(401).send({ message: 'User not found' });
   })
 );
 
@@ -397,7 +397,7 @@ userRouter.post(
  */
 
 userRouter.post(
-  "/signup",
+  '/signup',
   expressAsyncHandler(async (req, res) => {
     try {
       const { first_name, last_name, email, role } = req.body;
@@ -405,7 +405,7 @@ userRouter.post(
       if (existingUser) {
         return res
           .status(400)
-          .send({ message: "Email is already registered." });
+          .send({ message: 'Email is already registered.' });
       }
       const hashedPassword = await bcrypt.hash(req.body.password, 8);
       const newUser = new User({
@@ -419,23 +419,23 @@ userRouter.post(
       const { password, ...other } = user._doc;
       res
         .status(201)
-        .send({ message: "User registered successfully. please Login", other });
+        .send({ message: 'User registered successfully. please Login', other });
     } catch (error) {
       console.error(error);
       res
         .status(500)
-        .send({ message: "Registration failed. Please try again later." });
+        .send({ message: 'Registration failed. Please try again later.' });
     }
   })
 );
 
 userRouter.put(
-  "/profile",
+  '/profile',
   isAuth,
-  upload.single("file"),
+  upload.single('file'),
   expressAsyncHandler(async (req, res) => {
     try {
-      console.log("req.user._id ", req.user._id);
+      console.log('req.user._id ', req.user._id);
       const userdata = await User.findById(req.user._id);
       if (userdata) {
         if (req.file) {
@@ -452,37 +452,44 @@ userRouter.put(
           { new: true }
         );
 
-        console.log("updatedUser ", updatedUser);
+        console.log('updatedUser ', updatedUser);
         const { password, passresetToken, ...other } = updatedUser._doc;
         const userData = { ...other, token: generateToken(updatedUser) };
         res.send({
           userData,
         });
       } else {
-        res.status(404).send({ message: "User not found" });
+        res.status(404).send({ message: 'User not found' });
       }
     } catch (error) {
-      console.log("Error ", error);
+      console.log('Error ', error);
     }
   })
 );
 
-export const uploadDoc = async (req) => {
+export const uploadDoc = async (req, mediaType) => {
   try {
     cloudinary.config({
       cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
       api_key: process.env.CLOUDINARY_API_KEY,
       api_secret: process.env.CLOUDINARY_API_SECRET,
     });
+
     const streamUpload = (req) => {
       return new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream((error, result) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(result);
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            resource_type: mediaType, // 'video' or 'audio'
+          },
+
+          (error, result) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result);
+            }
           }
-        });
+        );
         streamifier.createReadStream(req.file.buffer).pipe(stream);
       });
     };
@@ -490,12 +497,12 @@ export const uploadDoc = async (req) => {
     const profileUri = await streamUpload(req);
     return profileUri.url;
   } catch (error) {
-    console.log("Cloudinary Error ", error);
+    console.log('Cloudinary Error ', error);
   }
 };
 
 userRouter.post(
-  "/add",
+  '/add',
   isAuth,
   isAdminOrSelf,
   expressAsyncHandler(async (req, res) => {
@@ -506,14 +513,14 @@ userRouter.post(
       if (existingUser) {
         return res
           .status(400)
-          .send({ message: "Email is already registered." });
+          .send({ message: 'Email is already registered.' });
       }
-      if (role === "agent") {
-        if (agentCategory == "" || agentCategory == null) {
-          return res.status(400).send({ message: "wrong category provided" });
+      if (role === 'agent') {
+        if (agentCategory == '' || agentCategory == null) {
+          return res.status(400).send({ message: 'wrong category provided' });
         }
       }
-      const hashedPassword = await bcrypt.hash("RoonBerg@123", 8);
+      const hashedPassword = await bcrypt.hash('RoonBerg@123', 8);
       const data = {
         first_name,
         last_name,
@@ -523,7 +530,7 @@ userRouter.post(
         agentCategory,
         userStatus,
         // Only assign the category field if the role is "agent"
-        ...(role === "agent" ? { agentCategory } : {}),
+        ...(role === 'agent' ? { agentCategory } : {}),
       };
       console.log(data);
       const newUser = new User(data);
@@ -532,7 +539,7 @@ userRouter.post(
 
       if (user) {
         const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-          expiresIn: "3d",
+          expiresIn: '3d',
         });
 
         user.passresetToken = token;
@@ -543,8 +550,8 @@ userRouter.post(
 
         const options = {
           to: `<${user.email}>`,
-          subject: "Reset Password ✔",
-          template: "RESET-PASS",
+          subject: 'Reset Password ✔',
+          template: 'RESET-PASS',
           resetLink,
         };
 
@@ -556,35 +563,35 @@ userRouter.post(
             message: `We sent a reset password link to your email.`,
           });
         } else {
-          res.status(404).send({ message: "Email sending failed" });
+          res.status(404).send({ message: 'Email sending failed' });
         }
       } else {
-        res.status(404).send({ message: "User not found" });
+        res.status(404).send({ message: 'User not found' });
       }
 
       const { password, ...other } = userinfo._doc;
-      res.status(201).send({ message: "User created successfully", other });
+      res.status(201).send({ message: 'User created successfully', other });
     } catch (error) {
       console.error(error);
       res
         .status(500)
-        .send({ message: "User creation failed. Please try again later." });
+        .send({ message: 'User creation failed. Please try again later.' });
     }
   })
 );
 // get single category
 userRouter.get(
-  "/:id",
+  '/:id',
   expressAsyncHandler(async (req, res) => {
     try {
       const user = await User.findById(req.params.id);
       if (!user) {
-        res.status(400).json({ message: "user not found" });
+        res.status(400).json({ message: 'user not found' });
       }
       res.json(user);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error" });
+      res.status(500).json({ message: 'Server error' });
     }
   })
 );

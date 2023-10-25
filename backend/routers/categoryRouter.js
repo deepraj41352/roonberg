@@ -25,9 +25,9 @@ categoryRouter.get(
   '/:id',
   expressAsyncHandler(async (req, res) => {
     try {
-      const category = await Category.findById(req.params.id);
+      const category = await Category.findById(req.params.id).sort({ createdAt: -1 });
       if (!category) {
-        res.status(400).json({ message: "category not found" });
+        res.status(400).json({ message: 'category not found' });
       }
       res.json(category);
     } catch (error) {
@@ -36,6 +36,7 @@ categoryRouter.get(
     }
   })
 );
+
 categoryRouter.post(
   '/',
   isAuth,
@@ -88,7 +89,7 @@ categoryRouter.put(
   expressAsyncHandler(async (req, res) => {
     try {
       const category = await Category.findById(req.params.id);
-      console.log("category", category);
+      console.log('category', category);
       await category.updateOne({ $set: req.body });
       res.status(200).json('Category update successfully');
     } catch (err) {
@@ -129,6 +130,5 @@ categoryRouter.put(
     }
   })
 );
-
 
 export default categoryRouter;

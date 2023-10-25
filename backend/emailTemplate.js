@@ -141,6 +141,18 @@ const emailTemplate = (options) => {
       return templateHead + templateBody1 + templateFooter;
       break;
     default:
+
+    case 'TEST_PRI':
+      const templateBody2 = ` <!-- First Row --> 
+  <p> New Project created with the following details</p>
+      <table role="presentation" border="0" cellpadding="0" cellspacing="10px" style="padding: 30px 30px 30px 60px;">
+      <tr>
+    " hello dosto"
+     
+       </tr>
+         </table>`;
+      return templateHead + templateBody2 + templateFooter;
+      break;
       break;
   }
 };
