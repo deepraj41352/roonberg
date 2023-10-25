@@ -85,12 +85,8 @@ export default function AdminDashboard() {
     </>
   ) : (
     <>
-      <Row>
-        <h2 className="p-5">
-          Welcome{' '}
-          {userInfo.first_name.charAt(0).toUpperCase() +
-            userInfo.first_name.slice(1)}
-        </h2>
+      <Row className="p-5">
+        <h2>Well Come {userInfo.first_name}</h2>
       </Row>
     </>
   );

@@ -3,7 +3,7 @@ import Conversation from '../Models/conversationModel.js';
 
 const conversationRouter = express.Router();
 
-//.............get conversation of a user..................
+//get conv of a user
 
 conversationRouter.get('/:projectId', async (req, res) => {
   try {
@@ -25,7 +25,7 @@ conversationRouter.post('/:conversationId', async (req, res) => {
   }
 });
 
-//............... get conv includes two userId..............
+// get conv includes two userId
 
 conversationRouter.get('/find/:firstUserId/:secondUserId', async (req, res) => {
   try {

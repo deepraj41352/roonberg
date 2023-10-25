@@ -15,11 +15,11 @@ import RegistrationForm from './Screens/RegistrationScreen';
 import AdminProjectListScreen from './Screens/AdminProjectListScreen';
 import AdminAgentListScreen from './Screens/AdminAgentListScreen';
 import AdminCategoriesListScreen from './Screens/AdminCategoriesListScreen';
-import AdminListScreen from './Screens/AdminListScreen';
 import AdminContractorListScreen from './Screens/AdminContractorListScreen';
 import SearchScreen from './Screens/SearchScreen';
 import ProjectSingleScreen from './Screens/ProjectSingleScreen';
 import ChatWindowScreen from './Screens/ChatWindowScreen';
+import AdminEditAgent from './Screens/AdminEditAgentScreen';
 import { useContext, useState } from 'react';
 import {
   Container,
@@ -45,13 +45,16 @@ import ProjectNotification from './Screens/ProjectNotification';
 import AddProject from './Screens/AddProject';
 import ChatScreen from './Screens/ChatScreen';
 import AdminEditCategory from './Screens/AdminEditCategoryScreen';
-import AdminEditAgent from './Screens/AdminEditAgentScreen';
 import AdminEditProject from './Screens/AdminEditProjectScreen';
 import AdminEditContractor from './Screens/AdminEditContractorScreen';
 import ContractorProject from './Contractor/ContractorProjectListScreen';
 import ContractorEditProject from './Contractor/ContractorEditProjectScreen';
 import AgentProjectList from './Agent/AgentProjectListScreen';
 import AdminAssignAgent from './Screens/AdminAssignAgentScreen';
+import AgentEditProject from './Agent/AgentEditProjectScreen';
+import ContractorProjectScreen from './Components/Contractor/contractorProjectScreen';
+import SuperadminEditAdmin from './Screens/SuperadminEditAdmin';
+import AdminListScreen from './Screens/AdminListScreen';
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -149,11 +152,22 @@ function App() {
                         </Nav.Link>
                       </Nav>
                     </Navbar.Collapse>
+                    <div
+                      className=" me-1 ms-3"
+                      onClick={() => {
+                        navigate('/profile-screen');
+                      }}
+                    >
+                      <img
+                        className="profile-icon"
+                        src={userInfo.profile_picture}
+                      ></img>
+                    </div>
                   </Container>
                 </Navbar>
               ) : (
                 <Navbar expand="lg" className=" main-div">
-                  <Container>
+                  <Container className="loginPageNav">
                     <Navbar.Brand href="#home">
                       <Image className="border-0" src="./logo2.png" thumbnail />
                     </Navbar.Brand>
@@ -168,7 +182,7 @@ function App() {
                       <Nav className=" login-button">
                         <Nav className="login-nav ">
                           <Link className="login-admin" to="/registration">
-                            <BsFillPersonFill className="fs-5 Icon-person " />
+                            <BsFillPersonFill className="fs-5 Icon-person me-1 " />
                             Signup
                           </Link>
                           <Link className="login-admin" href="#link">
@@ -200,6 +214,10 @@ function App() {
                     <Route
                       path="/projectNotification"
                       element={<ProjectNotification />}
+                    />
+                    <Route
+                      path="/superadmineditadmin/:id"
+                      element={<SuperadminEditAdmin />}
                     />
 
                     <Route
@@ -243,6 +261,7 @@ function App() {
                         </ProtectedRoute>
                       }
                     />
+
                     <Route
                       path="/adminContractorList"
                       element={
@@ -286,12 +305,17 @@ function App() {
                     />
 
                     <Route
+                      path="/superadmineditadmin/:id"
+                      element={<SuperadminEditAdmin />}
+                    />
+
+                    <Route
                       path="/AdminAssignAgent/:id"
                       element={<AdminAssignAgent />}
                     />
                     {/* Contractor */}
                     <Route
-                      path="/contractorProjectList"
+                      path="/project-list-screen"
                       element={<ContractorProject />}
                     />
 
@@ -303,6 +327,10 @@ function App() {
                     <Route
                       path="/agentProjectList"
                       element={<AgentProjectList />}
+                    />
+                    <Route
+                      path="/agentEditProject/:id"
+                      element={<AgentEditProject />}
                     />
                   </Routes>
                 </div>

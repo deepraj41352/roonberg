@@ -62,20 +62,6 @@ function ProjectSingleScreen() {
     };
     getConversations();
   }, []);
-  // const [conversations, setConversation] = useState([]);
-  // useEffect(() => {
-  //   const getConversations = async () => {
-  //     try {
-  //       const res = await axios.get(`/api/conversation/${id}`);
-  //       setConversation(res.data);
-  //     } catch (err) {
-  //       console.log(err);
-
-  //     }
-  //   };
-  //   getConversations();
-  // }, []);
-  // console.log("convsrsation",conversations)
 
   useEffect(() => {
     const fetchProjectData = async () => {
@@ -106,7 +92,7 @@ function ProjectSingleScreen() {
 
     fetchProjectData();
   }, []);
-
+  console.log('project== datass', projectData);
   useEffect(() => {
     const fetchCategoryData = async () => {
       try {
@@ -266,6 +252,20 @@ function ProjectSingleScreen() {
             <Card className={`projectScreenCard2 ${theme}CardBody`}>
               <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
               <Card.Body className="d-flex flex-wrap gap-3 ">
+                <div
+                  className="text-center w-100"
+                  style={{
+                    display:
+                      projectData &&
+                      projectData.conversions &&
+                      projectData.conversions.length < 1
+                        ? 'block'
+                        : 'none',
+                  }}
+                >
+                  No Chat Available
+                </div>
+
                 {projectData?.conversions?.map((conversion) => {
                   const assignedAgent = projectData.assignedAgent.find(
                     (assignedAgent) =>
@@ -300,7 +300,7 @@ function ProjectSingleScreen() {
                         <>
                           <Card className="chatboxes">
                             <Card.Header>
-                              {assignedAgent.categoryName}
+                              {categoryData && assignedAgent.categoryName}
                             </Card.Header>
                             <Card.Body>
                               <Link to={`/chatWindowScreen/${conversion._id}`}>
@@ -309,7 +309,7 @@ function ProjectSingleScreen() {
                                   type="button"
                                   // onClick={conversionHandler(conversion._id)}
                                 >
-                                  {assignedAgent.agentName}
+                                  {categoryData && assignedAgent.agentName}
                                 </Button>
                               </Link>
                             </Card.Body>

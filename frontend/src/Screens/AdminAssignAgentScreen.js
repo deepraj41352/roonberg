@@ -36,7 +36,7 @@ const reducer = (state, action) => {
   }
 };
 
-function ProjectSingleScreen() {
+function AdminAssignAgent() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { state } = useContext(Store);
@@ -443,10 +443,11 @@ function ProjectSingleScreen() {
                     ))}
                     <div className='d-flex align-items-center'>
 
-                      <Button className='mb-2 mx-2 bg-primary' onClick={addAgent} >
 
+                      <div className='mb-2 mx-2' onClick={addAgent} >
+                        <GrAddCircle className='mx-2' style={{ backgroundColor: 'white' }} />
                         Assign Agent
-                      </Button>
+                      </div>
                       <Button className='mb-2 mx-2 bg-primary' type='submit' >
 
                         Submit
@@ -467,4 +468,4 @@ function ProjectSingleScreen() {
   );
 }
 
-export default ProjectSingleScreen;
+export default AdminAssignAgent;

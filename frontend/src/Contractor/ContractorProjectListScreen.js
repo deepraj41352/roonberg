@@ -1,347 +1,390 @@
-import Box from '@mui/material/Box';
-import { DataGrid } from '@mui/x-data-grid';
-import { Grid } from '@mui/material';
-import { AiFillDelete } from 'react-icons/ai';
-import Modal from '@mui/material/Modal';
-import TextField from '@mui/material/TextField';
-import { Form } from 'react-bootstrap';
-import { BiPlusMedical } from 'react-icons/bi';
-import { Store } from '../Store';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import Tab from 'react-bootstrap/Tab';
-import { ThreeDots } from 'react-loader-spinner';
-import Tabs from 'react-bootstrap/Tabs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateField } from '@mui/x-date-pickers/DateField';
+import Box from "@mui/material/Box";
+import { DataGrid } from "@mui/x-data-grid";
+import { Grid } from "@mui/material";
+// import { AiFillDelete } from 'react-icons/ai';
+import Modal from "@mui/material/Modal";
+import TextField from "@mui/material/TextField";
+import { Card, Form } from "react-bootstrap";
+import { BiPlusMedical } from "react-icons/bi";
+import { Store } from "../Store";
+import axios from "axios";
+import { toast } from "react-toastify";
+import Tab from "react-bootstrap/Tab";
+import { ThreeDots } from "react-loader-spinner";
+import Tabs from "react-bootstrap/Tabs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateField } from "@mui/x-date-pickers/DateField";
 import {
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    Button,
-} from '@mui/material';
-import { Link } from 'react-router-dom';
-import { useContext, useEffect, useReducer, useState } from 'react';
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Button,
+} from "@mui/material";
+import { Link } from "react-router-dom";
+import { useContext, useEffect, useReducer, useState } from "react";
+import dayjs from 'dayjs';
 
 const reducer = (state, action) => {
-    switch (action.type) {
-        case 'FATCH_REQUEST':
-            return { ...state, loading: true };
-        case 'FATCH_SUCCESS':
-            return { ...state, projectData: action.payload, loading: false };
-        case 'FATCH_ERROR':
-            return { ...state, error: action.payload, loading: false };
-        case 'SUCCESS_CATEGORY':
-            return { ...state, categoryData: action.payload, loading: false };
-        case 'ERROR_CATEGORY':
-            return { ...state, error: action.payload, loading: false };
-        case 'DELETE_SUCCESS':
-            return { ...state, successDelete: action.payload };
+  switch (action.type) {
+    case "FATCH_REQUEST":
+      return { ...state, loading: true };
+    case "FATCH_SUCCESS":
+      return { ...state, projectData: action.payload, loading: false };
+    case "FATCH_ERROR":
+      return { ...state, error: action.payload, loading: false };
+    case "SUCCESS_CATEGORY":
+      return { ...state, categoryData: action.payload, loading: false };
+    case "ERROR_CATEGORY":
+      return { ...state, error: action.payload, loading: false };
+    case "DELETE_SUCCESS":
+      return { ...state, successDelete: action.payload };
 
-        case 'DELETE_RESET':
-            return { ...state, successDelete: false };
+    case "DELETE_RESET":
+      return { ...state, successDelete: false };
 
-        case 'UPDATE_SUCCESS':
-            return { ...state, successUpdate: action.payload };
+    case "UPDATE_SUCCESS":
+      return { ...state, successUpdate: action.payload };
 
-        case 'UPDATE_RESET':
-            return { ...state, successUpdate: false };
+    case "UPDATE_RESET":
+      return { ...state, successUpdate: false };
 
-        default:
-            return state;
-    }
+    default:
+      return state;
+  }
 };
 
 const columns = [
-    { field: '_id', headerName: 'ID', width: 90 },
-    {
-        field: 'projectName',
-        headerName: 'Project Name',
-        width: 150,
-    },
-    {
-        field: 'projectDescription',
-        headerName: 'Description',
-        width: 150,
-    },
-    {
-        field: 'projectCategory',
-        headerName: 'project Category',
-        width: 90,
-    },
-    {
-        field: 'assignedAgent',
-        headerName: 'Assigned Agent',
-        width: 110,
-    },
+  { field: "_id", headerName: "ID", width: 90 },
+  {
+    field: "projectName",
+    headerName: "Project",
+    width: 150,
+  },
+  {
+    field: "projectDescription",
+    headerName: "Description",
+    width: 150,
+  },
+  {
+    field: "projectCategory",
+    headerName: "Category",
+    width: 90,
+  },
+  {
+    field: "assignedAgent",
+    headerName: "Agent",
+    width: 110,
+  },
 ];
 
 export default function ContractorProject() {
-    const [isModelOpen, setIsModelOpen] = useState(false);
-    const [selectedRowData, setSelectedRowData] = useState(null);
-    const [isNewProject, setIsNewProject] = useState(false);
-    const [isSubmiting, setIsSubmiting] = useState(false);
+  const [isModelOpen, setIsModelOpen] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState(null);
+  const [isNewProject, setIsNewProject] = useState(false);
+  const [isSubmiting, setIsSubmiting] = useState(false);
 
-    const { state } = useContext(Store);
-    const { toggleState, userInfo } = state;
-    const theme = toggleState ? 'dark' : 'light';
-    const [
-        { loading, error, projectData, successDelete, successUpdate, categoryData },
-        dispatch,
-    ] = useReducer(reducer, {
-        loading: true,
-        error: '',
-        projectData: [],
-        successDelete: false,
-        successUpdate: false,
-    });
+  const { state } = useContext(Store);
+  const { toggleState, userInfo } = state;
+  const theme = toggleState ? "dark" : "light";
+  const [
+    { loading, error, projectData, successDelete, successUpdate, categoryData },
+    dispatch,
+  ] = useReducer(reducer, {
+    loading: true,
+    error: "",
+    projectData: [],
+    successDelete: false,
+    successUpdate: false,
+  });
 
-    const [projectName, setProjectName] = useState('');
-    const [projectDescription, setProjectDescription] = useState('');
+  const [projectName, setProjectName] = useState("");
+  const [projectDescription, setProjectDescription] = useState("");
+  const [startDateError, setStartDateError] = useState('');
+  const [endDateError, setEndDateError] = useState('');
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
+  const [selectedOptions, setSelectedOptions] = useState([]);
 
-    const [startDate, setStartDate] = useState();
-    const [endDate, setEndDate] = useState();
-    const [selectedOptions, setSelectedOptions] = useState([]);
+  const handleCloseRow = () => {
+    setIsModelOpen(false);
+  };
 
-    // const handleEdit = (userid) => {
-    //   const constractorToEdit = projectData.find(
-    //     (constractor) => constractor && constractor._id === userid
-    //   );
-    //   setProjectName(constractorToEdit ? constractorToEdit.projectName : '');
-    //   setProjectDescription(
-    //     constractorToEdit ? constractorToEdit.projectDescription : ''
-    //   );
-    //   setProjectOwner(constractorToEdit ? constractorToEdit.projectOwner : '');
-    //   setAssignedAgent(constractorToEdit ? constractorToEdit.assignedAgent : '');
-    //   setSelectedRowData(constractorToEdit);
-    //   setIsModelOpen(true);
-    //   setIsNewProject(false);
-    // };
+  const handleNew = () => {
+    setIsModelOpen(true);
 
-    const handleCloseRow = () => {
+  };
+
+  useEffect(() => {
+    const FatchProjectData = async () => {
+      try {
+        dispatch({ type: "FATCH_REQUEST" });
+        const response = await axios.get(`/api/project/getproject/${userInfo._id}`);
+        const datas = response.data.projects;
+        const rowData = datas.map((items) => ({
+          ...items,
+          _id: items._id,
+          projectName: items.projectName,
+          projectDescription: items.projectDescription,
+          projectCategory: items.projectCategory
+            ? items.projectCategory.map((cat) => cat.categoryName)
+            : "",
+          assignedAgent: items.assignedAgent
+            ? items.assignedAgent.map((agent) => agent.agentName)
+            : "",
+        }));
+
+        dispatch({ type: "FATCH_SUCCESS", payload: rowData });
+      } catch (error) {
+        console.error(error);
+        dispatch({ type: "FATCH_ERROR", payload: error })
+        if (error.response && error.response.status === 404) {
+          toast.error('You dont have any projects at the moment.');
+        } else {
+          toast.error('An error occurred while fetching data');
+        }
+      }
+    };
+
+    if (successDelete) {
+      dispatch({ type: "DELETE_RESET" });
+    } else if (successUpdate) {
+      dispatch({ type: "UPDATE_RESET" });
+    } else {
+      FatchProjectData();
+    }
+  }, [successDelete, successUpdate, dispatch, userInfo.token]);
+
+  const projectActiveData = projectData.filter((item) => {
+    return item.projectStatus === "active";
+  });
+  const projectCompleteData = projectData.filter((item) => {
+    return item.projectStatus === "complete";
+  });
+  const projectQuedData = projectData.filter((item) => {
+    return item.projectStatus === "qued";
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmiting(true);
+    if (isNewProject) {
+      const response = await axios.post(
+        "/api/project/",
+        {
+          projectName: projectName,
+          projectDescription: projectDescription,
+          projectCategory: selectedOptions,
+          createdDate: startDate,
+          endDate: endDate,
+        },
+        {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+      if (response.status === 201) {
+        toast.success(response.data.message);
+        const datas = response.data;
         setIsModelOpen(false);
-    };
+        setIsSubmiting(false);
 
-    const handleNew = () => {
-        setSelectedRowData(null);
-        setIsModelOpen(true);
-        setIsNewProject(true);
-    };
+        // dispatch({ type: 'FATCH_SUCCESS', payload: datas });
+        dispatch({ type: "UPDATE_SUCCESS", payload: true });
+      } else if (response.status === 500) {
+        toast.error(response.data.error);
+        setIsSubmiting(false);
+      }
+    } else {
+      const response = await axios.put(
+        `/api/project/update/${selectedRowData._id}`,
+        {
+          projectName: projectName,
+          projectDescription: projectDescription,
+        },
+        {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        }
+      );
 
-    useEffect(() => {
-        const FatchProjectData = async () => {
-            try {
-                dispatch({ type: 'FATCH_REQUEST' });
-                const response = await axios.get('/api/project', {
-                    headers: { Authorization: `Bearer ${userInfo.token}` },
-                });
-                const datas = response.data;
-                const rowData = datas.map((items) => ({
-                    ...items,
-                    _id: items._id,
-                    projectName: items.projectName,
-                    projectDescription: items.projectDescription,
-                    projectCategory: items.projectCategory
-                        ? items.projectCategory.map((cat) => cat.categoryName)
-                        : '',
-                    assignedAgent: items.assignedAgent
-                        ? items.assignedAgent.map((agent) => agent.agentName)
-                        : '',
-                }));
+      if (response.status === 200) {
+        toast.success(response.data);
+        setIsModelOpen(false);
+        setIsSubmiting(false);
 
-                dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
-            } catch (error) {
-                console.log(error);
-            }
-        };
+        dispatch({ type: "UPDATE_SUCCESS", payload: true });
+      } else if (response.status === 500) {
+        toast.error(response.message);
+        setIsSubmiting(false);
+      }
+    }
+  };
 
-        if (successDelete) {
-            dispatch({ type: 'DELETE_RESET' });
-        } else if (successUpdate) {
-            dispatch({ type: 'UPDATE_RESET' });
+  const deleteHandle = async (productId) => {
+    if (window.confirm("Are you sure to delete?")) {
+      try {
+        const response = await axios.delete(`/api/project/${productId}`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+
+        if (response.status === 200) {
+          toast.success("Data deleted successfully!");
+          dispatch({
+            type: "DELETE_SUCCESS",
+            payload: true,
+          });
         } else {
-            FatchProjectData();
+          toast.error("Failed to delete data.");
         }
-    }, [successDelete, successUpdate, dispatch, userInfo.token]);
+      } catch (error) {
+        console.error(error);
+        toast.error("An error occurred while deleting data.");
+      }
+    }
+  };
 
-    const projectActiveData = projectData.filter((item) => {
-        return item.projectStatus === 'active';
-    });
-    const projectCompleteData = projectData.filter((item) => {
-        return item.projectStatus === 'complete';
-    });
-    const projectQuedData = projectData.filter((item) => {
-        return item.projectStatus === 'qued';
-    });
+  useEffect(() => {
+    const fetchCategoryData = async () => {
+      try {
+        dispatch("FETCH_REQUEST");
+        const response = await axios.get(`/api/category`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        const categoryData = response.data;
+        const uniqueCategories = Array.from(
+          new Set(
+            categoryData.map((item) => ({
+              _id: item._id,
+              categoryName: item.categoryName,
+            }))
+          )
+        );
+        dispatch({ type: "SUCCESS_CATEGORY", payload: uniqueCategories });
+      } catch (error) {
+        console.error("Error fetching category data:", error);
+      }
+    };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsSubmiting(true);
-        if (isNewProject) {
-            const response = await axios.post(
-                '/api/project/',
-                {
-                    projectName: projectName,
-                    projectDescription: projectDescription,
-                    projectCategory: selectedOptions,
-                    createdDate: startDate,
-                    endDate: endDate,
-                },
-                {
-                    headers: { Authorization: `Bearer ${userInfo.token}` },
-                }
-            );
-            if (response.status === 201) {
-                toast.success(response.data.message);
-                const datas = response.data;
-                setIsModelOpen(false);
-                setIsSubmiting(false);
+    fetchCategoryData();
+  }, []);
 
-                // dispatch({ type: 'FATCH_SUCCESS', payload: datas });
-                dispatch({ type: 'UPDATE_SUCCESS', payload: true });
-            } else if (response.status === 500) {
-                toast.error(response.data.error);
-                setIsSubmiting(false);
-            }
+  const handleChange = (event) => {
+    setSelectedOptions(event.target.value);
+  };
+
+  const currentDate = dayjs();
+
+  const validateDates = (newStartDate, newEndDate) => {
+    const selectedStartDate = dayjs(newStartDate);
+    const selectedEndDate = dayjs(newEndDate);
+
+    if (
+      selectedStartDate.isAfter(currentDate, 'day') ||
+      selectedStartDate.isSame(currentDate, 'day')
+    ) {
+      setStartDate(newStartDate);
+      setStartDateError('');
+
+      if (newEndDate) {
+        if (
+          selectedEndDate.isAfter(selectedStartDate, 'day') ||
+          selectedEndDate.isSame(selectedStartDate, 'day')
+        ) {
+          setEndDate(newEndDate);
+          setEndDateError('');
         } else {
-            const response = await axios.put(
-                `/api/project/update/${selectedRowData._id}`,
-                {
-                    projectName: projectName,
-                    projectDescription: projectDescription,
-                },
-                {
-                    headers: { Authorization: `Bearer ${userInfo.token}` },
-                }
-            );
-
-            if (response.status === 200) {
-                toast.success(response.data);
-                setIsModelOpen(false);
-                setIsSubmiting(false);
-
-                dispatch({ type: 'UPDATE_SUCCESS', payload: true });
-            } else if (response.status === 500) {
-                toast.error(response.message);
-                setIsSubmiting(false);
-            }
+          setEndDateError(
+            'End date must be greater than or equal to the Start Date.'
+          );
         }
-    };
-
-    const deleteHandle = async (productId) => {
-        if (window.confirm('Are you sure to delete?')) {
-            try {
-                const response = await axios.delete(`/api/project/${productId}`, {
-                    headers: { Authorization: `Bearer ${userInfo.token}` },
-                });
-
-                if (response.status === 200) {
-                    toast.success('Data deleted successfully!');
-                    dispatch({
-                        type: 'DELETE_SUCCESS',
-                        payload: true,
-                    });
-                } else {
-                    toast.error('Failed to delete data.');
-                }
-            } catch (error) {
-                console.error(error);
-                toast.error('An error occurred while deleting data.');
-            }
-        }
-    };
-
-    useEffect(() => {
-        const fetchCategoryData = async () => {
-            try {
-                dispatch('FETCH_REQUEST');
-                const response = await axios.get(`/api/category`, {
-                    headers: { Authorization: `Bearer ${userInfo.token}` },
-                });
-                const categoryData = response.data;
-                const uniqueCategories = Array.from(
-                    new Set(
-                        categoryData.map((item) => ({
-                            _id: item._id,
-                            categoryName: item.categoryName,
-                        }))
-                    )
-                );
-                dispatch({ type: 'SUCCESS_CATEGORY', payload: uniqueCategories });
-            } catch (error) {
-                console.error('Error fetching category data:', error);
-            }
-        };
-
-        fetchCategoryData();
-    }, []);
-
-    const handleChange = (event) => {
-        setSelectedOptions(event.target.value);
-    };
-
-    return (
-        <>
-            <Button
+      }
+    } else {
+      setStartDateError(
+        'Start date must be greater than or equal to the current date.'
+      );
+    }
+  };
+  return (
+    <>
+      <div className="px-3 mt-3">
+        <Button
+          variant="outlined"
+          className=" m-2 d-flex globalbtnColor"
+          onClick={handleNew}
+        >
+          <BiPlusMedical className="mx-2" />
+          Add Project
+        </Button>
+        {loading ? (
+          <>
+            <div className="ThreeDot">
+              <ThreeDots
+                height="80"
+                width="80"
+                radius="9"
+                className="ThreeDot justify-content-center"
+                color="#0e0e3d"
+                ariaLabel="three-dots-loading"
+                wrapperStyle={{}}
+                wrapperClassName=""
+                visible={true}
+              />
+            </div>
+          </>
+        ) : projectData.length < 0 || error ? (
+          <div>
+            <Card>
+              <Card.Text>You don't have any projects at the moment.</Card.Text>
+              <Card.Text>Create new project.</Card.Text>
+              <Button
                 variant="outlined"
                 className=" m-2 d-flex globalbtnColor"
                 onClick={handleNew}
-            >
+              >
                 <BiPlusMedical className="mx-2" />
                 Add Project
-            </Button>
-            {loading ? (
-                <>
-                    <div className="ThreeDot">
-                        <ThreeDots
-                            height="80"
-                            width="80"
-                            radius="9"
-                            className="ThreeDot justify-content-center"
-                            color="#0e0e3d"
-                            ariaLabel="three-dots-loading"
-                            wrapperStyle={{}}
-                            wrapperClassName=""
-                            visible={true}
-                        />
-                    </div>
-                </>
-            ) : error ? (
-                <div>{error}</div>
-            ) : (
-                <>
-                    <Tabs
-                        defaultActiveKey="All"
-                        id="uncontrolled-tab-example"
-                        className="mb-3 mt-4 ps-4 gap-5 tab-btn"
-                    >
-                        <Tab className="tab-color" eventKey="All" title="All">
-                            <Box sx={{ height: 400, width: '100%' }}>
-                                <DataGrid
-                                    className={`tableBg mx-2 ${theme}DataGrid`}
-                                    rows={projectData}
-                                    columns={[
-                                        ...columns,
-                                        {
-                                            field: 'action',
-                                            headerName: 'Action',
-                                            width: 250,
-                                            renderCell: (params) => {
-                                                return (
-                                                    <Grid item xs={8}>
-                                                        <Link to={`/contractorEditProject/${params.row._id}`}>
-                                                            <Button
-                                                                variant="contained"
-                                                                className="mx-2 tableEditbtn"
-                                                            // onClick={() => handleEdit(params.row._id)}
-                                                            // startIcon={<MdEdit />}
-                                                            >
-                                                                Edit
-                                                            </Button>
-                                                        </Link>
-                                                        {/* <Button
+              </Button>
+            </Card >
+          </div>
+        ) : (
+          <>
+            <div className="tabBorder mt-3">
+              <Tabs
+                defaultActiveKey="All"
+                id="uncontrolled-tab-example"
+                className={`mb-0  tab-btn ${theme}Tab`}
+              >
+                <Tab className="tab-color" eventKey="All" title="All">
+                  <Box sx={{ height: 400, width: "100%" }}>
+                    <DataGrid
+                      className={
+                        theme == "light"
+                          ? `${theme}DataGrid`
+                          : `tableBg ${theme}DataGrid`
+                      }
+                      rows={projectData}
+                      columns={[
+                        ...columns,
+                        {
+                          field: "action",
+                          headerName: "Action",
+                          width: 250,
+                          renderCell: (params) => {
+                            return (
+                              <Grid item xs={8}>
+                                <Link
+                                  to={`/contractorEditProject/${params.row._id}`}
+                                >
+                                  <Button
+                                    variant="contained"
+                                    className="mx-2 tableEditbtn"
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
+                                  >
+                                    Edit
+                                  </Button>
+                                </Link>
+                                {/* <Button
                                                             variant="outlined"
                                                             className="mx-2 tableDeletebtn"
                                                             onClick={() => deleteHandle(params.row._id)}
@@ -349,291 +392,320 @@ export default function ContractorProject() {
                                                         >
                                                             Delete
                                                         </Button> */}
-                                                    </Grid>
-                                                );
-                                            },
-                                        },
-                                    ]}
-                                    getRowId={(row) => row._id}
-                                    initialState={{
-                                        pagination: {
-                                            paginationModel: {
-                                                pageSize: 5,
-                                            },
-                                        },
-                                    }}
-                                    pageSizeOptions={[5]}
-                                    checkboxSelection
-                                    disableRowSelectionOnClick
-                                />
-                            </Box>
-                            <Modal open={isModelOpen} onClose={handleCloseRow}>
-                                <Box
-                                    className="modelBg"
-                                    sx={{
-                                        position: 'absolute',
-                                        top: '50%',
-                                        left: '50%',
-                                        transform: 'translate(-50%, -50%)',
-                                        width: 400,
-                                        bgcolor: 'background.paper',
-                                        boxShadow: 24,
-                                        p: 4,
-                                    }}
+                              </Grid>
+                            );
+                          },
+                        },
+                      ]}
+                      getRowId={(row) => row._id}
+                      initialState={{
+                        pagination: {
+                          paginationModel: {
+                            pageSize: 5,
+                          },
+                        },
+                      }}
+                      pageSizeOptions={[5]}
+                      checkboxSelection
+                      disableRowSelectionOnClick
+                    />
+                  </Box>
+                  <Modal open={isModelOpen} onClose={handleCloseRow}>
+                    <Box
+                      className="modelBg  modalRespnsive"
+                      sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: 400,
+                        bgcolor: "background.paper",
+                        boxShadow: 24,
+                        p: 4,
+                      }}
+                    >
+                      <Form onSubmit={handleSubmit}>
+
+                        <h4 className="d-flex justify-content-center">
+                          Add Project
+                        </h4>
+                        <TextField
+                          required
+                          className="mb-3"
+                          value={projectName}
+                          onChange={(e) => setProjectName(e.target.value)}
+                          label="Project Name"
+                          fullWidth
+                        />
+
+                        <TextField
+                          required
+                          className="mb-3"
+                          id="outlined-multiline-static"
+                          onChange={(e) =>
+                            setProjectDescription(e.target.value)
+                          }
+                          label="Project Description"
+                          multiline
+                          rows={4}
+                          fullWidth
+                          variant="outlined"
+                        // value={'text'}
+                        // onChange={handleChange}
+                        />
+                        <FormControl fullWidth className="mb-3">
+                          <InputLabel>Select Categories</InputLabel>
+                          <Select
+                            required
+                            multiple
+                            value={selectedOptions}
+                            onChange={handleChange}
+                          // renderValue={(selected) => (
+                          //   <div>
+                          //     {categoryData && selected
+                          //       ? selected.map((value) => (
+                          //           <span key={value}>
+                          //             {categoryData.find(
+                          //               (option) => option._id === value
+                          //             ).categoryName + ','}
+                          //           </span>
+                          //         ))
+                          //       : ''}
+                          //   </div>
+                          // )}
+                          >
+                            {categoryData &&
+                              categoryData.map((option) => (
+                                <MenuItem key={option._id} value={option._id}>
+                                  {option.categoryName}
+                                </MenuItem>
+                              ))}
+                          </Select>
+                        </FormControl>
+
+                        <LocalizationProvider dateAdapter={AdapterDayjs} className="mb-3">
+                          <DateField
+                            required
+                            label="Start Date"
+                            value={startDate}
+                            onChange={(newValue) =>
+                              validateDates(newValue, endDate)
+                            }
+                            format="MM-DD-YYYY"
+                          />
+                          {startDateError && (
+                            <div style={{ color: 'red' }}>{startDateError}</div>
+                          )}
+                          <DateField
+                            required
+                            label="End Date"
+                            value={endDate}
+                            onChange={(newValue) =>
+                              validateDates(startDate, newValue)
+                            }
+                            format="MM-DD-YYYY"
+                          />
+                          {endDateError && (
+                            <div style={{ color: 'red' }}>{endDateError}</div>
+                          )}
+                        </LocalizationProvider>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          type="submit"
+                          disabled={isSubmiting}
+                        >
+                          {isSubmiting
+                            ? "Submitting"
+                            : "Submit"
+                          }
+                        </Button>
+                      </Form>
+                    </Box>
+                  </Modal>
+                </Tab>
+                <Tab className="tab-color" eventKey="Active" title="Active">
+                  <Box sx={{ height: 400, width: "100%" }}>
+                    <DataGrid
+                      className={
+                        theme == "light"
+                          ? `${theme}DataGrid`
+                          : `tableBg ${theme}DataGrid`
+                      }
+                      rows={projectActiveData}
+                      columns={[
+                        ...columns,
+                        {
+                          field: "action",
+                          headerName: "Action",
+                          width: 250,
+                          renderCell: (params) => {
+                            return (
+                              <Grid item xs={8}>
+                                <Link
+                                  to={`/projectSingleScreen/${params.row._id}`}
                                 >
-                                    <Form onSubmit={handleSubmit}>
-                                        {isNewProject ? (
-                                            <h4 className="d-flex justify-content-center">
-                                                Add new Project Details
-                                            </h4>
-                                        ) : (
-                                            <h4 className="d-flex justify-content-center">
-                                                Edit Project Details
-                                            </h4>
-                                        )}
-                                        <TextField
-                                            required
-                                            className="mb-2"
-                                            value={projectName}
-                                            onChange={(e) => setProjectName(e.target.value)}
-                                            label="Project Name"
-                                            fullWidth
-                                        />
+                                  <Button
+                                    variant="contained"
+                                    className="mx-2 tableEditbtn"
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
+                                  >
+                                    Edit
+                                  </Button>
+                                </Link>
 
-                                        <TextField
-                                            required
-                                            id="outlined-multiline-static"
-                                            onChange={(e) => setProjectDescription(e.target.value)}
-                                            label="Project Description"
-                                            multiline
-                                            rows={4}
-                                            fullWidth
-                                            variant="outlined"
-                                        // value={'text'}
-                                        // onChange={handleChange}
-                                        />
-                                        <FormControl fullWidth>
-                                            <InputLabel>Categories</InputLabel>
-                                            <Select
-                                                required
-                                                multiple
-                                                value={selectedOptions}
-                                                onChange={handleChange}
-                                            // renderValue={(selected) => (
-                                            //   <div>
-                                            //     {categoryData && selected
-                                            //       ? selected.map((value) => (
-                                            //           <span key={value}>
-                                            //             {categoryData.find(
-                                            //               (option) => option._id === value
-                                            //             ).categoryName + ','}
-                                            //           </span>
-                                            //         ))
-                                            //       : ''}
-                                            //   </div>
-                                            // )}
-                                            >
-                                                {categoryData &&
-                                                    categoryData.map((option) => (
-                                                        <MenuItem key={option._id} value={option._id}>
-                                                            {option.categoryName}
-                                                        </MenuItem>
-                                                    ))}
-                                            </Select>
-                                        </FormControl>
+                                <Button
+                                  variant="outlined"
+                                  className="mx-2 tableDeletebtn"
+                                  onClick={() => deleteHandle(params.row._id)}
+                                // startIcon={<AiFillDelete />}
+                                >
+                                  Delete
+                                </Button>
+                              </Grid>
+                            );
+                          },
+                        },
+                      ]}
+                      getRowId={(row) => row._id}
+                      initialState={{
+                        pagination: {
+                          paginationModel: {
+                            pageSize: 5,
+                          },
+                        },
+                      }}
+                      pageSizeOptions={[5]}
+                      checkboxSelection
+                      disableRowSelectionOnClick
+                    />
+                  </Box>
+                </Tab>
+                <Tab
+                  className="tab-color"
+                  eventKey="Completed"
+                  title="Completed"
+                >
+                  <Box sx={{ height: 400, width: "100%" }}>
+                    <DataGrid
+                      className={
+                        theme == "light"
+                          ? `${theme}DataGrid`
+                          : `tableBg ${theme}DataGrid`
+                      }
+                      rows={projectCompleteData}
+                      columns={[
+                        ...columns,
+                        {
+                          field: "action",
+                          headerName: "Action",
+                          width: 250,
+                          renderCell: (params) => {
+                            return (
+                              <Grid item xs={8}>
+                                <Link
+                                  to={`/projectSingleScreen/${params.row._id}`}
+                                >
+                                  <Button
+                                    variant="contained"
+                                    className="mx-2 tableEditbtn"
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
+                                  >
+                                    Edit
+                                  </Button>
+                                </Link>
 
-                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                            <DateField
-                                                required
-                                                label="Start Date"
-                                                value={startDate}
-                                                onChange={(newValue) => setStartDate(newValue)}
-                                                format="MM-DD-YYYY"
-                                            />
-                                            <DateField
-                                                required
-                                                label="End Date"
-                                                value={endDate}
-                                                onChange={(newValue) => setEndDate(newValue)}
-                                                format="MM-DD-YYYY"
-                                            />
-                                        </LocalizationProvider>
-                                        <Button
-                                            variant="contained"
-                                            color="primary"
-                                            type="submit"
-                                            disabled={isSubmiting}
-                                        >
-                                            {isNewProject
-                                                ? isSubmiting
-                                                    ? 'Adding Project...'
-                                                    : 'Add Project'
-                                                : isSubmiting
-                                                    ? 'Saving Changes...'
-                                                    : 'Save Changes'}
-                                        </Button>
-                                    </Form>
-                                </Box>
-                            </Modal>
-                        </Tab>
-                        <Tab className="tab-color" eventKey="Active" title="Active">
-                            <Box sx={{ height: 400, width: '100%' }}>
-                                <DataGrid
-                                    className={`tableBg mx-2 ${theme}DataGrid`}
-                                    rows={projectActiveData}
-                                    columns={[
-                                        ...columns,
-                                        {
-                                            field: 'action',
-                                            headerName: 'Action',
-                                            width: 250,
-                                            renderCell: (params) => {
-                                                return (
-                                                    <Grid item xs={8}>
-                                                        <Link to={`/projectSingleScreen/${params.row._id}`}>
-                                                            <Button
-                                                                variant="contained"
-                                                                className="mx-2 tableEditbtn"
-                                                            // onClick={() => handleEdit(params.row._id)}
-                                                            // startIcon={<MdEdit />}
-                                                            >
-                                                                Edit
-                                                            </Button>
-                                                        </Link>
-
-                                                        <Button
-                                                            variant="outlined"
-                                                            className="mx-2 tableDeletebtn"
-                                                            onClick={() => deleteHandle(params.row._id)}
-                                                            startIcon={<AiFillDelete />}
-                                                        >
-                                                            Delete
-                                                        </Button>
-                                                    </Grid>
-                                                );
-                                            },
-                                        },
-                                    ]}
-                                    getRowId={(row) => row._id}
-                                    initialState={{
-                                        pagination: {
-                                            paginationModel: {
-                                                pageSize: 5,
-                                            },
-                                        },
-                                    }}
-                                    pageSizeOptions={[5]}
-                                    checkboxSelection
-                                    disableRowSelectionOnClick
-                                />
-                            </Box>
-                        </Tab>
-                        <Tab className="tab-color" eventKey="Completed" title="Completed">
-                            <Box sx={{ height: 400, width: '100%' }}>
-                                <DataGrid
-                                    className={`tableBg mx-2 ${theme}DataGrid`}
-                                    rows={projectCompleteData}
-                                    columns={[
-                                        ...columns,
-                                        {
-                                            field: 'action',
-                                            headerName: 'Action',
-                                            width: 250,
-                                            renderCell: (params) => {
-                                                return (
-                                                    <Grid item xs={8}>
-                                                        <Link to={`/projectSingleScreen/${params.row._id}`}>
-                                                            <Button
-                                                                variant="contained"
-                                                                className="mx-2 tableEditbtn"
-                                                            // onClick={() => handleEdit(params.row._id)}
-                                                            // startIcon={<MdEdit />}
-                                                            >
-                                                                Edit
-                                                            </Button>
-                                                        </Link>
-
-                                                        <Button
-                                                            variant="outlined"
-                                                            className="mx-2 tableDeletebtn"
-                                                            onClick={() => deleteHandle(params.row._id)}
-                                                            startIcon={<AiFillDelete />}
-                                                        >
-                                                            Delete
-                                                        </Button>
-                                                    </Grid>
-                                                );
-                                            },
-                                        },
-                                    ]}
-                                    getRowId={(row) => row._id}
-                                    initialState={{
-                                        pagination: {
-                                            paginationModel: {
-                                                pageSize: 5,
-                                            },
-                                        },
-                                    }}
-                                    pageSizeOptions={[5]}
-                                    checkboxSelection
-                                    disableRowSelectionOnClick
-                                />
-                            </Box>
-                        </Tab>
-                        <Tab className="tab-color" eventKey="Qued" title="Qued">
-                            <Box sx={{ height: 400, width: '100%' }}>
-                                <DataGrid
-                                    className={`tableBg mx-2 ${theme}DataGrid`}
-                                    rows={projectQuedData}
-                                    columns={[
-                                        ...columns,
-                                        {
-                                            field: 'action',
-                                            headerName: 'Action',
-                                            width: 250,
-                                            renderCell: (params) => {
-                                                return (
-                                                    <Grid item xs={8}>
-                                                        <Link to={`/projectSingleScreen/${params.row._id}`}>
-                                                            <Button
-                                                                variant="contained"
-                                                                className="mx-2 tableEditbtn"
-                                                            // onClick={() => handleEdit(params.row._id)}
-                                                            // startIcon={<MdEdit />}
-                                                            >
-                                                                Edit
-                                                            </Button>
-                                                        </Link>
-                                                        <Button
-                                                            variant="outlined"
-                                                            className="mx-2 tableDeletebtn"
-                                                            onClick={() => deleteHandle(params.row._id)}
-                                                            startIcon={<AiFillDelete />}
-                                                        >
-                                                            Delete
-                                                        </Button>
-                                                    </Grid>
-                                                );
-                                            },
-                                        },
-                                    ]}
-                                    getRowId={(row) => row._id}
-                                    initialState={{
-                                        pagination: {
-                                            paginationModel: {
-                                                pageSize: 5,
-                                            },
-                                        },
-                                    }}
-                                    pageSizeOptions={[5]}
-                                    checkboxSelection
-                                    disableRowSelectionOnClick
-                                />
-                            </Box>
-                        </Tab>
-                    </Tabs>
-                </>
-            )}
-        </>
-    );
+                                <Button
+                                  variant="outlined"
+                                  className="mx-2 tableDeletebtn"
+                                  onClick={() => deleteHandle(params.row._id)}
+                                // startIcon={<AiFillDelete />}
+                                >
+                                  Delete
+                                </Button>
+                              </Grid>
+                            );
+                          },
+                        },
+                      ]}
+                      getRowId={(row) => row._id}
+                      initialState={{
+                        pagination: {
+                          paginationModel: {
+                            pageSize: 5,
+                          },
+                        },
+                      }}
+                      pageSizeOptions={[5]}
+                      checkboxSelection
+                      disableRowSelectionOnClick
+                    />
+                  </Box>
+                </Tab>
+                <Tab className="tab-color" eventKey="Qued" title="Qued">
+                  <Box sx={{ height: 400, width: "100%" }}>
+                    <DataGrid
+                      className={
+                        theme == "light"
+                          ? `${theme}DataGrid`
+                          : `tableBg ${theme}DataGrid`
+                      }
+                      rows={projectQuedData}
+                      columns={[
+                        ...columns,
+                        {
+                          field: "action",
+                          headerName: "Action",
+                          width: 250,
+                          renderCell: (params) => {
+                            return (
+                              <Grid item xs={8}>
+                                <Link
+                                  to={`/projectSingleScreen/${params.row._id}`}
+                                >
+                                  <Button
+                                    variant="contained"
+                                    className="mx-2 tableEditbtn"
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
+                                  >
+                                    Edit
+                                  </Button>
+                                </Link>
+                                <Button
+                                  variant="outlined"
+                                  className="mx-2 tableDeletebtn"
+                                  onClick={() => deleteHandle(params.row._id)}
+                                // startIcon={<AiFillDelete />}
+                                >
+                                  Delete
+                                </Button>
+                              </Grid>
+                            );
+                          },
+                        },
+                      ]}
+                      getRowId={(row) => row._id}
+                      initialState={{
+                        pagination: {
+                          paginationModel: {
+                            pageSize: 5,
+                          },
+                        },
+                      }}
+                      pageSizeOptions={[5]}
+                      checkboxSelection
+                      disableRowSelectionOnClick
+                    />
+                  </Box>
+                </Tab>
+              </Tabs>
+            </div>
+          </>
+        )}
+      </div>
+    </>
+  );
 }

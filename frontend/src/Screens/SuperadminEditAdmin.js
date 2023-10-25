@@ -18,7 +18,7 @@ const reducer = (state, action) => {
     case 'FATCH_REQUEST':
       return { ...state, loading: true };
     case 'FATCH_SUCCESS':
-      return { ...state, ContractorData: action.payload, loading: false };
+      return { ...state, categoryData: action.payload, loading: false };
     case 'FATCH_ERROR':
       return { ...state, error: action.payload, loading: false };
     case 'UPDATE_SUCCESS':
@@ -30,7 +30,7 @@ const reducer = (state, action) => {
   }
 };
 
-function AdminEditContractor() {
+function SuperadminEditAdmin() {
   const { id } = useParams();
   if (id) {
     console.log('id exists:', id);
@@ -41,23 +41,25 @@ function AdminEditContractor() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [status, setStatus] = useState('');
   const [isSubmiting, setIsSubmiting] = useState(false);
+
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
   const theme = toggleState ? 'dark' : 'light';
 
   const [
-    { loading, error, ContractorData, successDelete, successUpdate },
+    { loading, error, categoryData, successDelete, successUpdate },
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
     error: '',
-    ContractorData: {},
+    categoryData: {},
     successDelete: false,
     successUpdate: false,
     isSubmiting: false,
   });
-  const [status, setStatus] = useState(ContractorData.userStatus);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -70,7 +72,8 @@ function AdminEditContractor() {
         setLastName(datas.last_name);
         setEmail(datas.email);
         setStatus(datas.userStatus);
-        dispatch({ type: 'FATCH_SUCCESS', payload: datas });
+
+        // setStatus(datas.categoryStatus)
       } catch (error) {
         toast.error(error.response?.data?.message);
       }
@@ -98,8 +101,8 @@ function AdminEditContractor() {
         }
       );
       dispatch({ type: 'UPDATE_SUCCESS' });
-      toast.success('Contractor updated Successfully !');
-      navigate('/adminContractorList');
+      toast.success(data.data);
+      navigate('/adminList');
     } catch (err) {
       toast.error(err.response?.data?.message);
     } finally {
@@ -113,7 +116,7 @@ function AdminEditContractor() {
         <div className="ProfileScreen-inner px-4 py-3 w-100">
           <Row className="mb-3">
             <Col>
-              <h4>Update Contractor</h4>
+              <h4>Update Admin</h4>
             </Col>
           </Row>
           <Row>
@@ -142,6 +145,7 @@ function AdminEditContractor() {
                       type="text"
                       value={lastName}
                       required
+                      placeholder="Last Name"
                     />
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -151,7 +155,6 @@ function AdminEditContractor() {
                       onChange={(e) => setEmail(e.target.value)}
                       type="email"
                       value={email}
-                      required
                       disabled
                     />
                   </Form.Group>
@@ -161,6 +164,7 @@ function AdminEditContractor() {
                       value={status}
                       onChange={(e) => setStatus(e.target.value)}
                     >
+                      <option value="">SELECT STATUS</option>
                       <option value="true">Active</option>
                       <option value="false">Inactive</option>
                     </Form.Select>
@@ -168,12 +172,12 @@ function AdminEditContractor() {
 
                   <div className="d-flex justify-content-left mt-4">
                     <Button
-                      className=" py-1 w-25 globalbtnColor updatingBtn"
+                      className=" py-1 w-25 globalbtnColor editFormBtn"
                       variant="primary"
                       type="submit"
                       disabled={isSubmiting}
                     >
-                      {isSubmiting ? 'Updating' : 'Update'}
+                      {isSubmiting ? 'Updateing' : 'Update'}
                     </Button>
                   </div>
                 </Form>
@@ -186,4 +190,4 @@ function AdminEditContractor() {
   );
 }
 
-export default AdminEditContractor;
+export default SuperadminEditAdmin;

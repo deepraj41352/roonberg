@@ -9,8 +9,6 @@ import {
   MenuItem,
   Select,
 } from '@mui/material';
-import { AiFillDelete } from 'react-icons/ai';
-import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import { Form, Toast } from 'react-bootstrap';
@@ -57,22 +55,22 @@ const columns = [
   {
     field: 'first_name',
     headerName: 'Agent Name',
-    width: 150,
+    width: 100,
   },
   {
     field: 'email',
     headerName: 'Email',
-    width: 200,
+    width: 100,
   },
   {
     field: 'agentCategory',
     headerName: 'Category',
-    width: 150,
+    width: 100,
   },
   {
     field: 'userStatus',
     headerName: 'Status',
-    width: 150,
+    width: 100,
   },
 ];
 
@@ -84,22 +82,22 @@ export default function AdminAgentListScreen() {
   const theme = toggleState ? 'dark' : 'light';
   const [isModelOpen, setIsModelOpen] = useState(false);
 
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState();
   const [password, setPassword] = useState('');
   const [selectcategory, setSelectCategory] = useState();
-  console.log('name', name);
-  console.log('password', password);
+
   const [
     {
       loading,
+      submitting,
+      categoryData,
       error,
       AgentData,
       successDelete,
-      categoryData,
       successUpdate,
-      submitting,
     },
     dispatch,
   ] = useReducer(reducer, {
@@ -120,7 +118,6 @@ export default function AdminAgentListScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const datas = response.data;
-        // setSelectCategory(datas)
         dispatch({ type: 'FATCH_CATEGORY', payload: datas });
       } catch (error) {
         console.log(error);
@@ -129,6 +126,14 @@ export default function AdminAgentListScreen() {
     FatchCategory();
   }, []);
 
+  const handleCloseRow = () => {
+    setIsModelOpen(false);
+  };
+
+  const handleNew = () => {
+    setIsModelOpen(true);
+  };
+
   useEffect(() => {
     const FatchAgentData = async () => {
       try {
@@ -136,13 +141,16 @@ export default function AdminAgentListScreen() {
         const response = await axios.post(`/api/user/`, { role: role });
         const datas = response.data;
         const rowData = datas.map((items) => {
+          const categoryName = categoryData.find(
+            (category) => category._id === items.agentCategory
+          );
           return {
             ...items,
             _id: items._id,
             first_name: items.first_name,
             email: items.email,
             userStatus: items.userStatus ? 'Active' : 'Inactive',
-            agentCategory: items.agentCategory,
+            agentCategory: categoryName ? categoryName.categoryName : '',
           };
         });
         dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
@@ -157,7 +165,7 @@ export default function AdminAgentListScreen() {
     } else {
       FatchAgentData();
     }
-  }, [successDelete, successUpdate]);
+  }, [successDelete, successUpdate, categoryData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -166,9 +174,9 @@ export default function AdminAgentListScreen() {
       const response = await axios.post(
         `/api/user/add`,
         {
-          first_name: name,
+          first_name: firstName,
+          last_name: lastName,
           email: email,
-          password: password,
           role: role,
           userStatus: status,
           agentCategory: selectcategory,
@@ -177,13 +185,19 @@ export default function AdminAgentListScreen() {
       );
       console.log(response);
       if (response.status === 200) {
-        toast.success('Agent added Successfully !');
+        toast.success('Agent Created Successfully !');
         setIsModelOpen(false);
+        setFirstName('');
+        setLastName('');
+        setStatus('');
+        setEmail('');
+        setSelectCategory('');
         dispatch({ type: 'UPDATE_SUCCESS', payload: true });
         dispatch({ type: 'FATCH_SUBMITTING', payload: false });
       }
     } catch (error) {
       toast.error(error.response?.data?.message);
+      dispatch({ type: 'FATCH_SUBMITTING', payload: false });
     }
   };
 
@@ -195,7 +209,7 @@ export default function AdminAgentListScreen() {
         });
 
         if (response.status === 200) {
-          toast.success('Agent data deleted successfully!');
+          toast.success('Agent deleted successfully!');
           dispatch({
             type: 'DELETE_SUCCESS',
             payload: true,
@@ -210,9 +224,9 @@ export default function AdminAgentListScreen() {
     }
   };
 
-  const handleCloseRow = () => {
-    setIsModelOpen(false);
-  };
+  // const handleCloseRow = () => {
+  //   setIsModelOpen(false);
+  // };
 
   const handleModel = () => {
     setIsModelOpen(true);
@@ -269,7 +283,6 @@ export default function AdminAgentListScreen() {
                           variant="contained"
                           className="mx-2 tableEditbtn"
                           onClick={() => handleEdit(params.row._id)}
-                          startIcon={<MdEdit />}
                         >
                           Edit
                         </Button>
@@ -277,7 +290,6 @@ export default function AdminAgentListScreen() {
                           variant="outlined"
                           className="mx-2 tableDeletebtn"
                           onClick={() => deleteHandle(params.row._id)}
-                          startIcon={<AiFillDelete />}
                         >
                           Delete
                         </Button>
@@ -323,15 +335,21 @@ export default function AdminAgentListScreen() {
                   Add Agent
                 </h4>
                 <TextField
-                  className="mb-2"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  label="Username"
+                  className="mb-3"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  label="First Name"
                   fullWidth
                 />
-
                 <TextField
-                  className="mb-2"
+                  className="mb-3"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  label="Last Name"
+                  fullWidth
+                />
+                <TextField
+                  className="mb-3"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   label="Email"
@@ -339,28 +357,27 @@ export default function AdminAgentListScreen() {
                   fullWidth
                 />
                 <Validations type="email" value={email} />
-                <TextField
-                  className="mb-2"
+                {/* <TextField
+                  className="mb-3"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   label="Password"
                   type="password"
                   fullWidth
                 />
-                <Validations type="password" value={password} />
-                <FormControl>
-                  <InputLabel>Choose Status</InputLabel>
+                <Validations type="password" value={password} /> */}
+                <FormControl className="mb-3">
+                  <InputLabel>Select Status</InputLabel>
                   <Select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
                   >
-                    <MenuItem value="">SELECT STATUS</MenuItem>
                     <MenuItem value={true}>Active</MenuItem>
                     <MenuItem value={false}>Inactive</MenuItem>
                   </Select>
                 </FormControl>
-                <FormControl>
-                  <InputLabel>Choose Category</InputLabel>
+                <FormControl className="mb-3">
+                  <InputLabel>Select Category</InputLabel>
                   <Select
                     value={selectcategory}
                     onChange={(e) => setSelectCategory(e.target.value)}
@@ -381,7 +398,7 @@ export default function AdminAgentListScreen() {
                   type="submit"
                   disabled={submitting}
                 >
-                  {submitting ? 'Adding Agent...' : 'Add Agent'}
+                  {submitting ? 'Submitting' : 'Submit'}
                 </Button>
               </Form>
             </Box>

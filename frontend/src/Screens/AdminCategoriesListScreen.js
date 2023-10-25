@@ -8,11 +8,12 @@ import {
   MenuItem,
   Select,
 } from '@mui/material';
-import { AiFillDelete } from 'react-icons/ai';
-import { MdEdit } from 'react-icons/md';
+// import { AiFillDelete } from 'react-icons/ai';
+// import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
-import { Form, FormControl } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
+import { FormControl } from '@mui/material';
 import { BiPlusMedical } from 'react-icons/bi';
 import { Store } from '../Store';
 import { useContext, useEffect, useReducer, useState } from 'react';
@@ -41,8 +42,10 @@ const reducer = (state, action) => {
 
     case 'UPDATE_RESET':
       return { ...state, successUpdate: false };
-    case 'CATEGORY_CRATED_REQ':
+    case "CATEGORY_CRATED_REQ":
       return { ...state, isSubmiting: true };
+    case "FATCH_SUBMITTING":
+      return { ...state, submitting: action.payload };
     default:
       return state;
   }
@@ -52,12 +55,12 @@ const columns = [
   { field: '_id', headerName: 'ID', width: 250 },
   {
     field: 'categoryName',
-    headerName: 'categoryName',
+    headerName: 'category',
     width: 100,
   },
   {
     field: 'categoryDescription',
-    headerName: 'categoryDescription',
+    headerName: 'Description',
     width: 150,
   },
   {
@@ -90,7 +93,7 @@ const columns = [
   },
   {
     field: 'categoryStatus',
-    headerName: 'categoryStatus',
+    headerName: 'Status',
     width: 100,
   },
 ];
@@ -107,7 +110,7 @@ export default function AdminContractorListScreen() {
   const [status, setStatus] = useState('');
   const [categoryDesc, setCatogryDesc] = useState('');
   const [
-    { loading, error, categoryData, successDelete, successUpdate, isSubmiting },
+    { loading, error, categoryData, successDelete, successUpdate, isSubmiting, submitting },
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
@@ -116,10 +119,12 @@ export default function AdminContractorListScreen() {
     successDelete: false,
     successUpdate: false,
     isSubmiting: false,
+    submitting: false
   });
 
   const handleEdit = (rowId) => {
     navigate(`/adminEditCategory/${rowId}`);
+
 
     // setSelectedRowData(params);
     // setIsModelOpen(true);
@@ -134,6 +139,9 @@ export default function AdminContractorListScreen() {
     setSelectedRowData(null);
     setIsModelOpen(true);
     setIsNewCategory(true);
+  };
+  const handleSubmitNewCategory = () => {
+    setIsModelOpen(false);
   };
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -152,7 +160,7 @@ export default function AdminContractorListScreen() {
             ...items,
             _id: items._id,
             categoryName: items.categoryName,
-            categoryDescription: items.categoryDescription,
+            categoryDescription: items.categoryDescription == '' ? 'No description' : items.categoryDescription,
             categoryImage: items.categoryImage,
             categoryStatus:
               items.categoryStatus == true ? 'Active' : 'Inactive',
@@ -175,7 +183,7 @@ export default function AdminContractorListScreen() {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-
+    dispatch({ type: "FATCH_SUBMITTING", payload: true })
     const formDatas = new FormData();
 
     formDatas.append('categoryImage', selectedFile);
@@ -193,10 +201,16 @@ export default function AdminContractorListScreen() {
         },
       });
       console.log(data.message);
-      toast.success(data.message);
-      dispatch({ type: 'UPDATE_SUCCESS' });
+      toast.success("Category Created Successfully !");
+      dispatch({ type: "UPDATE_SUCCESS" })
+      dispatch({ type: "FATCH_SUBMITTING", payload: false })
+      setCatogry('');
+      setCatogryDesc('');
+      setSelectedFile(null)
+      setStatus('')
     } catch (err) {
       toast.error(err.response?.data?.message);
+      dispatch({ type: "FATCH_SUBMITTING", payload: false })
     } finally {
       setIsModelOpen(false);
     }
@@ -215,7 +229,7 @@ export default function AdminContractorListScreen() {
         });
 
         if (response.status === 200) {
-          toast.success('Category data deleted successfully!');
+          toast.success('Category deleted successfully!');
           dispatch({
             type: 'DELETE_SUCCESS',
             payload: true,
@@ -240,24 +254,30 @@ export default function AdminContractorListScreen() {
         <BiPlusMedical className="mx-2" />
         Add Category
       </Button>
-      <Box sx={{ height: 400, width: '100%' }}>
+      <Box sx={{ height: 400, width: "100%" }}>
         <DataGrid
-          className={`tableBg mx-2 ${theme}DataGrid`}
+          className={
+            theme == 'light'
+              ? `${theme}DataGrid mx-2`
+              : `tableBg ${theme}DataGrid mx-2`
+          }
+
           rows={categoryData}
           columns={[
             ...columns,
             {
-              field: 'action',
-              headerName: 'Action',
+              field: "action",
+              headerName: "Action",
               width: 250,
               renderCell: (params) => {
                 return (
                   <Grid item xs={8}>
+
                     <Button
                       variant="contained"
                       className="mx-2 tableEditbtn"
                       onClick={() => handleEdit(params.row._id)}
-                      startIcon={<MdEdit />}
+
                     >
                       Edit
                     </Button>
@@ -265,7 +285,7 @@ export default function AdminContractorListScreen() {
                       variant="outlined"
                       className="mx-2 tableDeletebtn"
                       onClick={() => deleteHandle(params.row._id)}
-                      startIcon={<AiFillDelete />}
+
                     >
                       Delete
                     </Button>
@@ -291,93 +311,60 @@ export default function AdminContractorListScreen() {
         <Box
           className="modelBg"
           sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
             width: 400,
-            bgcolor: 'background.paper',
+            bgcolor: "background.paper",
             boxShadow: 24,
             p: 4,
           }}
         >
           <Form>
-            {isNewCategory ? (
-              <h4 className="d-flex justify-content-center">
-                Add new Category Details
-              </h4>
-            ) : (
-              <h4 className="d-flex justify-content-center">
-                Edit Category Details
-              </h4>
-            )}
+
+            <h4 className="d-flex justify-content-center">
+              Add Category
+            </h4>
+
             <TextField
-              className="mb-2"
+              className="mb-3"
               value={category}
               label="Category Name"
               fullWidth
               onChange={(e) => setCatogry(e.target.value)}
             />
             <TextField
-              className="mb-2"
+              className="mb-3"
               value={categoryDesc}
               label="Add description"
               fullWidth
               onChange={(e) => setCatogryDesc(e.target.value)}
             />
-            {/* <FormControl className="formselect">
+            <FormControl className="mb-3">
+              <InputLabel>Select Status</InputLabel>
               <Select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
               >
-                <MenuItem value="true">Active</MenuItem>
-                <MenuItem value="false">Inactive</MenuItem>
+                <MenuItem value={true} >Active</MenuItem>
+                <MenuItem value={false}>Inactive</MenuItem>
               </Select>
-            </FormControl> */}
-            {/* <FormControl fullWidth>
-              <InputLabel>Choose Options</InputLabel>
-              <Select
-                required
-                multiple
-                value={status}
-                onChange={handleChange}
-                renderValue={(selected) => (
-                  <div>
-                    {selected.map((value) => (
-                      <span key={value}>{value}, </span>
-                    ))}
-                  </div>
-                )}
-              >
-                {categoryData.map((option) => (
-                  <MenuItem
-                    key={option.categoryName}
-                    value={option._id}
-                  >
-                    {option.categoryName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl> */}
-            <select
-              className="formselect mb-2"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-            >
-              <option value="">SELECT STATUS</option>
-              <option value={true}>Active</option>
-              <option value={false}>Inactive</option>
-            </select>
-
+            </FormControl>
             <TextField
-              className="mb-2"
+              className="mb-3"
               type="file"
               fullWidth
               onChange={handleFileChange}
             />
 
-            <Button variant="contained" color="primary" onClick={submitHandler}>
-              submit
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={submitHandler}
+              disabled={submitting}
+            >
+              {submitting ? 'submitting' : 'Submit'}
             </Button>
           </Form>
         </Box>

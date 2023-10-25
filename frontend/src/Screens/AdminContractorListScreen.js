@@ -77,7 +77,7 @@ export default function AdminContractorListScreen() {
   const [isModelOpen, setIsModelOpen] = useState(false);
   const theme = toggleState ? 'dark' : 'light';
 
-  const [name, setName] = useState('');
+  const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('');
@@ -143,28 +143,26 @@ export default function AdminContractorListScreen() {
       const response = await axios.post(
         `/api/user/add`,
         {
-          first_name: name,
-          last_name: lastname,
+          first_name: firstname,
           last_name: lastname,
           email: email,
           password: password,
-          password: password,
           role: role,
-          userStatus: status,
           userStatus: status,
         },
         { headers: { Authorization: `Bearer ${userInfo.token}` } }
       );
-      console.log(response);
-      console.log(response);
       if (response.status === 200) {
         toast.success('Contractor added Successfully !');
         setIsModelOpen(false);
         dispatch({ type: 'UPDATE_SUCCESS', payload: true });
         dispatch({ type: 'FATCH_SUBMITTING', payload: false });
+        setFirstname('');
+        setLastname('');
+        setStatus('');
+        setEmail('');
       }
     } catch (error) {
-      console.log(error);
       toast.error(error.response?.data?.message);
       dispatch({ type: 'FATCH_SUBMITTING', payload: false });
     }
@@ -178,7 +176,7 @@ export default function AdminContractorListScreen() {
         });
 
         if (response.status === 200) {
-          toast.success('constractor data deleted successfully!');
+          toast.success('constractor deleted successfully!');
           dispatch({
             type: 'DELETE_SUCCESS',
             payload: true,
@@ -238,7 +236,11 @@ export default function AdminContractorListScreen() {
             </Button>
             <Box sx={{ height: 400, width: '100%' }}>
               <DataGrid
-                className={`tableBg mx-2 ${theme}DataGrid`}
+                className={
+                  theme == 'light'
+                    ? `${theme}DataGrid mx-2`
+                    : `tableBg ${theme}DataGrid mx-2`
+                }
                 rows={constructorData}
                 columns={[
                   ...columns,
@@ -253,7 +255,6 @@ export default function AdminContractorListScreen() {
                             variant="contained"
                             className="mx-2 tableEditbtn"
                             onClick={() => handleEdit(params.row._id)}
-                            startIcon={<MdEdit />}
                           >
                             Edit
                           </Button>
@@ -261,7 +262,6 @@ export default function AdminContractorListScreen() {
                             variant="outlined"
                             className="mx-2 tableDeletebtn"
                             onClick={() => deleteHandle(params.row._id)}
-                            startIcon={<AiFillDelete />}
                           >
                             Delete
                           </Button>
@@ -309,22 +309,22 @@ export default function AdminContractorListScreen() {
                   </h4>
 
                   <TextField
-                    className="mb-2"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    label="FirstName"
+                    className="mb-3"
+                    value={firstname}
+                    onChange={(e) => setFirstname(e.target.value)}
+                    label="First Name"
                     fullWidth
                   />
                   <TextField
-                    className="mb-2"
+                    className="mb-3"
                     value={lastname}
                     onChange={(e) => setLastname(e.target.value)}
-                    label="LastName"
+                    label="Last Name"
                     fullWidth
                   />
 
                   <TextField
-                    className="mb-2"
+                    className="mb-3"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     label="Email"
@@ -332,17 +332,8 @@ export default function AdminContractorListScreen() {
                     fullWidth
                   />
                   <Validations type="email" value={email} />
-                  <TextField
-                    className="mb-2"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    label="Password"
-                    type="password"
-                    fullWidth
-                  />
-                  <Validations type="password" value={password} />
                   <FormControl className="formselect">
-                    <InputLabel>Choose Status</InputLabel>
+                    <InputLabel>Select Status</InputLabel>
                     <Select
                       value={status}
                       onChange={(e) => setStatus(e.target.value)}
@@ -353,13 +344,13 @@ export default function AdminContractorListScreen() {
                   </FormControl>
                   <br></br>
                   <Button
-                    className="mt-2 formbtn"
+                    className="mt-2 formbtn updatingBtn"
                     variant="contained"
                     color="primary"
                     type="submit"
                     disabled={submitting}
                   >
-                    {submitting ? 'Adding Contractor...' : 'Add Contractor'}
+                    {submitting ? 'submitting' : 'Submit'}
                   </Button>
                 </Form>
               </Box>

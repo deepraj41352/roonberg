@@ -61,7 +61,7 @@ function ProfileScreen() {
       <div className="ProfileScreen-inner px-4 py-3 w-100">
         <Row className="mb-3">
           <Col>
-            <h4>Userr Profile</h4>
+            <h4>User Profile</h4>
           </Col>
         </Row>
         <Row>
@@ -69,10 +69,24 @@ function ProfileScreen() {
             <Card className={`${theme}CardBody`}>
               <Form onSubmit={submitHandler} className="p-4 w-100 formWidth ">
                 <div className="classforprofile">
-                  <img src={userInfo.profile_picture} alt=""></img>
-                  <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label className="mb-1">Profile Picture</Form.Label>
-                    <Form.Control type="file" onChange={handleFileChange} />
+                  <Form.Group className="mb-2" controlId="formBasicPassword">
+                    <div className="d-flex gap-3">
+                      <div>
+                        <Form.Label className="mb-1">
+                          <img
+                            className="profile-icon-inner "
+                            src={userInfo.profile_picture}
+                            alt="user-image"
+                          ></img>
+                        </Form.Label>
+                      </div>
+                      <div>
+                        <Form.Label className="mb-1">
+                          Profile Picture
+                        </Form.Label>
+                        <Form.Control type="file" onChange={handleFileChange} />
+                      </div>
+                    </div>
                   </Form.Group>
                 </div>
 
