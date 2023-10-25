@@ -4,7 +4,7 @@ import { Grid } from "@mui/material";
 // import { AiFillDelete } from 'react-icons/ai';
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
-import { Form } from "react-bootstrap";
+import { Card, Form } from "react-bootstrap";
 import { BiPlusMedical } from "react-icons/bi";
 import { Store } from "../Store";
 import axios from "axios";
@@ -24,6 +24,7 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useContext, useEffect, useReducer, useState } from "react";
+import dayjs from 'dayjs';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -58,7 +59,7 @@ const columns = [
   { field: "_id", headerName: "ID", width: 90 },
   {
     field: "projectName",
-    headerName: "Project Name",
+    headerName: "Project",
     width: 150,
   },
   {
@@ -68,12 +69,12 @@ const columns = [
   },
   {
     field: "projectCategory",
-    headerName: "project Category",
+    headerName: "Category",
     width: 90,
   },
   {
     field: "assignedAgent",
-    headerName: "Assigned Agent",
+    headerName: "Agent",
     width: 110,
   },
 ];
@@ -100,44 +101,27 @@ export default function ContractorProject() {
 
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
-
+  const [startDateError, setStartDateError] = useState('');
+  const [endDateError, setEndDateError] = useState('');
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
   const [selectedOptions, setSelectedOptions] = useState([]);
-
-  // const handleEdit = (userid) => {
-  //   const constractorToEdit = projectData.find(
-  //     (constractor) => constractor && constractor._id === userid
-  //   );
-  //   setProjectName(constractorToEdit ? constractorToEdit.projectName : '');
-  //   setProjectDescription(
-  //     constractorToEdit ? constractorToEdit.projectDescription : ''
-  //   );
-  //   setProjectOwner(constractorToEdit ? constractorToEdit.projectOwner : '');
-  //   setAssignedAgent(constractorToEdit ? constractorToEdit.assignedAgent : '');
-  //   setSelectedRowData(constractorToEdit);
-  //   setIsModelOpen(true);
-  //   setIsNewProject(false);
-  // };
 
   const handleCloseRow = () => {
     setIsModelOpen(false);
   };
 
   const handleNew = () => {
-    setSelectedRowData(null);
     setIsModelOpen(true);
-    setIsNewProject(true);
+
   };
 
   useEffect(() => {
     const FatchProjectData = async () => {
       try {
         dispatch({ type: "FATCH_REQUEST" });
-        const response = await axios.get("/api/project", {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        });
-        const datas = response.data;
+        const response = await axios.get(`/api/project/getproject/${userInfo._id}`);
+        const datas = response.data.projects;
         const rowData = datas.map((items) => ({
           ...items,
           _id: items._id,
@@ -153,7 +137,13 @@ export default function ContractorProject() {
 
         dispatch({ type: "FATCH_SUCCESS", payload: rowData });
       } catch (error) {
-        console.log(error);
+        console.error(error);
+        dispatch({ type: "FATCH_ERROR", payload: error })
+        if (error.response && error.response.status === 404) {
+          toast.error('You dont have any projects at the moment.');
+        } else {
+          toast.error('An error occurred while fetching data');
+        }
       }
     };
 
@@ -282,6 +272,38 @@ export default function ContractorProject() {
     setSelectedOptions(event.target.value);
   };
 
+  const currentDate = dayjs();
+
+  const validateDates = (newStartDate, newEndDate) => {
+    const selectedStartDate = dayjs(newStartDate);
+    const selectedEndDate = dayjs(newEndDate);
+
+    if (
+      selectedStartDate.isAfter(currentDate, 'day') ||
+      selectedStartDate.isSame(currentDate, 'day')
+    ) {
+      setStartDate(newStartDate);
+      setStartDateError('');
+
+      if (newEndDate) {
+        if (
+          selectedEndDate.isAfter(selectedStartDate, 'day') ||
+          selectedEndDate.isSame(selectedStartDate, 'day')
+        ) {
+          setEndDate(newEndDate);
+          setEndDateError('');
+        } else {
+          setEndDateError(
+            'End date must be greater than or equal to the Start Date.'
+          );
+        }
+      }
+    } else {
+      setStartDateError(
+        'Start date must be greater than or equal to the current date.'
+      );
+    }
+  };
   return (
     <>
       <div className="px-3 mt-3">
@@ -309,8 +331,21 @@ export default function ContractorProject() {
               />
             </div>
           </>
-        ) : error ? (
-          <div>{error}</div>
+        ) : projectData.length < 0 || error ? (
+          <div>
+            <Card>
+              <Card.Text>You don't have any projects at the moment.</Card.Text>
+              <Card.Text>Create new project.</Card.Text>
+              <Button
+                variant="outlined"
+                className=" m-2 d-flex globalbtnColor"
+                onClick={handleNew}
+              >
+                <BiPlusMedical className="mx-2" />
+                Add Project
+              </Button>
+            </Card >
+          </div>
         ) : (
           <>
             <div className="tabBorder mt-3">
@@ -390,18 +425,13 @@ export default function ContractorProject() {
                       }}
                     >
                       <Form onSubmit={handleSubmit}>
-                        {isNewProject ? (
-                          <h4 className="d-flex justify-content-center">
-                            Add new Project Details
-                          </h4>
-                        ) : (
-                          <h4 className="d-flex justify-content-center">
-                            Edit Project Details
-                          </h4>
-                        )}
+
+                        <h4 className="d-flex justify-content-center">
+                          Add Project
+                        </h4>
                         <TextField
                           required
-                          className="mb-2"
+                          className="mb-3"
                           value={projectName}
                           onChange={(e) => setProjectName(e.target.value)}
                           label="Project Name"
@@ -410,6 +440,7 @@ export default function ContractorProject() {
 
                         <TextField
                           required
+                          className="mb-3"
                           id="outlined-multiline-static"
                           onChange={(e) =>
                             setProjectDescription(e.target.value)
@@ -422,8 +453,8 @@ export default function ContractorProject() {
                         // value={'text'}
                         // onChange={handleChange}
                         />
-                        <FormControl fullWidth>
-                          <InputLabel>Categories</InputLabel>
+                        <FormControl fullWidth className="mb-3">
+                          <InputLabel>Select Categories</InputLabel>
                           <Select
                             required
                             multiple
@@ -452,21 +483,31 @@ export default function ContractorProject() {
                           </Select>
                         </FormControl>
 
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <LocalizationProvider dateAdapter={AdapterDayjs} className="mb-3">
                           <DateField
                             required
                             label="Start Date"
                             value={startDate}
-                            onChange={(newValue) => setStartDate(newValue)}
+                            onChange={(newValue) =>
+                              validateDates(newValue, endDate)
+                            }
                             format="MM-DD-YYYY"
                           />
+                          {startDateError && (
+                            <div style={{ color: 'red' }}>{startDateError}</div>
+                          )}
                           <DateField
                             required
                             label="End Date"
                             value={endDate}
-                            onChange={(newValue) => setEndDate(newValue)}
+                            onChange={(newValue) =>
+                              validateDates(startDate, newValue)
+                            }
                             format="MM-DD-YYYY"
                           />
+                          {endDateError && (
+                            <div style={{ color: 'red' }}>{endDateError}</div>
+                          )}
                         </LocalizationProvider>
                         <Button
                           variant="contained"
@@ -474,13 +515,10 @@ export default function ContractorProject() {
                           type="submit"
                           disabled={isSubmiting}
                         >
-                          {isNewProject
-                            ? isSubmiting
-                              ? "Adding Project..."
-                              : "Add Project"
-                            : isSubmiting
-                              ? "Saving Changes..."
-                              : "Save Changes"}
+                          {isSubmiting
+                            ? "Submitting"
+                            : "Submit"
+                          }
                         </Button>
                       </Form>
                     </Box>

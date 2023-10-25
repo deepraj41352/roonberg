@@ -98,7 +98,7 @@ function AdminEditContractor() {
         }
       );
       dispatch({ type: 'UPDATE_SUCCESS' });
-      toast.success(data.data);
+      toast.success("Contractor updated Successfully !");
       navigate('/adminContractorList');
     } catch (err) {
       toast.error(err.response?.data?.message);
@@ -132,7 +132,7 @@ function AdminEditContractor() {
                       required
                     />
                   </Form.Group>
-                  {/* <Form.Group className="mb-3" controlId="formBasicEmail">
+                  <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label className="mb-1 input-box">
                       Last Name
                     </Form.Label>
@@ -143,7 +143,7 @@ function AdminEditContractor() {
                       value={lastName}
                       required
                     />
-                  </Form.Group> */}
+                  </Form.Group>
                   <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label className="mb-1 input-box">Email</Form.Label>
                     <Form.Control
@@ -173,7 +173,7 @@ function AdminEditContractor() {
                       type="submit"
                       disabled={isSubmiting}
                     >
-                      {isSubmiting ? "Updateing" : "Update"}
+                      {isSubmiting ? "Updating" : "Update"}
                     </Button>
                   </div>
                 </Form>

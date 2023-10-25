@@ -82,13 +82,13 @@ export default function AdminAgentListScreen() {
   const theme = toggleState ? 'dark' : 'light';
   const [isModelOpen, setIsModelOpen] = useState(false);
 
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState();
   const [password, setPassword] = useState('');
   const [selectcategory, setSelectCategory] = useState();
-  console.log("name", name)
-  console.log("password", password)
+
   const [
     {
       loading,
@@ -174,9 +174,9 @@ export default function AdminAgentListScreen() {
       const response = await axios.post(
         `/api/user/add`,
         {
-          first_name: name,
+          first_name: firstName,
+          last_name: lastName,
           email: email,
-          password: password,
           role: role,
           userStatus: status,
           agentCategory: selectcategory,
@@ -185,10 +185,10 @@ export default function AdminAgentListScreen() {
       );
       console.log(response);
       if (response.status === 200) {
-        toast.success('Agent added Successfully !');
+        toast.success('Agent Created Successfully !');
         setIsModelOpen(false);
-        setName('');
-        setPassword('');
+        setFirstName('');
+        setLastName('');
         setStatus('');
         setEmail('');
         setSelectCategory('');
@@ -209,7 +209,7 @@ export default function AdminAgentListScreen() {
         });
 
         if (response.status === 200) {
-          toast.success('Agent data deleted successfully!');
+          toast.success('Agent deleted successfully!');
           dispatch({
             type: 'DELETE_SUCCESS',
             payload: true,
@@ -338,16 +338,23 @@ export default function AdminAgentListScreen() {
                   Add Agent
                 </h4>
                 <TextField
-                  className="mb-2"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  label="Username"
+                  className="mb-3"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  label="First Name"
 
                   fullWidth
                 />
-
                 <TextField
-                  className="mb-2"
+                  className="mb-3"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  label="Last Name"
+
+                  fullWidth
+                />
+                <TextField
+                  className="mb-3"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   label="Email"
@@ -355,17 +362,17 @@ export default function AdminAgentListScreen() {
                   fullWidth
                 />
                 <Validations type="email" value={email} />
-                <TextField
-                  className="mb-2"
+                {/* <TextField
+                  className="mb-3"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   label="Password"
                   type="password"
                   fullWidth
                 />
-                <Validations type="password" value={password} />
-                <FormControl >
-                  <InputLabel>Choose Status</InputLabel>
+                <Validations type="password" value={password} /> */}
+                <FormControl className="mb-3">
+                  <InputLabel>Select Status</InputLabel>
                   <Select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
@@ -374,8 +381,8 @@ export default function AdminAgentListScreen() {
                     <MenuItem value={false}>Inactive</MenuItem>
                   </Select>
                 </FormControl>
-                <FormControl >
-                  <InputLabel>Choose Category</InputLabel>
+                <FormControl className="mb-3">
+                  <InputLabel>Select Category</InputLabel>
                   <Select
                     value={selectcategory} onChange={(e) => setSelectCategory(e.target.value)} required
                   >
@@ -392,7 +399,7 @@ export default function AdminAgentListScreen() {
                   type="submit"
                   disabled={submitting}
                 >
-                  {submitting ? "Adding Agent..." : "Add Agent"}
+                  {submitting ? "Submitting" : "Submit"}
                 </Button>
               </Form>
             </Box>

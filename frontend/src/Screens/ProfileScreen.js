@@ -73,7 +73,7 @@ function ProfileScreen() {
                     <div className="d-flex gap-3">
                       <div>
                         <Form.Label className="mb-1">
-                          <img src={userInfo.profile_picture}></img>
+                          <img className="profile-icon-inner " src={userInfo.profile_picture} alt="user-image"></img>
                         </Form.Label>
                       </div>
                       <div>

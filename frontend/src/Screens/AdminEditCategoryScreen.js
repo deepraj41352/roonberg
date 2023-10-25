@@ -198,7 +198,7 @@ function AdminEditCategory() {
                       onChange={(e) => setCatogryDesc(e.target.value)}
                       type="text"
                       value={categoryDesc}
-                      required
+                      placeholder='Add Description'
                     />
                   </Form.Group>
 
@@ -215,12 +215,12 @@ function AdminEditCategory() {
                   </Form.Group>
                   <div className="d-flex justify-content-start mt-4">
                     <Button
-                      className=" py-1 w-25 globalbtnColor"
+                      className=" py-1 w-25 globalbtnColor updatingBtn"
                       variant="primary"
                       type="submit"
                       disabled={isSubmiting}
                     >
-                      {isSubmiting ? 'Updateing...' : 'Update'}
+                      {isSubmiting ? 'Updating' : 'Update'}
                     </Button>
                   </div>
                 </Form>

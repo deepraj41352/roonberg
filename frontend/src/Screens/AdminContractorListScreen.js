@@ -138,26 +138,25 @@ export default function AdminContractorListScreen() {
         {
           first_name: firstname,
           last_name: lastname,
-          last_name: lastname,
           email: email,
           password: password,
-          password: password,
           role: role,
-          userStatus: status,
           userStatus: status,
         },
         { headers: { Authorization: `Bearer ${userInfo.token}` } }
       );
-      console.log(response);
-      console.log(response);
       if (response.status === 200) {
+
         toast.success('Contractor added Successfully !');
         setIsModelOpen(false);
         dispatch({ type: 'UPDATE_SUCCESS', payload: true });
         dispatch({ type: 'FATCH_SUBMITTING', payload: false });
+        setFirstname('');
+        setLastname('');
+        setStatus('');
+        setEmail('');
       }
     } catch (error) {
-      console.log(error);
       toast.error(error.response?.data?.message);
       dispatch({ type: 'FATCH_SUBMITTING', payload: false });
     }
@@ -171,7 +170,7 @@ export default function AdminContractorListScreen() {
         });
 
         if (response.status === 200) {
-          toast.success('constractor data deleted successfully!');
+          toast.success('constractor deleted successfully!');
           dispatch({
             type: 'DELETE_SUCCESS',
             payload: true,
@@ -304,22 +303,22 @@ export default function AdminContractorListScreen() {
                   </h4>
 
                   <TextField
-                    className="mb-2"
+                    className="mb-3"
                     value={firstname}
                     onChange={(e) => setFirstname(e.target.value)}
-                    label="Name"
+                    label="First Name"
                     fullWidth
                   />
-                  {/* <TextField
-                    className="mb-2"
+                  <TextField
+                    className="mb-3"
                     value={lastname}
                     onChange={(e) => setLastname(e.target.value)}
-                    label="LastName"
+                    label="Last Name"
                     fullWidth
-                  /> */}
+                  />
 
                   <TextField
-                    className="mb-2"
+                    className="mb-3"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     label="Email"
@@ -327,22 +326,12 @@ export default function AdminContractorListScreen() {
                     fullWidth
                   />
                   <Validations type="email" value={email} />
-                  <TextField
-                    className="mb-2"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    label="Password"
-                    type="password"
-                    fullWidth
-                  />
-                  <Validations type="password" value={password} />
                   <FormControl className="formselect">
-                    <InputLabel>Choose Status</InputLabel>
+                    <InputLabel>Select Status</InputLabel>
                     <Select
                       value={status}
                       onChange={(e) => setStatus(e.target.value)}
                     >
-
                       <MenuItem value={true}>Active</MenuItem>
                       <MenuItem value={false}>Inactive</MenuItem>
                     </Select>
@@ -355,7 +344,7 @@ export default function AdminContractorListScreen() {
                     type="submit"
                     disabled={submitting}
                   >
-                    {submitting ? "Adding Contractor" : "Add Contractor"}
+                    {submitting ? "submitting" : "Submit"}
 
                   </Button>
                 </Form>

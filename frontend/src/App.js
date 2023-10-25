@@ -261,6 +261,7 @@ function App() {
                         </ProtectedRoute>
                       }
                     />
+
                     <Route
                       path="/adminContractorList"
                       element={
@@ -315,7 +316,7 @@ function App() {
                     {/* Contractor */}
                     <Route
                       path="/project-list-screen"
-                      element={<ContractorProjectScreen />}
+                      element={<ContractorProject />}
                     />
 
                     <Route
