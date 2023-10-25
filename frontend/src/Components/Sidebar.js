@@ -133,8 +133,19 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 Categories List
               </li>
             </Link>
-            <Link to="/adminProjectList" className="text-decoration-none">
-              <li>
+            <Link
+              to="/adminProjectList"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
+              <li
+                className={
+                  selectedItem === 'ProjectListAdmin' ? 'selected' : ''
+                }
+                onClick={() => {
+                  setSelectedItem('ProjectListAdmin');
+                }}
+              >
                 <AiOutlineProject className="me-3 fs-5" />
                 Project List
               </li>

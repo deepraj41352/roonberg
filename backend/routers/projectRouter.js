@@ -5,11 +5,9 @@ import { isAuth, isAdminOrSelf, sendEmailNotify } from '../util.js';
 import User from '../Models/userModel.js';
 import Conversation from '../Models/conversationModel.js';
 import Category from '../Models/categoryModel.js';
-import mongoose from 'mongoose';
+import CustomEmail from '../Models/customEmailModul.js';
 
 const projectRouter = express.Router();
-
-// ..................get all project........................
 
 projectRouter.get(
   '/',
@@ -126,8 +124,6 @@ projectRouter.post(
       const userRole = req.user.role;
       const contractorId = req.body.projectOwner;
       const assignedAgent = req.body.assignedAgent;
-      const categoryId = req.body.categoryId;
-
       const agentIds = assignedAgent.map((agent) => agent.agentId);
       console.log('agentIds', agentIds);
       const user = await User.findById(contractorId, 'first_name email');
@@ -141,14 +137,7 @@ projectRouter.post(
           endDate: req.body.endDate,
           projectStatus: req.body.projectStatus,
           projectOwner: contractorId,
-          $push: {
-            assignedAgent: {
-              agentId: assignedAgent,
-              agentName: agentuser.first_name,
-              categoryId: categoryId,
-              categoryName: category.categoryName,
-            },
-          },
+          assignedAgent: assignedAgent,
         });
 
         const project = await newProject.save();
@@ -159,7 +148,11 @@ projectRouter.post(
         );
         const agentEmailList = agentEmails.map((agent) => agent.email);
 
+        console.log('contractormail', user.email);
+        console.log('agentEmails', agentEmailList);
+
         const toEmails = [user.email, ...agentEmailList];
+        console.log('bothmail', toEmails);
         const options = {
           to: toEmails,
           subject: 'New Project Create✔',
@@ -201,7 +194,6 @@ projectRouter.post(
     }
   })
 );
-
 //................ admin create Project .....................
 
 // projectRouter.post(
@@ -372,32 +364,6 @@ projectRouter.post(
 //         },
 //         { new: true }
 //       );
-
-//       const options = {
-//         to: user.email,
-//         subject: 'New Project Create ✔',
-//         template: 'CREATE-PROJECT',
-//         projectName: updatedProject.projectName,
-//         projectDescription: updatedProject.projectDescription,
-//         user,
-//       };
-//       await sendEmailNotify(options);
-//       if (updatedProject.assignedAgent) {
-//         const newConversation = new Conversation({
-//           members: [user._id, updatedProject.projectOwner],
-//           projectId: projectId,
-//         });
-//         await newConversation.save();
-//       }
-//       res.status(200).json({ updatedProject, agent: user });
-//     } catch (error) {
-//       console.error('Error assigning the project:', error);
-//       res.status(500).json({ error: 'Error assigning the project' });
-//     }
-//   })
-// );
-
-// update and assign project
 
 //       const options = {
 //         to: user.email,
@@ -586,8 +552,6 @@ projectRouter.delete(
   })
 );
 
-// ..................update project contractor..............
-
 projectRouter.put(
   '/update/:id',
   isAuth,
@@ -603,6 +567,36 @@ projectRouter.put(
         message: 'Something went wrong, please try again',
         error: err,
       });
+    }
+  })
+);
+
+projectRouter.get(
+  '/getproject/:userId',
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      console.log('userid', userId);
+      const projects = await Project.find({
+        $or: [
+          { projectOwner: userId },
+          {
+            'assignedAgent.agentId': userId,
+          },
+        ],
+      });
+      if (!projects || projects.length === 0) {
+        res.status(404).json({ message: 'No projects found for this user' });
+      } else {
+        const projectIds = projects.map((project) => project._id);
+        const conversations = await Conversation.find({
+          projectId: { $in: projectIds },
+        });
+        res.json({ projects, conversations });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
     }
   })
 );

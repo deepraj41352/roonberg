@@ -6,7 +6,9 @@ import { uploadDoc } from './userRouter.js';
 import multer from 'multer';
 
 const MessageRouter = express.Router();
-//add
+const upload = multer();
+
+// code for alll media
 
 MessageRouter.post('/audio', upload.single('media'), async (req, res) => {
   try {
@@ -45,8 +47,6 @@ MessageRouter.post('/', upload.single('media'), async (req, res) => {
   }
 });
 
-//get
-
 MessageRouter.get('/:conversationId', async (req, res) => {
   try {
     const messages = await Message.find({
@@ -57,8 +57,6 @@ MessageRouter.get('/:conversationId', async (req, res) => {
     res.status(500).json(err);
   }
 });
-
-//..............delete mesage..............
 
 MessageRouter.delete('/:conversationId', async (req, res) => {
   try {
