@@ -15,14 +15,12 @@ const imapConfig = {
   tls: false, // Use TLS if required
 };
 
-
-
 const imap = new Imap(imapConfig);
 
 // Function to send an email
 function sendEmail(to, subject, message) {
   const mailOptions = {
-    from: 'deepraj41352@email.com', 
+    from: 'deepraj41352@email.com',
     to,
     subject,
     html: message,

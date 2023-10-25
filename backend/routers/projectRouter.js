@@ -14,7 +14,7 @@ projectRouter.get(
   isAuth,
   expressAsyncHandler(async (req, res) => {
     try {
-      // Check user's role and determine which projects to retrieve 
+      // Check user's role and determine which projects to retrieve
       const userRole = req.user.role; // Replace with the actual way you get the user's role
 
       if (userRole === 'admin' || userRole === 'superadmin') {
@@ -58,7 +58,7 @@ projectRouter.put(
       const contractorId = req.body.projectOwner;
       const assignedAgent = req.body.assignedAgent;
       const agentIds = assignedAgent.map((agent) => agent.agentId);
-      console.log("agentIds", agentIds);
+      console.log('agentIds', agentIds);
       const user = await User.findById(contractorId, 'first_name email');
 
       // const projectId = req.params.id;
@@ -68,7 +68,6 @@ projectRouter.put(
       // const user = await User.findById(agentId, '_id first_name email');
 
       const updateFields = {
-
         assignedAgent,
 
         projectName: req.body.projectName,
@@ -79,7 +78,7 @@ projectRouter.put(
         projectStatus: req.body.projectStatus,
         projectOwner: contractorId,
       };
-      console.log("updateFields", updateFields)
+      console.log('updateFields', updateFields);
 
       const updatedProject = await Project.findByIdAndUpdate(
         projectId,
@@ -466,7 +465,7 @@ projectRouter.post(
 projectRouter.put(
   '/assign-update/:id',
   isAuth,
-  isAdminOrSelf,
+
   expressAsyncHandler(async (req, res) => {
     try {
       if (req.user.role !== 'admin') {
@@ -577,20 +576,22 @@ projectRouter.get(
   expressAsyncHandler(async (req, res) => {
     try {
       const userId = req.params.userId;
-      console.log("userid", userId)
+      console.log('userid', userId);
       const projects = await Project.find({
         $or: [
           { projectOwner: userId },
           {
-            'assignedAgent.agentId': userId
-          }
-        ]
+            'assignedAgent.agentId': userId,
+          },
+        ],
       });
       if (!projects || projects.length === 0) {
         res.status(404).json({ message: 'No projects found for this user' });
       } else {
-        const projectIds = projects.map(project => project._id);
-        const conversations = await Conversation.find({ projectId: { $in: projectIds } });
+        const projectIds = projects.map((project) => project._id);
+        const conversations = await Conversation.find({
+          projectId: { $in: projectIds },
+        });
         res.json({ projects, conversations });
       }
     } catch (error) {
@@ -607,7 +608,7 @@ projectRouter.get(
       const user = await Project.findById(req.params.id);
       const project = await Project.findById(req.params.id);
       if (!project) {
-        console.log(project)
+        console.log(project);
         res.status(400).json({ message: 'Project not found' });
       }
       const conversions = await Conversation.find({ projectId: req.params.id });
@@ -678,7 +679,6 @@ projectRouter.get(
 //   })
 // );
 
-
 projectRouter.post(
   '/assign-project/:id',
   isAuth,
@@ -695,12 +695,12 @@ projectRouter.post(
       const updatedProject = await Project.findByIdAndUpdate(
         projectId,
         {
-          assignedAgent: agent
+          assignedAgent: agent,
         },
 
         { new: true }
       );
-      console.log(updatedProject)
+      console.log(updatedProject);
       const agentEmails = await User.find({ _id: { $in: agentIds } }, 'email');
       const agentEmailList = agentEmails.map((agent) => agent.email);
       const options = {
@@ -718,11 +718,10 @@ projectRouter.post(
           projectId: projectId,
         });
         await newConversation.save();
-        console.log(newConversation)
+        console.log(newConversation);
       }
 
       res.status(200).json({ updatedProject, agent: agentIds });
-
     } catch (error) {
       console.error('Error assigning the project:', error);
       res.status(500).json({ error: 'Error assigning the project' });

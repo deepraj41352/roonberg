@@ -17,9 +17,9 @@ const reducer = (state, action) => {
   switch (action.type) {
     case 'FATCH_REQUEST':
       return { ...state, loading: true };
-    case "FATCH_SUCCESS":
+    case 'FATCH_SUCCESS':
       return { ...state, ContractorData: action.payload, loading: false };
-    case "FATCH_ERROR":
+    case 'FATCH_ERROR':
       return { ...state, error: action.payload, loading: false };
     case 'UPDATE_SUCCESS':
       return { ...state, successUpdate: action.payload };
@@ -51,7 +51,7 @@ function AdminEditContractor() {
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
-    error: "",
+    error: '',
     ContractorData: {},
     successDelete: false,
     successUpdate: false,
@@ -70,7 +70,7 @@ function AdminEditContractor() {
         setLastName(datas.last_name);
         setEmail(datas.email);
         setStatus(datas.userStatus);
-        dispatch({ type: "FATCH_SUCCESS", payload: datas })
+        dispatch({ type: 'FATCH_SUCCESS', payload: datas });
       } catch (error) {
         toast.error(error.response?.data?.message);
       }
@@ -98,7 +98,7 @@ function AdminEditContractor() {
         }
       );
       dispatch({ type: 'UPDATE_SUCCESS' });
-      toast.success("Contractor updated Successfully !");
+      toast.success('Contractor updated Successfully !');
       navigate('/adminContractorList');
     } catch (err) {
       toast.error(err.response?.data?.message);
@@ -173,7 +173,7 @@ function AdminEditContractor() {
                       type="submit"
                       disabled={isSubmiting}
                     >
-                      {isSubmiting ? "Updating" : "Update"}
+                      {isSubmiting ? 'Updating' : 'Update'}
                     </Button>
                   </div>
                 </Form>

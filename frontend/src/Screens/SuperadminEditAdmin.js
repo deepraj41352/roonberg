@@ -116,7 +116,7 @@ function SuperadminEditAdmin() {
         <div className="ProfileScreen-inner px-4 py-3 w-100">
           <Row className="mb-3">
             <Col>
-              <h4>Update Contractor</h4>
+              <h4>Update Admin</h4>
             </Col>
           </Row>
           <Row>

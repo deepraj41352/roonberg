@@ -8,19 +8,19 @@ import {
   InputLabel,
   MenuItem,
   Select,
-} from "@mui/material";
-import Modal from "@mui/material/Modal";
-import TextField from "@mui/material/TextField";
-import { Form, Toast } from "react-bootstrap";
-import { BiPlusMedical } from "react-icons/bi";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { Store } from "../Store";
-import { ImCross } from "react-icons/im";
+} from '@mui/material';
+import Modal from '@mui/material/Modal';
+import TextField from '@mui/material/TextField';
+import { Form, Toast } from 'react-bootstrap';
+import { BiPlusMedical } from 'react-icons/bi';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { Store } from '../Store';
+import { ImCross } from 'react-icons/im';
 import { ThreeDots } from 'react-loader-spinner';
-import { useNavigate } from "react-router-dom";
-import { useContext, useEffect, useReducer, useState } from "react";
-import Validations from "../Components/Validations";
+import { useNavigate } from 'react-router-dom';
+import { useContext, useEffect, useReducer, useState } from 'react';
+import Validations from '../Components/Validations';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -118,7 +118,7 @@ export default function AdminAgentListScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const datas = response.data;
-        dispatch({ type: "FATCH_CATEGORY", payload: datas });
+        dispatch({ type: 'FATCH_CATEGORY', payload: datas });
       } catch (error) {
         console.log(error);
       }
@@ -131,9 +131,7 @@ export default function AdminAgentListScreen() {
   };
 
   const handleNew = () => {
-
     setIsModelOpen(true);
-
   };
 
   useEffect(() => {
@@ -143,13 +141,15 @@ export default function AdminAgentListScreen() {
         const response = await axios.post(`/api/user/`, { role: role });
         const datas = response.data;
         const rowData = datas.map((items) => {
-          const categoryName = categoryData.find((category) => category._id === items.agentCategory);
+          const categoryName = categoryData.find(
+            (category) => category._id === items.agentCategory
+          );
           return {
             ...items,
             _id: items._id,
             first_name: items.first_name,
             email: items.email,
-            userStatus: items.userStatus ? "Active" : "Inactive",
+            userStatus: items.userStatus ? 'Active' : 'Inactive',
             agentCategory: categoryName ? categoryName.categoryName : '',
           };
         });
@@ -233,14 +233,14 @@ export default function AdminAgentListScreen() {
   };
 
   const handleEdit = (userid) => {
-    navigate(`/adminEditAgent/${userid}`)
+    navigate(`/adminEditAgent/${userid}`);
   };
-  console.log("selectcategory", selectcategory)
+  console.log('selectcategory', selectcategory);
   return (
     <>
       {loading ? (
         <>
-          <div className='ThreeDot' >
+          <div className="ThreeDot">
             <ThreeDots
               height="80"
               width="80"
@@ -253,9 +253,8 @@ export default function AdminAgentListScreen() {
               visible={true}
             />
           </div>
-
         </>
-      ) : (error ? (
+      ) : error ? (
         <div>{error}</div>
       ) : (
         <>
@@ -267,15 +266,15 @@ export default function AdminAgentListScreen() {
             <BiPlusMedical className="mx-2" />
             Add Agent
           </Button>
-          <Box sx={{ height: 400, width: "100%" }}>
+          <Box sx={{ height: 400, width: '100%' }}>
             <DataGrid
               className={`tableBg mx-2 ${theme}DataGrid`}
               rows={AgentData}
               columns={[
                 ...columns,
                 {
-                  field: "action",
-                  headerName: "Action",
+                  field: 'action',
+                  headerName: 'Action',
                   width: 250,
                   renderCell: (params) => {
                     return (
@@ -284,7 +283,6 @@ export default function AdminAgentListScreen() {
                           variant="contained"
                           className="mx-2 tableEditbtn"
                           onClick={() => handleEdit(params.row._id)}
-
                         >
                           Edit
                         </Button>
@@ -292,7 +290,6 @@ export default function AdminAgentListScreen() {
                           variant="outlined"
                           className="mx-2 tableDeletebtn"
                           onClick={() => deleteHandle(params.row._id)}
-
                         >
                           Delete
                         </Button>
@@ -318,12 +315,12 @@ export default function AdminAgentListScreen() {
             <Box
               className="modelBg"
               sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
                 width: 400,
-                bgcolor: "background.paper",
+                bgcolor: 'background.paper',
                 boxShadow: 24,
                 p: 4,
               }}
@@ -342,7 +339,6 @@ export default function AdminAgentListScreen() {
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   label="First Name"
-
                   fullWidth
                 />
                 <TextField
@@ -350,7 +346,6 @@ export default function AdminAgentListScreen() {
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   label="Last Name"
-
                   fullWidth
                 />
                 <TextField
@@ -377,17 +372,21 @@ export default function AdminAgentListScreen() {
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
                   >
-                    <MenuItem value={true} >Active</MenuItem>
+                    <MenuItem value={true}>Active</MenuItem>
                     <MenuItem value={false}>Inactive</MenuItem>
                   </Select>
                 </FormControl>
                 <FormControl className="mb-3">
                   <InputLabel>Select Category</InputLabel>
                   <Select
-                    value={selectcategory} onChange={(e) => setSelectCategory(e.target.value)} required
+                    value={selectcategory}
+                    onChange={(e) => setSelectCategory(e.target.value)}
+                    required
                   >
                     {categoryData.map((items) => (
-                      <MenuItem key={items._id} value={items._id} >{items.categoryName}</MenuItem>
+                      <MenuItem key={items._id} value={items._id}>
+                        {items.categoryName}
+                      </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -399,13 +398,13 @@ export default function AdminAgentListScreen() {
                   type="submit"
                   disabled={submitting}
                 >
-                  {submitting ? "Submitting" : "Submit"}
+                  {submitting ? 'Submitting' : 'Submit'}
                 </Button>
               </Form>
             </Box>
           </Modal>
         </>
-      ))}
+      )}
     </>
   );
 }

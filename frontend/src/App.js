@@ -15,7 +15,6 @@ import RegistrationForm from './Screens/RegistrationScreen';
 import AdminProjectListScreen from './Screens/AdminProjectListScreen';
 import AdminAgentListScreen from './Screens/AdminAgentListScreen';
 import AdminCategoriesListScreen from './Screens/AdminCategoriesListScreen';
-import AdminListScreen from './Screens/AdminListScreen';
 import AdminContractorListScreen from './Screens/AdminContractorListScreen';
 import SearchScreen from './Screens/SearchScreen';
 import ProjectSingleScreen from './Screens/ProjectSingleScreen';
@@ -55,6 +54,7 @@ import AdminAssignAgent from './Screens/AdminAssignAgentScreen';
 import AgentEditProject from './Agent/AgentEditProjectScreen';
 import ContractorProjectScreen from './Components/Contractor/contractorProjectScreen';
 import SuperadminEditAdmin from './Screens/SuperadminEditAdmin';
+import AdminListScreen from './Screens/AdminListScreen';
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
