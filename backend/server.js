@@ -12,7 +12,7 @@ import MessageRouter from './routers/MessageRoute.js';
 import cron from 'node-cron';
 import Imap from 'node-imap';
 import nodemailer from 'nodemailer';
-import EmailParser from 'email-reply-parser';
+// import EmailParser from 'email-reply-parser';
 
 dotenv.config();
 mongoose
