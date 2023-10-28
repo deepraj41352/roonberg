@@ -3,6 +3,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { Grid } from '@mui/material';
 import { AiFillDelete } from 'react-icons/ai';
 import { MdEdit } from 'react-icons/md';
+import { MdPlaylistRemove, MdPlaylistAdd } from 'react-icons/md'
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import { Form } from 'react-bootstrap';
@@ -25,9 +26,10 @@ import {
 } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { useContext, useEffect, useReducer, useState } from 'react';
-import { GrSubtractCircle, GrAddCircle } from 'react-icons/gr';
+import { GrAddCircle } from 'react-icons/gr';
+import { MdRemoveCircleOutline } from 'react-icons/md'
 import dayjs from 'dayjs';
-
+import { ImCross } from "react-icons/im";
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FATCH_REQUEST':
@@ -91,6 +93,7 @@ const columns = [
 
 export default function AdminProjectListScreen() {
   const [isModelOpen, setIsModelOpen] = useState(false);
+  const [morefieldsModel, setMorefieldsModel] = useState(false);
   const [isNewProject, setIsNewProject] = useState(false);
   const [isSubmiting, setIsSubmiting] = useState(false);
   const { state } = useContext(Store);
@@ -127,9 +130,7 @@ export default function AdminProjectListScreen() {
   const [startDateError, setStartDateError] = useState('');
   const [endDateError, setEndDateError] = useState('');
   const navigate = useNavigate();
-  const [agents, setAgents] = useState([
-    { categoryId: '', agentName: '', agentId: '' },
-  ]);
+  const [agents, setAgents] = useState([]);
   const [categories, setCategories] = useState([]);
   const [projectStatus, setProjectStatus] = useState();
 
@@ -187,7 +188,7 @@ export default function AdminProjectListScreen() {
   };
 
   const addAgent = () => {
-    setAgents([...agents, { categoryId: '', agentId: '' }]);
+    setAgents([...agents, {}]);
   };
   const removeAgent = (index) => {
     const updatedAgents = [...agents];
@@ -202,7 +203,9 @@ export default function AdminProjectListScreen() {
   const handleCloseRow = () => {
     setIsModelOpen(false);
   };
-
+  const HandelClose = () => {
+    setMorefieldsModel(false);
+  };
   const handleNew = () => {
     setIsModelOpen(true);
     setIsNewProject(true);
@@ -298,9 +301,14 @@ export default function AdminProjectListScreen() {
   const projectQuedData = projectData.filter((item) => {
     return item.projectStatus === 'qued';
   });
+  // const assignedAgent = projectData.filter((item) => {
+  //   return item.assignedAgent.length === 0;
+  // });
   const assignedAgent = projectData.filter((item) => {
-    return item.assignedAgent.length === 0;
+    return item.assignedAgent.every((agent) => !agent?.agentId);
   });
+  console.log('assignedAgent', assignedAgent);
+
 
 
   const handleSubmit = async (e) => {
@@ -413,6 +421,10 @@ export default function AdminProjectListScreen() {
     }
   };
 
+  const moreFieldsopen = () => {
+    setMorefieldsModel(true)
+  }
+
   return (
     <>
       <div className="px-3 mt-3">
@@ -520,6 +532,11 @@ export default function AdminProjectListScreen() {
                     }}
                   >
                     <Form className='scrollInAdminproject' onSubmit={handleSubmit}>
+                      <ImCross
+                        color="black"
+                        className="formcrossbtn"
+                        onClick={handleCloseRow}
+                      />
                       <h4 className="d-flex justify-content-center">
                         Add Project
                       </h4>
@@ -553,7 +570,43 @@ export default function AdminProjectListScreen() {
                           ))}
                         </Select>
                       </FormControl>
-                      {agents.map((agent, index) => (
+                      {/* Remove the existing mapping */}
+                      {/* <div>
+                        <FormControl className="mb-3">
+                          <InputLabel>Select Category</InputLabel>
+                          <Select
+                            value={agents[0].categoryId}
+                            onChange={(e) => handleAgentChange(0, 'categoryId', e.target.value)}
+                          >
+                            <MenuItem disabled={agents[0].categoryId !== ''}>Select Category</MenuItem>
+                            {categoryData.map((category) => (
+                              <MenuItem key={category._id} value={category._id}
+                                disabled={agents.some((a) => a.categoryId === category._id)}
+                              >
+                                {category.categoryName}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                        <FormControl className="mb-3">
+                          <InputLabel>Select Agent</InputLabel>
+                          <Select
+                            value={agents[0].agentId}
+                            onChange={(e) => handleAgentChange(0, 'agentId', e.target.value)}
+                          >
+                            <MenuItem disabled={agents[0].agentId !== ''}>Select Agent</MenuItem>
+                            {assignedAgentByCateHandle(0).map((agent) => 
+                              <MenuItem key={agent._id} value={agent._id}
+                                disabled={agents.some((a) => a.agentId === agent._id)}
+                              >
+                                {agent.first_name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </div> */}
+
+                      {/* {agents.map((agent, index) => (
                         <div key={index}>
                           <FormControl className="mb-3">
                             <InputLabel>Select Category</InputLabel>
@@ -588,19 +641,19 @@ export default function AdminProjectListScreen() {
                               ))}
                             </Select>
                           </FormControl>
-                          <div className='d-flex align-items-center'>
-                            <GrSubtractCircle color="black" className='mx-2' onClick={() => removeAgent(index)} />
-                            <p className='text-dark m-0'>Remove</p>
-                          </div>
                         </div>
-                      ))}
+                      ))} */}
+                      <div className='d-flex align-items-center mb-3'>
+                        <div className='d-flex align-items-center' onClick={moreFieldsopen}>
+                          <MdPlaylistAdd color="black" className='mx-2 ' />
+                          Add Category/Agent
+                        </div>
+                        <div className='d-flex align-items-center'>
+                          <MdPlaylistRemove color="black" className='mx-2' onClick={moreFieldsopen} />
+                          <p className='text-dark m-0 '>Remove</p>
+                        </div>
 
-                      <div className='d-flex align-items-center'>
 
-                        <Button className='mb-3 bg-primary' onClick={addAgent}>
-                          <GrAddCircle color="white" className='mx-2' />
-                          Add Category and Agent
-                        </Button>
                       </div>
                       <FormControl className="mb-3" >
                         <InputLabel>Select Status</InputLabel>
@@ -641,6 +694,84 @@ export default function AdminProjectListScreen() {
                         disabled={isSubmiting}
                       >
                         {isSubmiting ? "Submitting" : "Submit"}
+                      </Button>
+                    </Form>
+                  </Box>
+                </Modal>
+                <Modal open={morefieldsModel} onClose={HandelClose}>
+                  <Box
+                    className="modelBg"
+                    sx={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      width: 400,
+                      bgcolor: 'background.paper',
+                      boxShadow: 24,
+                      p: 4,
+                    }}
+                  >
+                    <Form className='scrollInAdminproject' onSubmit={handleSubmit}>
+                      <ImCross
+                        color="black"
+                        className="formcrossbtn"
+                        onClick={HandelClose}
+                      />
+                      <h4 className="d-flex justify-content-center">
+                        Assign
+                      </h4>
+                      {agents.map((agent, index) => (
+                        <div className='moreFieldsDiv d-flex align-items-center gap-2' key={index}>
+                          <FormControl className="mb-3">
+                            <InputLabel>Category</InputLabel>
+                            <Select
+                              value={agent.categoryId}
+                              onChange={(e) => handleAgentChange(index, 'categoryId', e.target.value)}
+                            >
+                              <MenuItem disabled={agent.categoryId !== ''}>Category</MenuItem>
+                              {categoryData.map((category) => (
+                                <MenuItem key={category._id} value={category._id}
+                                  disabled={agents.some((a) => a.categoryId === category._id)}
+                                >
+                                  {category.categoryName}
+
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                          <FormControl className="mb-3">
+                            <InputLabel>Agent</InputLabel>
+                            <Select
+                              value={agent.agentId}
+                              onChange={(e) => handleAgentChange(index, 'agentId', e.target.value)}
+                            >
+                              <MenuItem disabled={agent.agentId !== ''}>Agent</MenuItem>
+                              {assignedAgentByCateHandle(index).map((agent) => (
+                                <MenuItem key={agent._id} value={agent._id}
+                                  disabled={agents.some((a) => a.agentId === agent._id)}
+                                >
+                                  {agent.first_name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                          <div className=''>
+                            <MdRemoveCircleOutline color="black" className='mx-2' onClick={() => removeAgent(index)} />
+                          </div>
+                        </div>
+                      ))}
+
+                      <div className='d-flex align-items-center'>
+
+                        <div className='mb-3' onClick={addAgent}>
+                          <MdPlaylistAdd color="black" className='mx-2' />
+                          Add Category and Agent
+                        </div>
+                      </div>
+                      <Button variant="contained" color="primary" type="submit" onClick={HandelClose}
+                      >
+                        Save
                       </Button>
                     </Form>
                   </Box>
@@ -878,3 +1009,20 @@ export default function AdminProjectListScreen() {
     </>
   );
 }
+
+
+// const [agents, setAgents] = useState([
+//   { categoryId: '', agentName: '', agentId: '' },
+// ]);
+
+// // Function to add a new category and agent to the agents array
+// const addCategoryAndAgent = () => {
+//   // You can replace the default values ('' and '') with the values you want to add.
+//   const newCategoryAndAgent = { categoryId: 'YourCategoryId', agentName: 'YourAgentName', agentId: 'YourAgentId' };
+
+//   // Use the spread operator to create a new array with the new category and agent added.
+//   setAgents([...agents, newCategoryAndAgent]);
+// };
+
+// // Call this function to add a new category and agent to the agents array
+// addCategoryAndAgent();

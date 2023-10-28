@@ -1,16 +1,14 @@
 import axios from 'axios';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useReducer, useState } from 'react';
 import Card from 'react-bootstrap/Card';
 import { Store } from '../Store';
-import { Button, Form, FormControl } from 'react-bootstrap';
-import MultiSelect from 'react-multiple-select-dropdown-lite';
+import { Button, Form } from 'react-bootstrap';
 import 'react-multiple-select-dropdown-lite/dist/index.css';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { InputLabel, MenuItem, Select } from '@mui/material';
-import { GrSubtractCircle, GrAddCircle } from 'react-icons/gr';
 import { AiFillDelete } from 'react-icons/ai';
 import { MdPlaylistAdd } from 'react-icons/md';
+
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FATCH_REQUEST':
@@ -33,6 +31,10 @@ const reducer = (state, action) => {
       return { ...state, contractorData: action.payload };
     case "FATCH_SUBMITTING":
       return { ...state, submitting: action.payload };
+    case "REMOVE_SUBMITTING":
+      return { ...state, agentCateRemoving: action.payload };
+    case 'REMOVE_SUCCESS':
+      return { ...state, successRemove: action.payload };
     default:
       return state;
   }
@@ -40,17 +42,16 @@ const reducer = (state, action) => {
 
 function AdminEditProject() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
-  const [selectedOptions, setSelectedOptions] = useState([]);
-  const [createdDate, setCreatedDate] = useState();
-  const [endDate, setEndDate] = useState();
   const theme = toggleState ? 'dark' : 'light';
+  const navigate = useNavigate();
   const [
-    { loading, error, projectData, categoryData, successUpdate, agentData, contractorData, submitting },
+    { loading, error, projectData, categoryData, successUpdate,
+      agentData, contractorData, submitting, successRemove,
+      agentCateRemoving },
     dispatch,
-  ] = React.useReducer(reducer, {
+  ] = useReducer(reducer, {
     loading: true,
     error: '',
     projectData: {},
@@ -58,16 +59,20 @@ function AdminEditProject() {
     successUpdate: false,
     agentData: [],
     contractorData: [],
-    submitting: false
+    submitting: false,
+    successRemove: false,
+    agentCateRemoving: false
   });
+  const [agentCateRemovingIndex, setAgentCateRemovingIndex] = useState(null);
   const [conversations, setConversation] = useState([]);
-  const [agentCategoryPair, setAgentCategoryPair] = useState([]);
-  const [agents, setAgents] = useState([{ categoryId: '', agentName: '', agentId: '' }]);
-  const [isSubmiting, setIsSubmiting] = useState(false);
+  const [agents, setAgents] = useState([]);
   const [categories, setCategories] = useState(projectData.projectCategory);
-  const [projectStatus, setProjectStatus] = useState(projectData.projectStatus);
-  const [projectOwner, setProjectOwner] = useState(projectData.projectOwner);
+  const [projectStatus, setProjectStatus] = useState(null);
+  const [projectOwner, setProjectOwner] = useState(null);
+  const [createdDate, setCreatedDate] = useState();
+  const [endDate, setEndDate] = useState();
 
+  // get conversation
   useEffect(() => {
     const getConversations = async () => {
       try {
@@ -77,9 +82,19 @@ function AdminEditProject() {
         console.log(err);
       }
     };
-    getConversations();
-  }, []);
+    if (successUpdate) {
+      dispatch({ typr: "UPDATE_SUCCESS" })
+    }
+    else if (successRemove) {
+      dispatch({ type: "REMOVE_SUCCESS" })
+    }
+    else {
+      getConversations();
+    }
 
+  }, [successUpdate, successRemove]);
+
+  // get project
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
@@ -108,11 +123,98 @@ function AdminEditProject() {
 
       }
     };
+    if (successUpdate) {
+      dispatch({ typr: "UPDATE_SUCCESS" })
+    }
+    else if (successRemove) {
+      dispatch({ type: "REMOVE_SUCCESS" })
+    }
+    else {
+      fetchProjectData();
+    }
 
-    fetchProjectData();
+  }, [successUpdate, successRemove, contractorData]);
+
+  // get category
+  useEffect(() => {
+    const fetchCategoryData = async () => {
+      try {
+        dispatch('FETCH_REQUEST');
+        const response = await axios.get(`/api/category`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        const category = response.data;
+        dispatch({ type: 'SUCCESS_CATEGORY', payload: category });
+      } catch (error) {
+        console.error('Error fetching category data:', error);
+      }
+    };
+
+    fetchCategoryData();
   }, []);
 
-  const handleAgentChange = (index, key, value) => {
+  // get contractor
+  useEffect(() => {
+
+    const FatchContractorData = async () => {
+      try {
+        const response = await axios.post(`/api/user/`, { role: "contractor" });
+        const datas = response.data;
+        dispatch({ type: "FATCH_CONTRACTOR", payload: datas })
+
+      } catch (error) {
+      }
+    }
+    FatchContractorData();
+
+  }, [])
+
+  // get agent
+  useEffect(() => {
+
+    const FatchAgentData = async () => {
+      try {
+        const response = await axios.post(`/api/user/`, { role: "agent" });
+        const datas = response.data;
+        dispatch({ type: "FATCH_AGENTS", payload: datas })
+
+      } catch (error) {
+      }
+    }
+    FatchAgentData();
+
+  }, [])
+
+  const selectAgentByCateHandle = (index) => {
+    const category = agents[index].categoryId;
+    if (Array.isArray(categoryData)) {
+      if (category) {
+        const selectedCategory1 = categoryData.find(categoryItem => categoryItem._id === category);
+        if (selectedCategory1) {
+          const agentForCategory = agentData.filter(agentItem => agentItem.agentCategory === selectedCategory1._id);
+          if (agentForCategory) {
+            return agentForCategory
+          }
+        }
+      }
+    }
+    return [];
+  }
+
+  const addDynamicFields = () => {
+    setAgents([...agents, {}]);
+  };
+
+  // const removeDynamicFields = (index) => {
+  //   if (window.confirm("Are you sure to delete?")) {
+  //     const updatedAgents = [...agents];
+  //     updatedAgents.splice(index, 1);
+  //     setAgents(updatedAgents);
+  //   }
+  // };
+
+
+  const selectedCateAgent = (index, key, value) => {
     console.log("Value received:", value);
     const updatedAgents = [...agents];
     updatedAgents[index] = {
@@ -152,96 +254,6 @@ function AdminEditProject() {
     setAgents(updatedAgents);
   };
 
-  const addAgent = () => {
-    setAgents([...agents, { categoryId: '', agentId: '' }]);
-  };
-  const removeAgent = (index) => {
-    if (window.confirm("Are you sure to delete?")) {
-      const updatedAgents = [...agents];
-      updatedAgents.splice(index, 1);
-      setAgents(updatedAgents);
-    }
-  };
-  const assignedAgentByCateHandle = (index) => {
-    const category = agents[index].categoryId;
-    if (Array.isArray(categoryData)) {
-      if (category) {
-        const selectedCategory1 = categoryData.find(categoryItem => categoryItem._id === category);
-        if (selectedCategory1) {
-          const agentForCategory = agentData.find(agentItem => agentItem.agentCategory === selectedCategory1._id);
-          if (agentForCategory) {
-            return [agentForCategory]
-          }
-        }
-      }
-    }
-    return [];
-  }
-
-  useEffect(() => {
-    const fetchCategoryData = async () => {
-      try {
-        dispatch('FETCH_REQUEST');
-        const response = await axios.get(`/api/category`, {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        });
-        const category = response.data;
-        dispatch({ type: 'SUCCESS_CATEGORY', payload: category });
-      } catch (error) {
-        console.error('Error fetching category data:', error);
-      }
-    };
-
-    fetchCategoryData();
-  }, []);
-
-  console.log('selectedOptions', selectedOptions);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("categoryid", categories)
-    dispatch({ type: "FATCH_SUBMITTING", payload: true })
-    try {
-      console.log("categoryid", categories)
-      const updatedData = {
-        projectName: projectData.projectName,
-        projectDescription: projectData.projectDescription,
-        projectCategory: categories || projectData.projectCategory,// Assign the constructed projectCategory array here
-        createdDate: createdDate,
-        endDate: endDate,
-        assignedAgent: agents,
-        projectStatus: projectStatus || projectData.projectStatus,
-        projectOwner: projectOwner || projectData.projectOwner,
-      };
-
-      const response = await axios.put(
-        `/api/project/assign-update/${id}`,
-        updatedData,
-        {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        }
-      );
-
-      if (response.status === 200) {
-        toast.success('Project updated Successfully !');
-        navigate('/adminProjectList')
-        dispatch({ type: "FATCH_SUBMITTING", payload: false })
-        console.log(response);
-      }
-    } catch (error) {
-      console.error('API Error:', error);
-    }
-  };
-
-  const options =
-    categoryData && Array.isArray(categoryData)
-      ? categoryData.map((item) => ({
-        label: item.categoryName,
-        value: item._id,
-      }))
-      : [];
-  // console.log(projectData);
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     dispatch({
@@ -253,43 +265,66 @@ function AdminEditProject() {
     });
   };
 
-  const handleCategoryChange = (selected) => {
-    setSelectedOptions(selected);
+  const handleRemoveAgentCategory = async (agentIndex) => {
+    setAgentCateRemovingIndex(agentIndex)
+    if (window.confirm('are you sure to delete ?'))
+      dispatch({ type: "REMOVE_SUBMITTING", payload: true })
+    try {
+      const response = await axios.put(
+        `/api/project/remove-agentCategoryPair/${id}`,
+        { agentIndex },
+        {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+      if (response.status === 200) {
+        toast.success("Agent and Category Remove Successfully !");
+        dispatch({ type: "REMOVE_SUCCESS", payload: true });
+        dispatch({ type: "REMOVE_SUBMITTING", payload: false })
+      }
+    } catch (error) {
+      console.error('API Error:', error);
+      dispatch({ type: "REMOVE_SUBMITTING", payload: false })
+    }
+
+  };
+  const handleSubmit = async (e) => {
+
+    e.preventDefault();
+    console.log("categoryid", categories)
+    dispatch({ type: "FATCH_SUBMITTING", payload: true })
+    try {
+      console.log("categoryid", categories)
+      const response = await axios.put(
+        `/api/project/assign-update/${id}`,
+        {
+          projectName: projectData.projectName,
+          projectDescription: projectData.projectDescription,
+
+          createdDate: createdDate,
+          endDate: endDate,
+          assignedAgent: agents,
+          projectStatus: projectStatus || projectData.projectStatus,
+          projectOwner: projectOwner || projectData.projectOwner,
+        },
+        {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success('Project updated Successfully !');
+        // navigate('/adminProjectList')
+        dispatch({ type: 'UPDATE_SUCCESS', payload: true });
+        dispatch({ type: "FATCH_SUBMITTING", payload: false })
+
+      }
+    } catch (error) {
+      console.error('API Error:', error);
+      dispatch({ type: "FATCH_SUBMITTING", payload: false })
+    }
   };
 
-  useEffect(() => {
-
-    const FatchContractorData = async () => {
-      try {
-        const response = await axios.post(`/api/user/`, { role: "contractor" });
-        const datas = response.data;
-        dispatch({ type: "FATCH_CONTRACTOR", payload: datas })
-
-      } catch (error) {
-      }
-    }
-    FatchContractorData();
-
-  }, [])
-
-  useEffect(() => {
-
-    const FatchAgentData = async () => {
-      try {
-        const response = await axios.post(`/api/user/`, { role: "agent" });
-        const datas = response.data;
-        dispatch({ type: "FATCH_AGENTS", payload: datas })
-
-      } catch (error) {
-      }
-    }
-    FatchAgentData();
-
-  }, [])
-
-
-
-  console.log('selectbyg', agents)
   return (
     <div>
       {loading ? (
@@ -331,19 +366,18 @@ function AdminEditProject() {
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="formBasicPassword">
                     <Form.Label className="mb-1">Contractor</Form.Label>
-                    {console.log('projectOwner', projectOwner)}
-                    <Form.Select value={projectData && projectData.projectOwner} onChange={(e) => setProjectOwner(e.target.value)}>
+
+                    <Form.Select value={projectOwner || projectData.projectOwner} onChange={(e) => setProjectOwner(e.target.value)}>
                       <option value="">SELECT CONTRACTOR</option>
                       {contractorData.map((items) => (
                         <option key={items._id} value={items._id} >{items.first_name}</option>
 
                       ))}
-
                     </Form.Select>
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="formBasicPassword">
                     <Form.Label className="mb-1">Project Status</Form.Label>
-                    <Form.Select value={projectStatus} onChange={(e) => setProjectStatus(e.target.value)}>
+                    <Form.Select value={projectStatus || projectData.projectStatus} onChange={(e) => setProjectStatus(e.target.value)}>
                       <option value="active">Active </option>
                       <option value="inactive">Inactive </option>
                       <option value="queue">In Proccess </option>
@@ -427,22 +461,25 @@ function AdminEditProject() {
                           </>
                         ) : (
                           <>
-                            <Card className="chatboxes">
-                              <Card.Header>
-                                {categoryData && assignedAgent.categoryName}
-                              </Card.Header>
-                              <Card.Body>
-                                <Link to={`/chatWindowScreen/${conversion._id}`}>
-                                  <Button
-                                    className="chatBtn"
-                                    type="button"
-                                  // onClick={conversionHandler(conversion._id)}
-                                  >
-                                    {categoryData && assignedAgent.agentName}
-                                  </Button>
-                                </Link>
-                              </Card.Body>
-                            </Card>
+                            {categoryData && assignedAgent && assignedAgent.categoryName && (
+                              <Card className="chatboxes">
+                                <Card.Header>
+                                  {assignedAgent.categoryName}
+                                </Card.Header>
+                                <Card.Body>
+                                  <Link to={`/chatWindowScreen/${conversion._id}`}>
+                                    <Button
+                                      className="chatBtn"
+                                      type="button"
+                                    // onClick={conversionHandler(conversion._id)}
+                                    >
+                                      {assignedAgent.agentName}
+                                    </Button>
+                                  </Link>
+                                </Card.Body>
+                              </Card>
+                            )}
+
                           </>
                         )}
                       </>
@@ -453,62 +490,65 @@ function AdminEditProject() {
               <Card className={`projectScreenCard2 ${theme}CardBody`}>
                 <Card.Header className={`${theme}CardHeader`}>Assigned</Card.Header>
                 <Card.Body className="d-flex justify-content-center flex-wrap gap-3 ">
-                  {/* -------- */}
-
                   <Form className='scrollInAdminproject' onSubmit={handleSubmit}>
-                    {agents.map((agent, index) => (
-                      <div key={index} className='d-flex justify-content-between align-items-center'>
-                        <Form.Group className="mb-3 mx-2" controlId="formBasicPassword">
-                          <Form.Label className="mb-1">Category</Form.Label>
-                          <Form.Select
-                            value={agent.categoryId || categories}
-                            onChange={(e) => handleAgentChange(index, 'categoryId', e.target.value)}>
-                            <option value="">SELECT</option>
-                            {Array.isArray(categoryData) ? (
-                              categoryData.map((category) => (
-                                <option key={category._id} value={category._id}>
-                                  {category.categoryName}
+                    {Array.isArray(agents) ? (
+                      agents.map((agentCatData, index) => (
+
+                        <div key={index} className='d-flex justify-content-between align-items-center' >
+                          <Form.Group className="mb-3 mx-2" controlId="formBasicPassword">
+                            <Form.Label className="mb-1">Category</Form.Label>
+                            {console.log('agentCatData ', agentCatData)}
+                            <Form.Select
+                              value={agentCatData.categoryId}
+                              onChange={(e) => selectedCateAgent(index, 'categoryId', e.target.value)}
+                            >
+                              <option value="">SELECT</option>
+                              {Array.isArray(categoryData) ? (
+                                categoryData.map((category) => (
+                                  <option key={category._id} value={category._id}>
+                                    {category.categoryName}
+                                  </option>
+                                ))
+                              ) : (
+                                <option value="">Loading agents...</option>
+                              )}
+                            </Form.Select>
+                          </Form.Group>
+                          <Form.Group className="mb-3 mx-2" controlId="formBasicPassword">
+                            <Form.Label className="mb-1">Agent</Form.Label>
+                            <Form.Select
+                              value={agentCatData.agentId}
+                              onChange={(e) => selectedCateAgent(index, 'agentId', e.target.value)}
+                            >
+                              <option >SELECT AGENT</option>
+                              {selectAgentByCateHandle(index).map((agent) => (
+                                <option key={agent._id} value={agent._id}
+                                // disabled={agents.some((a) => a.agentId === agent._id)}
+                                >
+                                  {agent.first_name}
                                 </option>
-                              ))
-                            ) : (
-                              <option value="">Loading categories...</option>
-                            )}
-                          </Form.Select>
-                        </Form.Group>
-                        <Form.Group className="mb-3 mx-2" controlId="formBasicPassword">
-                          <Form.Label className="mb-1">Agent</Form.Label>
-                          <Form.Select value={agent.agentId}
-                            onChange={(e) => handleAgentChange(index, 'agentId', e.target.value)}>
-                            <option value="">SELECT AGENT</option>
-                            {assignedAgentByCateHandle(index).map((agent) => (
-                              <option key={agent._id} value={agent._id}
-                              // disabled={agents.some((a) => a.agentId === agent._id)}
-                              >
-                                {agent.first_name}
-                              </option>
-                            ))}
-                          </Form.Select>
-                        </Form.Group>
-                        <div className='d-flex align-items-center mx-2'>
-                          <Button className=' mt-2 ' onClick={() => removeAgent(index)} >
-                            <AiFillDelete className='mx-1' />
-                            Remove
-                          </Button>
+                              ))}
+                            </Form.Select>
+                          </Form.Group>
+                          <div className='d-flex align-items-center mx-2'>
+                            <Button className=' mt-2 ' onClick={() => handleRemoveAgentCategory(index)} disabled={agentCateRemoving && agentCateRemovingIndex == index} >
+                              <AiFillDelete className='mx-1' />
+                              {agentCateRemoving && agentCateRemovingIndex === index ? 'Removing' : 'Remove'}
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-
-
-
+                      ))
+                    )
+                      : (
+                        <option value="">Loading categories...</option>
+                      )}
                     <div className='d-flex align-items-center'>
-                      <div className='mb-2 mx-2' onClick={addAgent} >
+                      <div className='mb-2 mx-2' onClick={addDynamicFields} >
                         <MdPlaylistAdd className='mx-2 fs-3' />
                         Add Category and Agent
                       </div>
                     </div>
-
                   </Form>
-
                   {/* -------- */}
                 </Card.Body>
               </Card>
@@ -516,8 +556,9 @@ function AdminEditProject() {
 
           </div>
         </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 }
 

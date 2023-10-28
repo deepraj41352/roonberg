@@ -1,8 +1,8 @@
 import axios from 'axios';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useReducer, useState } from 'react';
 import Card from 'react-bootstrap/Card';
 import { Store } from '../Store';
-import { Button, Form, FormControl } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 import MultiSelect from 'react-multiple-select-dropdown-lite';
 import 'react-multiple-select-dropdown-lite/dist/index.css';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { InputLabel, MenuItem, Select } from '@mui/material';
 import { GrSubtractCircle, GrAddCircle } from 'react-icons/gr'
 import { AiFillDelete } from 'react-icons/ai';
+
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FATCH_REQUEST':
@@ -31,6 +32,10 @@ const reducer = (state, action) => {
 
     case "FATCH_CONTRACTOR":
       return { ...state, contractorData: action.payload };
+    case "REMOVE_SUBMITTING":
+      return { ...state, agentCateRemoving: action.payload };
+    case 'REMOVE_SUCCESS':
+      return { ...state, successRemove: action.payload };
     default:
       return state;
   }
@@ -46,16 +51,18 @@ function AdminAssignAgent() {
   const [endDate, setEndDate] = useState();
   const theme = toggleState ? 'dark' : 'light';
   const [
-    { loading, error, projectData, categoryData, successUpdate, agentData, contractorData },
+    { loading, error, projectData, categoryData, successUpdate, agentData, contractorData, agentCateRemoving, successRemove },
     dispatch,
-  ] = React.useReducer(reducer, {
+  ] = useReducer(reducer, {
     loading: true,
     error: '',
     projectData: {},
     categoryData: {},
     successUpdate: false,
     agentData: [],
-    contractorData: []
+    contractorData: [],
+    successRemove: false,
+    successUpdate: false,
   });
   const [conversations, setConversation] = useState([]);
   const [agentCategoryPair, setAgentCategoryPair] = useState([]);
@@ -64,27 +71,39 @@ function AdminAssignAgent() {
   const [categories, setCategories] = useState([]);
   const [projectStatus, setProjectStatus] = useState('');
   const [projectOwner, setProjectOwner] = useState('');
+  const [agentCateRemovingIndex, setAgentCateRemovingIndex] = useState(null);
 
   useEffect(() => {
     const getConversations = async () => {
       try {
         const res = await axios.get(`/api/conversation/${id}`);
         setConversation(res.data);
+        console.log("res.data", res.data);
       } catch (err) {
         console.log(err);
       }
     };
-    getConversations();
-  }, []);
+    if (successUpdate) {
+      dispatch({ typr: "UPDATE_SUCCESS" })
+    }
+    else if (successRemove) {
+      dispatch({ type: "REMOVE_SUCCESS" })
+    }
+    else {
+      getConversations();
+    }
+
+
+  }, [successUpdate, successRemove]);
 
   const assignedAgentByCateHandle = (index) => {
     const category = agents[index].categoryId;
     if (category) {
       const selectedCategory1 = categoryData.find(categoryItem => categoryItem._id === category);
       if (selectedCategory1) {
-        const agentForCategory = agentData.find(agentItem => agentItem.agentCategory === selectedCategory1._id);
+        const agentForCategory = agentData.filter(agentItem => agentItem.agentCategory === selectedCategory1._id);
         if (agentForCategory) {
-          return [agentForCategory]
+          return agentForCategory
         }
       }
     }
@@ -121,11 +140,14 @@ function AdminAssignAgent() {
     if (successUpdate) {
       dispatch({ type: "UPDATE_RESET" })
     }
+    else if (successRemove) {
+      dispatch({ type: "REMOVE_SUCCESS" })
+    }
     else {
       fetchProjectData();
     }
 
-  }, [successUpdate]);
+  }, [successUpdate, successRemove]);
 
   useEffect(() => {
     const fetchCategoryData = async () => {
@@ -144,7 +166,29 @@ function AdminAssignAgent() {
     fetchCategoryData();
   }, []);
 
-  console.log('selectedOptions', selectedOptions);
+  const handleRemoveAgentCategory = async (agentIndex) => {
+    setAgentCateRemovingIndex(agentIndex)
+    if (window.confirm('are you sure to delete ?'))
+      dispatch({ type: "REMOVE_SUBMITTING", payload: true })
+    try {
+      const response = await axios.put(
+        `/api/project/remove-agentCategoryPair/${id}`,
+        { agentIndex },
+        {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+      if (response.status === 200) {
+        toast.success("Agent and Category Remove Successfully !");
+        dispatch({ type: "REMOVE_SUCCESS", payload: true });
+        dispatch({ type: "REMOVE_SUBMITTING", payload: false })
+      }
+    } catch (error) {
+      console.error('API Error:', error);
+      dispatch({ type: "REMOVE_SUBMITTING", payload: false })
+    }
+
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -374,27 +418,76 @@ function AdminAssignAgent() {
               <Card className={`projectScreenCard2 ${theme}CardBody`}>
                 <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
                 <Card.Body className="d-flex flex-wrap gap-3 ">
-                  {/* -------- */}
-                  {conversations.map((conversion) => {
+                  <div
+                    className="text-center w-100"
+                    style={{
+                      display:
+                        projectData &&
+                          projectData.conversions &&
+                          projectData.conversions.length < 1
+                          ? 'block'
+                          : 'none',
+                    }}
+                  >
+                    No Chat Available
+                  </div>
+
+                  {projectData?.conversions?.map((conversion) => {
+                    const assignedAgent = projectData.assignedAgent.find(
+                      (assignedAgent) =>
+                        assignedAgent.agentId === conversion.members[0]
+                    );
                     return (
-                      <Card className="chatboxes">
-                        <Card.Header>Chat</Card.Header>
-                        <Card.Body>
-                          <Link to={`/chatWindowScreen/${conversion._id}`}>
-                            <Button
-                              className="chatBtn"
-                              type="button"
-                            // onClick={conversionHandler(conversion._id)}
-                            >
-                              {conversion._id}
-                            </Button>
-                          </Link>
-                        </Card.Body>
-                      </Card>
+                      <>
+                        {userInfo.role == 'agent' ? (
+                          <>
+                            {conversion.members.includes(userInfo._id) && (
+                              <>
+                                <Card className="chatboxes">
+                                  {/* <Card.Header>{assignedAgent.categoryId}</Card.Header> */}
+                                  <Card.Body>
+                                    <Link
+                                      to={`/chatWindowScreen/${conversion._id}`}
+                                    >
+                                      <Button
+                                        className="chatBtn"
+                                        type="button"
+                                      // onClick={conversionHandler(conversion._id)}
+                                      >
+                                        Chat Now
+                                      </Button>
+                                    </Link>
+                                  </Card.Body>
+                                </Card>
+                              </>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            {categoryData && assignedAgent && assignedAgent.categoryName && (
+                              <Card className="chatboxes">
+                                <Card.Header>
+                                  {assignedAgent.categoryName}
+                                </Card.Header>
+                                <Card.Body>
+                                  <Link to={`/chatWindowScreen/${conversion._id}`}>
+                                    <Button
+                                      className="chatBtn"
+                                      type="button"
+                                    // onClick={conversionHandler(conversion._id)}
+                                    >
+                                      {assignedAgent.agentName}
+                                    </Button>
+                                  </Link>
+                                </Card.Body>
+                              </Card>
+                            )}
+
+                          </>
+                        )}
+                      </>
                     );
                   })}
-
-                  {/* -------- */}
                 </Card.Body>
               </Card>
               <Card className={`projectScreenCard2 ${theme}CardBody`}>
@@ -408,9 +501,9 @@ function AdminAssignAgent() {
                         <Form.Group className="mb-3 mx-2" controlId="formBasicPassword">
                           <Form.Label className="mb-1">Category</Form.Label>
                           <Form.Select
-                            value={agent.categoryId || selectedOptions}
+                            value={agent.categoryId}
                             onChange={(e) => handleAgentChange(index, 'categoryId', e.target.value)}>
-
+                            <option value="">SELECT</option>
                             {categoryData.map((category) => (
                               <option key={category._id} value={category._id}
                               >
@@ -433,10 +526,10 @@ function AdminAssignAgent() {
                             ))}
                           </Form.Select>
                         </Form.Group>
-                        <div className='d-flex align-items-center'>
-                          <Button className=' mt-2 bg-primary' onClick={() => removeAgent(index)} >
-                            <AiFillDelete className='mx-2' />
-                            Remove
+                        <div className='d-flex align-items-center mx-2'>
+                          <Button className=' mt-2 ' onClick={() => handleRemoveAgentCategory(index)} disabled={agentCateRemoving && agentCateRemovingIndex == index} >
+                            <AiFillDelete className='mx-1' />
+                            {agentCateRemoving && agentCateRemovingIndex === index ? 'Removing' : 'Remove'}
                           </Button>
                         </div>
                       </div>

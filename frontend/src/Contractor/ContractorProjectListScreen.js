@@ -169,54 +169,31 @@ export default function ContractorProject() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmiting(true);
-    if (isNewProject) {
-      const response = await axios.post(
-        "/api/project/",
-        {
-          projectName: projectName,
-          projectDescription: projectDescription,
-          projectCategory: selectedOptions,
-          createdDate: startDate,
-          endDate: endDate,
-        },
-        {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        }
-      );
-      if (response.status === 201) {
-        toast.success(response.data.message);
-        const datas = response.data;
-        setIsModelOpen(false);
-        setIsSubmiting(false);
 
-        // dispatch({ type: 'FATCH_SUCCESS', payload: datas });
-        dispatch({ type: "UPDATE_SUCCESS", payload: true });
-      } else if (response.status === 500) {
-        toast.error(response.data.error);
-        setIsSubmiting(false);
+    const response = await axios.post(
+      "/api/project/",
+      {
+        projectName: projectName,
+        projectDescription: projectDescription,
+        projectCategory: selectedOptions,
+        createdDate: startDate,
+        endDate: endDate,
+      },
+      {
+        headers: { Authorization: `Bearer ${userInfo.token}` },
       }
-    } else {
-      const response = await axios.put(
-        `/api/project/update/${selectedRowData._id}`,
-        {
-          projectName: projectName,
-          projectDescription: projectDescription,
-        },
-        {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        }
-      );
+    );
+    if (response.status === 201) {
+      toast.success(response.data.message);
+      const datas = response.data;
+      setIsModelOpen(false);
+      setIsSubmiting(false);
 
-      if (response.status === 200) {
-        toast.success(response.data);
-        setIsModelOpen(false);
-        setIsSubmiting(false);
-
-        dispatch({ type: "UPDATE_SUCCESS", payload: true });
-      } else if (response.status === 500) {
-        toast.error(response.message);
-        setIsSubmiting(false);
-      }
+      // dispatch({ type: 'FATCH_SUCCESS', payload: datas });
+      dispatch({ type: "UPDATE_SUCCESS", payload: true });
+    } else if (response.status === 500) {
+      toast.error(response.data.error);
+      setIsSubmiting(false);
     }
   };
 
