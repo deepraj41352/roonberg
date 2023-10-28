@@ -418,7 +418,6 @@ projectRouter.post(
         {
           assignedAgent: agent
         },
-
         { new: true }
       );
       console.log(updatedProject)

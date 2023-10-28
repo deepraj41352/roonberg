@@ -595,4 +595,21 @@ userRouter.get(
     }
   })
 );
+
+// get User Role
+userRouter.get(
+  '/role/:userId',
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const user = await User.findById(req.params.userId).select('role');
+      if (!user) {
+        res.status(400).json({ message: 'user not found' });
+      }
+      res.json(user);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  })
+);
 export default userRouter;
