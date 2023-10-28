@@ -8,20 +8,19 @@ import {
   InputLabel,
   MenuItem,
   Select,
-} from '@mui/material';
-import { AiFillDelete } from 'react-icons/ai';
-import { MdEdit } from 'react-icons/md';
-import Modal from '@mui/material/Modal';
-import TextField from '@mui/material/TextField';
-import { Form, Toast } from 'react-bootstrap';
-import { BiPlusMedical } from 'react-icons/bi';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import { Store } from '../Store';
-import { ImCross } from 'react-icons/im';
+} from "@mui/material";
+import Modal from "@mui/material/Modal";
+import TextField from "@mui/material/TextField";
+import { Form, Toast } from "react-bootstrap";
+import { BiPlusMedical } from "react-icons/bi";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { Store } from "../Store";
+import { ImCross } from "react-icons/im";
 import { ThreeDots } from 'react-loader-spinner';
-import { useNavigate } from 'react-router-dom';
-import { useContext, useEffect, useReducer, useState } from 'react';
+import { useNavigate } from "react-router-dom";
+import { useContext, useEffect, useReducer, useState } from "react";
+import Validations from "../Components/Validations";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -82,13 +81,14 @@ export default function AdminAgentListScreen() {
   const role = 'agent';
   const theme = toggleState ? 'dark' : 'light';
   const [isModelOpen, setIsModelOpen] = useState(false);
-  const [selectedRowData, setSelectedRowData] = useState(null);
-  const [isNewAgent, setIsNewAgent] = useState(false);
-  const [name, setName] = useState('');
+
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState();
   const [password, setPassword] = useState('');
-  const [selectcategory, setSelectCategory] = useState('');
+  const [selectcategory, setSelectCategory] = useState();
+
   const [
     {
       loading,
@@ -118,8 +118,7 @@ export default function AdminAgentListScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const datas = response.data;
-        setSelectCategory(datas);
-        dispatch({ type: 'FATCH_CATEGORY', payload: datas });
+        dispatch({ type: "FATCH_CATEGORY", payload: datas });
       } catch (error) {
         console.log(error);
       }
@@ -132,21 +131,9 @@ export default function AdminAgentListScreen() {
   };
 
   const handleNew = () => {
-    setSelectedRowData(null);
-    setIsModelOpen(true);
-    setIsNewAgent(true);
-  };
 
-  const handleEdit = (userid) => {
-    const agentToEdit = AgentData.find(
-      (agent) => agent && agent._id === userid
-    );
-    setName(agentToEdit ? agentToEdit.first_name : '');
-    setEmail(agentToEdit ? agentToEdit.email : '');
-    setStatus(agentToEdit ? agentToEdit.status : 'active');
-    setSelectedRowData(agentToEdit);
     setIsModelOpen(true);
-    setIsNewAgent(false);
+
   };
 
   useEffect(() => {
@@ -156,13 +143,14 @@ export default function AdminAgentListScreen() {
         const response = await axios.post(`/api/user/`, { role: role });
         const datas = response.data;
         const rowData = datas.map((items) => {
+          const categoryName = categoryData.find((category) => category._id === items.agentCategory);
           return {
             ...items,
             _id: items._id,
             first_name: items.first_name,
             email: items.email,
-            userStatus: items.userStatus ? 'Active' : 'Inactive',
-            agentCategory: items.agentCategory,
+            userStatus: items.userStatus ? "Active" : "Inactive",
+            agentCategory: categoryName ? categoryName.categoryName : '',
           };
         });
         dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
@@ -177,7 +165,7 @@ export default function AdminAgentListScreen() {
     } else {
       FatchAgentData();
     }
-  }, [successDelete, successUpdate]);
+  }, [successDelete, successUpdate, categoryData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -186,9 +174,9 @@ export default function AdminAgentListScreen() {
       const response = await axios.post(
         `/api/user/add`,
         {
-          first_name: name,
+          first_name: firstName,
+          last_name: lastName,
           email: email,
-          password: password,
           role: role,
           userStatus: status,
           agentCategory: selectcategory,
@@ -197,13 +185,19 @@ export default function AdminAgentListScreen() {
       );
       console.log(response);
       if (response.status === 200) {
-        toast.success('Agent added Successfully !');
+        toast.success('Agent Created Successfully !');
         setIsModelOpen(false);
+        setFirstName('');
+        setLastName('');
+        setStatus('');
+        setEmail('');
+        setSelectCategory('');
         dispatch({ type: 'UPDATE_SUCCESS', payload: true });
         dispatch({ type: 'FATCH_SUBMITTING', payload: false });
       }
     } catch (error) {
       toast.error(error.response?.data?.message);
+      dispatch({ type: 'FATCH_SUBMITTING', payload: false });
     }
   };
 
@@ -215,7 +209,7 @@ export default function AdminAgentListScreen() {
         });
 
         if (response.status === 200) {
-          toast.success('Agent data deleted successfully!');
+          toast.success('Agent deleted successfully!');
           dispatch({
             type: 'DELETE_SUCCESS',
             payload: true,
@@ -238,180 +232,180 @@ export default function AdminAgentListScreen() {
     setIsModelOpen(true);
   };
 
-  // const handleEdit = (userid) => {
-  //   navigate(`/adminEditAgent/${userid}`);
-  // };
-
+  const handleEdit = (userid) => {
+    navigate(`/adminEditAgent/${userid}`)
+  };
+  console.log("selectcategory", selectcategory)
   return (
     <>
-      <div className="px-3 mt-3">
-        {loading ? (
-          <>
-            <div className="ThreeDot">
-              <ThreeDots
-                height="80"
-                width="80"
-                radius="9"
-                className="ThreeDot justify-content-center"
-                color="#0e0e3d"
-                ariaLabel="three-dots-loading"
-                wrapperStyle={{}}
-                wrapperClassName=""
-                visible={true}
-              />
-            </div>
-          </>
-        ) : error ? (
-          <div>{error}</div>
-        ) : (
-          <>
-            <Button
-              variant="outlined"
-              className=" m-2 d-flex globalbtnColor"
-              onClick={handleModel}
+      {loading ? (
+        <>
+          <div className='ThreeDot' >
+            <ThreeDots
+              height="80"
+              width="80"
+              radius="9"
+              className="ThreeDot justify-content-center"
+              color="#0e0e3d"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClassName=""
+              visible={true}
+            />
+          </div>
+
+        </>
+      ) : (error ? (
+        <div>{error}</div>
+      ) : (
+        <>
+          <Button
+            variant="outlined"
+            className=" m-2 d-flex globalbtnColor"
+            onClick={handleModel}
+          >
+            <BiPlusMedical className="mx-2" />
+            Add Agent
+          </Button>
+          <Box sx={{ height: 400, width: "100%" }}>
+            <DataGrid
+              className={`tableBg mx-2 ${theme}DataGrid`}
+              rows={AgentData}
+              columns={[
+                ...columns,
+                {
+                  field: "action",
+                  headerName: "Action",
+                  width: 250,
+                  renderCell: (params) => {
+                    return (
+                      <Grid item xs={8}>
+                        <Button
+                          variant="contained"
+                          className="mx-2 tableEditbtn"
+                          onClick={() => handleEdit(params.row._id)}
+
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          className="mx-2 tableDeletebtn"
+                          onClick={() => deleteHandle(params.row._id)}
+
+                        >
+                          Delete
+                        </Button>
+                      </Grid>
+                    );
+                  },
+                },
+              ]}
+              getRowId={(row) => row._id}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 5,
+                  },
+                },
+              }}
+              pageSizeOptions={[5]}
+              checkboxSelection
+              disableRowSelectionOnClick
+            />
+          </Box>
+          <Modal open={isModelOpen} onClose={handleCloseRow}>
+            <Box
+              className="modelBg"
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: 400,
+                bgcolor: "background.paper",
+                boxShadow: 24,
+                p: 4,
+              }}
             >
-              <BiPlusMedical className="mx-2" />
-              Add Agent
-            </Button>
-            <Box sx={{ height: 400, width: '100%' }}>
-              <DataGrid
-                className={
-                  theme == 'light'
-                    ? `${theme}DataGrid mx-2`
-                    : `tableBg ${theme}DataGrid mx-2`
-                }
-                rows={AgentData}
-                columns={[
-                  ...columns,
-                  {
-                    field: 'action',
-                    headerName: 'Action',
-                    width: 250,
-                    renderCell: (params) => {
-                      return (
-                        <Grid item xs={8}>
-                          <Button
-                            variant="contained"
-                            className="mx-2 tableEditbtn"
-                            onClick={() => handleEdit(params.row._id)}
-                            // startIcon={<MdEdit />}
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            variant="outlined"
-                            className="mx-2 tableDeletebtn"
-                            onClick={() => deleteHandle(params.row._id)}
-                            // startIcon={<AiFillDelete />}
-                          >
-                            Delete
-                          </Button>
-                        </Grid>
-                      );
-                    },
-                  },
-                ]}
-                getRowId={(row) => row._id}
-                initialState={{
-                  pagination: {
-                    paginationModel: {
-                      pageSize: 5,
-                    },
-                  },
-                }}
-                pageSizeOptions={[5]}
-                checkboxSelection
-                disableRowSelectionOnClick
-              />
-            </Box>
-            <Modal open={isModelOpen} onClose={handleCloseRow}>
-              <Box
-                className="modelBg"
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  width: 400,
-                  bgcolor: 'background.paper',
-                  boxShadow: 24,
-                  p: 4,
-                }}
-              >
-                <Form onSubmit={handleSubmit}>
-                  <ImCross
-                    color="black"
-                    className="formcrossbtn"
-                    onClick={handleCloseRow}
-                  />
-                  <h4 className="d-flex justify-content-center text-dark">
-                    Add Agent
-                  </h4>
-                  <TextField
-                    className="mb-2"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    label="Username"
-                    fullWidth
-                  />
+              <Form onSubmit={handleSubmit}>
+                <ImCross
+                  color="black"
+                  className="formcrossbtn"
+                  onClick={handleCloseRow}
+                />
+                <h4 className="d-flex justify-content-center text-dark">
+                  Add Agent
+                </h4>
+                <TextField
+                  className="mb-3"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  label="First Name"
 
-                  <TextField
-                    className="mb-2"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    label="Email"
-                    type="email"
-                    fullWidth
-                  />
-                  <TextField
-                    className="mb-2"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    label="Password"
-                    type="password"
-                    fullWidth
-                  />
+                  fullWidth
+                />
+                <TextField
+                  className="mb-3"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  label="Last Name"
 
-                  <FormControl>
-                    <InputLabel>Choose Status</InputLabel>
-                    <Select
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value)}
-                    >
-                      <MenuItem value="">SELECT STATUS</MenuItem>
-                      <MenuItem value={true}>Active</MenuItem>
-                      <MenuItem value={false}>Inactive</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <FormControl>
-                    <InputLabel>Choose Category</InputLabel>
-                    <Select
-                      value={selectcategory}
-                      onChange={(e) => setSelectCategory(e.target.value)}
-                    >
-                      {categoryData.map((items) => (
-                        <MenuItem key={items._id} value={items._id}>
-                          {items.categoryName}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                  <br></br>
-                  <Button
-                    className="mt-2 formbtn"
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                    disabled={submitting}
+                  fullWidth
+                />
+                <TextField
+                  className="mb-3"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  label="Email"
+                  type="email"
+                  fullWidth
+                />
+                <Validations type="email" value={email} />
+                {/* <TextField
+                  className="mb-3"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  label="Password"
+                  type="password"
+                  fullWidth
+                />
+                <Validations type="password" value={password} /> */}
+                <FormControl className="mb-3">
+                  <InputLabel>Select Status</InputLabel>
+                  <Select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
                   >
-                    {submitting ? 'Adding Agent...' : 'Add Agent'}
-                  </Button>
-                </Form>
-              </Box>
-            </Modal>
-          </>
-        )}
-      </div>
+                    <MenuItem value={true} >Active</MenuItem>
+                    <MenuItem value={false}>Inactive</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl className="mb-3">
+                  <InputLabel>Select Category</InputLabel>
+                  <Select
+                    value={selectcategory} onChange={(e) => setSelectCategory(e.target.value)} required
+                  >
+                    {categoryData.map((items) => (
+                      <MenuItem key={items._id} value={items._id} >{items.categoryName}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <br></br>
+                <Button
+                  className="mt-2 formbtn"
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                  disabled={submitting}
+                >
+                  {submitting ? "Submitting" : "Submit"}
+                </Button>
+              </Form>
+            </Box>
+          </Modal>
+        </>
+      ))}
     </>
   );
 }

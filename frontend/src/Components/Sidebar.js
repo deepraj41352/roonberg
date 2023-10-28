@@ -153,48 +153,6 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
           </>
         ) : null}
 
-        <Link
-          to="/profile-screen"
-          className="text-decoration-none"
-          onClick={handlSmallScreeneClick}
-        >
-          <li
-            className={selectedItem === 'profile' ? 'selected' : ''}
-            onClick={() => {
-              setSelectedItem('profile');
-            }}
-          >
-            <CgProfile className="me-3 fs-5" />
-            Profile
-          </li>
-        </Link>
-
-        {/* <Link to="/adminProjectList" className="text-decoration-none">
-          <li
-            className={selectedItem === 'profileList' ? 'selected' : ''}
-            onClick={() => {
-              setSelectedItem('profileList');
-            }}
-          >
-            <AiOutlineProject className="me-3 fs-5" />
-            Project List
-          </li>
-        </Link> */}
-        <Link
-          to="/ChatScreen"
-          className="text-decoration-none"
-          onClick={handlSmallScreeneClick}
-        >
-          <li
-            className={selectedItem === 'chat' ? 'selected' : ''}
-            onClick={() => {
-              setSelectedItem('chat');
-            }}
-          >
-            <BsFillChatLeftQuoteFill className="me-3 fs-5" />
-            Chat
-          </li>
-        </Link>
         {userInfo.role == 'contractor' ? (
           <>
             <Link
@@ -261,6 +219,50 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 Project Notification
               </li>
             </Link>
+          </>
+        ) : null}
+
+        {/* <Link to="/adminProjectList" className="text-decoration-none">
+          <li
+            className={selectedItem === 'profileList' ? 'selected' : ''}
+            onClick={() => {
+              setSelectedItem('profileList');
+            }}
+          >
+            <AiOutlineProject className="me-3 fs-5" />
+            Project List
+          </li>
+        </Link> */}
+        <Link
+          to="/profile-screen"
+          className="text-decoration-none"
+          onClick={handlSmallScreeneClick}
+        >
+          <li
+            className={selectedItem === 'profile' ? 'selected' : ''}
+            onClick={() => {
+              setSelectedItem('profile');
+            }}
+          >
+            <CgProfile className="me-3 fs-5" />
+            Profile
+          </li>
+        </Link>
+        <Link
+          to="/ChatScreen"
+          className="text-decoration-none"
+          onClick={handlSmallScreeneClick}
+        >
+          <li
+            className={selectedItem === 'chat' ? 'selected' : ''}
+            onClick={() => {
+              setSelectedItem('chat');
+            }}
+          >
+            <BsFillChatLeftQuoteFill className="me-3 fs-5" />
+            Chat
+          </li>
+        </Link>
         <Link
           to="#Logout"
           onClick={signoutHandler}

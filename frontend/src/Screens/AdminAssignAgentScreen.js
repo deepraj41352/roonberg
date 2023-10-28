@@ -1,15 +1,16 @@
 import axios from 'axios';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useReducer, useState } from 'react';
 import Card from 'react-bootstrap/Card';
 import { Store } from '../Store';
-import { Button, Form, FormControl } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 import MultiSelect from 'react-multiple-select-dropdown-lite';
 import 'react-multiple-select-dropdown-lite/dist/index.css';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { InputLabel, MenuItem, Select } from '@mui/material';
-import { GrSubtractCircle, GrAddCircle } from 'react-icons/gr';
+import { GrSubtractCircle, GrAddCircle } from 'react-icons/gr'
 import { AiFillDelete } from 'react-icons/ai';
+
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FATCH_REQUEST':
@@ -26,17 +27,21 @@ const reducer = (state, action) => {
       return { ...state, successUpdate: action.payload };
     case 'UPDATE_RESET':
       return { ...state, successUpdate: false };
-    case 'FATCH_AGENTS':
+    case "FATCH_AGENTS":
       return { ...state, agentData: action.payload };
 
-    case 'FATCH_CONTRACTOR':
+    case "FATCH_CONTRACTOR":
       return { ...state, contractorData: action.payload };
+    case "REMOVE_SUBMITTING":
+      return { ...state, agentCateRemoving: action.payload };
+    case 'REMOVE_SUCCESS':
+      return { ...state, successRemove: action.payload };
     default:
       return state;
   }
 };
 
-function ProjectSingleScreen() {
+function AdminAssignAgent() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { state } = useContext(Store);
@@ -46,17 +51,9 @@ function ProjectSingleScreen() {
   const [endDate, setEndDate] = useState();
   const theme = toggleState ? 'dark' : 'light';
   const [
-    {
-      loading,
-      error,
-      projectData,
-      categoryData,
-      successUpdate,
-      agentData,
-      contractorData,
-    },
+    { loading, error, projectData, categoryData, successUpdate, agentData, contractorData, agentCateRemoving, successRemove },
     dispatch,
-  ] = React.useReducer(reducer, {
+  ] = useReducer(reducer, {
     loading: true,
     error: '',
     projectData: {},
@@ -64,46 +61,54 @@ function ProjectSingleScreen() {
     successUpdate: false,
     agentData: [],
     contractorData: [],
+    successRemove: false,
+    successUpdate: false,
   });
   const [conversations, setConversation] = useState([]);
   const [agentCategoryPair, setAgentCategoryPair] = useState([]);
-  const [agents, setAgents] = useState([
-    { categoryId: '', agentName: '', agentId: '' },
-  ]);
+  const [agents, setAgents] = useState([{ categoryId: '', agentName: '', agentId: '' }]);
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [categories, setCategories] = useState([]);
   const [projectStatus, setProjectStatus] = useState('');
   const [projectOwner, setProjectOwner] = useState('');
+  const [agentCateRemovingIndex, setAgentCateRemovingIndex] = useState(null);
 
   useEffect(() => {
     const getConversations = async () => {
       try {
         const res = await axios.get(`/api/conversation/${id}`);
         setConversation(res.data);
+        console.log("res.data", res.data);
       } catch (err) {
         console.log(err);
       }
     };
-    getConversations();
-  }, []);
+    if (successUpdate) {
+      dispatch({ typr: "UPDATE_SUCCESS" })
+    }
+    else if (successRemove) {
+      dispatch({ type: "REMOVE_SUCCESS" })
+    }
+    else {
+      getConversations();
+    }
+
+
+  }, [successUpdate, successRemove]);
 
   const assignedAgentByCateHandle = (index) => {
     const category = agents[index].categoryId;
     if (category) {
-      const selectedCategory1 = categoryData.find(
-        (categoryItem) => categoryItem._id === category
-      );
+      const selectedCategory1 = categoryData.find(categoryItem => categoryItem._id === category);
       if (selectedCategory1) {
-        const agentForCategory = agentData.find(
-          (agentItem) => agentItem.agentCategory === selectedCategory1._id
-        );
+        const agentForCategory = agentData.filter(agentItem => agentItem.agentCategory === selectedCategory1._id);
         if (agentForCategory) {
-          return [agentForCategory];
+          return agentForCategory
         }
       }
     }
     return [];
-  };
+  }
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
@@ -133,11 +138,16 @@ function ProjectSingleScreen() {
       }
     };
     if (successUpdate) {
-      dispatch({ type: 'UPDATE_RESET' });
-    } else {
+      dispatch({ type: "UPDATE_RESET" })
+    }
+    else if (successRemove) {
+      dispatch({ type: "REMOVE_SUCCESS" })
+    }
+    else {
       fetchProjectData();
     }
-  }, [successUpdate]);
+
+  }, [successUpdate, successRemove]);
 
   useEffect(() => {
     const fetchCategoryData = async () => {
@@ -156,11 +166,33 @@ function ProjectSingleScreen() {
     fetchCategoryData();
   }, []);
 
-  console.log('selectedOptions', selectedOptions);
+  const handleRemoveAgentCategory = async (agentIndex) => {
+    setAgentCateRemovingIndex(agentIndex)
+    if (window.confirm('are you sure to delete ?'))
+      dispatch({ type: "REMOVE_SUBMITTING", payload: true })
+    try {
+      const response = await axios.put(
+        `/api/project/remove-agentCategoryPair/${id}`,
+        { agentIndex },
+        {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+      if (response.status === 200) {
+        toast.success("Agent and Category Remove Successfully !");
+        dispatch({ type: "REMOVE_SUCCESS", payload: true });
+        dispatch({ type: "REMOVE_SUBMITTING", payload: false })
+      }
+    } catch (error) {
+      console.error('API Error:', error);
+      dispatch({ type: "REMOVE_SUBMITTING", payload: false })
+    }
+
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch({ type: 'UPDATE_SUCCESS', payload: false });
+    dispatch({ type: "UPDATE_SUCCESS", payload: false })
     try {
       const updatedData = {
         assignedAgent: agents,
@@ -178,7 +210,7 @@ function ProjectSingleScreen() {
       if (response.status === 200) {
         toast.success('Agent Assign Successfully !');
         console.log(response);
-        dispatch({ type: 'UPDATE_SUCCESS', payload: true });
+        dispatch({ type: "UPDATE_SUCCESS", payload: true })
         // navigate('/adminProjectList')
       }
     } catch (error) {
@@ -189,9 +221,9 @@ function ProjectSingleScreen() {
   const options =
     categoryData && Array.isArray(categoryData)
       ? categoryData.map((item) => ({
-          label: item.categoryName,
-          value: item._id,
-        }))
+        label: item.categoryName,
+        value: item._id,
+      }))
       : [];
   // console.log(projectData);
 
@@ -211,29 +243,37 @@ function ProjectSingleScreen() {
   };
 
   useEffect(() => {
+
     const FatchContractorData = async () => {
       try {
-        const response = await axios.post(`/api/user/`, { role: 'contractor' });
+        const response = await axios.post(`/api/user/`, { role: "contractor" });
         const datas = response.data;
-        dispatch({ type: 'FATCH_CONTRACTOR', payload: datas });
-      } catch (error) {}
-    };
+        dispatch({ type: "FATCH_CONTRACTOR", payload: datas })
+
+      } catch (error) {
+      }
+    }
     FatchContractorData();
-  }, []);
+
+  }, [])
 
   useEffect(() => {
+
     const FatchAgentData = async () => {
       try {
-        const response = await axios.post(`/api/user/`, { role: 'agent' });
+        const response = await axios.post(`/api/user/`, { role: "agent" });
         const datas = response.data;
-        dispatch({ type: 'FATCH_AGENTS', payload: datas });
-      } catch (error) {}
-    };
+        dispatch({ type: "FATCH_AGENTS", payload: datas })
+
+      } catch (error) {
+      }
+    }
     FatchAgentData();
-  }, []);
+
+  }, [])
 
   const handleAgentChange = (index, key, value) => {
-    console.log('Value received:', value);
+    console.log("Value received:", value);
     const updatedAgents = [...agents];
     updatedAgents[index] = {
       ...updatedAgents[index],
@@ -245,21 +285,21 @@ function ProjectSingleScreen() {
       updatedAgents[index].agentName = agentName.first_name;
     }
 
-    const categoryName = categoryData.find(
-      (categoryItem) => categoryItem._id === value
-    );
+
+    const categoryName = categoryData.find((categoryItem) => categoryItem._id === value);
     if (categoryName) {
       updatedAgents[index].categoryName = categoryName.categoryName;
     }
     if (key === 'categoryId' && value !== '') {
-      const selectedCategory = categoryData.find(
-        (categoryItem) => categoryItem._id === value
-      );
+
+      const selectedCategory = categoryData.find((categoryItem) => categoryItem._id === value);
 
       if (selectedCategory) {
+
         const categoryObject = {
           categoryId: selectedCategory._id,
           categoryName: selectedCategory.categoryName,
+
         };
         setCategories((prevCategories) => {
           const updatedCategories = [...prevCategories];
@@ -276,15 +316,15 @@ function ProjectSingleScreen() {
     setAgents([...agents, { categoryId: '', agentId: '' }]);
   };
   const removeAgent = (index) => {
-    if (window.confirm('Are you sure to delete?')) {
+    if (window.confirm("Are you sure to delete?")) {
       const updatedAgents = [...agents];
       updatedAgents.splice(index, 1);
       setAgents(updatedAgents);
     }
   };
 
-  console.log('projectOwner', projectData.projectOwner);
-  console.log('contractor', projectOwner);
+  console.log('projectOwner', projectData.projectOwner)
+  console.log('contractor', projectOwner)
   return (
     <div>
       {loading ? (
@@ -329,26 +369,18 @@ function ProjectSingleScreen() {
                   <Form.Group className="mb-3" controlId="formBasicPassword">
                     <Form.Label className="mb-1">Contractor</Form.Label>
                     {console.log('projectOwner', projectOwner)}
-                    <Form.Select
-                      disabled
-                      value={projectData && projectData.projectOwner}
-                      onChange={(e) => setProjectOwner(e.target.value)}
-                    >
+                    <Form.Select disabled value={projectData && projectData.projectOwner} onChange={(e) => setProjectOwner(e.target.value)}>
                       <option value="">SELECT CONTRACTOR</option>
                       {contractorData.map((items) => (
-                        <option key={items._id} value={items._id}>
-                          {items.first_name}
-                        </option>
+                        <option key={items._id} value={items._id} >{items.first_name}</option>
+
                       ))}
+
                     </Form.Select>
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="formBasicPassword">
                     <Form.Label className="mb-1">Project Status</Form.Label>
-                    <Form.Select
-                      disabled
-                      value={projectData && projectData.projectStatus}
-                      onChange={(e) => setProjectStatus(e.target.value)}
-                    >
+                    <Form.Select disabled value={projectData && projectData.projectStatus} onChange={(e) => setProjectStatus(e.target.value)}>
                       <option value="active">Active </option>
                       <option value="inactive">Inactive </option>
                       <option value="queue">In Proccess </option>
@@ -378,131 +410,150 @@ function ProjectSingleScreen() {
                       />
                     </Form.Group>
                   </div>
+
                 </Form>
               </Card.Body>
             </Card>
-            <div className="projectScreenCard2 d-flex flex-column gap-4">
+            <div className='projectScreenCard2 d-flex flex-column gap-4'>
               <Card className={`projectScreenCard2 ${theme}CardBody`}>
-                <Card.Header className={`${theme}CardHeader`}>
-                  Chats
-                </Card.Header>
+                <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
                 <Card.Body className="d-flex flex-wrap gap-3 ">
-                  {/* -------- */}
-                  {conversations.map((conversion) => {
+                  <div
+                    className="text-center w-100"
+                    style={{
+                      display:
+                        projectData &&
+                          projectData.conversions &&
+                          projectData.conversions.length < 1
+                          ? 'block'
+                          : 'none',
+                    }}
+                  >
+                    No Chat Available
+                  </div>
+
+                  {projectData?.conversions?.map((conversion) => {
+                    const assignedAgent = projectData.assignedAgent.find(
+                      (assignedAgent) =>
+                        assignedAgent.agentId === conversion.members[0]
+                    );
                     return (
-                      <Card className="chatboxes">
-                        <Card.Header>Chat</Card.Header>
-                        <Card.Body>
-                          <Link to={`/chatWindowScreen/${conversion._id}`}>
-                            <Button
-                              className="chatBtn"
-                              type="button"
-                              // onClick={conversionHandler(conversion._id)}
-                            >
-                              {conversion._id}
-                            </Button>
-                          </Link>
-                        </Card.Body>
-                      </Card>
+                      <>
+                        {userInfo.role == 'agent' ? (
+                          <>
+                            {conversion.members.includes(userInfo._id) && (
+                              <>
+                                <Card className="chatboxes">
+                                  {/* <Card.Header>{assignedAgent.categoryId}</Card.Header> */}
+                                  <Card.Body>
+                                    <Link
+                                      to={`/chatWindowScreen/${conversion._id}`}
+                                    >
+                                      <Button
+                                        className="chatBtn"
+                                        type="button"
+                                      // onClick={conversionHandler(conversion._id)}
+                                      >
+                                        Chat Now
+                                      </Button>
+                                    </Link>
+                                  </Card.Body>
+                                </Card>
+                              </>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            {categoryData && assignedAgent && assignedAgent.categoryName && (
+                              <Card className="chatboxes">
+                                <Card.Header>
+                                  {assignedAgent.categoryName}
+                                </Card.Header>
+                                <Card.Body>
+                                  <Link to={`/chatWindowScreen/${conversion._id}`}>
+                                    <Button
+                                      className="chatBtn"
+                                      type="button"
+                                    // onClick={conversionHandler(conversion._id)}
+                                    >
+                                      {assignedAgent.agentName}
+                                    </Button>
+                                  </Link>
+                                </Card.Body>
+                              </Card>
+                            )}
+
+                          </>
+                        )}
+                      </>
                     );
                   })}
-
-                  {/* -------- */}
                 </Card.Body>
               </Card>
               <Card className={`projectScreenCard2 ${theme}CardBody`}>
-                <Card.Header className={`${theme}CardHeader`}>
-                  Assigned
-                </Card.Header>
+                <Card.Header className={`${theme}CardHeader`}>Assigned</Card.Header>
                 <Card.Body className="d-flex justify-content-center flex-wrap gap-3 ">
                   {/* -------- */}
 
-                  <Form
-                    className="scrollInAdminproject"
-                    onSubmit={handleSubmit}
-                  >
+                  <Form className='scrollInAdminproject' onSubmit={handleSubmit}>
                     {agents.map((agent, index) => (
-                      <div
-                        key={index}
-                        className="d-flex justify-content-between align-items-center"
-                      >
-                        <Form.Group
-                          className="mb-3 mx-2"
-                          controlId="formBasicPassword"
-                        >
+                      <div key={index} className='d-flex justify-content-between align-items-center'>
+                        <Form.Group className="mb-3 mx-2" controlId="formBasicPassword">
                           <Form.Label className="mb-1">Category</Form.Label>
                           <Form.Select
-                            value={agent.categoryId || selectedOptions}
-                            onChange={(e) =>
-                              handleAgentChange(
-                                index,
-                                'categoryId',
-                                e.target.value
-                              )
-                            }
-                          >
+                            value={agent.categoryId}
+                            onChange={(e) => handleAgentChange(index, 'categoryId', e.target.value)}>
+                            <option value="">SELECT</option>
                             {categoryData.map((category) => (
-                              <option key={category._id} value={category._id}>
+                              <option key={category._id} value={category._id}
+                              >
                                 {category.categoryName}
                               </option>
                             ))}
                           </Form.Select>
                         </Form.Group>
-                        <Form.Group
-                          className="mb-3 mx-2"
-                          controlId="formBasicPassword"
-                        >
+                        <Form.Group className="mb-3 mx-2" controlId="formBasicPassword">
                           <Form.Label className="mb-1">Agent</Form.Label>
-                          <Form.Select
-                            value={agent.agentId}
-                            onChange={(e) =>
-                              handleAgentChange(
-                                index,
-                                'agentId',
-                                e.target.value
-                              )
-                            }
-                          >
+                          <Form.Select value={agent.agentId}
+                            onChange={(e) => handleAgentChange(index, 'agentId', e.target.value)}>
                             <option value="">SELECT AGENT</option>
                             {assignedAgentByCateHandle(index).map((agent) => (
-                              <option
-                                key={agent._id}
-                                value={agent._id}
-                                // disabled={agents.some((a) => a.agentId === agent._id)}
+                              <option key={agent._id} value={agent._id}
+                              // disabled={agents.some((a) => a.agentId === agent._id)}
                               >
                                 {agent.first_name}
                               </option>
                             ))}
                           </Form.Select>
                         </Form.Group>
-                        <div className="d-flex align-items-center">
-                          <Button
-                            className=" mt-2 bg-primary"
-                            onClick={() => removeAgent(index)}
-                          >
-                            <AiFillDelete className="mx-2" />
-                            Remove
+                        <div className='d-flex align-items-center mx-2'>
+                          <Button className=' mt-2 ' onClick={() => handleRemoveAgentCategory(index)} disabled={agentCateRemoving && agentCateRemovingIndex == index} >
+                            <AiFillDelete className='mx-1' />
+                            {agentCateRemoving && agentCateRemovingIndex === index ? 'Removing' : 'Remove'}
                           </Button>
                         </div>
                       </div>
                     ))}
-                    <div className="d-flex align-items-center">
-                      <Button
-                        className="mb-2 mx-2 bg-primary"
-                        onClick={addAgent}
-                      >
+                    <div className='d-flex align-items-center'>
+
+
+                      <div className='mb-2 mx-2' onClick={addAgent} >
+                        <GrAddCircle className='mx-2' style={{ backgroundColor: 'white' }} />
                         Assign Agent
-                      </Button>
-                      <Button className="mb-2 mx-2 bg-primary" type="submit">
+                      </div>
+                      <Button className='mb-2 mx-2 bg-primary' type='submit' >
+
                         Submit
                       </Button>
                     </div>
+
                   </Form>
 
                   {/* -------- */}
                 </Card.Body>
               </Card>
             </div>
+
           </div>
         </div>
       )}
@@ -510,4 +561,4 @@ function ProjectSingleScreen() {
   );
 }
 
-export default ProjectSingleScreen;
+export default AdminAssignAgent;

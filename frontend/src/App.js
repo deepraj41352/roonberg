@@ -52,8 +52,10 @@ import ContractorProject from './Contractor/ContractorProjectListScreen';
 import ContractorEditProject from './Contractor/ContractorEditProjectScreen';
 import AgentProjectList from './Agent/AgentProjectListScreen';
 import AdminAssignAgent from './Screens/AdminAssignAgentScreen';
+import AgentEditProject from './Agent/AgentEditProjectScreen';
 import ContractorProjectScreen from './Components/Contractor/contractorProjectScreen';
 import SuperadminEditAdmin from './Screens/SuperadminEditAdmin';
+
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -158,8 +160,8 @@ function App() {
                       }}
                     >
                       <img
-                        className="w-100 h-100"
-                        src={userInfo.profile_picture}
+                        className="w-100 h-100 profile-icon-inner"
+                        src={userInfo.profile_picture} alt="userimg"
                       ></img>
                     </div>
                   </Container>
@@ -260,6 +262,7 @@ function App() {
                         </ProtectedRoute>
                       }
                     />
+
                     <Route
                       path="/adminContractorList"
                       element={
@@ -303,13 +306,18 @@ function App() {
                     />
 
                     <Route
+                      path="/superadmineditadmin/:id"
+                      element={<SuperadminEditAdmin />}
+                    />
+
+                    <Route
                       path="/AdminAssignAgent/:id"
                       element={<AdminAssignAgent />}
                     />
                     {/* Contractor */}
                     <Route
                       path="/project-list-screen"
-                      element={<ContractorProjectScreen />}
+                      element={<ContractorProject />}
                     />
 
                     <Route
@@ -320,6 +328,10 @@ function App() {
                     <Route
                       path="/agentProjectList"
                       element={<AgentProjectList />}
+                    />
+                    <Route
+                      path="/agentEditProject/:id"
+                      element={<AgentEditProject />}
                     />
                   </Routes>
                 </div>

@@ -15,7 +15,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import streamifier from 'streamifier';
 const userRouter = express.Router();
 const upload = multer();
-/**
+/** 
  * @swagger
  * /user/{role}:
  *   get:
