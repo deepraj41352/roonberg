@@ -473,14 +473,16 @@ function ProjectSingleScreen() {
                     {agents.map((agent, index) => (
                       <div
                         key={index}
-                        className="d-flex justify-content-between align-items-center"
+                        className="d-flex justify-content-between align-items-center assign-card-div gap-3 mb-2"
                       >
+                        <div className='d-flex gap-3 contrator-agent-inputBox'>
                         <Form.Group
-                          className="mb-3"
+                          className=""
                           controlId="formBasicPassword"
                         >
                           <Form.Label className="mb-1">Category</Form.Label>
                           <Form.Select
+                          className='assign-card-input'
                             value={agent.categoryId}
                             onChange={(e) =>
                               handleAgentChange(
@@ -490,7 +492,7 @@ function ProjectSingleScreen() {
                               )
                             }
                           >
-                            <option value="">SELECT CATEGORY</option>
+                            <option value="">CATEGORY</option>
                             {categoryData.map((category) => (
                               <option key={category._id} value={category._id}>
                                 {category.categoryName}
@@ -499,11 +501,12 @@ function ProjectSingleScreen() {
                           </Form.Select>
                         </Form.Group>
                         <Form.Group
-                          className="mb-3"
+                          className=" "
                           controlId="formBasicPassword"
                         >
                           <Form.Label className="mb-1">Agent</Form.Label>
                           <Form.Select
+                           className='assign-card-input'
                             value={agent.agentId}
                             onChange={(e) =>
                               handleAgentChange(
@@ -513,7 +516,7 @@ function ProjectSingleScreen() {
                               )
                             }
                           >
-                            <option value="">SELECT AGENT</option>
+                            <option value="">AGENT</option>
                             {assignedAgentByCateHandle(index).map((agent) => (
                               <option
                                 key={agent._id}
@@ -525,19 +528,20 @@ function ProjectSingleScreen() {
                             ))}
                           </Form.Select>
                         </Form.Group>
-                        <div className="d-flex align-items-center">
+                        </div>
+                        <div className="d-flex removeBtnCard">
                           <Button
-                            className=" mt-2 bg-primary"
+                            className=" bg-primary"
                             onClick={() => removeAgent(index)}
                           >
-                            <AiFillDelete className="mx-2" />
+                           
                             Remove
                           </Button>
                         </div>
                       </div>
                     ))}
                     <div className="d-flex align-items-center">
-                      <Button className="mb-2 bg-primary" onClick={addAgent}>
+                      <Button className="my-3 bg-primary" onClick={addAgent}>
                         Add Category and Agent
                       </Button>
                     </div>

@@ -7,6 +7,7 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import projectRouter from './routers/projectRouter.js';
 import categoryRouter from './routers/categoryRouter.js';
+import NotificationRouter from './routers/NotificationRouter.js';
 import conversationRouter from './routers/conversationRouter.js';
 import MessageRouter from './routers/MessageRoute.js';
 import cron from 'node-cron';
@@ -69,6 +70,8 @@ app.use('/api/project', projectRouter);
 app.use('/api/category', categoryRouter);
 app.use('/api/conversation', conversationRouter);
 app.use('/api/message', MessageRouter);
+app.use('/api/notification', NotificationRouter);
+
 
 const transporter = nodemailer.createTransport({
   service: 'SMTP',

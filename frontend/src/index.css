@@ -522,6 +522,10 @@ body {
 .timeago {
   font-size: 12px;
 }
+.timeago2{
+  font-size: 13px;
+
+}
 .chat-senderMsg {
   display: flex;
   align-items: flex-start;
@@ -705,4 +709,33 @@ img.w-100.h-100 {
     display: block !important;
     cursor: pointer;
   }
+}
+
+.removeBtnCard{
+  margin-top: 26px;
+}
+@media(max-width:600px){
+.assign-card-input{
+  /* min-width: 100px; */
+  max-width: 150px;
+}
+}
+@media(max-width:480px){
+  .assign-card-div{
+flex-direction: column;
+
+  }
+  .removeBtnCard{
+    margin-top: 0px !important;
+  }
+}
+@media(max-width:380px){
+  .contrator-agent-inputBox{
+    flex-direction: column;
+  }
+}
+.chat-dp{
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
 }

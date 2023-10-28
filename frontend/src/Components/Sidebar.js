@@ -241,7 +241,10 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 Project List
               </li>
             </Link>
-            <Link
+        
+          </>
+        ) : null}
+           <Link
               to="/projectNotification"
               className="text-decoration-none"
               onClick={handlSmallScreeneClick}
@@ -258,8 +261,6 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 Project Notification
               </li>
             </Link>
-          </>
-        ) : null}
         <Link
           to="#Logout"
           onClick={signoutHandler}
