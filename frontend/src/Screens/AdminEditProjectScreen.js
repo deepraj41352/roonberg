@@ -78,12 +78,13 @@ function AdminEditProject() {
       try {
         const res = await axios.get(`/api/conversation/${id}`);
         setConversation(res.data);
+        console.log(res, "conversation")
       } catch (err) {
         console.log(err);
       }
     };
     if (successUpdate) {
-      dispatch({ typr: "UPDATE_SUCCESS" })
+      dispatch({ type: "UPDATE_SUCCESS" })
     }
     else if (successRemove) {
       dispatch({ type: "REMOVE_SUCCESS" })
@@ -113,18 +114,16 @@ function AdminEditProject() {
             : null
         );
         setCategories(ProjectDatas.projectCategory);
-        console.log("ProjectDatas.projectCategory", ProjectDatas.projectCategory)
         setAgents(ProjectDatas.assignedAgent);
         setProjectStatus(projectData.projectStatus);
         setProjectOwner(projectData.projectOwner);
         dispatch({ type: 'FATCH_SUCCESS', payload: ProjectDatas });
       } catch (error) {
         console.error('Error fetching project data:', error);
-
       }
     };
     if (successUpdate) {
-      dispatch({ typr: "UPDATE_SUCCESS" })
+      dispatch({ type: "UPDATE_SUCCESS" })
     }
     else if (successRemove) {
       dispatch({ type: "REMOVE_SUCCESS" })
@@ -144,7 +143,9 @@ function AdminEditProject() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const category = response.data;
+        console.log("category", category)
         dispatch({ type: 'SUCCESS_CATEGORY', payload: category });
+
       } catch (error) {
         console.error('Error fetching category data:', error);
       }
@@ -205,13 +206,12 @@ function AdminEditProject() {
     setAgents([...agents, {}]);
   };
 
-  // const removeDynamicFields = (index) => {
-  //   if (window.confirm("Are you sure to delete?")) {
-  //     const updatedAgents = [...agents];
-  //     updatedAgents.splice(index, 1);
-  //     setAgents(updatedAgents);
-  //   }
-  // };
+  const removeDynamicFields = (index) => {
+
+    const updatedAgents = [...agents];
+    updatedAgents.splice(index, 1);
+    setAgents(updatedAgents);
+  };
 
 
   const selectedCateAgent = (index, key, value) => {
@@ -267,34 +267,38 @@ function AdminEditProject() {
 
   const handleRemoveAgentCategory = async (agentIndex) => {
     setAgentCateRemovingIndex(agentIndex)
-    if (window.confirm('are you sure to delete ?'))
+    if (window.confirm('are you sure to delete ?')) {
       dispatch({ type: "REMOVE_SUBMITTING", payload: true })
-    try {
-      const response = await axios.put(
-        `/api/project/remove-agentCategoryPair/${id}`,
-        { agentIndex },
-        {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
+      try {
+        const response = await axios.put(
+          `/api/project/remove-agentCategoryPair/${id}`,
+          { agentIndex },
+          {
+            headers: { Authorization: `Bearer ${userInfo.token}` },
+          }
+        );
+        if (response.status === 200) {
+          toast.success("Agent and Category Remove Successfully !");
+          dispatch({ type: "REMOVE_SUCCESS", payload: true });
+          dispatch({ type: "REMOVE_SUBMITTING", payload: false })
         }
-      );
-      if (response.status === 200) {
-        toast.success("Agent and Category Remove Successfully !");
-        dispatch({ type: "REMOVE_SUCCESS", payload: true });
+      } catch (error) {
+        console.error('API Error:', error);
         dispatch({ type: "REMOVE_SUBMITTING", payload: false })
       }
-    } catch (error) {
-      console.error('API Error:', error);
-      dispatch({ type: "REMOVE_SUBMITTING", payload: false })
+    }
+    else {
+      console.log("Deletion canceled.")
     }
 
   };
   const handleSubmit = async (e) => {
 
     e.preventDefault();
-    console.log("categoryid", categories)
+    const filteredAgents = agents.filter(obj => Object.keys(obj).length > 1);
+
     dispatch({ type: "FATCH_SUBMITTING", payload: true })
     try {
-      console.log("categoryid", categories)
       const response = await axios.put(
         `/api/project/assign-update/${id}`,
         {
@@ -303,7 +307,7 @@ function AdminEditProject() {
 
           createdDate: createdDate,
           endDate: endDate,
-          assignedAgent: agents,
+          assignedAgent: filteredAgents,
           projectStatus: projectStatus || projectData.projectStatus,
           projectOwner: projectOwner || projectData.projectOwner,
         },
@@ -324,7 +328,14 @@ function AdminEditProject() {
       dispatch({ type: "FATCH_SUBMITTING", payload: false })
     }
   };
-
+  const removeFields = (index) => {
+    const agentCatData = agents[index];
+    if (!agentCatData.agentId && !agentCatData.categoryId) {
+      removeDynamicFields(index);
+    } else {
+      handleRemoveAgentCategory(index);
+    }
+  };
   return (
     <div>
       {loading ? (
@@ -490,7 +501,8 @@ function AdminEditProject() {
               <Card className={`projectScreenCard2 ${theme}CardBody`}>
                 <Card.Header className={`${theme}CardHeader`}>Assigned</Card.Header>
                 <Card.Body className="d-flex justify-content-center flex-wrap gap-3 ">
-                  <Form className='scrollInAdminproject' onSubmit={handleSubmit}>
+                  <Form className='scrollInAdminproject' >
+                    {/* onSubmit={handleSubmit} */}
                     {Array.isArray(agents) ? (
                       agents.map((agentCatData, index) => (
 
@@ -529,13 +541,9 @@ function AdminEditProject() {
                                 </option>
                               ))}
                             </Form.Select>
+
                           </Form.Group>
-                          <div className='d-flex align-items-center mx-2'>
-                            <Button className=' mt-2 ' onClick={() => handleRemoveAgentCategory(index)} disabled={agentCateRemoving && agentCateRemovingIndex == index} >
-                              <AiFillDelete className='mx-1' />
-                              {agentCateRemoving && agentCateRemovingIndex === index ? 'Removing' : 'Remove'}
-                            </Button>
-                          </div>
+                          <Button className=' mt-2 ' disabled={agentCateRemoving && agentCateRemovingIndex == index} onClick={() => removeFields(index)}> {agentCateRemoving && agentCateRemovingIndex === index ? 'Removing' : 'Remove'}</Button>
                         </div>
                       ))
                     )

@@ -212,7 +212,6 @@ projectRouter.get(
 
 // ******************************************* Admin Api's *************************************************************
 
-// admin remove agentCategoryPair
 projectRouter.put(
   '/remove-agentCategoryPair/:id',
   isAuth,
@@ -226,19 +225,22 @@ projectRouter.put(
         return res.status(404).json({ error: 'Project not found' });
       }
       const removedAgent = updatedProject.assignedAgent[agentIndexToRemove];
-      updatedProject.assignedAgent.splice(agentIndexToRemove, 1);
-      await updatedProject.save();
-      await Conversation.deleteOne({
-        members: [removedAgent.agentId, updatedProject.projectOwner],
+      const agentIdString = `${removedAgent.agentId.toString()}`;
+      const projectOwnerIdString = `${updatedProject.projectOwner.toString()}`;
+      const membersArray = [agentIdString, projectOwnerIdString];
+      await Conversation.deleteMany({
+        members: membersArray,
         projectId: projectId,
       });
+      updatedProject.assignedAgent.splice(agentIndexToRemove, 1);
+      await updatedProject.save();
       res.status(200).json({ updatedProject });
     } catch (error) {
-      console.error('Error removing agent:', error);
       res.status(500).json({ error: 'Error removing agent' });
     }
   })
 );
+
 
 // admin add project
 projectRouter.post(
@@ -410,10 +412,7 @@ projectRouter.post(
       const projectId = req.params.id;
       const agent = req.body.assignedAgent;
       const contractorId = req.body.projectOwner;
-      // const categoryId = req.body.categoryId;
-      // const category = await Category.findById(categoryId);
       const agentIds = agent.map((agent) => agent.agentId);
-      // const user = await User.findById(agentId, '_id first_name email');
       const updatedProject = await Project.findByIdAndUpdate(
         projectId,
         {
@@ -504,8 +503,8 @@ projectRouter.put(
         { $set: updateFields },
         { new: true }
       );
+      console.log("updatedProject", updatedProject)
       if (contractorOnly) {
-
         const options = {
           to: user.email,
           subject: 'New Project Assigned ✔',
@@ -542,7 +541,8 @@ projectRouter.put(
               members: [agentId, contractorId],
               projectId: projectId,
             });
-            await newConversation.save();
+            const con = await newConversation.save();
+            console.log("conversation", con)
           } else {
             console.log("Conversation already exists:", existingConversation);
           }
