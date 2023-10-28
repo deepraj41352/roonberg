@@ -17,7 +17,11 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { format } from "timeago.js";
 import { BsFillMicFill, BsFillMicMuteFill } from "react-icons/bs";
+import { FiUpload } from "react-icons/fi";
+import Modal from "react-bootstrap/Modal";
 import { ColorRing, ThreeDots } from "react-loader-spinner";
+import Button from "react-bootstrap/Button";
+
 
 function ChatWindowScreen() {
   const { id } = useParams();
@@ -29,6 +33,8 @@ function ChatWindowScreen() {
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [conversationID, setConversationID] = useState();
   const [projectData, SetProjectData] = useState();
+  const [chatOpositeMember, SetChatOpositeMember] = useState();
+  const [fileForModel, SetFileForModel] = useState(null);
   const [projectStatus, setProjectStatus] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedAudio, setSelectedAudio] = useState(null);
@@ -40,6 +46,7 @@ function ChatWindowScreen() {
   const [audioStream, setAudioStream] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const [mediaType, setMediaType] = useState("image");
   const audioChunks = useRef([]);
   const audioRef = useRef();
@@ -291,12 +298,33 @@ function ChatWindowScreen() {
     }
   };
 
+
+  useEffect(() => {
+    const receiverdId = conversationID?.members.find(
+      (member) => member !== userInfo._id
+    );
+    const getChatMemberName = async () => {
+      try {
+        const { data } = await axios.get(
+          `/api/user/${receiverdId}`
+        );
+        SetChatOpositeMember(data.first_name)
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getChatMemberName();
+  }, [conversationID]);
+
+
+
   const showFontStyleBox = () => {
     setShowFontStyle(!showFontStyle);
   };
   // const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const handleSendMessage = async () => {
+    setShowModal(false);
     const messageObject = {
       senderFirstName: userInfo.first_name,
       senderLastName: userInfo.last_name,
@@ -324,7 +352,10 @@ function ChatWindowScreen() {
       e.preventDefault();
     }
     const file = e.target.files[0];
-    if (isFileSizeValid(file)) {
+    console.log("file",file)
+    if ( isFileSizeValid(file)) {
+      SetFileForModel(file)
+      setShowModal(true);
       if (file.type.includes("image")) {
         setSelectedfile(file);
       } else if (file.type.includes("audio")) {
@@ -335,23 +366,20 @@ function ChatWindowScreen() {
 
       const reader = new FileReader();
       reader.onload = (event) => {
-        // Handle the file data based on its type
         const base64Data = event.target.result;
 
         //setSelectedImage(base64Data);
         if (file.type.includes("image")) {
-          // Handle image data
           setSelectedImage(base64Data);
         } else if (file.type.includes("audio")) {
           setSelectedAudio(base64Data);
         } else if (file.type.includes("video")) {
-          // Handle video data
           setSelectedVideo(base64Data);
         }
       };
 
       reader.readAsDataURL(file);
-    } else {
+    } else if (file){
       alert("Selected image file size exceeds the 40 MB limit.");
     }
   };
@@ -360,6 +388,7 @@ function ChatWindowScreen() {
     const receiverdId = conversationID.members.find(
       (member) => member !== userInfo._id
     );
+    console.log('receiverdId',receiverdId)
     if (selectedImage) {
       if (userInfo.role === "admin" || userInfo.role === "superadmin") {
         const messageData = {
@@ -517,8 +546,10 @@ function ChatWindowScreen() {
   }, [chatMessages, newMessage]);
 
   // console.log("conversationID ", conversationID);
-
   // console.log("chatMessages ", chatMessages);
+  const handleClose = () => {
+    setShowModal(false);
+  };
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
@@ -531,7 +562,7 @@ function ChatWindowScreen() {
     <div className=" justify-content-center align-items-center">
       <div className="d-flex justify-content-center gap-3 ">
         <Card className="chatWindow mt-3">
-          <CardHeader>Rohan </CardHeader>
+          <CardHeader>{chatOpositeMember} </CardHeader>
 
           <CardBody className="chatWindowBody pb-0">
             {chatMessages.map((item) => (
@@ -713,11 +744,19 @@ function ChatWindowScreen() {
                     onChange={onChange}
                   />
                 </div>
-                <Form.Control
-                  disabled={isSubmiting}
-                  onChange={handleFileChange}
-                  type="file"
-                />
+                <Form.Group className="icon-for-upload">
+      <Form.Label htmlFor="file-input" className="custom-file-upload">
+        <FiUpload /> 
+      </Form.Label>
+      <Form.Control
+      style={{display:"none"}}
+        id="file-input"
+        type="file"
+        disabled={isSubmiting}
+        onChange={handleFileChange}
+      />
+      
+    </Form.Group>
                 <div className="App d-flex align-items-center ps-2">
                   <BsFillMicFill
                     onClick={startRecording}
@@ -778,6 +817,20 @@ function ChatWindowScreen() {
                   <option value="queue">In Proccess </option>
                 </Form.Select>
               </Form.Group>
+              <Modal show={showModal} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>File Selected</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Your file has been selected.
+         <h4> {fileForModel?.name}</h4>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button className="btn-send"  onClick={handleSendMessage}>
+           send
+          </Button>
+        </Modal.Footer>
+      </Modal>
             </Form>
           ) : (
             <div className="d-flex mt-3 justify-content-center">
