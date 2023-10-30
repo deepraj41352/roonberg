@@ -342,7 +342,7 @@ io.on("connection", (socket) => {
       receiverdId,
       text,
     }) => {
-      console.log("users",users)
+      console.log("users", users)
 
       if (receiverdId.length == 2) {
         const agent = getUser(receiverdId[0]);
@@ -393,6 +393,20 @@ io.on("connection", (socket) => {
       }
     }
   );
+
+  // notification
+  socket.on('emailSent', (data) => {
+    console.log(data)
+    // Forward the event to the user's dashboard based on their user ID
+    socket.to(`user-${data.userId}`).emit('newEmail', data);
+  });
+
+
+
+
+
+
+
   // when disconnect
   socket.on("disconnect", () => {
     console.log("a user disconnected");

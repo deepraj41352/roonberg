@@ -55,7 +55,7 @@ function ChatWindowScreen() {
     if (selectedfile && selectedfile.type) {
       const mediaType =
         selectedfile.type.includes("video") ||
-        selectedfile.type.includes("audio")
+          selectedfile.type.includes("audio")
           ? "video"
           : "image";
 
@@ -236,7 +236,7 @@ function ChatWindowScreen() {
 
   useEffect(() => {
     socket.current.emit("addUser", userInfo._id, userInfo.role);
-    socket.current.on("getUsers", (users) => {});
+    socket.current.on("getUsers", (users) => { });
   }, []);
 
   useEffect(() => {
@@ -352,8 +352,8 @@ function ChatWindowScreen() {
       e.preventDefault();
     }
     const file = e.target.files[0];
-    console.log("file",file)
-    if ( isFileSizeValid(file)) {
+    console.log("file", file)
+    if (isFileSizeValid(file)) {
       SetFileForModel(file)
       setShowModal(true);
       if (file.type.includes("image")) {
@@ -379,7 +379,7 @@ function ChatWindowScreen() {
       };
 
       reader.readAsDataURL(file);
-    } else if (file){
+    } else if (file) {
       alert("Selected image file size exceeds the 40 MB limit.");
     }
   };
@@ -388,7 +388,7 @@ function ChatWindowScreen() {
     const receiverdId = conversationID.members.find(
       (member) => member !== userInfo._id
     );
-    console.log('receiverdId',receiverdId)
+    console.log('receiverdId', receiverdId)
     if (selectedImage) {
       if (userInfo.role === "admin" || userInfo.role === "superadmin") {
         const messageData = {
@@ -745,18 +745,18 @@ function ChatWindowScreen() {
                   />
                 </div>
                 <Form.Group className="icon-for-upload">
-      <Form.Label htmlFor="file-input" className="custom-file-upload">
-        <FiUpload /> 
-      </Form.Label>
-      <Form.Control
-      style={{display:"none"}}
-        id="file-input"
-        type="file"
-        disabled={isSubmiting}
-        onChange={handleFileChange}
-      />
-      
-    </Form.Group>
+                  <Form.Label htmlFor="file-input" className="custom-file-upload">
+                    <FiUpload />
+                  </Form.Label>
+                  <Form.Control
+                    style={{ display: "none" }}
+                    id="file-input"
+                    type="file"
+                    disabled={isSubmiting}
+                    onChange={handleFileChange}
+                  />
+
+                </Form.Group>
                 <div className="App d-flex align-items-center ps-2">
                   <BsFillMicFill
                     onClick={startRecording}
@@ -818,19 +818,19 @@ function ChatWindowScreen() {
                 </Form.Select>
               </Form.Group>
               <Modal show={showModal} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>File Selected</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Your file has been selected.
-         <h4> {fileForModel?.name}</h4>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button className="btn-send"  onClick={handleSendMessage}>
-           send
-          </Button>
-        </Modal.Footer>
-      </Modal>
+                <Modal.Header closeButton>
+                  <Modal.Title>File Selected</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  Your file has been selected.
+                  <h4> {fileForModel?.name}</h4>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button className="btn-send" onClick={handleSendMessage}>
+                    send
+                  </Button>
+                </Modal.Footer>
+              </Modal>
             </Form>
           ) : (
             <div className="d-flex mt-3 justify-content-center">

@@ -6,6 +6,10 @@ import User from '../Models/userModel.js';
 import Conversation from '../Models/conversationModel.js';
 import Category from '../Models/categoryModel.js';
 import CustomEmail from '../Models/customEmailModul.js';
+import { storeNotification } from '../server.js';
+// const io = require('../socket/index.js');
+import io from '../../socket/index.js'
+
 
 const projectRouter = express.Router();
 // get all projects
@@ -87,6 +91,7 @@ projectRouter.post(
       const project = await newProject.save();
 
       const adminEmails = await User.find({ role: 'admin' }, 'email');
+
       const emails = adminEmails.map((user) => user.email);
       const user = await User.findById(req.user._id, 'first_name email');
 
@@ -98,21 +103,28 @@ projectRouter.post(
         projectDescription: req.body.projectDescription,
         user,
       };
-
-      // Send the email
-      const checkMail = await sendEmailNotify(options);
-
       if (checkMail) {
-        console.log('Email notification sent to admins.');
+        const notifyUser = adminEmails._id;
+        const message = `${options.subject}Project Name - ${options.projectName},Description - ${options.projectDescription}`;
+        const status = "unseen";
+        const type = "project";
+        storeNotification(message, notifyUser, status, type);
+
+        const resultNotify = await storeNotification.save();
+
+        console.log("resultNotify", resultNotify)
         res
           .status(201)
           .json({ message: 'Project Created', project, categoryNames });
-      } else {
-        console.log('Failed to send the email notification.');
+
+      }
+      else {
+        console.log("email not send")
         res
           .status(201)
           .json({ message: 'Project Created', project, categoryNames });
       }
+
     } catch (error) {
       console.log(error);
       res.status(500).json({ message: 'Error creating project', error });
@@ -279,26 +291,55 @@ projectRouter.post(
         if (contractorOnly) {
           const options = {
             to: user.email,
-            subject: 'New Project Assigned ✔',
+            subject: 'New Project Create✔ ',
             template: 'ASSIGN-PROJECT',
             projectName: req.body.projectName,
             projectDescription: req.body.projectDescription,
             user,
           };
-          await sendEmailNotify(options);
+          const emailSendCheck = await sendEmailNotify(options);
+          if (emailSendCheck) {
+            const notifyUser = user._id;
+            const message = `${options.subject}Project Name - ${options.projectName},Description - ${options.projectDescription}`;
+            const status = "unseen";
+            const type = "project";
+            storeNotification(message, notifyUser, status, type);
+            await storeNotification.save();
+          }
+          else {
+            console.log("email not send")
+          }
         }
         else {
           const agentEmailList = agentEmails.map((agent) => agent.email);
           const toEmails = [user.email, ...agentEmailList];
+          const toUserIds = [...agentIds, user._id]
           const options = {
             to: toEmails,
-            subject: 'New Project Create✔',
+            subject: 'New Project Assigned ✔',
             template: 'CREATE-PROJECT',
             projectName: req.body.projectName,
             projectDescription: req.body.projectDescription,
             user,
           };
-          await sendEmailNotify(options);
+          const emailSendCheck = await sendEmailNotify(options);
+          if (emailSendCheck) {
+            for (const userId of toUserIds) {
+              const notifyUser = userId;
+              const message = `${options.subject}Project Name - ${options.projectName},Description - ${options.projectDescription}`;
+              const status = "unseen";
+              const type = "project";
+
+              storeNotification(message, notifyUser, status, type);
+              const resultNotify = await storeNotification.save();
+
+              console.log("resultNotify", resultNotify)
+            }
+          }
+          else {
+            console.log("email not send")
+          }
+
           for (const agentId of agentIds) {
             const newConversation = new Conversation({
               members: [agentId, contractorId],
@@ -408,10 +449,14 @@ projectRouter.post(
   isAuth,
   isAdminOrSelf,
   expressAsyncHandler(async (req, res) => {
+
     try {
       const projectId = req.params.id;
+      const previousProject = await Project.findById(projectId);
+      const previousAssignedAgent = previousProject.assignedAgent;
       const agent = req.body.assignedAgent;
       const contractorId = req.body.projectOwner;
+      const user = await User.findById(contractorId, 'first_name email');
       const agentIds = agent.map((agent) => agent.agentId);
       const updatedProject = await Project.findByIdAndUpdate(
         projectId,
@@ -420,18 +465,47 @@ projectRouter.post(
         },
         { new: true }
       );
-      console.log(updatedProject)
-      const agentEmails = await User.find({ _id: { $in: agentIds } }, 'email');
+
+      const updatedAssignedAgent = updatedProject.assignedAgent;
+
+      const newAssignedAgent = updatedAssignedAgent.filter((updatedAgent) => {
+        return !previousAssignedAgent.some((previousAgent) => previousAgent.agentId.equals(updatedAgent.agentId));
+      });
+
+      const filterAgentIds = newAssignedAgent.map((agent) => agent.agentId.toString())
+      const agentEmails = await User.find({ _id: { $in: filterAgentIds } }, 'email');
       const agentEmailList = agentEmails.map((agent) => agent.email);
+      const toUserIds = [...filterAgentIds, contractorId]
+
       const options = {
-        to: agentEmailList,
-        subject: 'New Project Create ✔',
+        to: [agentEmailList, user.email],
+        subject: 'New Project Assign ✔',
         template: 'CREATE-PROJECT',
         projectName: updatedProject.projectName,
         projectDescription: updatedProject.projectDescription,
         agentEmailList,
       };
-      await sendEmailNotify(options);
+
+      const emailSendCheck = await sendEmailNotify(options);
+
+      if (emailSendCheck) {
+        for (const userId of toUserIds) {
+          const notifyUser = userId;
+          const message = `${options.subject}Project Name - ${options.projectName},Description - ${options.projectDescription}`;
+          const status = "unseen";
+          const type = "project";
+
+          storeNotification(message, notifyUser, status, type);
+
+          const resultNotify = await storeNotification.save();
+
+          console.log("resultNotify", resultNotify)
+        }
+      }
+      else {
+        console.log("email not send")
+      }
+
 
       for (const agentId of agentIds) {
         const existingConversation = await Conversation.findOne({
@@ -450,15 +524,6 @@ projectRouter.post(
           console.log("Conversation already exists:", existingConversation);
         }
       }
-
-      // for (const agentId of agentIds) {
-      //   const newConversation = new Conversation({
-      //     members: [agentId, contractorId],
-      //     projectId: projectId,
-      //   });
-      //   await newConversation.save();
-      //   console.log(newConversation)
-      // }
 
       res.status(200).json({ updatedProject, agent: agentIds });
 
@@ -481,6 +546,8 @@ projectRouter.put(
         return res.status(403).json({ error: 'Access denied' });
       }
       const projectId = req.params.id;
+      const previousProject = await Project.findById(projectId);
+      const previousAssignedAgent = previousProject.assignedAgent;
       const contractorId = req.body.projectOwner;
       const assignedAgent = req.body.assignedAgent;
       const agentIds = assignedAgent
@@ -502,7 +569,7 @@ projectRouter.put(
         { $set: updateFields },
         { new: true }
       );
-      console.log("updatedProject", updatedProject)
+
       if (contractorOnly) {
         const options = {
           to: user.email,
@@ -512,11 +579,35 @@ projectRouter.put(
           projectDescription: updatedProject.projectDescription,
           user,
         };
-        await sendEmailNotify(options);
+        const emailSendCheck = await sendEmailNotify(options);
+        if (emailSendCheck) {
+          for (const userId of agentIds) {
+            const notifyUser = userId;
+            const message = `${options.subject}Project Name - ${options.projectName},Description - ${options.projectDescription}`;
+            const status = "unseen";
+            const type = "project";
+
+            storeNotification(message, notifyUser, status, type);
+
+            const resultNotify = await storeNotification.save();
+
+            console.log("resultNotify", resultNotify)
+            io.emit('emailSent', { userId: notifyUser });
+          }
+
+        }
       } else {
 
-        const agentEmails = await User.find({ _id: { $in: agentIds } }, 'email');
+        const updatedAssignedAgent = updatedProject.assignedAgent;
+
+        const newAssignedAgent = updatedAssignedAgent.filter((updatedAgent) => {
+          return !previousAssignedAgent.some((previousAgent) => previousAgent.agentId.equals(updatedAgent.agentId));
+        });
+
+        const filterAgentIds = newAssignedAgent.map((agent) => agent.agentId.toString())
+        const agentEmails = await User.find({ _id: { $in: filterAgentIds } }, 'email');
         const agentEmailList = agentEmails.map((agent) => agent.email);
+        const toUserIds = [...filterAgentIds, contractorId]
         const options = {
           to: [...agentEmailList, user.email],
           subject: 'New Project Assigned ✔',
@@ -525,7 +616,25 @@ projectRouter.put(
           projectDescription: updatedProject.projectDescription,
           user,
         };
-        await sendEmailNotify(options);
+        const emailSendCheck = await sendEmailNotify(options);
+        if (emailSendCheck) {
+          for (const userId of toUserIds) {
+            const notifyUser = userId;
+            const message = `${options.subject}Project Name - ${options.projectName},Description - ${options.projectDescription}`;
+            const status = "unseen";
+            const type = "project";
+
+            storeNotification(message, notifyUser, status, type);
+
+            const resultNotify = await storeNotification.save();
+
+            console.log("resultNotify++++++++++++++", resultNotify)
+          }
+        }
+        else {
+          console.log("email not send")
+        }
+
 
 
         for (const agentId of agentIds) {

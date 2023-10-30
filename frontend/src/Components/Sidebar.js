@@ -199,26 +199,43 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 Project List
               </li>
             </Link>
-        
+
           </>
         ) : null}
-           <Link
-              to="/projectNotification"
-              className="text-decoration-none"
-              onClick={handlSmallScreeneClick}
-            >
-              <li
-                className={
-                  selectedItem === 'projectNotification' ? 'selected' : ''
-                }
-                onClick={() => {
-                  setSelectedItem('projectNotification');
-                }}
-              >
-                <IoMdNotifications className="me-3 fs-5" />
-                Project Notification
-              </li>
-            </Link>
+        <Link
+          to="/notificationScreen"
+          className="text-decoration-none"
+          onClick={handlSmallScreeneClick}
+        >
+          <li
+            className={
+              selectedItem === 'notificationScreen' ? 'selected' : ''
+            }
+            onClick={() => {
+              setSelectedItem('notificationScreen');
+            }}
+          >
+            <IoMdNotifications className="me-3 fs-5" />
+            Notification
+          </li>
+        </Link>
+        {/* <Link
+          to="/projectNotification"
+          className="text-decoration-none"
+          onClick={handlSmallScreeneClick}
+        >
+          <li
+            className={
+              selectedItem === 'projectNotification' ? 'selected' : ''
+            }
+            onClick={() => {
+              setSelectedItem('projectNotification');
+            }}
+          >
+            <IoMdNotifications className="me-3 fs-5" />
+            Project Notification
+          </li>
+        </Link> */}
         <Link
           to="#Logout"
           onClick={signoutHandler}

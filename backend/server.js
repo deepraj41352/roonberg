@@ -14,6 +14,9 @@ import cron from 'node-cron';
 import Imap from 'node-imap';
 import nodemailer from 'nodemailer';
 import EmailParser from 'email-reply-parser';
+import Notification from './Models/notificationModel.js';
+
+
 
 dotenv.config();
 mongoose
@@ -98,6 +101,24 @@ function sendEmail(to, subject, message) {
     }
   });
 }
+
+export function storeNotification(message, notifyUser, status, type) {
+  const newNotification = new Notification({
+    type,
+    userId: notifyUser,
+    status,
+    message,
+  });
+
+  newNotification.save()
+    .then(savedNotification => {
+      console.log(savedNotification)
+    })
+    .catch(error => {
+      console.log(error)
+    });
+}
+
 
 // Function to process emails
 // async function processEmails() {

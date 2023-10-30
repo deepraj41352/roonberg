@@ -425,6 +425,8 @@ export default function AdminProjectListScreen() {
     setMorefieldsModel(true)
   }
 
+  console.log("agents", agents)
+
   return (
     <>
       <div className="px-3 mt-3">
@@ -643,6 +645,22 @@ export default function AdminProjectListScreen() {
                           </FormControl>
                         </div>
                       ))} */}
+                      <div className='cateAgentcontainer'>
+                        {agents.length > 0 ?
+                          (
+                            agents.map((agentCate, index) => (
+                              <div className='cateAgentItem' key={index}>
+                                <p><b>Category : </b>{agentCate.categoryName} <b>&</b> &nbsp; </p>
+                                <p><b> Agent : </b>{agentCate.agentName}</p>
+                              </div>
+                            ))
+                          ) : (
+
+                            <p className='px-3'>Add Category And Agent</p>
+
+                          )}
+
+                      </div>
                       <div className='d-flex align-items-center mb-3'>
                         <div className='d-flex align-items-center' onClick={moreFieldsopen}>
                           <MdPlaylistAdd color="black" className='mx-2 ' />

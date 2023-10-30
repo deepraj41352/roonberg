@@ -33,6 +33,20 @@ code {
 }
 
 /* Gaytri css start  */
+.cateAgentcontainer {
+  border: 1px solid rgb(194, 194, 194);
+  border-radius: 5px;
+}
+.cateAgentItem {
+  border-radius: 5px;
+  margin: 5px;
+  background-color: #a3bce4;
+  color: #fff;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  padding: 0px 5px;
+}
 .scrollInAdminproject {
   max-height: 500px;
   overflow-y: auto;
@@ -554,9 +568,8 @@ body {
 .timeago {
   font-size: 12px;
 }
-.timeago2{
+.timeago2 {
   font-size: 13px;
-
 }
 .chat-senderMsg {
   display: flex;
@@ -579,7 +592,6 @@ body {
   max-width: 60%;
   margin-left: 40%;
   margin-top: 25px;
-
 }
 
 .chat-receiverMsg-inner {
@@ -652,30 +664,29 @@ body {
   }
 }
 
-.removeBtnCard{
+.removeBtnCard {
   margin-top: 26px;
 }
-@media(max-width:600px){
-.assign-card-input{
-  /* min-width: 100px; */
-  max-width: 150px;
-}
-}
-@media(max-width:480px){
-  .assign-card-div{
-flex-direction: column;
-
+@media (max-width: 600px) {
+  .assign-card-input {
+    /* min-width: 100px; */
+    max-width: 150px;
   }
-  .removeBtnCard{
+}
+@media (max-width: 480px) {
+  .assign-card-div {
+    flex-direction: column;
+  }
+  .removeBtnCard {
     margin-top: 0px !important;
   }
 }
-@media(max-width:380px){
-  .contrator-agent-inputBox{
+@media (max-width: 380px) {
+  .contrator-agent-inputBox {
     flex-direction: column;
   }
 }
-.chat-dp{
+.chat-dp {
   height: 30px;
   width: 30px;
   border-radius: 50%;
@@ -691,12 +702,19 @@ flex-direction: column;
   object-fit: cover;
   /* background-position: center; */
 }
-.icon-for-upload{
-display: flex;
-justify-content: center;
-align-items: center;
-margin-left: 7px !important;
+.icon-for-upload {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 7px !important;
 }
-.btn-send{
-  background-color: linear-gradient( 1deg, rgba(0, 0, 0, 1) 0%, rgba(17, 17, 74, 1) 68%, rgba(0, 0, 0, 1) 93% ) !important;
+.btn-send {
+  background-color: linear-gradient(
+    1deg,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(17, 17, 74, 1) 68%,
+    rgba(0, 0, 0, 1) 93%
+  ) !important;
 }
+
+/*  */

@@ -55,6 +55,7 @@ import AdminAssignAgent from './Screens/AdminAssignAgentScreen';
 import AgentEditProject from './Agent/AgentEditProjectScreen';
 import ContractorProjectScreen from './Components/Contractor/contractorProjectScreen';
 import SuperadminEditAdmin from './Screens/SuperadminEditAdmin';
+import NotificationScreen from './Screens/NotificationScreen';
 
 
 function App() {
@@ -333,14 +334,19 @@ function App() {
                       path="/agentEditProject/:id"
                       element={<AgentEditProject />}
                     />
+
+                    <Route
+                      path="/notificationScreen"
+                      element={<NotificationScreen />}
+                    />
                   </Routes>
                 </div>
               </main>
             </div>
           </div>
-        </Container>
-      </div>
-    </div>
+        </Container >
+      </div >
+    </div >
   );
 }
 
