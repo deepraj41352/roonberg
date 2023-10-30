@@ -1,15 +1,18 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const MessageSchema = new mongoose.Schema(
   {
     conversationId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Conversation',
+      ref: "Conversation",
     },
     sender: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
     },
+    senderFirstName: { type: String },
+    senderLastName: { type: String },
+    Sender_Profile: { type: String },
     image: { type: String },
     audio: { type: String },
     video: { type: String },
@@ -20,5 +23,5 @@ const MessageSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Message = mongoose.model('Message', MessageSchema);
+const Message = mongoose.model("Message", MessageSchema);
 export default Message;

@@ -1,17 +1,17 @@
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import { Container, Row, Col, Card } from 'react-bootstrap/';
-import { Link, useNavigate } from 'react-router-dom';
-import Validations from '../Components/Validations';
-import { FaEye, FaRegEyeSlash } from 'react-icons/fa';
-import { useContext, useState, useEffect } from 'react';
-import { Store } from '../Store';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import { Container, Row, Col, Card } from "react-bootstrap/";
+import { Link, useNavigate } from "react-router-dom";
+import Validations from "../Components/Validations";
+import { FaEye, FaRegEyeSlash } from "react-icons/fa";
+import { useContext, useState, useEffect } from "react";
+import { Store } from "../Store";
+import axios from "axios";
+import { toast } from "react-toastify";
 function SignUpForm() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -23,11 +23,11 @@ function SignUpForm() {
   const { userInfo } = state;
 
   useEffect(() => {
-    const rememberedUser = localStorage.getItem('rememberedUser');
+    const rememberedUser = localStorage.getItem("rememberedUser");
     if (rememberedUser) {
       const { email, password } = JSON.parse(rememberedUser);
-      document.getElementById('username').value = email;
-      document.getElementById('password').value = password;
+      document.getElementById("username").value = email;
+      document.getElementById("password").value = password;
       setEmail(email);
       setPassword(password);
     }
@@ -39,21 +39,21 @@ function SignUpForm() {
 
     if (rememberMe) {
       localStorage.setItem(
-        'rememberedUser',
+        "rememberedUser",
         JSON.stringify({ email, password })
       );
     }
 
     try {
-      const { data } = await axios.post('/api/user/signin', {
+      const { data } = await axios.post("/api/user/signin", {
         email,
         password,
       });
-      ctxDispatch({ type: 'USER_SIGNIN', payload: data });
-      localStorage.setItem('userInfo', JSON.stringify(data));
+      ctxDispatch({ type: "USER_SIGNIN", payload: data });
+      localStorage.setItem("userInfo", JSON.stringify(data));
 
-      toast.success('Login successful');
-      navigate('/dashboard');
+      toast.success("Login successful !");
+      navigate("/dashboard");
     } catch (err) {
       toast.error(err.response?.data?.message);
     } finally {
@@ -63,7 +63,7 @@ function SignUpForm() {
 
   useEffect(() => {
     if (userInfo) {
-      navigate('/dashboard');
+      navigate("/dashboard");
     }
   }, [userInfo, navigate]);
 
@@ -102,7 +102,7 @@ function SignUpForm() {
                         id="password"
                         value={password}
                         className="pswd-input"
-                        type={showPassword ? 'text' : 'password'}
+                        type={showPassword ? "text" : "password"}
                         onChange={(e) => {
                           setPassword(e.target.value);
                         }}
@@ -131,7 +131,7 @@ function SignUpForm() {
                   type="submit"
                   disabled={isSubmiting}
                 >
-                  {isSubmiting ? 'Submiting...' : 'Submit'}
+                  {isSubmiting ? "Submiting..." : "Submit"}
                 </Button>
                 <Form.Group className="my-3">
                   <Link to="/ForgetPassword">Forgot Password?</Link>

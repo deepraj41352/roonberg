@@ -232,7 +232,7 @@ export default function AdminContractorListScreen() {
               onClick={handleModel}
             >
               <BiPlusMedical className="mx-2" />
-              Add ContractorF
+              Add Contractor
             </Button>
             <Box sx={{ height: 400, width: "100%" }}>
               <DataGrid

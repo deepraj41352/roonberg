@@ -564,6 +564,7 @@ body {
 
   justify-content: start;
   max-width: 60%;
+  margin-top: 20px;
 }
 .chat-senderMsg-inner {
   background-color: #a0ddd0;
@@ -571,7 +572,6 @@ body {
   border-top-left-radius: 0px !important;
   text-align: start;
   margin-bottom: 0;
-  margin-top: 20px;
 }
 .chat-receiverMsg {
   display: flex;
@@ -579,6 +579,7 @@ body {
   align-items: end;
   max-width: 60%;
   margin-left: 40%;
+  margin-top: 20px;
 }
 
 .chat-receiverMsg-inner {
@@ -587,7 +588,6 @@ body {
   border-top-right-radius: 0px !important;
   text-align: start;
   margin-bottom: 0;
-  margin-top: 20px;
 }
 .chatWindowBody {
   overflow: auto; /* Add scrollbars when content overflows */
@@ -697,4 +697,9 @@ body {
 .category-agent-block {
   border: 1px solid #c4c4c4;
   background-color: #eee;
+}
+.chat-dp {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
 }
