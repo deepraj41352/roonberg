@@ -5,6 +5,7 @@ import {
   CardFooter,
   CardHeader,
   Form,
+  Image ,
   InputGroup,
 } from "react-bootstrap";
 import { IoSendSharp } from "react-icons/io5";
@@ -16,12 +17,16 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { format } from "timeago.js";
-import { BsFillMicFill, BsFillMicMuteFill } from "react-icons/bs";
+import { BsDownload, BsFillMicFill, BsFillMicMuteFill } from "react-icons/bs";
 import { FiUpload } from "react-icons/fi";
 import Modal from "react-bootstrap/Modal";
 import { ColorRing, ThreeDots } from "react-loader-spinner";
 import Button from "react-bootstrap/Button";
-
+import { Editor } from "@tinymce/tinymce-react";
+// import { EditorValue } from "react-rte";
+import MUIRichTextEditor from 'mui-rte';
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { MdCancel } from "react-icons/md";
 
 function ChatWindowScreen() {
   const { id } = useParams();
@@ -45,8 +50,14 @@ function ChatWindowScreen() {
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [audioStream, setAudioStream] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
+  const [editorCheck, setEditorCheck] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [imageUrl, setImageUrl] = useState(null);
+
+  const [showImage, setShowImage] = useState(false);
+
+
   const [mediaType, setMediaType] = useState("image");
   const audioChunks = useRef([]);
   const audioRef = useRef();
@@ -321,9 +332,12 @@ function ChatWindowScreen() {
   const showFontStyleBox = () => {
     setShowFontStyle(!showFontStyle);
   };
+  
   // const [messages, setMessages] = useState([]);
+  const [clearEditor, setClearEditor] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const handleSendMessage = async () => {
+    setClearEditor(true); 
     setShowModal(false);
     const messageObject = {
       senderFirstName: userInfo.first_name,
@@ -525,7 +539,7 @@ function ChatWindowScreen() {
           text: newMessage,
         });
       }
-
+      setEditorValue({content: "" });
       try {
         const { data } = await axios.post("/api/message/", {
           senderFirstName: userInfo.first_name,
@@ -539,6 +553,7 @@ function ChatWindowScreen() {
         console.log(err.response?.data?.message);
       }
     }
+
   };
 
   useEffect(() => {
@@ -548,8 +563,19 @@ function ChatWindowScreen() {
   // console.log("conversationID ", conversationID);
   // console.log("chatMessages ", chatMessages);
   const handleClose = () => {
+    setShowImage(false)
     setShowModal(false);
+    setSelectedfile(null)
+    setSelectedFileAudio(null);
+    setSelectedFileVideo(null);
+    setSelectedAudio(null)
+    setSelectedImage(null)
+    setSelectedVideo(null)
   };
+ const handleforshowimage=(e)=>{
+    setShowImage(true)
+  }
+
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
@@ -557,7 +583,38 @@ function ChatWindowScreen() {
       handleSendMessage();
     }
   };
+  // const myTheme = createTheme({
+  //   // Set up your custom MUI theme here
+  // });
+  
+  const [editorValue,setEditorValue]=useState({content:''})
+  const handleEditorChange = (data) => {
+   // setEditorValue({content});
+   console.log('content ',data);
+    setNewMessage(data)
+  };
 
+  const handleDownload = () => {
+    // Create an invisible anchor element
+    const downloadLink = document.createElement('a');
+    downloadLink.href = imageUrl;
+    downloadLink.target = '_blank';
+    downloadLink.download = 'downloaded-image.png'; // Specify the desired file name
+
+    // Simulate a click on the anchor element to trigger the download
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  };
+
+  const handleforsetImage = (e) => {
+    setShowImage(true)
+    setImageUrl(e.target.src)
+    };
+
+
+
+  console.log("image for the modal",imageUrl)
   return (
     <div className=" justify-content-center align-items-center">
       <div className="d-flex justify-content-center gap-3 ">
@@ -574,9 +631,9 @@ function ChatWindowScreen() {
                         ref={scrollRef}
                         className="chat-receiverMsg d-flex flex-column"
                       >
-                        <div className="d-flex">
-                          <div className="d-flex flex-column  ">
-                            <div className="text-start px-2 timeago2">
+                        <div className="d-flex w-100">
+                          <div className="d-flex flex-column forWidth ">
+                            <div className="text-start d-flex justify-content-end  px-2 timeago2">
                               {item.senderFirstName} {item.senderLastName}
                             </div>
                             <p
@@ -589,26 +646,25 @@ function ChatWindowScreen() {
                           </div>
                           <div>
                             {" "}
-                            <img
+                            <img 
                               className="chat-dp"
-                              src={item.Sender_Profile}
+                              src={item.Sender_Profile?(item.Sender_Profile):("./avatar.png")}
                             ></img>
                           </div>
                         </div>
                       </div>
                     ) : (
+                      <>
                       <div
                         ref={scrollRef}
-                        className="chat-receiverMsg d-flex flex-column"
+                        className="chat-receiverMsg d-flex flex-row"
                       >
+                        <div className="w-100 mediachats" >
                         <div className="d-flex flex-row">
                           <div className="text-start px-2 timeago2">
                             {item.senderFirstName} {item.senderLastName}
                           </div>
-                          <img
-                            className="chat-dp"
-                            src={item.Sender_Profile}
-                          ></img>
+                        
                         </div>
                         {item.audio ? (
                           <audio
@@ -627,7 +683,8 @@ function ChatWindowScreen() {
                                 <source src={item.video} type="video/mp4" />
                               </video>
                             ) : (
-                              <img
+                              <>
+                              <img onClick={handleforsetImage}
                                 src={
                                   item.conversationId
                                     ? item.image
@@ -635,12 +692,23 @@ function ChatWindowScreen() {
                                 }
                                 className="chat-receiverMsg-inner w-100 p-2"
                               />
+                            </>
                             )}
                           </>
                         )}
 
                         <div className="timeago">{format(item.createdAt)}</div>
+                        </div>
+
+                        <img
+                        className="chat-dp"
+                        src={item.Sender_Profile?(item.Sender_Profile):("./avatar.png")}
+                        ></img>
+
+
                       </div>
+                       
+                        </>
                     )}
                   </>
                 ) : (
@@ -650,15 +718,15 @@ function ChatWindowScreen() {
                         ref={scrollRef}
                         className="chat-senderMsg d-flex flex-column "
                       >
-                        <div className="d-flex">
+                        <div className="d-flex w-100">
                           <div>
                             {" "}
                             <img
                               className="chat-dp"
-                              src={item.Sender_Profile}
+                              src={item.Sender_Profile?(item.Sender_Profile):("./avatar.png")}
                             ></img>
                           </div>
-                          <div className="d-flex flex-column  ">
+                          <div className="d-flex flex-column  forWidth  ">
                             <div className="text-start px-2 timeago2">
                               {item.senderFirstName} {item.senderLastName}
                             </div>
@@ -675,13 +743,15 @@ function ChatWindowScreen() {
                     ) : (
                       <div
                         ref={scrollRef}
-                        className="chat-senderMsg d-flex flex-column "
+                        className="chat-senderMsg d-flex flex-row "
                       >
-                        <div className="d-flex flex-row">
-                          <img
+                         <img
                             className="chat-dp"
-                            src={item.Sender_Profile}
-                          ></img>
+                            src={item.Sender_Profile?(item.Sender_Profile):("./avatar.png")}
+                            ></img>
+                        <div className="w-100">
+                        <div className="d-flex flex-row">
+                         
                           <div className="text-start px-2 timeago2">
                             {item.senderFirstName} {item.senderLastName}
                           </div>
@@ -704,7 +774,8 @@ function ChatWindowScreen() {
                                 <source src={item.video} type="video/mp4" />
                               </video>
                             ) : (
-                              <img
+                              <>                              <img
+                              onClick={handleforsetImage}
                                 src={
                                   item.conversationId
                                     ? item.image
@@ -712,16 +783,31 @@ function ChatWindowScreen() {
                                 }
                                 className="chat-senderMsg-inner w-100 p-2"
                               />
+                              
+                            </>
+
                             )}
                           </>
                         )}
                         <div className="timeago">{format(item.createdAt)}</div>
+
+                        </div>
                       </div>
                     )}
                   </>
                 )}
               </>
             ))}
+               <Modal className="modal-content1" show={showImage} onHide={handleClose}>
+                              
+                              <MdCancel className="close-button" onClick={handleClose}/>
+      
+                              <img
+                              className="w-100"
+                                src={imageUrl}
+                              />
+                                <BsDownload className="btn-send downloadBtn" onClick={handleDownload}/>
+                            </Modal>
           </CardBody>
           <CardFooter className="d-flex align-items-center">
             <Form className="w-100">
@@ -737,12 +823,28 @@ function ChatWindowScreen() {
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                 />
-                <div style={{ display: showFontStyle ? "block" : "none" }}>
+                <div style={{ display: showFontStyle ? "block" : "none" }} className="richEditor" >
                   <MyStatefulEditor
                     markup=""
-                    value={newMessage}
+                    clearEditor={clearEditor}
+        setClearEditor={setClearEditor}
                     onChange={onChange}
                   />
+                   {/* <Editor
+          value={editorValue.content}
+          init={{
+            height: 200,
+            menubar: true
+          }}
+          onEditorChange={handleEditorChange}
+        /> */}
+    {/* <ThemeProvider theme={myTheme}>
+    <MUIRichTextEditor
+      label="Type something here..."
+      onSave={handleEditorChange}
+      inlineToolbar={true}
+    />
+  </ThemeProvider>, */}
                 </div>
                 <Form.Group className="icon-for-upload">
       <Form.Label htmlFor="file-input" className="custom-file-upload">
@@ -771,7 +873,7 @@ function ChatWindowScreen() {
                   />
                 </div>
                 <div className="d-flex justify-content-center align-items-center ps-2 ">
-                  <RxFontStyle onClick={showFontStyleBox} />
+                  <RxFontStyle className="w-100 rxfontstryle" onClick={showFontStyleBox} />
                 </div>
               </InputGroup>
             </Form>
@@ -783,7 +885,7 @@ function ChatWindowScreen() {
                 ariaLabel="blocks-loading"
                 wrapperStyle={{}}
                 wrapperClass="blocks-wrapper"
-                colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
+                colors={["rgba(0, 0, 0, 1) 0%, rgba(17, 17, 74, 1) 68%, rgba(0, 0, 0, 1) 93%"]}
               />
             ) : (
               <IoSendSharp
@@ -793,11 +895,11 @@ function ChatWindowScreen() {
               />
             )}
           </CardFooter>
-        </Card>
+        </Card> 
         <Card className="chatWindowProjectInfo mt-3">
           {projectData ? (
             <Form className="px-3">
-              <Form.Group className="mb-3">
+              <Form.Group className="mb-3 projetStatusChat">
                 <Form.Label className="fw-bold">Project Name</Form.Label>
                 <Form.Control
                   type="text"
@@ -806,7 +908,7 @@ function ChatWindowScreen() {
                   value={projectData && projectData.projectName}
                 />
               </Form.Group>
-              <Form.Group className="mb-3" controlId="formBasicPassword">
+              <Form.Group className="mb-3 " controlId="formBasicPassword">
                 <Form.Label className="mb-1 fw-bold">Project Status</Form.Label>
                 <Form.Select
                   value={projectStatus}

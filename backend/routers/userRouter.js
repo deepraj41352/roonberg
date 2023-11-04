@@ -495,6 +495,7 @@ export const uploadDoc = async (req, mediaType) => {
     };
 
     const profileUri = await streamUpload(req);
+
     return profileUri.url;
   } catch (error) {
     console.log('Cloudinary Error ', error);
@@ -547,12 +548,14 @@ userRouter.post(
 
         const resetLink = `${baseUrl()}/reset-password/${token}`;
         console.log(`${token}`);
+        console.log(`${user.first_name}`);
 
         const options = {
           to: `<${user.email}>`,
-          subject: 'Reset Password ✔',
-          template: 'RESET-PASS',
-          resetLink,
+          subject: 'Create Password ✔',
+          template: 'RESET-PASS-ADD',
+          resetLink:resetLink,
+          first_name:user.first_name,
         };
 
         // Send the email

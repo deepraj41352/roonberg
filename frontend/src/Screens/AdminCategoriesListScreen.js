@@ -21,6 +21,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import AvatarImage from '../Components/Avatar';
+import { ThreeDots } from "react-loader-spinner";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -246,6 +247,28 @@ export default function AdminContractorListScreen() {
 
   return (
     <>
+     <div className="px-3 mt-3">
+        {loading ? (
+          <>
+            <div className="ThreeDot">
+              <ThreeDots
+                height="80"
+                width="80"
+                radius="9"
+                className="ThreeDot justi`fy-content-center"
+                color="#0e0e3d"
+                ariaLabel="three-dots-loading"
+                wrapperStyle={{}}
+                wrapperClassName=""
+                visible={true}
+              />
+            </div>
+          </>
+        ) : error ? (
+          <div>{error}</div>
+        ) : (
+
+<>
       <Button
         variant="outlined"
         className=" m-2 d-flex globalbtnColor"
@@ -369,6 +392,9 @@ export default function AdminContractorListScreen() {
           </Form>
         </Box>
       </Modal>
+      </>
+       )}
+       </div>
     </>
   );
 }

@@ -57,8 +57,10 @@ import ContractorProjectScreen from './Components/Contractor/contractorProjectSc
 import SuperadminEditAdmin from './Screens/SuperadminEditAdmin';
 
 
+
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
   const theme = toggleState ? 'dark' : 'light';
@@ -74,10 +76,28 @@ function App() {
   const handleSearchScreen = () => {
     navigate('/searchScreen');
   };
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const closeDropdown = () => {
+    setIsDropdownOpen(false);
+  };
+  
+  const signoutHandler = () => {
+    const userConfirm = window.confirm('Are you sure you want to logout?');
+    if (userConfirm) {
+      ctxDispatch({ type: 'USER_SIGNOUT' });
+      localStorage.removeItem('userInfo');
+      window.location.href = '/';
+    }
+  };
+
 
   return (
     <div className={userInfo ? `App ${theme}` : `App`}>
-      <ToastContainer position="bottom-center" limit={1} />
+      <ToastContainer position="bottom-center" autoClose={500} limit={1} />
+ 
       <div>
         <Container fluid className="px-0">
           <div className="d-flex ">
@@ -139,12 +159,7 @@ function App() {
                         <Nav.Link href="#action1">
                           <BiShareAlt className="fs-4 admin-btn-logo" />
                         </Nav.Link>
-                        <Nav.Link href="#action2">
-                          <AiOutlineCheck className="fs-4 admin-btn-logo  " />
-                        </Nav.Link>
-                        <Nav.Link href="#">
-                          <CgProfile className="fs-4 admin-btn-logo " />
-                        </Nav.Link>
+                       
                         <Nav.Link href="#">
                           <FiClock className="fs-4 admin-btn-logo " />
                         </Nav.Link>
@@ -155,14 +170,25 @@ function App() {
                     </Navbar.Collapse>
                     <div
                       className="profile-icon me-1 ms-3"
-                      onClick={() => {
-                        navigate('/profile-screen');
-                      }}
+                      onClick={toggleDropdown}
+                      // onClick={() => {
+                      //   navigate('/profile-screen');
+                      // }}
                     >
                       <img
-                        className="w-100 h-100 profile-icon-inner"
-                        src={userInfo.profile_picture} alt="userimg"
+                        className="w-100 h-100 profile-icon-inner img-fornavs"
+                        src={userInfo.profile_picture?(userInfo.profile_picture):("./avatar.png")} alt="userimg"
                       ></img>
+                         {isDropdownOpen && (
+        <div className="dropdown-content" onClick={closeDropdown}>
+          <Link to="/profile-screen">Profile</Link>
+          <Link to="/projectNotification">Notification</Link>
+          <Link to="#">Setting</Link>
+          <hr></hr>
+          <Link  onClick={signoutHandler} to="#">Logout</Link>
+          {/* Add more options as needed */}
+        </div>
+      )}
                     </div>
                   </Container>
                 </Navbar>
@@ -196,7 +222,7 @@ function App() {
                 </Navbar>
               )}
               <main>
-                <div>
+                <div className='mainfordata'>
                   <Routes>
                     <Route path="/" element={<SignUpForm />} />
                     <Route

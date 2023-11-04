@@ -43,7 +43,7 @@ function ProfileScreen() {
       console.log("data.userdata", data.userData);
       ctxDispatch({ type: "USER_UPDATE", payload: data.userData });
       localStorage.setItem("userInfo", JSON.stringify(data.userData));
-      toast.success(data.message);
+      toast.success("Your Profile Has Been updated");
     } catch (err) {
       toast.error(err.response?.data?.message);
     } finally {
@@ -73,7 +73,7 @@ function ProfileScreen() {
                     <div className="d-flex gap-3">
                       <div>
                         <Form.Label className="mb-1">
-                          <img className="profile-icon-inner " src={userInfo.profile_picture} alt="user-image"></img>
+                          <img className="profile-icon-inner " src={userInfo.profile_picture?(userInfo.profile_picture):("./avatar.png")} alt="user-image"></img>
                         </Form.Label>
                       </div>
                       <div>

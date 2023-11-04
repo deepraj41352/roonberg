@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema(
     phone_number: { type: String },
     country: { type: String },
     dob: { type: String },
-    profile_picture: { type: String },
+    profile_picture: { type: String ,default:'https://res.cloudinary.com/dmhxjhsrl/image/upload/v1698911473/r5jajgkngwnzr6hzj7vn.jpg' },
     role: {
       type: String,
       default: 'contractor',

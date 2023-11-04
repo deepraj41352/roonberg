@@ -49,6 +49,9 @@ function SignUpForm() {
         email,
         password,
       });
+      if (!data.profile_picture) {
+        data.profile_picture = "./avatar.png"; // Replace with your default avatar URL
+      }
       ctxDispatch({ type: 'USER_SIGNIN', payload: data });
       localStorage.setItem('userInfo', JSON.stringify(data));
 

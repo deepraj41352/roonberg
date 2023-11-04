@@ -1,12 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
 
-import { HiClipboardList } from 'react-icons/hi';
+import { HiClipboardList, HiUserGroup } from 'react-icons/hi';
 import { CiBoxList } from 'react-icons/ci';
-import { FaListAlt, FaListUl } from 'react-icons/fa';
+import { FaListAlt, FaListUl , } from 'react-icons/fa';
+import { FaPeopleGroup } from 'react-icons/fa';
+
 import { IoMdNotifications } from 'react-icons/io';
 import { AiFillHome, AiOutlineProject } from 'react-icons/ai';
 import { CgProfile } from 'react-icons/cg';
-import { MdLogout } from 'react-icons/md';
+import { MdGroup, MdGroups2, MdLogout, MdOutlineGroups2 } from 'react-icons/md';
 import { BsFillChatLeftQuoteFill } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
 import { Store } from '../Store';
@@ -80,7 +82,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 setSelectedItem('adminList');
               }}
             >
-              <HiClipboardList className="me-3 fs-5" />
+              <MdOutlineGroups2 className="me-3 fs-5" />
               Admin List
             </li>
           </Link>
@@ -99,7 +101,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                   setSelectedItem('agentList');
                 }}
               >
-                <FaListAlt className="me-3 fs-5" />
+                <HiUserGroup className="me-3 fs-5" />
                 Agent List
               </li>
             </Link>
@@ -114,7 +116,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                   setSelectedItem('contractorList');
                 }}
               >
-                <FaListUl className="me-3 fs-5" />
+                <MdGroup className="me-3 fs-5" />
                 Contractor List
               </li>
             </Link>
@@ -129,7 +131,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                   setSelectedItem('categoriesList');
                 }}
               >
-                <CiBoxList className="me-3 fs-5" />
+                <FaListUl className="me-3 fs-5" />
                 Categories List
               </li>
             </Link>

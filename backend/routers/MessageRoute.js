@@ -15,11 +15,9 @@ MessageRouter.post("/audio", upload.single("media"), async (req, res) => {
   try {
     if (req.file) {
       const mediaType = req.body.mediaType;
-      console.log("mediasendingtypeaudio", req.body.mediaType);
 
       const media = await uploadDoc(req, mediaType);
       req.body.audio = media;
-      console.log("Media:", req.body.audio);
     }
     const newMessage = new Message(req.body);
     const savedMessage = await newMessage.save();
@@ -32,10 +30,8 @@ MessageRouter.post("/video", upload.single("media"), async (req, res) => {
   try {
     if (req.file) {
       const mediaType = req.body.mediaType;
-      console.log("mediasendingtypeaudio", req.body.mediaType);
       const media = await uploadDoc(req, mediaType);
       req.body.video = media;
-      console.log("Media:", req.body.video);
     }
     const newMessage = new Message(req.body);
     const savedMessage = await newMessage.save();

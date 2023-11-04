@@ -342,8 +342,6 @@ io.on("connection", (socket) => {
       receiverdId,
       text,
     }) => {
-      console.log("users",users)
-
       if (receiverdId.length == 2) {
         const agent = getUser(receiverdId[0]);
         const contractor = getUser(receiverdId[1]);
@@ -352,6 +350,7 @@ io.on("connection", (socket) => {
             senderFirstName,
             senderLastName,
             Sender_Profile,
+
             senderId,
             text,
           });
@@ -361,6 +360,7 @@ io.on("connection", (socket) => {
             senderFirstName,
             senderLastName,
             Sender_Profile,
+
             senderId,
             text,
           });
@@ -376,7 +376,7 @@ io.on("connection", (socket) => {
             text,
           });
         } else {
-          console.log("kara");
+          console.log("karannn");
         }
         const AdminUser = users.filter(
           (item) => item.role === "admin" || item.role === "superadmin"
