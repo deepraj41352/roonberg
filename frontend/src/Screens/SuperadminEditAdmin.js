@@ -124,127 +124,77 @@ function SuperadminEditAdmin() {
           </Row>
           <Row>
             <Col>
-              <Card className={`${theme}CardBody`}>
-                <div className="FormContainerEdit">
-                  {isSubmiting ? (
+              <div className="overlayLoading" >
+                <Card className={`${theme}CardBody`}>
+                  <div className="FormContainerEdit">
+
                     <>
-                      <div className="overlayLoading" >
-                        <ColorRing className="overlayLoadingItem1"
-                          visible={true}
-                          height="40"
-                          width="40"
-                          ariaLabel="blocks-loading"
-                          wrapperStyle={{}}
-                          wrapperClass="blocks-wrapper"
-                          colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
-                        />
-                        <Form onSubmit={submitHandler} className="p-4 w-100 formWidth " >
-                          <TextField
-                            className="mb-3"
-                            value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
-                            label="First Name"
-                            fullWidth
-                            required
+                      {isSubmiting && (
+                        <div className="overlayLoadingItem1">
+                          <ColorRing
+                            visible={true}
+                            height="40"
+                            width="40"
+                            ariaLabel="blocks-loading"
+                            wrapperStyle={{}}
+                            wrapperClass="blocks-wrapper"
+                            colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
                           />
-                          <TextField
-                            className="mb-3"
-                            value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
-                            label="Last Name"
-                            fullWidth
-                          />
-                          <TextField
-                            className="mb-3"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            label="Email"
-                            type="email"
-                            fullWidth
-                            disabled
-
-                          />
-                          <FormControl className="mb-3">
-                            <InputLabel>Select Status</InputLabel>
-                            <Select
-                              value={status}
-                              onChange={(e) => setStatus(e.target.value)}
-                              required
-                            >
-                              <MenuItem value={true} >Active</MenuItem>
-                              <MenuItem value={false}>Inactive</MenuItem>
-                            </Select>
-                          </FormControl>
-
-                          <div className="d-flex justify-content-left mt-4">
-                            <Button
-                              className=" py-1 w-25 globalbtnColor editFormBtn"
-                              variant="primary"
-                              type="submit"
-                              disabled={isSubmiting}
-                            >
-                              {isSubmiting ? "UPDATING" : "UPDATE"}
-                            </Button>
-                          </div>
-                        </Form>
-                      </div>
-                    </>
-                  ) : (
-                    <Form onSubmit={submitHandler} className="p-4 w-100 formWidth ">
-
-                      <TextField
-                        className="mb-3"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        label="First Name"
-                        fullWidth
-                        required
-                      />
-                      <TextField
-                        className="mb-3"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        label="Last Name"
-                        fullWidth
-                      />
-                      <TextField
-                        className="mb-3"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        label="Email"
-                        type="email"
-                        fullWidth
-                        disabled
-
-
-                      />
-                      <FormControl className="mb-3">
-                        <InputLabel>Select Status</InputLabel>
-                        <Select
-                          value={status}
-                          onChange={(e) => setStatus(e.target.value)}
+                        </div>
+                      )}
+                      <Form onSubmit={submitHandler} className="p-4 w-100 formWidth " >
+                        <TextField
+                          className="mb-3"
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          label="First Name"
+                          fullWidth
                           required
-                        >
-                          <MenuItem value={true} >Active</MenuItem>
-                          <MenuItem value={false}>Inactive</MenuItem>
-                        </Select>
-                      </FormControl>
+                        />
+                        <TextField
+                          className="mb-3"
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                          label="Last Name"
+                          fullWidth
+                        />
+                        <TextField
+                          className="mb-3"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          label="Email"
+                          type="email"
+                          fullWidth
+                          disabled
 
-                      <div className="d-flex justify-content-left mt-4">
-                        <Button
-                          className=" py-1 w-25 globalbtnColor editFormBtn"
-                          variant="primary"
-                          type="submit"
-                          disabled={isSubmiting}
-                        >
-                          {isSubmiting ? "UPDATING" : "UPDATE"}
-                        </Button>
-                      </div>
-                    </Form>
-                  )}
+                        />
+                        <FormControl className="mb-3">
+                          <InputLabel>Select Status</InputLabel>
+                          <Select
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value)}
+                            required
+                          >
+                            <MenuItem value={true} >Active</MenuItem>
+                            <MenuItem value={false}>Inactive</MenuItem>
+                          </Select>
+                        </FormControl>
 
-                </div>
-              </Card>
+                        <div className="d-flex justify-content-left mt-4">
+                          <Button
+                            className=" py-1 w-25 globalbtnColor editFormBtn"
+                            variant="primary"
+                            type="submit"
+                            disabled={isSubmiting}
+                          >
+                            {isSubmiting ? "UPDATING" : "UPDATE"}
+                          </Button>
+                        </div>
+                      </Form>
+                    </>
+                  </div>
+                </Card>
+              </div>
             </Col>
           </Row>
         </div>

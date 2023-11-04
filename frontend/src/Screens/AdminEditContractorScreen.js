@@ -120,164 +120,63 @@ function AdminEditContractor() {
           </Row>
           <Row>
             <Col>
-              <Card className={`${theme}CardBody`}>
-                <div className="FormContainerEdit">
-                  {isSubmiting ? (
+              <div className="overlayLoading" >
+                <Card className={`${theme}CardBody`}>
+                  <div className="FormContainerEdit">
+
                     <>
-                      <div className="overlayLoading" >
-                        <ColorRing className="overlayLoadingItem1"
-                          visible={true}
-                          height="40"
-                          width="40"
-                          ariaLabel="blocks-loading"
-                          wrapperStyle={{}}
-                          wrapperClass="blocks-wrapper"
-                          colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
-                        />
-                        <Form onSubmit={submitHandler} className="p-4 w-100 formWidth" >
-                          <TextField
-                            className="mb-3"
-                            value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
-                            label="First Name"
-                            fullWidth
-                            required
+                      {isSubmiting && (
+                        <div className="overlayLoadingItem1">
+                          <ColorRing
+                            visible={true}
+                            height="40"
+                            width="40"
+                            ariaLabel="blocks-loading"
+                            wrapperStyle={{}}
+                            wrapperClass="blocks-wrapper"
+                            colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
                           />
-                          <TextField
-                            className="mb-3"
-                            value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
-                            label="Last Name"
-                            fullWidth
-                          />
-                          <TextField
-                            className="mb-3"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            label="Email"
-                            type="email"
-                            fullWidth
-                            disabled
+                        </div>
+                      )}
 
-                          />
-                          <FormControl className="mb-3">
-                            <InputLabel>Select Status</InputLabel>
-                            <Select
-                              value={status}
-                              onChange={(e) => setStatus(e.target.value)}
-                              required
-                            >
-                              <MenuItem value={true} >Active</MenuItem>
-                              <MenuItem value={false}>Inactive</MenuItem>
-                            </Select>
-                          </FormControl>
-                          {/* <Form.Group className="mb-3 " controlId="formBasicEmail">
-                    <Form.Label className="mb-1 input-box">
-                      First Name
-                    </Form.Label>
-                    <Form.Control
-                      className="input-box-inner"
-                      onChange={(e) => setFirstName(e.target.value)}
-                      type="text"
-                      value={firstName}
-                      required 
-                    />
-
-<TextField
-                        className="mb-3"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        label="First Name"
-                        fullWidth
-                        required
-                      />
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label className="mb-1 input-box">
-                      Last Name
-                    </Form.Label>
-                    <Form.Control
-                      className="input-box-inner"
-                      onChange={(e) => setLastName(e.target.value)}
-                      type="text"
-                      value={lastName}
-                      required
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label className="mb-1 input-box">Email</Form.Label>
-                    <Form.Control
-                      className="input-box-inner"
-                      onChange={(e) => setEmail(e.target.value)}
-                      type="email"
-                      value={email}
-                      required
-                      disabled
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label className="mb-1">Status</Form.Label>
-                    <Form.Select
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value)}
-                    >
-                      <option value="true">Active</option>
-                      <option value="false">Inactive</option>
-                    </Form.Select>
-                  </Form.Group> */}
-
-                          <div className="d-flex justify-content-left mt-4">
-                            <Button
-                              className=" py-1 w-25 globalbtnColor updatingBtn"
-                              variant="primary"
-                              type="submit"
-                              disabled={isSubmiting}
-                            >
-                              {isSubmiting ? "UPDATING" : "UPDATE"}
-                            </Button>
-                          </div>
-                        </Form>
-                      </div>
-                    </>
-                  ) : (
-                    <Form onSubmit={submitHandler} className="p-4 w-100 formWidth" >
-                      <TextField
-                        className="mb-3"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        label="First Name"
-                        fullWidth
-                        required
-                      />
-                      <TextField
-                        className="mb-3"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        label="Last Name"
-                        fullWidth
-                      />
-                      <TextField
-                        className="mb-3"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        label="Email"
-                        type="email"
-                        fullWidth
-                        disabled
-
-                      />
-                      <FormControl className="mb-3">
-                        <InputLabel>Select Status</InputLabel>
-                        <Select
-                          value={status}
-                          onChange={(e) => setStatus(e.target.value)}
+                      <Form onSubmit={submitHandler} className="p-4 w-100 formWidth" >
+                        <TextField
+                          className="mb-3"
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          label="First Name"
+                          fullWidth
                           required
-                        >
-                          <MenuItem value={true} >Active</MenuItem>
-                          <MenuItem value={false}>Inactive</MenuItem>
-                        </Select>
-                      </FormControl>
-                      {/* <Form.Group className="mb-3 " controlId="formBasicEmail">
+                        />
+                        <TextField
+                          className="mb-3"
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                          label="Last Name"
+                          fullWidth
+                        />
+                        <TextField
+                          className="mb-3"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          label="Email"
+                          type="email"
+                          fullWidth
+                          disabled
+
+                        />
+                        <FormControl className="mb-3">
+                          <InputLabel>Select Status</InputLabel>
+                          <Select
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value)}
+                            required
+                          >
+                            <MenuItem value={true} >Active</MenuItem>
+                            <MenuItem value={false}>Inactive</MenuItem>
+                          </Select>
+                        </FormControl>
+                        {/* <Form.Group className="mb-3 " controlId="formBasicEmail">
                     <Form.Label className="mb-1 input-box">
                       First Name
                     </Form.Label>
@@ -332,21 +231,24 @@ function AdminEditContractor() {
                     </Form.Select>
                   </Form.Group> */}
 
-                      <div className="d-flex justify-content-left mt-4">
-                        <Button
-                          className=" py-1 w-25 globalbtnColor updatingBtn"
-                          variant="primary"
-                          type="submit"
-                          disabled={isSubmiting}
-                        >
-                          {isSubmiting ? "UPDATING" : "UPDATE"}
-                        </Button>
-                      </div>
-                    </Form>
-                  )}
+                        <div className="d-flex justify-content-left mt-4">
+                          <Button
+                            className=" py-1 w-25 globalbtnColor updatingBtn"
+                            variant="primary"
+                            type="submit"
+                            disabled={isSubmiting}
+                          >
+                            {isSubmiting ? "UPDATING" : "UPDATE"}
+                          </Button>
+                        </div>
+                      </Form>
 
-                </div>
-              </Card>
+                    </>
+
+
+                  </div>
+                </Card>
+              </div>
             </Col>
           </Row>
         </div>

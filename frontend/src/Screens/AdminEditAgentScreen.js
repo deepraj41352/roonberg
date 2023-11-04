@@ -143,12 +143,13 @@ function AdminEditAgent() {
           </Row>
           <Row>
             <Col>
-              <Card className={`${theme}CardBody`}>
-                <div className="FormContainerEdit">
-                  {isSubmiting ? (
-                    <>
-                      <div className="overlayLoading" >
-                        <ColorRing className="overlayLoadingItem1"
+              <div className="overlayLoading" >
+                <Card className={`${theme}CardBody`}>
+                  <div className="FormContainerEdit">
+
+                    {isSubmiting && (
+                      <div className="overlayLoadingItem1">
+                        <ColorRing
                           visible={true}
                           height="40"
                           width="40"
@@ -157,69 +158,9 @@ function AdminEditAgent() {
                           wrapperClass="blocks-wrapper"
                           colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
                         />
-                        <Form onSubmit={submitHandler} className="p-4 w-100 formWidth ">
-                          <TextField
-                            className="mb-3"
-                            value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
-                            label="First Name"
-                            fullWidth
-                            required
-                          />
-                          <TextField
-                            className="mb-3"
-                            value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
-                            label="Last Name"
-                            fullWidth
-                          />
-                          <TextField
-                            className="mb-3"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            label="Email"
-                            type="email"
-                            fullWidth
-                            disabled
-
-                          />
-                          <FormControl className="mb-3">
-                            <InputLabel>Select Status</InputLabel>
-                            <Select
-                              value={status}
-                              onChange={(e) => setStatus(e.target.value)}
-                              required
-                            >
-                              <MenuItem value={true} >Active</MenuItem>
-                              <MenuItem value={false}>Inactive</MenuItem>
-                            </Select>
-                          </FormControl>
-
-
-                          <FormControl className="mb-3">
-                            <InputLabel>Category</InputLabel>
-                            <Select required
-                              value={category} onChange={(e) => setCategory(e.target.value)}
-                            >
-                              {categoryDatas.map((items) => (
-                                <MenuItem key={items._id} value={items._id} >{items.categoryName}</MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                          <div className="d-flex justify-content-start mt-4">
-                            <Button
-                              className=" py-1 w-25 globalbtnColor updatingBtn"
-                              variant="primary"
-                              type="submit"
-                              disabled={isSubmiting}
-                            >
-                              {isSubmiting ? 'UPDATING' : 'UPDATE'}
-                            </Button>
-                          </div>
-                        </Form>
                       </div>
-                    </>
-                  ) : (
+                    )}
+
                     <Form onSubmit={submitHandler} className="p-4 w-100 formWidth ">
                       <TextField
                         className="mb-3"
@@ -280,11 +221,10 @@ function AdminEditAgent() {
                         </Button>
                       </div>
                     </Form>
-                  )}
 
-
-                </div>
-              </Card>
+                  </div>
+                </Card>
+              </div>
             </Col>
           </Row>
         </div>

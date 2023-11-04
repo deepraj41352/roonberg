@@ -153,12 +153,13 @@ function AdminEditCategory() {
           </Row>
           <Row>
             <Col>
-              <Card className={`${theme}CardBody`}>
-                <div className="FormContainerEdit">
-                  {isSubmiting ? (
-                    <>
-                      <div className="overlayLoading" >
-                        <ColorRing className="overlayLoadingItem1"
+              <div className="overlayLoading" >
+                <Card className={`${theme}CardBody`}>
+                  <div className="FormContainerEdit">
+
+                    {isSubmiting && (
+                      <div className="overlayLoadingItem1">
+                        <ColorRing
                           visible={true}
                           height="40"
                           width="40"
@@ -167,78 +168,13 @@ function AdminEditCategory() {
                           wrapperClass="blocks-wrapper"
                           colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
                         />
-
-
-                        <Form onSubmit={submitHandler} className="p-4 w-100 formWidth ">
-                          <Row>
-                            <Col>
-
-                              {categoryData.categoryImage !== 'null' ? (
-                                <Avatar src={categoryData.categoryImage} />
-                              ) : (
-                                <AvatarImage name={category} bgColor={color} />
-                              )}
-                            </Col>
-                            <Col>
-                              <Form.Group
-                                className="mb-3"
-                                controlId="formBasicPassword"
-                              >
-                                <Form.Control
-                                  disabled={isSubmiting}
-                                  className="input-box-inner"
-                                  type="file"
-                                  onChange={handleFileChange}
-                                />
-                              </Form.Group>
-                            </Col>
-                          </Row>
-
-
-                          <TextField
-                            className="mb-3"
-                            value={category}
-                            label="Category Name"
-                            fullWidth
-                            onChange={(e) => setCatogry(e.target.value)}
-                            required
-                          />
-                          <TextField
-                            className="mb-3"
-                            value={categoryDesc}
-                            label="Add Description"
-                            fullWidth
-                            onChange={(e) => setCatogryDesc(e.target.value)}
-
-                          />
-                          <FormControl className="mb-3">
-                            <InputLabel>Select Status</InputLabel>
-                            <Select
-                              value={status}
-                              onChange={(e) => setStatus(e.target.value)}
-                              required
-                            >
-                              <MenuItem value={true} >Active</MenuItem>
-                              <MenuItem value={false}>Inactive</MenuItem>
-                            </Select>
-                          </FormControl>
-                          <div className="d-flex justify-content-start mt-4">
-                            <Button
-                              className=" py-1 w-25 globalbtnColor updatingBtn"
-                              variant="primary"
-                              type="submit"
-                              disabled={isSubmiting}
-                            >
-                              {isSubmiting ? 'UPDATING' : 'UPDATE'}
-                            </Button>
-                          </div>
-                        </Form>
                       </div>
-                    </>
-                  ) : (
+                    )}
+
                     <Form onSubmit={submitHandler} className="p-4 w-100 formWidth ">
                       <Row>
                         <Col>
+
                           {categoryData.categoryImage !== 'null' ? (
                             <Avatar src={categoryData.categoryImage} />
                           ) : (
@@ -251,6 +187,7 @@ function AdminEditCategory() {
                             controlId="formBasicPassword"
                           >
                             <Form.Control
+                              disabled={isSubmiting}
                               className="input-box-inner"
                               type="file"
                               onChange={handleFileChange}
@@ -267,10 +204,6 @@ function AdminEditCategory() {
                         fullWidth
                         onChange={(e) => setCatogry(e.target.value)}
                         required
-                        InputLabelProps={{
-                          shrink: categoryData.categoryName ? true : false,
-
-                        }}
                       />
                       <TextField
                         className="mb-3"
@@ -302,10 +235,13 @@ function AdminEditCategory() {
                         </Button>
                       </div>
                     </Form>
-                  )}
 
-                </div>
-              </Card>
+
+
+
+                  </div>
+                </Card>
+              </div>
             </Col>
           </Row>
         </div>
