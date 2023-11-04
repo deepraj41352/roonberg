@@ -790,3 +790,7 @@ margin: 1px;
   background: #0000004a;
   color: white;
 }
+.badgesclass{
+  font-size: 10px !important;
+  left: 112% !important;
+}

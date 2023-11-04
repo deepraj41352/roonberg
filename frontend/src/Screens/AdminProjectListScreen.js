@@ -6,7 +6,7 @@ import { MdEdit } from 'react-icons/md';
 import { MdPlaylistRemove, MdPlaylistAdd } from 'react-icons/md'
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
-import { Form } from 'react-bootstrap';
+import { Badge, Form } from 'react-bootstrap';
 import { BiPlusMedical } from 'react-icons/bi';
 import { Store } from '../Store';
 import axios from 'axios';
@@ -462,7 +462,9 @@ export default function AdminProjectListScreen() {
               id="uncontrolled-tab-example"
               className={`mb-0  tab-btn ${theme}Tab`}
             >
-              <Tab className="tab-color" eventKey="All" title="All">
+              <Tab className="tab-color" eventKey="All" title={<span  class="position-relative">All   <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+   {projectData.length}
+  </span></span>}>
                 <Box sx={{ height: 400, width: '100%' }}>
                   <DataGrid
                     className={
@@ -777,7 +779,9 @@ export default function AdminProjectListScreen() {
                   </Box>
                 </Modal>
               </Tab>
-              <Tab className="tab-color" eventKey="Active" title="Active">
+              <Tab className="tab-color" eventKey="Active" title={<span  class="position-relative">Active   <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+   {projectActiveData.length}
+  </span></span>}>
                 <Box sx={{ height: 400, width: '100%' }}>
                   <DataGrid
                     className={
@@ -832,7 +836,9 @@ export default function AdminProjectListScreen() {
                   />
                 </Box>
               </Tab>
-              <Tab className="tab-color" eventKey="Completed" title="Completed">
+              <Tab className="tab-color" eventKey="Completed" title={<span  class="position-relative">Completed   <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+   {projectCompleteData.length}
+  </span></span>}>
                 <Box sx={{ height: 400, width: '100%' }}>
                   <DataGrid
                     className={
@@ -889,7 +895,9 @@ export default function AdminProjectListScreen() {
                   />
                 </Box>
               </Tab>
-              <Tab className="tab-color" eventKey="Qued" title="Qued">
+              <Tab className="tab-color" eventKey="Qued" title={<span  class="position-relative">Qued   <span class="badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+   {projectQuedData.length}
+  </span></span>}>
                 <Box sx={{ height: 400, width: '100%' }}>
                   <DataGrid
                     className={
@@ -945,7 +953,9 @@ export default function AdminProjectListScreen() {
                   />
                 </Box>
               </Tab>
-              <Tab className="tab-color" eventKey="Assigned" title="Assigned">
+              <Tab className="tab-color" eventKey="Assigned" title={<span  class="position-relative">Assigned   <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+   {assignedAgent.length}
+  </span></span>}>
                 <Box sx={{ height: 400, width: '100%' }}>
                   <DataGrid
                     className={
