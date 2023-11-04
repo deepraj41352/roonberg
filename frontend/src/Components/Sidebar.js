@@ -14,7 +14,7 @@ import { ImCross } from 'react-icons/im';
 
 function Sidebar({ sidebarVisible, setSidebarVisible }) {
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { userInfo } = state;
+  const { userInfo, NotificationData } = state;
   const [selectedItem, setSelectedItem] = useState(null);
   const [isSmallScreen, setIsSmallScreen] = useState(true);
 
@@ -70,7 +70,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
         </Link>
         {userInfo.role == 'superadmin' ? (
           <Link
-            to="/adminList"
+            to="/adminList-screen"
             className="text-decoration-none"
             onClick={handlSmallScreeneClick}
           >

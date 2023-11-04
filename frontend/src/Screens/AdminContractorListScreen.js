@@ -11,7 +11,7 @@ import axios from "axios";
 import { Store } from "../Store";
 import { toast } from "react-toastify";
 import { ImCross } from "react-icons/im";
-import { ThreeDots } from "react-loader-spinner";
+import { ColorRing, ThreeDots } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useReducer, useState } from "react";
 import Validations from "../Components/Validations";
@@ -147,7 +147,7 @@ export default function AdminContractorListScreen() {
       );
       if (response.status === 200) {
 
-        toast.success('Contractor added Successfully !');
+        toast.success('Contractor Created Successfully !');
         setIsModelOpen(false);
         dispatch({ type: 'UPDATE_SUCCESS', payload: true });
         dispatch({ type: 'FATCH_SUBMITTING', payload: false });
@@ -163,24 +163,24 @@ export default function AdminContractorListScreen() {
   };
   // --------------------------
   const deleteHandle = async (userid) => {
-    if (window.confirm('Are you sure to delete?')) {
+    if (window.confirm('Are You Sure To Delete?')) {
       try {
         const response = await axios.delete(`/api/user/${userid}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
 
         if (response.status === 200) {
-          toast.success('constractor deleted successfully!');
+          toast.success('Constractor Deleted Successfully!');
           dispatch({
             type: 'DELETE_SUCCESS',
             payload: true,
           });
         } else {
-          toast.error('Failed to delete constractor data.');
+          toast.error('Failed To Delete Constractor .');
         }
       } catch (error) {
         console.error(error);
-        toast.error('An error occurred while deleting constractor data.');
+        toast.error('An Error Occurred While Deleting Constractor .');
       }
     }
   };
@@ -288,66 +288,87 @@ export default function AdminContractorListScreen() {
                   width: 400,
                   bgcolor: 'background.paper',
                   boxShadow: 24,
-                  p: 4,
+                  p: submitting ? 0 : 4,
                 }}
               >
-                <Form onSubmit={handleSubmit}>
-                  <ImCross
-                    color="black"
-                    className="formcrossbtn"
-                    onClick={handleCloseRow}
-                  />
+                <div className="overlayLoading" >
+                  {submitting && (
+                    <div className="overlayLoadingItem1">
+                      <ColorRing
+                        visible={true}
+                        height="40"
+                        width="40"
+                        ariaLabel="blocks-loading"
+                        wrapperStyle={{}}
+                        wrapperClass="blocks-wrapper"
+                        colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
+                      />
+                    </div>
+                  )}
+                  <Form onSubmit={handleSubmit} className={submitting ? 'scrollInAdminproject p-4 ' : 'scrollInAdminproject px-1'}>
+                    <ImCross
+                      color="black"
+                      className="formcrossbtn"
+                      onClick={handleCloseRow}
+                    />
 
-                  <h4 className="d-flex justify-content-center">
-                    Add Contractor
-                  </h4>
+                    <h4 className="d-flex justify-content-center">
+                      Add Contractor
+                    </h4>
 
-                  <TextField
-                    className="mb-3"
-                    value={firstname}
-                    onChange={(e) => setFirstname(e.target.value)}
-                    label="First Name"
-                    fullWidth
-                  />
-                  <TextField
-                    className="mb-3"
-                    value={lastname}
-                    onChange={(e) => setLastname(e.target.value)}
-                    label="Last Name"
-                    fullWidth
-                  />
+                    <TextField
+                      className="mb-3"
+                      value={firstname}
+                      onChange={(e) => setFirstname(e.target.value)}
+                      label="First Name"
+                      fullWidth
+                      required
 
-                  <TextField
-                    className="mb-3"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    label="Email"
-                    type="email"
-                    fullWidth
-                  />
-                  <Validations type="email" value={email} />
-                  <FormControl className="formselect">
-                    <InputLabel>Select Status</InputLabel>
-                    <Select
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value)}
+                    />
+                    <TextField
+                      className="mb-3"
+                      value={lastname}
+                      onChange={(e) => setLastname(e.target.value)}
+                      label="Last Name"
+                      fullWidth
+                    />
+
+                    <TextField
+                      className="mb-3"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      label="Email"
+                      type="email"
+                      fullWidth
+                      required
+                    />
+                    <Validations type="email" value={email} />
+                    <FormControl className="formselect">
+                      <InputLabel>Select Status</InputLabel>
+                      <Select
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
+                        required
+                      >
+                        <MenuItem value={true}>Active</MenuItem>
+                        <MenuItem value={false}>Inactive</MenuItem>
+                      </Select>
+                    </FormControl>
+                    <br></br>
+                    <Button
+                      className="mt-2 formbtn updatingBtn globalbtnColor"
+                      variant="contained"
+                      color="primary"
+                      type="submit"
+                      disabled={submitting}
                     >
-                      <MenuItem value={true}>Active</MenuItem>
-                      <MenuItem value={false}>Inactive</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <br></br>
-                  <Button
-                    className="mt-2 formbtn updatingBtn"
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                    disabled={submitting}
-                  >
-                    {submitting ? "submitting" : "Submit"}
+                      {submitting ?
+                        "SUBMITTING"
+                        : "SUBMIT "}
 
-                  </Button>
-                </Form>
+                    </Button>
+                  </Form>
+                </div>
               </Box>
             </Modal>
           </>

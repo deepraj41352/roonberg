@@ -33,6 +33,52 @@ code {
 }
 
 /* Gaytri css start  */
+.cateAgentcontainerHide {
+  display: none !important;
+}
+.cateAgentPairBtn {
+  padding: 15px 5px;
+  border-radius: 5px;
+  margin-top: 5px;
+  border: 1px solid #b2b8be;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cateLogoImgLabel {
+  left: 30% !important;
+}
+.cateLogoImgContainer {
+  border: 1px solid #dee2e6 !important;
+  border-radius: 5px !important;
+  padding: 10px !important;
+}
+.css-kzyyzb-MuiDataGrid-root .MuiDataGrid-columnHeader:focus,
+.css-kzyyzb-MuiDataGrid-root .MuiDataGrid-cell:focus {
+  outline: none !important;
+}
+
+.css-kzyyzb-MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within,
+.css-kzyyzb-MuiDataGrid-root .MuiDataGrid-cell:focus-within {
+  outline: none !important;
+}
+.overlayLoading {
+  position: relative;
+}
+.overlayLoadingItem1 {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.FormContainerEdit {
+  background-color: white;
+  margin: 20px;
+  border-radius: 5px;
+}
 .cateAgentcontainer {
   border: 1px solid rgb(194, 194, 194);
   border-radius: 5px;
@@ -213,6 +259,9 @@ code {
 }
 
 /* Gaytri css start  */
+.disabledMenuItem {
+  text-decoration: line-through !important;
+}
 .fullContainer {
   height: 100vh !important;
 }
@@ -244,7 +293,7 @@ code {
 }
 .tableBg p,
 button {
-  color: white !important;
+  /* color: white !important; */
 }
 .tableBg input[type='checkbox'] {
   border-color: white !important;
@@ -300,7 +349,13 @@ body {
 }
 .globalbtnColor {
   color: #ffffff !important;
-  background-color: #1d4ed8 !important;
+  background-color: RGB(14, 14, 61) !important;
+  font-weight: 700 !important;
+  border: none !important;
+}
+
+.pointCursor {
+  cursor: pointer;
 }
 
 .formWidth {
@@ -529,7 +584,7 @@ body {
 }
 /* ---------Priyanshu-End------------- */
 .css-1jy569b-MuiFormLabel-root-MuiInputLabel-root {
-  background-color: #fff !important;
+  /* background-color: #fff !important; */
   padding: 3px;
 }
 .darkCardBody {
@@ -718,3 +773,18 @@ body {
 }
 
 /*  */
+::-webkit-scrollbar {
+  width: 8px;
+  margin-left: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #cec5c5; /* Gray color for the track */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background: RGB(14, 14, 61); /* Blue color for the scrollbar handle */
+}

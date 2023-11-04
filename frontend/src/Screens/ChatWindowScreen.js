@@ -812,9 +812,9 @@ function ChatWindowScreen() {
                   value={projectStatus}
                   onChange={handleStatusUpdate}
                 >
-                  <option value="active">Active </option>
-                  <option value="inactive">Inactive </option>
-                  <option value="queue">In Proccess </option>
+                  <option value="active">Active</option>
+                  <option value="completed">Completed </option>
+                  <option value="qued">Qued </option>
                 </Form.Select>
               </Form.Group>
               <Modal show={showModal} onHide={handleClose}>

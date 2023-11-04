@@ -4,6 +4,7 @@ export const Store = createContext();
 
 const initialValue = {
   validationMsg: null,
+  NotificationData: null,
   toggleState: localStorage.getItem('toggleState')
     ? JSON.parse(localStorage.getItem('toggleState'))
     : null,
@@ -29,6 +30,11 @@ const reducer = (state, action) => {
       return {
         ...state,
         toggleState: action.payload,
+      };
+    case 'NOTIFICATION':
+      return {
+        ...state,
+        NotificationData: action.payload,
       };
     default:
       return state;

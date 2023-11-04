@@ -4,6 +4,7 @@ import {
   Avatar,
   Button,
   Grid,
+  Input,
   InputLabel,
   MenuItem,
   Select,
@@ -21,6 +22,8 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import AvatarImage from '../Components/Avatar';
+import { ImCross } from 'react-icons/im';
+import { ColorRing } from 'react-loader-spinner';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -100,6 +103,7 @@ const columns = [
 
 const getRowId = (row) => row._id;
 
+
 export default function AdminContractorListScreen() {
   const navigate = useNavigate();
   const [isModelOpen, setIsModelOpen] = useState(false);
@@ -119,7 +123,7 @@ export default function AdminContractorListScreen() {
     successDelete: false,
     successUpdate: false,
     isSubmiting: false,
-    submitting: false
+    submitting: false,
   });
 
   const handleEdit = (rowId) => {
@@ -229,17 +233,17 @@ export default function AdminContractorListScreen() {
         });
 
         if (response.status === 200) {
-          toast.success('Category deleted successfully!');
+          toast.success('Category Deleted Successfully!');
           dispatch({
             type: 'DELETE_SUCCESS',
             payload: true,
           });
         } else {
-          toast.error('Failed to delete constractor data.');
+          toast.error('Failed To Delete Category.');
         }
       } catch (error) {
         console.error(error);
-        toast.error('An error occurred while deleting constractor data.');
+        toast.error('An Error Occurred While Deleting Category.');
       }
     }
   };
@@ -318,55 +322,97 @@ export default function AdminContractorListScreen() {
             width: 400,
             bgcolor: "background.paper",
             boxShadow: 24,
-            p: 4,
+            p: submitting ? 0 : 4,
           }}
         >
-          <Form>
+          <div className="overlayLoading" >
+            {submitting && (
+              <div className="overlayLoadingItem1">
+                <ColorRing
+                  visible={true}
+                  height="40"
+                  width="40"
+                  ariaLabel="blocks-loading"
+                  wrapperStyle={{}}
+                  wrapperClass="blocks-wrapper"
+                  colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
+                />
+              </div>
+            )}
+            <Form className={submitting ? 'scrollInAdminproject p-4 ' : 'scrollInAdminproject px-1'}>
+              <ImCross
+                color="black"
+                className="formcrossbtn"
+                onClick={handleCloseRow}
+              />
+              <h4 className="d-flex justify-content-center">
+                Add Category
+              </h4>
 
-            <h4 className="d-flex justify-content-center">
-              Add Category
-            </h4>
+              <TextField
+                className="mb-3"
+                value={category}
+                label="Category Name"
+                fullWidth
+                onChange={(e) => setCatogry(e.target.value)}
+                required
 
-            <TextField
-              className="mb-3"
-              value={category}
-              label="Category Name"
-              fullWidth
-              onChange={(e) => setCatogry(e.target.value)}
-            />
-            <TextField
-              className="mb-3"
-              value={categoryDesc}
-              label="Add description"
-              fullWidth
-              onChange={(e) => setCatogryDesc(e.target.value)}
-            />
-            <FormControl className="mb-3">
-              <InputLabel>Select Status</InputLabel>
-              <Select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
+              />
+              <TextField
+                className="mb-3"
+                value={categoryDesc}
+                label="Add Description"
+                fullWidth
+                onChange={(e) => setCatogryDesc(e.target.value)}
+
+              />
+              <FormControl className="mb-3">
+                <InputLabel>Select Status</InputLabel>
+                <Select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                  required
+                >
+                  <MenuItem value={true} >Active</MenuItem>
+                  <MenuItem value={false}>Inactive</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField
+                className="mb-3"
+                type="file"
+                fullWidth
+                onChange={handleFileChange}
+                required
+                style={{ display: 'none' }}
+              />
+              <FormControl className="mb-3 cateLogoImgContainer">
+                <InputLabel className='cateLogoImgLabel'>Upload Category Logo</InputLabel>
+                <Input
+                  type="file"
+                  onChange={handleFileChange}
+                  required
+                  style={{ display: 'none' }}
+                  id="file-input"
+                />
+                <label htmlFor="file-input">
+                  <Button variant="contained" component="span" className='globalbtnColor'>
+                    Browse
+                  </Button>
+                </label>
+              </FormControl>
+              <Button
+                className="mt-2 formbtn updatingBtn globalbtnColor"
+                variant="contained"
+                color="primary"
+                onClick={submitHandler}
+                disabled={submitting}
               >
-                <MenuItem value={true} >Active</MenuItem>
-                <MenuItem value={false}>Inactive</MenuItem>
-              </Select>
-            </FormControl>
-            <TextField
-              className="mb-3"
-              type="file"
-              fullWidth
-              onChange={handleFileChange}
-            />
-
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={submitHandler}
-              disabled={submitting}
-            >
-              {submitting ? 'submitting' : 'Submit'}
-            </Button>
-          </Form>
+                {submitting ?
+                  "SUBMITTING"
+                  : "SUBMIT "}
+              </Button>
+            </Form>
+          </div>
         </Box>
       </Modal>
     </>

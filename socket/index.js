@@ -18,6 +18,7 @@ server.listen(port, () => {
 });
 
 let users = [];
+let Notification = [];
 
 const addUser = (userId, socketId, role) => {
   !users.some((user) => user.userId === userId) &&
@@ -394,17 +395,14 @@ io.on("connection", (socket) => {
     }
   );
 
-  // notification
-  socket.on('emailSent', (data) => {
-    console.log(data)
-    // Forward the event to the user's dashboard based on their user ID
-    socket.to(`user-${data.userId}`).emit('newEmail', data);
+  socket.on('connectionForNotify', () => {
+    console.log('User connected for notifications');
   });
 
-
-
-
-
+  socket.on('notifyProjectBackend', (notifyUser, message) => {
+    console.log('notify and mesage', notifyUser, message)
+    io.emit("notifyProjectFrontend", notifyUser, message);
+  });
 
 
   // when disconnect
@@ -414,3 +412,6 @@ io.on("connection", (socket) => {
     io.emit("getUsers", users);
   });
 });
+
+
+

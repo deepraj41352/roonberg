@@ -3,7 +3,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { Grid } from '@mui/material';
 import { AiFillDelete } from 'react-icons/ai';
 import { MdEdit } from 'react-icons/md';
-import { MdPlaylistRemove, MdPlaylistAdd } from 'react-icons/md'
+import { MdAddCircleOutline, MdPlaylistRemove } from 'react-icons/md'
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import { Form } from 'react-bootstrap';
@@ -12,7 +12,7 @@ import { Store } from '../Store';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Tab from 'react-bootstrap/Tab';
-import { ThreeDots } from 'react-loader-spinner';
+import { ColorRing, ThreeDots } from 'react-loader-spinner';
 import Tabs from 'react-bootstrap/Tabs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -130,7 +130,7 @@ export default function AdminProjectListScreen() {
   const [startDateError, setStartDateError] = useState('');
   const [endDateError, setEndDateError] = useState('');
   const navigate = useNavigate();
-  const [agents, setAgents] = useState([]);
+  const [agents, setAgents] = useState([{ categoryId: '', agentId: '' }]);
   const [categories, setCategories] = useState([]);
   const [projectStatus, setProjectStatus] = useState();
 
@@ -188,7 +188,7 @@ export default function AdminProjectListScreen() {
   };
 
   const addAgent = () => {
-    setAgents([...agents, {}]);
+    setAgents([...agents, { categoryId: '', agentId: '' }]);
   };
   const removeAgent = (index) => {
     const updatedAgents = [...agents];
@@ -313,6 +313,7 @@ export default function AdminProjectListScreen() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const filteredAgents = agents.filter(obj => Object.keys(obj).length > 1);
     setIsSubmiting(true);
     try {
       const response = await axios.post(
@@ -322,7 +323,7 @@ export default function AdminProjectListScreen() {
           projectDescription: projectDescription,
           createdDate: startDate,
           endDate: endDate,
-          assignedAgent: agents,
+          assignedAgent: filteredAgents,
           projectCategory: categories,
           projectOwner: projectOwner,
           projectStatus: projectStatus,
@@ -336,7 +337,7 @@ export default function AdminProjectListScreen() {
       dispatch({ type: 'UPDATE_SUCCESS', payload: true });
       dispatch({ type: 'UPDATE_SUCCESS', payload: true });
       if (response.status === 201) {
-        toast.success(response.data.message);
+        toast.success("Project Created Successfully !");
         const datas = response.data;
         setIsModelOpen(false);
         setIsSubmiting(false);
@@ -358,24 +359,24 @@ export default function AdminProjectListScreen() {
   };
 
   const deleteHandle = async (productId) => {
-    if (window.confirm('Are you sure to delete?')) {
+    if (window.confirm('Are You Sure To Delete?')) {
       try {
         const response = await axios.delete(`/api/project/${productId}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
 
         if (response.status === 200) {
-          toast.success('Data deleted successfully!');
+          toast.success('Project Deleted Successfully!');
           dispatch({
             type: 'DELETE_SUCCESS',
             payload: true,
           });
         } else {
-          toast.error('Failed to delete data.');
+          toast.error('Failed To Delete Project.');
         }
       } catch (error) {
         console.error(error);
-        toast.error('An error occurred while deleting data.');
+        toast.error('An Error Occurred While Deleting Project.');
       }
     }
   };
@@ -432,7 +433,7 @@ export default function AdminProjectListScreen() {
       <div className="px-3 mt-3">
         <Button
           variant="outlined"
-          className=" m-2 d-flex globalbtnColor"
+          className="my-2 d-flex globalbtnColor"
           onClick={handleNew}
         >
           <BiPlusMedical className="mx-2" />
@@ -519,7 +520,11 @@ export default function AdminProjectListScreen() {
                     disableRowSelectionOnClick
                   />
                 </Box>
+
+
                 <Modal open={isModelOpen} onClose={handleCloseRow}>
+
+
                   <Box
                     className="modelBg"
                     sx={{
@@ -530,192 +535,138 @@ export default function AdminProjectListScreen() {
                       width: 400,
                       bgcolor: 'background.paper',
                       boxShadow: 24,
-                      p: 4,
+                      p: isSubmiting ? 0 : 4,
                     }}
                   >
-                    <Form className='scrollInAdminproject' onSubmit={handleSubmit}>
-                      <ImCross
-                        color="black"
-                        className="formcrossbtn"
-                        onClick={handleCloseRow}
-                      />
-                      <h4 className="d-flex justify-content-center">
-                        Add Project
-                      </h4>
-                      <TextField
-                        required
-                        className="mb-3"
-                        value={projectName}
-                        onChange={(e) => setProjectName(e.target.value)}
-                        label="Project Name"
-                        fullWidth
-                      />
+                    <div className="overlayLoading">
+                      {isSubmiting && (
+                        <div className="overlayLoadingItem1 y-3">
 
-                      <TextField
-
-                        id="outlined-multiline-static"
-                        onChange={(e) => setProjectDescription(e.target.value)}
-                        label="Project Description"
-                        multiline
-                        rows={4}
-                        fullWidth
-                        variant="outlined"
-                        className="mb-3"
-                      />
-                      <FormControl className="mb-3">
-                        <InputLabel>Select Contractor</InputLabel>
-                        <Select value={projectOwner} onChange={(e) => setProjectOwner(e.target.value)}>
-                          <MenuItem onClick={() => { handleRedirectToContractorScreen() }}>  <BiPlusMedical /> add new Contractor</MenuItem>
-                          {contractorData.map((items) => (
-                            <MenuItem key={items._id} value={items._id} >{items.first_name}</MenuItem>
-
-                          ))}
-                        </Select>
-                      </FormControl>
-                      {/* Remove the existing mapping */}
-                      {/* <div>
-                        <FormControl className="mb-3">
-                          <InputLabel>Select Category</InputLabel>
-                          <Select
-                            value={agents[0].categoryId}
-                            onChange={(e) => handleAgentChange(0, 'categoryId', e.target.value)}
-                          >
-                            <MenuItem disabled={agents[0].categoryId !== ''}>Select Category</MenuItem>
-                            {categoryData.map((category) => (
-                              <MenuItem key={category._id} value={category._id}
-                                disabled={agents.some((a) => a.categoryId === category._id)}
-                              >
-                                {category.categoryName}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                        <FormControl className="mb-3">
-                          <InputLabel>Select Agent</InputLabel>
-                          <Select
-                            value={agents[0].agentId}
-                            onChange={(e) => handleAgentChange(0, 'agentId', e.target.value)}
-                          >
-                            <MenuItem disabled={agents[0].agentId !== ''}>Select Agent</MenuItem>
-                            {assignedAgentByCateHandle(0).map((agent) => 
-                              <MenuItem key={agent._id} value={agent._id}
-                                disabled={agents.some((a) => a.agentId === agent._id)}
-                              >
-                                {agent.first_name}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </div> */}
-
-                      {/* {agents.map((agent, index) => (
-                        <div key={index}>
-                          <FormControl className="mb-3">
-                            <InputLabel>Select Category</InputLabel>
-                            <Select
-                              value={agent.categoryId}
-                              onChange={(e) => handleAgentChange(index, 'categoryId', e.target.value)}
-                            >
-                              <MenuItem disabled={agent.categoryId !== ''}>Select Category</MenuItem>
-                              {categoryData.map((category) => (
-                                <MenuItem key={category._id} value={category._id}
-                                  disabled={agents.some((a) => a.categoryId === category._id)}
-                                >
-                                  {category.categoryName}
-
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                          <FormControl className="mb-3">
-                            <InputLabel>Select Agent</InputLabel>
-                            <Select
-                              value={agent.agentId}
-                              onChange={(e) => handleAgentChange(index, 'agentId', e.target.value)}
-                            >
-                              <MenuItem disabled={agent.agentId !== ''}>Select Agent</MenuItem>
-                              {assignedAgentByCateHandle(index).map((agent) => (
-                                <MenuItem key={agent._id} value={agent._id}
-                                  disabled={agents.some((a) => a.agentId === agent._id)}
-                                >
-                                  {agent.first_name}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
+                          <ColorRing
+                            visible={true}
+                            height="40"
+                            width="40"
+                            ariaLabel="blocks-loading"
+                            wrapperStyle={{}}
+                            wrapperClass="blocks-wrapper"
+                            colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
+                          />
                         </div>
-                      ))} */}
-                      <div className='cateAgentcontainer'>
-                        {agents.length > 0 ?
-                          (
-                            agents.map((agentCate, index) => (
-                              <div className='cateAgentItem' key={index}>
-                                <p><b>Category : </b>{agentCate.categoryName} <b>&</b> &nbsp; </p>
-                                <p><b> Agent : </b>{agentCate.agentName}</p>
-                              </div>
-                            ))
-                          ) : (
+                      )}
 
-                            <p className='px-3'>Add Category And Agent</p>
+                      <Form className={isSubmiting ? 'scrollInAdminproject p-4 ' : 'scrollInAdminproject px-3'} onSubmit={handleSubmit}>
+                        <ImCross
+                          color="black"
+                          className="formcrossbtn"
+                          onClick={handleCloseRow}
+                        />
+                        <h4 className="d-flex justify-content-center">
+                          Add Project
+                        </h4>
+                        <TextField
+                          required
+                          className="mb-3"
+                          value={projectName}
+                          onChange={(e) => setProjectName(e.target.value)}
+                          label="Project Name"
+                          fullWidth
+                        />
 
+                        <TextField
+
+                          id="outlined-multiline-static"
+                          onChange={(e) => setProjectDescription(e.target.value)}
+                          label="Project Description"
+                          multiline
+                          rows={4}
+                          fullWidth
+                          variant="outlined"
+                          className="mb-3"
+                        />
+                        <FormControl className="mb-3">
+                          <InputLabel>Select Contractor </InputLabel>
+                          <Select value={projectOwner} onChange={(e) => setProjectOwner(e.target.value)} required>
+                            <MenuItem onClick={() => { handleRedirectToContractorScreen() }}>  <BiPlusMedical /> add new Contractor</MenuItem>
+                            {contractorData.map((items) => (
+                              <MenuItem key={items._id} value={items._id} >{items.first_name}</MenuItem>
+
+                            ))}
+                          </Select>
+                        </FormControl>
+                        {agents.length > 0 && (
+                          <div className={agents.categoryId == '' && agents.agentId == '' ? 'cateAgentcontainerHide' : 'cateAgentcontainer'}>
+                            {agents.length > 0 &&
+                              (
+                                agents.map((agentCate, index) => (
+                                  <div className='cateAgentItem' key={index}>
+                                    <p><b>Category : </b>{agentCate.categoryName} <b>&</b> &nbsp; </p>
+                                    <p><b> Agent : </b>{agentCate.agentName}</p>
+                                  </div>
+                                ))
+                              )
+                            }
+                          </div>
+                        )}
+                        <div className='d-flex align-items-center mb-3'>
+                          <div className='d-flex align-items-center cateAgentPairBtn px-3' onClick={moreFieldsopen}>
+                            {/* <MdAddCircleOutline color="black" className='mx-2 ' /> */}
+                            Add Category/Agent
+                          </div>
+                          <div className='d-flex align-items-center cateAgentPairBtn mx-2 px-3' onClick={moreFieldsopen}>
+                            {/* <MdRemoveCircleOutline color="black" className='mx-2'  /> */}
+                            <p className='text-dark m-0 '>Remove</p>
+                          </div>
+
+
+                        </div>
+                        <FormControl className="mb-3" >
+                          <InputLabel>Select Status</InputLabel>
+                          <Select value={projectStatus} onChange={(e) => setProjectStatus(e.target.value)} required>
+                            <MenuItem value="active">Active</MenuItem>
+                            <MenuItem value="completed">Completed </MenuItem>
+                            <MenuItem value="qued">Qued </MenuItem>
+                          </Select>
+                        </FormControl>
+                        <LocalizationProvider dateAdapter={AdapterDayjs} className="mb-3">
+                          <DateField
+                            required
+                            label="Start Date"
+                            value={startDate}
+                            onChange={(newValue) =>
+                              validateDates(newValue, endDate)
+                            }
+                            format="MM-DD-YYYY"
+                          />
+                          {startDateError && (
+                            <div style={{ color: 'red' }}>{startDateError}</div>
                           )}
-
-                      </div>
-                      <div className='d-flex align-items-center mb-3'>
-                        <div className='d-flex align-items-center' onClick={moreFieldsopen}>
-                          <MdPlaylistAdd color="black" className='mx-2 ' />
-                          Add Category/Agent
-                        </div>
-                        <div className='d-flex align-items-center'>
-                          <MdPlaylistRemove color="black" className='mx-2' onClick={moreFieldsopen} />
-                          <p className='text-dark m-0 '>Remove</p>
-                        </div>
-
-
-                      </div>
-                      <FormControl className="mb-3" >
-                        <InputLabel>Select Status</InputLabel>
-                        <Select value={projectStatus} onChange={(e) => setProjectStatus(e.target.value)}>
-                          <MenuItem value=""> Select Status </MenuItem>
-                          <MenuItem value="active">  Active </MenuItem>
-                          <MenuItem value="inactive">  Inactive </MenuItem>
-                          <MenuItem value="queue">  In Proccess </MenuItem>
-                        </Select>
-                      </FormControl>
-                      <LocalizationProvider dateAdapter={AdapterDayjs} className="mb-3">
-                        <DateField
-                          required
-                          label="Start Date"
-                          value={startDate}
-                          onChange={(newValue) =>
-                            validateDates(newValue, endDate)
-                          }
-                          format="MM-DD-YYYY"
-                        />
-                        {startDateError && (
-                          <div style={{ color: 'red' }}>{startDateError}</div>
-                        )}
-                        <DateField
-                          required
-                          label="End Date"
-                          value={endDate}
-                          onChange={(newValue) =>
-                            validateDates(startDate, newValue)
-                          }
-                          format="MM-DD-YYYY"
-                        />
-                        {endDateError && (
-                          <div style={{ color: 'red' }}>{endDateError}</div>
-                        )}
-                      </LocalizationProvider>
-                      <Button variant="contained" color="primary" type="submit"
-                        disabled={isSubmiting}
-                      >
-                        {isSubmiting ? "Submitting" : "Submit"}
-                      </Button>
-                    </Form>
+                          <DateField
+                            required
+                            label="End Date"
+                            value={endDate}
+                            onChange={(newValue) =>
+                              validateDates(startDate, newValue)
+                            }
+                            format="MM-DD-YYYY"
+                          />
+                          {endDateError && (
+                            <div style={{ color: 'red' }}>{endDateError}</div>
+                          )}
+                        </LocalizationProvider>
+                        <Button variant="contained" color="primary" type="submit"
+                          disabled={isSubmiting}
+                          className="mt-2 formbtn updatingBtn globalbtnColor"
+                        >
+                          {isSubmiting ?
+                            "SUBMITTING"
+                            : "SUBMIT "}
+                        </Button>
+                      </Form>
+                    </div>
                   </Box>
+
                 </Modal>
+
                 <Modal open={morefieldsModel} onClose={HandelClose}>
                   <Box
                     className="modelBg"
@@ -741,9 +692,12 @@ export default function AdminProjectListScreen() {
                       </h4>
                       {agents.map((agent, index) => (
                         <div className='moreFieldsDiv d-flex align-items-center gap-2' key={index}>
+
+
                           <FormControl className="mb-3">
                             <InputLabel>Category</InputLabel>
                             <Select
+                              required
                               value={agent.categoryId}
                               onChange={(e) => handleAgentChange(index, 'categoryId', e.target.value)}
                             >
@@ -774,20 +728,20 @@ export default function AdminProjectListScreen() {
                               ))}
                             </Select>
                           </FormControl>
-                          <div className=''>
-                            <MdRemoveCircleOutline color="black" className='mx-2' onClick={() => removeAgent(index)} />
+                          <div className='d-flex'>
+                            <MdRemoveCircleOutline color="black" className='text-bold text-danger fs-5 pointCursor ' onClick={() => removeAgent(index)} />
+
+                            <MdAddCircleOutline color="black" className='text-success text-bold fs-5 pointCursor' onClick={addAgent} />
+
                           </div>
                         </div>
                       ))}
 
                       <div className='d-flex align-items-center'>
 
-                        <div className='mb-3' onClick={addAgent}>
-                          <MdPlaylistAdd color="black" className='mx-2' />
-                          Add Category and Agent
-                        </div>
+
                       </div>
-                      <Button variant="contained" color="primary" type="submit" onClick={HandelClose}
+                      <Button variant="contained" color="primary" className='globalbtnColor' type="submit" onClick={HandelClose}
                       >
                         Save
                       </Button>
@@ -1023,7 +977,7 @@ export default function AdminProjectListScreen() {
             </Tabs>
           </>
         )}
-      </div>
+      </div >
     </>
   );
 }
