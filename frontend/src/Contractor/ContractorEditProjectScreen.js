@@ -7,6 +7,7 @@ import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { ColorRing } from "react-loader-spinner";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -40,6 +41,7 @@ function ContractorEditProject() {
   const [createdDate, setCreatedDate] = useState();
   const [endDate, setEndDate] = useState();
   const theme = toggleState ? "dark" : "light";
+  const [isSubmit, setSubmit] = useState(false);
   const [
     { loading, error, projectData, categoryData, successUpdate },
     dispatch,
@@ -115,6 +117,7 @@ function ContractorEditProject() {
     e.preventDefault();
     try {
       // Construct the updated data object
+      setSubmit(true)
       const categoryIds = selectedOptions.split(",");
       const projectCategory = categoryIds.map((categoryId) => {
         const category = categoryData.find((cat) => cat._id === categoryId);
@@ -141,11 +144,13 @@ function ContractorEditProject() {
       );
 
       if (response.status === 200) {
-        toast.success("Project updated Successfully !");
+        toast.success("Project Updated Successfully !");
         console.log(response);
+        setSubmit(false)
       }
     } catch (error) {
       console.error("API Error:", error);
+      setSubmit(false)
     }
   };
 
@@ -180,77 +185,92 @@ function ContractorEditProject() {
         <div>{error}</div>
       ) : (
         <div>
-          <div className="d-flex w-100 my-3 gap-4 justify-content-center align-item-center projectScreenCard-outer ">
-            <Card className={`projectScreenCard ${theme}CardBody`}>
-              <Card.Header className={`${theme}CardHeader`}>
-                Project Details
-              </Card.Header>
-              <Card.Body className="text-start">
-                <Form className="px-3" onSubmit={handleSubmit}>
-                  <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold">Project Name</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="projectName"
-                      value={projectData.projectName}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                  <Form.Group
-                    className="mb-3"
-                    controlId="exampleForm.ControlTextarea1"
-                  >
-                    <Form.Label className="fw-bold">
-                      Project Description
-                    </Form.Label>
-                    <Form.Control
-                      as="textarea"
-                      rows={3}
-                      name="projectDescription"
-                      value={projectData.projectDescription}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold">Select Options:</Form.Label>
-                    <MultiSelect
-                      className="categorieslist"
-                      onChange={handleCategoryChange}
-                      options={options}
-                      defaultValue={selectedOptions}
-                    />
-                  </Form.Group>
-                  <div className="d-flex gap-3 mb-3">
-                    <Form.Group className="w-100" controlId="start-date">
-                      <Form.Label className="fw-bold">Start Date</Form.Label>
+          <div className="overlayLoading">
+            {isSubmit && (
+              <div className="overlayLoadingItem1">
+
+                <ColorRing
+                  visible={true}
+                  height="40"
+                  width="40"
+                  ariaLabel="blocks-loading"
+                  wrapperStyle={{}}
+                  wrapperClass="blocks-wrapper"
+                  colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
+                />
+              </div>
+            )}
+            <div className="d-flex w-100 my-3 gap-4 justify-content-center align-item-center projectScreenCard-outer ">
+              <Card className={`projectScreenCard ${theme}CardBody`}>
+                <Card.Header className={`${theme}CardHeader`}>
+                  Project Details
+                </Card.Header>
+                <Card.Body className="text-start">
+                  <Form className="px-3" onSubmit={handleSubmit}>
+                    <Form.Group className="mb-3">
+                      <Form.Label className="fw-bold">Project Name</Form.Label>
                       <Form.Control
-                        type="date"
-                        name="createdDate"
-                        value={createdDate}
-                        onChange={(e) => setCreatedDate(e.target.value)}
-                        placeholder="Start Date"
+                        type="text"
+                        name="projectName"
+                        value={projectData.projectName}
+                        onChange={handleInputChange}
                       />
                     </Form.Group>
-                    <Form.Group className="w-100" controlId="end-date">
-                      <Form.Label className="fw-bold">End Date</Form.Label>
+                    <Form.Group
+                      className="mb-3"
+                      controlId="exampleForm.ControlTextarea1"
+                    >
+                      <Form.Label className="fw-bold">
+                        Project Description
+                      </Form.Label>
                       <Form.Control
-                        type="date"
-                        name="endDate"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        placeholder="End Date"
+                        as="textarea"
+                        rows={3}
+                        name="projectDescription"
+                        value={projectData.projectDescription}
+                        onChange={handleInputChange}
                       />
                     </Form.Group>
-                  </div>
-                  <Button variant="primary" type="submit">
-                    Submit
-                  </Button>
-                </Form>
-              </Card.Body>
-            </Card>
-            <Card className={`projectScreenCard2 ${theme}CardBody`}>
-              <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
-              <Card.Body className="d-flex flex-wrap gap-3 ">
+                    <Form.Group className="mb-3">
+                      <Form.Label className="fw-bold">Select Options:</Form.Label>
+                      <MultiSelect
+                        className="categorieslist"
+                        onChange={handleCategoryChange}
+                        options={options}
+                        defaultValue={selectedOptions}
+                      />
+                    </Form.Group>
+                    <div className="d-flex gap-3 mb-3">
+                      <Form.Group className="w-100" controlId="start-date">
+                        <Form.Label className="fw-bold">Start Date</Form.Label>
+                        <Form.Control
+                          type="date"
+                          name="createdDate"
+                          value={createdDate}
+                          onChange={(e) => setCreatedDate(e.target.value)}
+                          placeholder="Start Date"
+                        />
+                      </Form.Group>
+                      <Form.Group className="w-100" controlId="end-date">
+                        <Form.Label className="fw-bold">End Date</Form.Label>
+                        <Form.Control
+                          type="date"
+                          name="endDate"
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                          placeholder="End Date"
+                        />
+                      </Form.Group>
+                    </div>
+                    <Button variant="primary" type="submit" disabled={isSubmit}>
+                      {isSubmit ? "UPDATING" : "UPDATE"}
+                    </Button>
+                  </Form>
+                </Card.Body>
+              </Card>
+              <Card className={`projectScreenCard2 ${theme}CardBody`}>
+                <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
+                <Card.Body className="d-flex flex-wrap gap-3 ">
                   <div
                     className="text-center w-100"
                     style={{
@@ -322,7 +342,8 @@ function ContractorEditProject() {
                     );
                   })}
                 </Card.Body>
-            </Card>
+              </Card>
+            </div>
           </div>
         </div>
       )}

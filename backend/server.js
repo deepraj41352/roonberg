@@ -106,7 +106,7 @@ export async function storeNotification(message, notifyUser, status, type) {
     status,
     message,
   });
-  console.log("newNotification-------", newNotification);
+  // console.log("newNotification-------", newNotification);
 
   const notify = await newNotification.save();
 

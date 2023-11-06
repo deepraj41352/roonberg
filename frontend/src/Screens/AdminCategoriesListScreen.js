@@ -24,6 +24,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import AvatarImage from '../Components/Avatar';
 import { ImCross } from 'react-icons/im';
 import { ColorRing } from 'react-loader-spinner';
+import Badge from '@mui/material/Badge';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -94,11 +95,7 @@ const columns = [
       );
     },
   },
-  {
-    field: 'categoryStatus',
-    headerName: 'Status',
-    width: 100,
-  },
+
 ];
 
 const getRowId = (row) => row._id;
@@ -113,6 +110,7 @@ export default function AdminContractorListScreen() {
   const [category, setCatogry] = useState('');
   const [status, setStatus] = useState('');
   const [categoryDesc, setCatogryDesc] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false)
   const [
     { loading, error, categoryData, successDelete, successUpdate, isSubmiting, submitting },
     dispatch,
@@ -226,6 +224,7 @@ export default function AdminContractorListScreen() {
   };
 
   const deleteHandle = async (userid) => {
+    setIsDeleting(true);
     if (window.confirm('Are you sure to delete?')) {
       try {
         const response = await axios.delete(`/api/category/${userid}`, {
@@ -234,6 +233,7 @@ export default function AdminContractorListScreen() {
 
         if (response.status === 200) {
           toast.success('Category Deleted Successfully!');
+          setIsDeleting(false);
           dispatch({
             type: 'DELETE_SUCCESS',
             payload: true,
@@ -242,6 +242,7 @@ export default function AdminContractorListScreen() {
           toast.error('Failed To Delete Category.');
         }
       } catch (error) {
+        setIsDeleting(false);
         console.error(error);
         toast.error('An Error Occurred While Deleting Category.');
       }
@@ -249,68 +250,108 @@ export default function AdminContractorListScreen() {
   };
 
   return (
+
     <>
+
       <Button
         variant="outlined"
         className=" m-2 d-flex globalbtnColor"
         onClick={handleNew}
+        disabled={isDeleting}
       >
         <BiPlusMedical className="mx-2" />
         Add Category
       </Button>
-      <Box sx={{ height: 400, width: "100%" }}>
-        <DataGrid
-          className={
-            theme == 'light'
-              ? `${theme}DataGrid mx-2`
-              : `tableBg ${theme}DataGrid mx-2`
-          }
+      <div className="overlayLoading" >
+        {isDeleting && (
+          <div className="overlayLoadingItem1">
+            <ColorRing
+              visible={true}
+              height="40"
+              width="40"
+              ariaLabel="blocks-loading"
+              wrapperStyle={{}}
+              wrapperClass="blocks-wrapper"
+              const colors={["white", "white", "white", "white", "white"]}
+            />
+          </div>
+        )}
+        <Box sx={{ height: 400, width: "100%" }}>
+          <DataGrid
+            className={
+              theme == 'light'
+                ? `${theme}DataGrid mx-2`
+                : `tableBg ${theme}DataGrid mx-2`
+            }
 
-          rows={categoryData}
-          columns={[
-            ...columns,
-            {
-              field: "action",
-              headerName: "Action",
-              width: 250,
-              renderCell: (params) => {
-                return (
-                  <Grid item xs={8}>
+            // rows={categoryData ? categoryData : noRows}
+            rows={categoryData}
+            columns={[
+              ...columns,
+              {
+                field: 'categoryStatus',
+                headerName: 'Status',
+                width: 100,
+                renderCell: (params) => {
+                  const isInactive = params.row.categoryStatus === 'Inactive';
+                  const cellClassName = isInactive ? 'inactive-cell' : 'active-cell';
 
-                    <Button
-                      variant="contained"
-                      className="mx-2 tableEditbtn"
-                      onClick={() => handleEdit(params.row._id)}
-
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      className="mx-2 tableDeletebtn"
-                      onClick={() => deleteHandle(params.row._id)}
-
-                    >
-                      Delete
-                    </Button>
-                  </Grid>
-                );
+                  return (
+                    <div className={`status-cell ${cellClassName}`}>
+                      {params.row.categoryStatus}
+                    </div>
+                  );
+                },
               },
-            },
-          ]}
-          getRowId={getRowId}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 5,
+              {
+                field: "action",
+                headerName: "Action",
+                width: 250,
+                renderCell: (params) => {
+                  return (
+                    <Grid item xs={8}>
+
+                      <Button
+                        variant="contained"
+                        className="mx-2 tableEditbtn"
+                        onClick={() => handleEdit(params.row._id)}
+
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        className="mx-2 tableDeletebtn"
+                        onClick={() => deleteHandle(params.row._id)}
+
+                      >
+                        Delete
+                      </Button>
+                    </Grid>
+                  );
+                },
               },
-            },
-          }}
-          pageSizeOptions={[5]}
-          checkboxSelection
-          disableRowSelectionOnClick
-        />
-      </Box>
+
+            ]}
+            getRowId={getRowId}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 5,
+                },
+              },
+            }}
+            pageSizeOptions={[5]}
+            checkboxSelection
+            disableRowSelectionOnClick
+
+            // gridOptions={gridOptions}
+            localeText={{ noRowsLabel: "Category Data Is Not Avalible" }}
+          // getRowClassName={(params) => (params.row.categoryStatus === 'Inactive' ? 'inactive-row' : '')}
+
+          />
+        </Box>
+      </div>
       <Modal open={isModelOpen} onClose={handleCloseRow}>
         <Box
           className="modelBg"
@@ -416,5 +457,6 @@ export default function AdminContractorListScreen() {
         </Box>
       </Modal>
     </>
+
   );
 }

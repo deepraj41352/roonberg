@@ -15,7 +15,7 @@ import axios from 'axios';
 import { ColorRing, ThreeDots } from 'react-loader-spinner';
 import { Avatar, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import AvatarImage from '../Components/Avatar';
-
+import { FaUserEdit } from 'react-icons/fa'
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FATCH_REQUEST':
@@ -182,6 +182,7 @@ function AdminEditCategory() {
                           )}
                         </Col>
                         <Col>
+                          <FaUserEdit />
                           <Form.Group
                             className="mb-3"
                             controlId="formBasicPassword"
@@ -204,6 +205,10 @@ function AdminEditCategory() {
                         fullWidth
                         onChange={(e) => setCatogry(e.target.value)}
                         required
+                        InputLabelProps={{
+                          shrink: categoryData.categoryName ? true : false,
+
+                        }}
                       />
                       <TextField
                         className="mb-3"

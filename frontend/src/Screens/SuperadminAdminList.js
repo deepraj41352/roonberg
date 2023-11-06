@@ -62,11 +62,11 @@ const columns = [
         headerName: 'Email',
         width: 100,
     },
-    {
-        field: 'userStatus',
-        headerName: 'Status',
-        width: 100,
-    },
+    // {
+    //     field: 'userStatus',
+    //     headerName: 'Status',
+    //     width: 100,
+    // },
 ];
 
 export default function SuperadminAdminList() {
@@ -83,7 +83,7 @@ export default function SuperadminAdminList() {
     const [status, setStatus] = useState();
     const [password, setPassword] = useState('');
     const [selectcategory, setSelectCategory] = useState();
-
+    const [isDeleting, setIsDeleting] = useState(false)
     const [
         {
             loading,
@@ -197,6 +197,7 @@ export default function SuperadminAdminList() {
     };
 
     const deleteHandle = async (userid) => {
+        setIsDeleting(true)
         if (window.confirm('Are You Sure To Delete?')) {
             try {
                 const response = await axios.delete(`/api/user/${userid}`, {
@@ -204,6 +205,7 @@ export default function SuperadminAdminList() {
                 });
 
                 if (response.status === 200) {
+                    setIsDeleting(false)
                     toast.success('Admin Deleted Successfully!');
                     dispatch({
                         type: 'DELETE_SUCCESS',
@@ -213,6 +215,7 @@ export default function SuperadminAdminList() {
                     toast.error('Failed To Delete Admin.');
                 }
             } catch (error) {
+                setIsDeleting(false)
                 console.error(error);
                 toast.error('An Error Occurred While Deleting Admin.');
             }
@@ -258,57 +261,89 @@ export default function SuperadminAdminList() {
                         variant="outlined"
                         className=" m-2 d-flex globalbtnColor"
                         onClick={handleModel}
+                        disabled={isDeleting}
                     >
                         <BiPlusMedical className="mx-2" />
                         Add Admin
                     </Button>
-                    <Box sx={{ height: 400, width: "100%" }}>
-                        <DataGrid
-                            className={`tableBg mx-2 ${theme}DataGrid`}
-                            rows={AgentData}
-                            columns={[
-                                ...columns,
-                                {
-                                    field: "action",
-                                    headerName: "Action",
-                                    width: 250,
-                                    renderCell: (params) => {
-                                        return (
-                                            <Grid item xs={8}>
-                                                <Button
-                                                    variant="contained"
-                                                    className="mx-2 tableEditbtn"
-                                                    onClick={() => handleEdit(params.row._id)}
+                    <div className="overlayLoading" >
+                        {isDeleting && (
+                            <div className="overlayLoadingItem1">
+                                <ColorRing
+                                    visible={true}
+                                    height="40"
+                                    width="40"
+                                    ariaLabel="blocks-loading"
+                                    wrapperStyle={{}}
+                                    wrapperClass="blocks-wrapper"
+                                    const colors={["white", "white", "white", "white", "white"]}
+                                />
+                            </div>
+                        )}
+                        <Box sx={{ height: 400, width: "100%" }}>
+                            <DataGrid
+                                className={`tableBg mx-2 ${theme}DataGrid`}
+                                rows={AgentData}
+                                columns={[
+                                    ...columns,
+                                    {
+                                        field: 'userStatus',
+                                        headerName: 'Status',
+                                        width: 100,
+                                        renderCell: (params) => {
+                                            const isInactive = params.row.userStatus === 'Inactive';
+                                            const cellClassName = isInactive ? 'inactive-cell' : 'active-cell';
 
-                                                >
-                                                    Edit
-                                                </Button>
-                                                <Button
-                                                    variant="outlined"
-                                                    className="mx-2 tableDeletebtn"
-                                                    onClick={() => deleteHandle(params.row._id)}
+                                            return (
+                                                <div className={`status-cell ${cellClassName}`}>
+                                                    {params.row.userStatus}
+                                                </div>
+                                            );
+                                        },
+                                    },
+                                    {
+                                        field: "action",
+                                        headerName: "Action",
+                                        width: 250,
+                                        renderCell: (params) => {
+                                            return (
+                                                <Grid item xs={8}>
+                                                    <Button
+                                                        variant="contained"
+                                                        className="mx-2 tableEditbtn"
+                                                        onClick={() => handleEdit(params.row._id)}
 
-                                                >
-                                                    Delete
-                                                </Button>
-                                            </Grid>
-                                        );
+                                                    >
+                                                        Edit
+                                                    </Button>
+                                                    <Button
+                                                        variant="outlined"
+                                                        className="mx-2 tableDeletebtn"
+                                                        onClick={() => deleteHandle(params.row._id)}
+
+                                                    >
+                                                        Delete
+                                                    </Button>
+                                                </Grid>
+                                            );
+                                        },
                                     },
-                                },
-                            ]}
-                            getRowId={(row) => row._id}
-                            initialState={{
-                                pagination: {
-                                    paginationModel: {
-                                        pageSize: 5,
+                                ]}
+                                getRowId={(row) => row._id}
+                                initialState={{
+                                    pagination: {
+                                        paginationModel: {
+                                            pageSize: 5,
+                                        },
                                     },
-                                },
-                            }}
-                            pageSizeOptions={[5]}
-                            checkboxSelection
-                            disableRowSelectionOnClick
-                        />
-                    </Box>
+                                }}
+                                pageSizeOptions={[5]}
+                                checkboxSelection
+                                disableRowSelectionOnClick
+                                localeText={{ noRowsLabel: "Admin Data Is Not Avalible" }}
+                            />
+                        </Box>
+                    </div>
                     <Modal open={isModelOpen} onClose={handleCloseRow} className='overlayLoading'>
                         <Box
                             className="modelBg"
