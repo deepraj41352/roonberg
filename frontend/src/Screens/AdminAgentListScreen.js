@@ -105,7 +105,6 @@ export default function AdminAgentListScreen() {
     loading: true,
     error: '',
     AgentData: [],
-    successDelete: false,
     categoryData: [],
     successUpdate: false,
     submitting: false,
@@ -227,6 +226,9 @@ export default function AdminAgentListScreen() {
       } finally {
         setIsDeleting(false);
       }
+    }
+    else {
+      setIsDeleting(false);
     }
   };
 

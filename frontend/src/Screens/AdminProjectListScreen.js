@@ -377,6 +377,9 @@ export default function AdminProjectListScreen() {
         toast.error('An Error Occurred While Deleting Project.');
       }
     }
+    else {
+      setIsDeleting(false);
+    }
   };
 
   const handleRedirectToContractorScreen = () => {

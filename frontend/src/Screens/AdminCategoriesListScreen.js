@@ -247,6 +247,9 @@ export default function AdminContractorListScreen() {
         toast.error('An Error Occurred While Deleting Category.');
       }
     }
+    else {
+      setIsDeleting(false);
+    }
   };
 
   return (

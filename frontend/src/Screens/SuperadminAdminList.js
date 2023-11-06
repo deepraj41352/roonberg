@@ -220,6 +220,9 @@ export default function SuperadminAdminList() {
                 toast.error('An Error Occurred While Deleting Admin.');
             }
         }
+        else {
+            setIsDeleting(false);
+        }
     };
 
     // const handleCloseRow = () => {

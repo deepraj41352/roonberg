@@ -52,7 +52,7 @@ import ContractorEditProject from './Contractor/ContractorEditProjectScreen';
 import AgentProjectList from './Agent/AgentProjectListScreen';
 import AdminAssignAgent from './Screens/AdminAssignAgentScreen';
 import AgentEditProject from './Agent/AgentEditProjectScreen';
-import ContractorProjectScreen from './Components/Contractor/contractorProjectScreen';
+// import ContractorProjectScreen from './Components/Contractor/contractorProjectScreen';
 import SuperadminEditAdmin from './Screens/SuperadminEditAdmin';
 import NotificationScreen from './Screens/NotificationScreen';
 import AdminListScreen from './Screens/AdminListScreen';

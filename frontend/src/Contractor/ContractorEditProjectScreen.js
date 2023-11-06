@@ -7,8 +7,11 @@ import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { ColorRing } from "react-loader-spinner";
-
+import { ColorRing, ThreeDots } from "react-loader-spinner";
+import { TextField } from "@mui/material";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
+import DatePicker from "@mui/lab/DatePicker";
 const reducer = (state, action) => {
   switch (action.type) {
     case "FATCH_REQUEST":
@@ -145,7 +148,7 @@ function ContractorEditProject() {
 
       if (response.status === 200) {
         toast.success("Project Updated Successfully !");
-        console.log(response);
+        navigate("/adminContractorList")
         setSubmit(false)
       }
     } catch (error) {
@@ -180,7 +183,21 @@ function ContractorEditProject() {
   return (
     <div>
       {loading ? (
-        <div>Loading ...</div>
+        <>
+          <div className="ThreeDot">
+            <ThreeDots
+              height="80"
+              width="80"
+              radius="9"
+              className="ThreeDot justify-content-center"
+              color="#0e0e3d"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClassName=""
+              visible={true}
+            />
+          </div>
+        </>
       ) : error ? (
         <div>{error}</div>
       ) : (
@@ -205,68 +222,97 @@ function ContractorEditProject() {
                 <Card.Header className={`${theme}CardHeader`}>
                   Project Details
                 </Card.Header>
-                <Card.Body className="text-start">
-                  <Form className="px-3" onSubmit={handleSubmit}>
-                    <Form.Group className="mb-3">
-                      <Form.Label className="fw-bold">Project Name</Form.Label>
-                      <Form.Control
+                <div className='FormContainerEdit pt-4'>
+                  <Card.Body className="text-start">
+                    <Form className="px-3" onSubmit={handleSubmit}>
+                      <TextField
+                        required
                         type="text"
                         name="projectName"
                         value={projectData.projectName}
                         onChange={handleInputChange}
+                        className=" mb-3"
+                        label="Project Name"
+                        fullWidth
+                        InputLabelProps={{
+                          shrink: projectData.projectName ? true : false,
+
+                        }}
+
                       />
-                    </Form.Group>
-                    <Form.Group
-                      className="mb-3"
-                      controlId="exampleForm.ControlTextarea1"
-                    >
-                      <Form.Label className="fw-bold">
-                        Project Description
-                      </Form.Label>
-                      <Form.Control
-                        as="textarea"
-                        rows={3}
-                        name="projectDescription"
+                      <TextField
                         value={projectData.projectDescription}
                         onChange={handleInputChange}
-                      />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                      <Form.Label className="fw-bold">Select Options:</Form.Label>
-                      <MultiSelect
-                        className="categorieslist"
-                        onChange={handleCategoryChange}
-                        options={options}
-                        defaultValue={selectedOptions}
-                      />
-                    </Form.Group>
-                    <div className="d-flex gap-3 mb-3">
-                      <Form.Group className="w-100" controlId="start-date">
-                        <Form.Label className="fw-bold">Start Date</Form.Label>
-                        <Form.Control
-                          type="date"
-                          name="createdDate"
-                          value={createdDate}
-                          onChange={(e) => setCreatedDate(e.target.value)}
-                          placeholder="Start Date"
+                        name='projectDescription'
+                        className=" mb-3"
+                        label="Project Description"
+                        multiline
+                        rows={4}
+                        fullWidth
+                        variant="outlined"
+                        InputLabelProps={{
+                          shrink: projectData.projectDescription ? true : false,
+                        }} />
+
+                      <Form.Group className="mb-3">
+                        <Form.Label className="fw-bold">Select Options:</Form.Label>
+                        <MultiSelect
+                          className="categorieslist"
+                          onChange={handleCategoryChange}
+                          options={options}
+                          defaultValue={selectedOptions}
                         />
                       </Form.Group>
-                      <Form.Group className="w-100" controlId="end-date">
-                        <Form.Label className="fw-bold">End Date</Form.Label>
-                        <Form.Control
-                          type="date"
-                          name="endDate"
-                          value={endDate}
-                          onChange={(e) => setEndDate(e.target.value)}
-                          placeholder="End Date"
-                        />
-                      </Form.Group>
-                    </div>
-                    <Button variant="primary" type="submit" disabled={isSubmit}>
-                      {isSubmit ? "UPDATING" : "UPDATE"}
-                    </Button>
-                  </Form>
-                </Card.Body>
+                      <div className="d-flex gap-3 mb-3">
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                          <DatePicker
+                            label="Date"
+                            value={createdDate}
+                            onChange={(date) => setCreatedDate(date)}
+                            renderInput={(params) => <TextField {...params} />}
+
+                          />
+                          <DatePicker
+                            label="Date"
+                            value={endDate}
+                            onChange={(date) => setEndDate(date)}
+                            renderInput={(params) => (
+                              <TextField {...params} style={{ color: 'white' }} />
+                            )}
+
+                          />
+                        </LocalizationProvider>
+                      </div>
+                      {/* <div className="d-flex gap-3 mb-3">
+                        <Form.Group className="w-100" controlId="start-date">
+                          <Form.Label className="fw-bold">Start Date</Form.Label>
+                          <Form.Control
+                            type="date"
+                            name="createdDate"
+                            value={createdDate}
+                            onChange={(e) => setCreatedDate(e.target.value)}
+                            placeholder="Start Date"
+                          />
+                        </Form.Group>
+                        <Form.Group className="w-100" controlId="end-date">
+                          <Form.Label className="fw-bold">End Date</Form.Label>
+                          <Form.Control
+                            type="date"
+                            name="endDate"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                            placeholder="End Date"
+                          />
+                        </Form.Group>
+                      </div> */}
+                      <div className='d-flex justify-content-end'>
+                        <Button variant="primary" type="submit" className='globalbtnColor updatingBtn' disabled={isSubmit}>
+                          {isSubmit ? "UPDATING" : "UPDATE"}
+                        </Button>
+                      </div>
+                    </Form>
+                  </Card.Body>
+                </div>
               </Card>
               <Card className={`projectScreenCard2 ${theme}CardBody`}>
                 <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
@@ -345,9 +391,10 @@ function ContractorEditProject() {
               </Card>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        </div >
+      )
+      }
+    </div >
   );
 }
 

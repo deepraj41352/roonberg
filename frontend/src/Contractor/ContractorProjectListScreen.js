@@ -28,6 +28,7 @@ import dayjs from 'dayjs';
 import DatePicker from "@mui/lab/DatePicker";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
+import { ImCross } from "react-icons/im";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -38,15 +39,9 @@ const reducer = (state, action) => {
     case "FATCH_ERROR":
       return { ...state, error: action.payload, loading: false };
     case "SUCCESS_CATEGORY":
-      return { ...state, categoryData: action.payload, loading: false };
+      return { ...state, categoryData: action.payload };
     case "ERROR_CATEGORY":
-      return { ...state, error: action.payload, loading: false };
-    case "DELETE_SUCCESS":
-      return { ...state, successDelete: action.payload };
-
-    case "DELETE_RESET":
-      return { ...state, successDelete: false };
-
+      return { ...state, error: action.payload };
     case "UPDATE_SUCCESS":
       return { ...state, successUpdate: action.payload };
 
@@ -150,9 +145,7 @@ export default function ContractorProject() {
       }
     };
 
-    if (successDelete) {
-      dispatch({ type: "DELETE_RESET" });
-    } else if (successUpdate) {
+    if (successUpdate) {
       dispatch({ type: "UPDATE_RESET" });
     } else {
       FatchProjectData();
@@ -186,43 +179,19 @@ export default function ContractorProject() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         }
       );
-      if (response.status === 200) {
+      if (response.status === 201) {
         toast.success(response.data.message);
         const datas = response.data;
         setIsModelOpen(false);
         setIsSubmiting(false);
         // dispatch({ type: 'FATCH_SUCCESS', payload: datas });
-        dispatch({ type: "UPDATE_SUCCESS", payload: true });
+        // dispatch({ type: "UPDATE_SUCCESS", payload: true });
       }
     } catch (error) {
       toast.error(error);
       setIsSubmiting(false);
     }
   }
-
-
-  const deleteHandle = async (productId) => {
-    if (window.confirm("Are you sure to delete?")) {
-      try {
-        const response = await axios.delete(`/api/project/${productId}`, {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        });
-
-        if (response.status === 200) {
-          toast.success("Project Deleted Successfully!");
-          dispatch({
-            type: "DELETE_SUCCESS",
-            payload: true,
-          });
-        } else {
-          toast.error("Failed to Delete Project.");
-        }
-      } catch (error) {
-        console.error(error);
-        toast.error("An Error Occurred While Deleting Project.");
-      }
-    }
-  };
 
   useEffect(() => {
     const fetchCategoryData = async () => {
@@ -409,7 +378,6 @@ export default function ContractorProject() {
                       <div className="overlayLoading">
                         {isSubmiting && (
                           <div className="overlayLoadingItem1 y-3">
-
                             <ColorRing
                               visible={true}
                               height="40"
@@ -423,7 +391,11 @@ export default function ContractorProject() {
                         )}
 
                         <Form onSubmit={handleSubmit} className={isSubmiting ? 'scrollInAdminproject p-4 ' : 'scrollInAdminproject px-3'}>
-
+                          <ImCross
+                            color="black"
+                            className="formcrossbtn"
+                            onClick={handleCloseRow}
+                          />
                           <h4 className="d-flex justify-content-center">
                             Add Project
                           </h4>
@@ -573,14 +545,14 @@ export default function ContractorProject() {
                                   </Button>
                                 </Link>
 
-                                <Button
+                                {/* <Button
                                   variant="outlined"
                                   className="mx-2 tableDeletebtn"
                                   onClick={() => deleteHandle(params.row._id)}
                                 // startIcon={<AiFillDelete />}
                                 >
                                   Delete
-                                </Button>
+                                </Button> */}
                               </Grid>
                             );
                           },
@@ -635,14 +607,14 @@ export default function ContractorProject() {
                                   </Button>
                                 </Link>
 
-                                <Button
+                                {/* <Button
                                   variant="outlined"
                                   className="mx-2 tableDeletebtn"
                                   onClick={() => deleteHandle(params.row._id)}
                                 // startIcon={<AiFillDelete />}
                                 >
                                   Delete
-                                </Button>
+                                </Button> */}
                               </Grid>
                             );
                           },
@@ -692,14 +664,14 @@ export default function ContractorProject() {
                                     Edit
                                   </Button>
                                 </Link>
-                                <Button
+                                {/* <Button
                                   variant="outlined"
                                   className="mx-2 tableDeletebtn"
                                   onClick={() => deleteHandle(params.row._id)}
                                 // startIcon={<AiFillDelete />}
                                 >
                                   Delete
-                                </Button>
+                                </Button> */}
                               </Grid>
                             );
                           },

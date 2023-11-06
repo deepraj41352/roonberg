@@ -170,7 +170,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 Project List
               </li>
             </Link>
-            <Link
+            {/* <Link
               to="/add-project"
               className="text-decoration-none"
               onClick={handlSmallScreeneClick}
@@ -184,7 +184,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 <AiFillHome className="me-3 fs-5" />
                 Add Project
               </li>
-            </Link>
+            </Link> */}
           </>
         ) : null}
         {userInfo.role == 'agent' ? (
