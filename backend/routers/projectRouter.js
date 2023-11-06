@@ -329,6 +329,7 @@ projectRouter.post(
           };
           const emailSendCheck = await sendEmailNotify(options);
           if (emailSendCheck) {
+
             const notifyUser = user._id;
             const message = `New Project Create  Project Name - ${options.projectName},Description - ${options.projectDescription}`;
             const status = "unseen";
