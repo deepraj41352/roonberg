@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useReducer, useState } from "react";
-import { Button, Card, Col, Container, Form, Row, Toast } from "react-bootstrap";
+import { Button, Card, Col, Container, Form, Row, } from "react-bootstrap";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Store } from "../Store";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { ThreeDots } from 'react-loader-spinner';
+import { ColorRing, ThreeDots } from 'react-loader-spinner';
+import { FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -62,7 +63,7 @@ function AdminEditAgent() {
   const [email, setEmail] = useState('');
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [status, setStatus] = useState('');
-  const [category, setCategory] = useState(agentData.agentCategory);
+  const [category, setCategory] = useState('');
 
 
   useEffect(() => {
@@ -122,7 +123,7 @@ function AdminEditAgent() {
         }
       );
       dispatch({ type: "UPDATE_SUCCESS" })
-      toast.success("Agent updated Successfully !");
+      toast.success("Agent Updated Successfully !");
       navigate('/adminAgentList')
 
     } catch (err) {
@@ -142,64 +143,88 @@ function AdminEditAgent() {
           </Row>
           <Row>
             <Col>
-              <Card className={`${theme}CardBody`}>
-                <Form onSubmit={submitHandler} className="p-4 w-100 formWidth ">
-                  <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label className="mb-1 input-box">Name</Form.Label>
-                    <Form.Control className="input-box-inner"
-                      onChange={(e) => setFirstName(e.target.value)}
-                      type="text"
-                      value={firstName}
-                      required
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label className="mb-1 input-box">Last Name</Form.Label>
-                    <Form.Control className="input-box-inner"
-                      onChange={(e) => setLastName(e.target.value)}
-                      type="text"
-                      value={lastName}
-                      required
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label className="mb-1 input-box" >Email</Form.Label>
-                    <Form.Control className="input-box-inner"
-                      onChange={(e) => setEmail(e.target.value)}
-                      type="email"
-                      value={email}
-                      required
-                      disabled
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label className="mb-1">Status</Form.Label>
-                    <Form.Select value={status} onChange={(e) => setStatus(e.target.value)}>
-                      <option value="">SELECT STATUS</option>
-                      <option value="true">Active</option>
-                      <option value="false">Inactive</option>
-                    </Form.Select>
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label className="mb-1">Category</Form.Label>
-                    <Form.Select value={category} onChange={(e) => setCategory(e.target.value)}>
-                      {categoryDatas.map((items) => (
-                        <option key={items._id} value={items._id} >{items.categoryName}</option>
-                      ))}
-                    </Form.Select>
-                  </Form.Group>
-                  <div className="d-flex justify-content-start mt-4">
-                    <Button
-                      className=" py-1 w-25 globalbtnColor updatingBtn"
-                      variant="primary"
-                      type="submit"
-                      disabled={isSubmiting}
-                    >
-                      {isSubmiting ? "Updating" : "Update"}
-                    </Button>
+              <div className="overlayLoading" >
+                <Card className={`${theme}CardBody`}>
+                  <div className="FormContainerEdit">
+
+                    {isSubmiting && (
+                      <div className="overlayLoadingItem1">
+                        <ColorRing
+                          visible={true}
+                          height="40"
+                          width="40"
+                          ariaLabel="blocks-loading"
+                          wrapperStyle={{}}
+                          wrapperClass="blocks-wrapper"
+                          colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
+                        />
+                      </div>
+                    )}
+
+                    <Form onSubmit={submitHandler} className="p-4 w-100 formWidth ">
+                      <TextField
+                        className="mb-3"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        label="First Name"
+                        fullWidth
+                        required
+                      />
+                      <TextField
+                        className="mb-3"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        label="Last Name"
+                        fullWidth
+                      />
+                      <TextField
+                        className="mb-3"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        label="Email"
+                        type="email"
+                        fullWidth
+                        disabled
+
+                      />
+                      <FormControl className="mb-3">
+                        <InputLabel>Select Status</InputLabel>
+                        <Select
+                          value={status}
+                          onChange={(e) => setStatus(e.target.value)}
+                          required
+                        >
+                          <MenuItem value={true} >Active</MenuItem>
+                          <MenuItem value={false}>Inactive</MenuItem>
+                        </Select>
+                      </FormControl>
+
+
+                      <FormControl className="mb-3">
+                        <InputLabel>Category</InputLabel>
+                        <Select required
+                          value={category} onChange={(e) => setCategory(e.target.value)}
+                        >
+                          {categoryDatas.map((items) => (
+                            <MenuItem key={items._id} value={items._id} >{items.categoryName}</MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      <div className="d-flex justify-content-start mt-4">
+                        <Button
+                          className=" py-1 w-25 globalbtnColor updatingBtn"
+                          variant="primary"
+                          type="submit"
+                          disabled={isSubmiting}
+                        >
+                          {isSubmiting ? 'UPDATING' : 'UPDATE'}
+                        </Button>
+                      </div>
+                    </Form>
+
                   </div>
-                </Form>
-              </Card>
+                </Card>
+              </div>
             </Col>
           </Row>
         </div>

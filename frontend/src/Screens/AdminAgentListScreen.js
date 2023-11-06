@@ -11,13 +11,13 @@ import {
 } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
-import { Form, Toast } from "react-bootstrap";
+import { Form, } from "react-bootstrap";
 import { BiPlusMedical } from "react-icons/bi";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Store } from "../Store";
 import { ImCross } from "react-icons/im";
-import { ThreeDots } from 'react-loader-spinner';
+import { ColorRing, ThreeDots } from 'react-loader-spinner';
 import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useReducer, useState } from "react";
 import Validations from "../Components/Validations";
@@ -202,24 +202,24 @@ export default function AdminAgentListScreen() {
   };
 
   const deleteHandle = async (userid) => {
-    if (window.confirm('Are you sure to delete?')) {
+    if (window.confirm('Are you Sure To Delete?')) {
       try {
         const response = await axios.delete(`/api/user/${userid}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
 
         if (response.status === 200) {
-          toast.success('Agent deleted successfully!');
+          toast.success('Agent Deleted Successfully!');
           dispatch({
             type: 'DELETE_SUCCESS',
             payload: true,
           });
         } else {
-          toast.error('Failed to delete agent data.');
+          toast.error('Failed To Delete Agent.');
         }
       } catch (error) {
         console.error(error);
-        toast.error('An error occurred while deleting agent data.');
+        toast.error('An Error Occurred While Deleting Agent.');
       }
     }
   };
@@ -314,7 +314,7 @@ export default function AdminAgentListScreen() {
               disableRowSelectionOnClick
             />
           </Box>
-          <Modal open={isModelOpen} onClose={handleCloseRow}>
+          <Modal open={isModelOpen} onClose={handleCloseRow} className='overlayLoading'>
             <Box
               className="modelBg"
               sx={{
@@ -325,44 +325,62 @@ export default function AdminAgentListScreen() {
                 width: 400,
                 bgcolor: "background.paper",
                 boxShadow: 24,
-                p: 4,
+                p: submitting ? 0 : 4,
               }}
             >
-              <Form onSubmit={handleSubmit}>
-                <ImCross
-                  color="black"
-                  className="formcrossbtn"
-                  onClick={handleCloseRow}
-                />
-                <h4 className="d-flex justify-content-center text-dark">
-                  Add Agent
-                </h4>
-                <TextField
-                  className="mb-3"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  label="First Name"
 
-                  fullWidth
-                />
-                <TextField
-                  className="mb-3"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  label="Last Name"
 
-                  fullWidth
-                />
-                <TextField
-                  className="mb-3"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  label="Email"
-                  type="email"
-                  fullWidth
-                />
-                <Validations type="email" value={email} />
-                {/* <TextField
+              <div className="overlayLoading" >
+                {submitting && (
+                  <div className="overlayLoadingItem1">
+                    <ColorRing
+                      visible={true}
+                      height="40"
+                      width="40"
+                      ariaLabel="blocks-loading"
+                      wrapperStyle={{}}
+                      wrapperClass="blocks-wrapper"
+                      colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
+                    />
+                  </div>
+                )}
+                <Form className={submitting ? 'scrollInAdminproject p-4 ' : 'scrollInAdminproject px-1'} onSubmit={handleSubmit} >
+                  <ImCross
+                    color="black"
+                    className="formcrossbtn"
+                    onClick={handleCloseRow}
+                  />
+                  <h4 className="d-flex justify-content-center text-dark">
+                    Add Agent
+                  </h4>
+                  <TextField
+                    className="mb-3"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    label="First Name"
+                    fullWidth
+                    required
+                  />
+                  <TextField
+                    className="mb-3"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    label="Last Name"
+
+                    fullWidth
+                  />
+                  <TextField
+                    className="mb-3"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    label="Email"
+                    type="email"
+                    fullWidth
+                    required
+
+                  />
+                  <Validations type="email" value={email} />
+                  {/* <TextField
                   className="mb-3"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -371,37 +389,44 @@ export default function AdminAgentListScreen() {
                   fullWidth
                 />
                 <Validations type="password" value={password} /> */}
-                <FormControl className="mb-3">
-                  <InputLabel>Select Status</InputLabel>
-                  <Select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
+                  <FormControl className="mb-3">
+                    <InputLabel>Select Status</InputLabel>
+                    <Select
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
+                      required
+                    >
+                      <MenuItem value={true} >Active</MenuItem>
+                      <MenuItem value={false}>Inactive</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <FormControl className="mb-3">
+                    <InputLabel>Select Category</InputLabel>
+                    <Select required
+                      value={selectcategory} onChange={(e) => setSelectCategory(e.target.value)}
+                    >
+                      {categoryData.map((items) => (
+                        <MenuItem key={items._id} value={items._id} >{items.categoryName}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <br></br>
+                  <Button
+                    className="mt-2 formbtn globalbtnColor"
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    disabled={submitting}
                   >
-                    <MenuItem value={true} >Active</MenuItem>
-                    <MenuItem value={false}>Inactive</MenuItem>
-                  </Select>
-                </FormControl>
-                <FormControl className="mb-3">
-                  <InputLabel>Select Category</InputLabel>
-                  <Select
-                    value={selectcategory} onChange={(e) => setSelectCategory(e.target.value)} required
-                  >
-                    {categoryData.map((items) => (
-                      <MenuItem key={items._id} value={items._id} >{items.categoryName}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <br></br>
-                <Button
-                  className="mt-2 formbtn"
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                  disabled={submitting}
-                >
-                  {submitting ? "Submitting" : "Submit"}
-                </Button>
-              </Form>
+                    {submitting ?
+                      "SUBMITTING"
+                      : "SUBMIT "}
+                  </Button>
+                </Form>
+              </div>
+
+
+
             </Box>
           </Modal>
         </>

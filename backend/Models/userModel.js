@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema(
     userStatus: { type: Boolean, default: true },
     passresetToken: { type: String },
     agentCategory: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
+    lastLogin:{type: Date , default:Date.now}
   },
   {
     timestamps: true,

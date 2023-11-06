@@ -18,6 +18,7 @@ server.listen(port, () => {
 });
 
 let users = [];
+let Notification = [];
 
 const addUser = (userId, socketId, role) => {
   !users.some((user) => user.userId === userId) &&
@@ -342,6 +343,8 @@ io.on("connection", (socket) => {
       receiverdId,
       text,
     }) => {
+      console.log("users", users)
+
       if (receiverdId.length == 2) {
         const agent = getUser(receiverdId[0]);
         const contractor = getUser(receiverdId[1]);
@@ -393,6 +396,21 @@ io.on("connection", (socket) => {
       }
     }
   );
+
+  socket.on('connectionForNotify', () => {
+    console.log('User connected for notifications');
+  });
+
+  socket.on('notifyProjectBackend', (notifyUser, message) => {
+    console.log('notify and mesage', notifyUser, message)
+    io.emit("notifyProjectFrontend", notifyUser, message);
+  });
+  socket.on('notifyUserBackend', (notifyUser, message) => {
+    console.log('notify and mesage for user', notifyUser, message)
+    io.emit("notifyUserFrontend", notifyUser, message);
+  });
+
+
   // when disconnect
   socket.on("disconnect", () => {
     console.log("a user disconnected");
@@ -400,3 +418,6 @@ io.on("connection", (socket) => {
     io.emit("getUsers", users);
   });
 });
+
+
+

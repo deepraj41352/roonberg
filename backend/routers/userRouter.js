@@ -15,6 +15,16 @@ import { v2 as cloudinary } from 'cloudinary';
 import streamifier from 'streamifier';
 const userRouter = express.Router();
 const upload = multer();
+import { storeNotification } from "../server.js";
+
+
+import { Socket, io } from "socket.io-client";
+const socket = io('ws://localhost:8900');
+
+socket.emit("connectionForNotify", () => {
+  console.log("connectionForNotif user connnercted");
+});
+
 /** 
  * @swagger
  * /user/{role}:
@@ -322,11 +332,14 @@ userRouter.post(
   '/signin',
   expressAsyncHandler(async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
+   
     if (user) {
       if (bcrypt.compareSync(req.body.password, user.password)) {
-        const { password, passresetToken, ...other } = user._doc;
-        const userData = { ...other, token: generateToken(user) };
-
+        
+        const updatedUser = await User.findOneAndUpdate({ email: req.body.email },{lastLogin:new Date()},{new:true});
+        console.log('updatedUser ',updatedUser)
+        const { password, passresetToken, ...other } = updatedUser._doc;
+        const userData = { ...other, token: generateToken(updatedUser) };
         res.send(userData);
         return;
       } else {
@@ -417,6 +430,14 @@ userRouter.post(
       });
       const user = await newUser.save();
       const { password, ...other } = user._doc;
+      if(user){
+        const notifyUser = user._id;
+        const message = `welcome ${user.first_name}`;
+        const status = "unseen";
+        const type = "User";
+        storeNotification(message, notifyUser, status, type);
+        socket.emit("notifyUserBackend", notifyUser, message);
+      }
       res
         .status(201)
         .send({ message: 'User registered successfully. please Login', other });
@@ -458,6 +479,12 @@ userRouter.put(
         res.send({
           userData,
         });
+        const notifyUser = updatedUser._id;
+        const message = `Your profile is updated`;
+        const status = "unseen";
+        const type = "User";
+        storeNotification(message, notifyUser, status, type);
+        socket.emit("notifyUserBackend", notifyUser, message);
       } else {
         res.status(404).send({ message: 'User not found' });
       }

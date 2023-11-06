@@ -33,6 +33,66 @@ code {
 }
 
 /* Gaytri css start  */
+.cateAgentcontainerHide {
+  display: none !important;
+}
+.cateAgentPairBtn {
+  padding: 15px 5px;
+  border-radius: 5px;
+  margin-top: 5px;
+  border: 1px solid #b2b8be;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cateLogoImgLabel {
+  left: 30% !important;
+}
+.cateLogoImgContainer {
+  border: 1px solid #dee2e6 !important;
+  border-radius: 5px !important;
+  padding: 10px !important;
+}
+.css-kzyyzb-MuiDataGrid-root .MuiDataGrid-columnHeader:focus,
+.css-kzyyzb-MuiDataGrid-root .MuiDataGrid-cell:focus {
+  outline: none !important;
+}
+
+.css-kzyyzb-MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within,
+.css-kzyyzb-MuiDataGrid-root .MuiDataGrid-cell:focus-within {
+  outline: none !important;
+}
+.overlayLoading {
+  position: relative;
+}
+.overlayLoadingItem1 {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.FormContainerEdit {
+  background-color: white;
+  margin: 20px;
+  border-radius: 5px;
+}
+.cateAgentcontainer {
+  border: 1px solid rgb(194, 194, 194);
+  border-radius: 5px;
+}
+.cateAgentItem {
+  border-radius: 5px;
+  margin: 5px;
+  background-color: #a3bce4;
+  color: #fff;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  padding: 0px 5px;
+}
 .scrollInAdminproject {
   max-height: 500px;
   overflow-y: auto;
@@ -199,6 +259,9 @@ code {
 }
 
 /* Gaytri css start  */
+.disabledMenuItem {
+  text-decoration: line-through !important;
+}
 .fullContainer {
   height: 100vh !important;
 }
@@ -230,7 +293,7 @@ code {
 }
 .tableBg p,
 button {
-  color: white !important;
+  /* color: white !important; */
 }
 .tableBg input[type='checkbox'] {
   border-color: white !important;
@@ -286,7 +349,13 @@ body {
 }
 .globalbtnColor {
   color: #ffffff !important;
-  background-color: #1d4ed8 !important;
+  background-color: RGB(14, 14, 61) !important;
+  font-weight: 700 !important;
+  border: none !important;
+}
+
+.pointCursor {
+  cursor: pointer;
 }
 
 .formWidth {
@@ -515,7 +584,7 @@ body {
 }
 /* ---------Priyanshu-End------------- */
 .css-1jy569b-MuiFormLabel-root-MuiInputLabel-root {
-  background-color: #fff !important;
+  /* background-color: #fff !important; */
   padding: 3px;
 }
 .darkCardBody {
@@ -554,9 +623,8 @@ body {
 .timeago {
   font-size: 12px;
 }
-.timeago2{
+.timeago2 {
   font-size: 13px;
-
 }
 .chat-senderMsg {
   display: flex;
@@ -663,30 +731,29 @@ align-items: self-end;
   }
 }
 
-.removeBtnCard{
+.removeBtnCard {
   margin-top: 26px;
 }
-@media(max-width:600px){
-.assign-card-input{
-  /* min-width: 100px; */
-  max-width: 150px;
-}
-}
-@media(max-width:480px){
-  .assign-card-div{
-flex-direction: column;
-
+@media (max-width: 600px) {
+  .assign-card-input {
+    /* min-width: 100px; */
+    max-width: 150px;
   }
-  .removeBtnCard{
+}
+@media (max-width: 480px) {
+  .assign-card-div {
+    flex-direction: column;
+  }
+  .removeBtnCard {
     margin-top: 0px !important;
   }
 }
-@media(max-width:380px){
-  .contrator-agent-inputBox{
+@media (max-width: 380px) {
+  .contrator-agent-inputBox {
     flex-direction: column;
   }
 }
-.chat-dp{
+.chat-dp {
   height: 30px;
   width: 30px;
   border-radius: 50%;
@@ -702,11 +769,11 @@ flex-direction: column;
   object-fit: cover;
   /* background-position: center; */
 }
-.icon-for-upload{
-display: flex;
-justify-content: center;
-align-items: center;
-margin-left: 7px !important;
+.icon-for-upload {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 7px !important;
 }
 .btn-send{
   background-color: linear-gradient( 1deg, rgba(0, 0, 0, 1) 0%, rgba(17, 17, 74, 1) 68%, rgba(0, 0, 0, 1) 93% ) !important;
@@ -793,4 +860,98 @@ margin: 1px;
 .badgesclass{
   font-size: 10px !important;
   left: 112% !important;
+}
+.btn-send {
+  background-color: linear-gradient(
+    1deg,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(17, 17, 74, 1) 68%,
+    rgba(0, 0, 0, 1) 93%
+  ) !important;
+}
+
+/*  */
+::-webkit-scrollbar {
+  width: 8px;
+  margin-left: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #cec5c5; /* Gray color for the track */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background: RGB(14, 14, 61); /* Blue color for the scrollbar handle */
+}
+.nav-link{
+  color: white !important;
+}
+.notification-badge{
+  font-size: 11px !important;
+  margin-top: 5px !important;
+  margin-left: 7px !important;
+}
+
+.notification-badgeApp{
+  font-size: 9px !important;
+margin-top: 11px !important;
+margin-left: -1px !important;
+
+}
+
+.navbar-nav-scroll{
+  align-items: center;
+}
+.custom-list {
+  list-style: none;
+  padding: 0;
+}
+
+.custom-list-item {
+  /* background-color: #07162c !important; */
+  color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+.pagination {
+  margin-top: 20px;
+}
+
+.pagination .page-link {
+  background-color: #07162c;
+  color: #fff;
+}
+
+.pagination .page-link.active {
+  background-color: #07162c;
+}
+.list-group-item{
+  display: flex !important;
+align-items: center;
+  color: white !important;
+}
+.NotificationMsg{
+  width: 88%;
+  text-align: start;
+}
+.MarkAsRead{
+  border-radius: 11px !important;
+  color: black;
+  background-color: #b9c9da;
+  width: 12%;
+  padding: 0 !important;
+}
+.list-group-item-dark{
+     background-color: #07162c !important; 
+
+}
+.list-group-item-light{
+  background-color: #afb4b9 !important;
+
 }

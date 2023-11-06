@@ -15,13 +15,12 @@ import RegistrationForm from './Screens/RegistrationScreen';
 import AdminProjectListScreen from './Screens/AdminProjectListScreen';
 import AdminAgentListScreen from './Screens/AdminAgentListScreen';
 import AdminCategoriesListScreen from './Screens/AdminCategoriesListScreen';
-import AdminListScreen from './Screens/AdminListScreen';
 import AdminContractorListScreen from './Screens/AdminContractorListScreen';
 import SearchScreen from './Screens/SearchScreen';
 import ProjectSingleScreen from './Screens/ProjectSingleScreen';
 import ChatWindowScreen from './Screens/ChatWindowScreen';
 import AdminEditAgent from './Screens/AdminEditAgentScreen';
-import { useContext, useState } from 'react';
+import { useContext, useState,useEffect } from 'react';
 import {
   Container,
   Form,
@@ -37,6 +36,7 @@ import { BiShareAlt } from 'react-icons/bi';
 import { CgProfile } from 'react-icons/cg';
 import { FiClock } from 'react-icons/fi';
 import { MdOutlineNotifications } from 'react-icons/md';
+import axios from 'axios';
 import { Store } from './Store';
 import AdminDashboard from './Screens/AdminDashboard';
 import ProtectedRoute from './Components/ProtectedRoute';
@@ -55,6 +55,9 @@ import AdminAssignAgent from './Screens/AdminAssignAgentScreen';
 import AgentEditProject from './Agent/AgentEditProjectScreen';
 import ContractorProjectScreen from './Components/Contractor/contractorProjectScreen';
 import SuperadminEditAdmin from './Screens/SuperadminEditAdmin';
+import NotificationScreen from './Screens/NotificationScreen';
+import AdminListScreen from './Screens/AdminListScreen';
+import SuperadminAdminList from './Screens/SuperadminAdminList';
 
 
 
@@ -62,7 +65,7 @@ function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { toggleState, userInfo } = state;
+  const { toggleState, userInfo,NotificationData } = state;
   const theme = toggleState ? 'dark' : 'light';
   const [searchValue, setSearchValue] = useState('');
   const navigate = useNavigate();
@@ -93,6 +96,10 @@ function App() {
     }
   };
 
+  const handelforNOtification = () => {
+    ctxDispatch({ type: 'NOTIFICATION-NULL' });
+
+  };
 
   return (
     <div className={userInfo ? `App ${theme}` : `App`}>
@@ -156,16 +163,22 @@ function App() {
                           <Theme />
                         </div>
 
-                        <Nav.Link href="#action1">
+                        <Link href="#action1">
                           <BiShareAlt className="fs-4 admin-btn-logo" />
-                        </Nav.Link>
+                        </Link>
                        
-                        <Nav.Link href="#">
+                        <Link href="#">
                           <FiClock className="fs-4 admin-btn-logo " />
-                        </Nav.Link>
-                        <Nav.Link href="#">
+                        </Link>
+                        <Link to="/notificationScreen" className="position-relative" >
                           <MdOutlineNotifications className="fs-4 admin-btn-logo  " />
-                        </Nav.Link>
+    
+  {NotificationData.length > 0 && (
+    <span className="position-absolute notification-badgeApp top-0 start-110 translate-middle badge rounded-pill bg-danger">
+      {NotificationData.length}
+    </span>
+  )}
+                        </Link>
                       </Nav>
                     </Navbar.Collapse>
                     <div
@@ -242,10 +255,10 @@ function App() {
                       path="/projectNotification"
                       element={<ProjectNotification />}
                     />
-                    <Route
+                    {/* <Route
                       path="/superadmineditadmin/:id"
                       element={<SuperadminEditAdmin />}
-                    />
+                    /> */}
 
                     <Route
                       path="/dashboard"
@@ -281,10 +294,10 @@ function App() {
                       }
                     />
                     <Route
-                      path="/adminList"
+                      path="/adminList-screen"
                       element={
                         <ProtectedRoute>
-                          <AdminListScreen />
+                          <SuperadminAdminList />
                         </ProtectedRoute>
                       }
                     />
@@ -359,14 +372,19 @@ function App() {
                       path="/agentEditProject/:id"
                       element={<AgentEditProject />}
                     />
+
+                    <Route
+                      path="/notificationScreen"
+                      element={<NotificationScreen />}
+                    />
                   </Routes>
                 </div>
               </main>
             </div>
           </div>
-        </Container>
-      </div>
-    </div>
+        </Container >
+      </div >
+    </div >
   );
 }
 

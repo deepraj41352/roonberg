@@ -19,6 +19,8 @@ const reducer = (state, action) => {
       return { ...state, projectData: action.payload, loading: false };
     case 'FATCH_ERROR':
       return { ...state, error: action.payload, loading: false };
+    case "FATCH_SUBMITTING":
+      return { ...state, submitting: action.payload }
     case 'SUCCESS_CATEGORY':
       return { ...state, categoryData: action.payload, loading: false };
     case 'ERROR_CATEGORY':
@@ -51,7 +53,7 @@ function AdminAssignAgent() {
   const [endDate, setEndDate] = useState();
   const theme = toggleState ? 'dark' : 'light';
   const [
-    { loading, error, projectData, categoryData, successUpdate, agentData, contractorData, agentCateRemoving, successRemove },
+    { loading, error, projectData, categoryData, successUpdate, agentData, contractorData, agentCateRemoving, successRemove, submitting },
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
@@ -63,6 +65,7 @@ function AdminAssignAgent() {
     contractorData: [],
     successRemove: false,
     successUpdate: false,
+    submitting: false
   });
   const [conversations, setConversation] = useState([]);
   const [agentCategoryPair, setAgentCategoryPair] = useState([]);
@@ -84,7 +87,7 @@ function AdminAssignAgent() {
       }
     };
     if (successUpdate) {
-      dispatch({ typr: "UPDATE_SUCCESS" })
+      dispatch({ type: "UPDATE_SUCCESS" })
     }
     else if (successRemove) {
       dispatch({ type: "REMOVE_SUCCESS" })
@@ -168,30 +171,34 @@ function AdminAssignAgent() {
 
   const handleRemoveAgentCategory = async (agentIndex) => {
     setAgentCateRemovingIndex(agentIndex)
-    if (window.confirm('are you sure to delete ?'))
+    if (window.confirm('are you sure to delete ?')) {
       dispatch({ type: "REMOVE_SUBMITTING", payload: true })
-    try {
-      const response = await axios.put(
-        `/api/project/remove-agentCategoryPair/${id}`,
-        { agentIndex },
-        {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
+      try {
+        const response = await axios.put(
+          `/api/project/remove-agentCategoryPair/${id}`,
+          { agentIndex },
+          {
+            headers: { Authorization: `Bearer ${userInfo.token}` },
+          }
+        );
+        if (response.status === 200) {
+          toast.success("Agent and Category Remove Successfully !");
+          dispatch({ type: "REMOVE_SUCCESS", payload: true });
+          dispatch({ type: "REMOVE_SUBMITTING", payload: false })
         }
-      );
-      if (response.status === 200) {
-        toast.success("Agent and Category Remove Successfully !");
-        dispatch({ type: "REMOVE_SUCCESS", payload: true });
+      } catch (error) {
+        console.error('API Error:', error);
         dispatch({ type: "REMOVE_SUBMITTING", payload: false })
       }
-    } catch (error) {
-      console.error('API Error:', error);
-      dispatch({ type: "REMOVE_SUBMITTING", payload: false })
     }
-
+    else {
+      console.log("Deletion canceled.")
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    dispatch({ type: "FATCH_SUBMITTING", payload: true })
     dispatch({ type: "UPDATE_SUCCESS", payload: false })
     try {
       const updatedData = {
@@ -211,10 +218,12 @@ function AdminAssignAgent() {
         toast.success('Agent Assign Successfully !');
         console.log(response);
         dispatch({ type: "UPDATE_SUCCESS", payload: true })
+        dispatch({ type: "FATCH_SUBMITTING", payload: false })
         // navigate('/adminProjectList')
       }
     } catch (error) {
       console.error('API Error:', error);
+      dispatch({ type: "FATCH_SUBMITTING", payload: false })
     }
   };
 
@@ -315,16 +324,28 @@ function AdminAssignAgent() {
   const addAgent = () => {
     setAgents([...agents, { categoryId: '', agentId: '' }]);
   };
-  const removeAgent = (index) => {
-    if (window.confirm("Are you sure to delete?")) {
-      const updatedAgents = [...agents];
-      updatedAgents.splice(index, 1);
-      setAgents(updatedAgents);
-    }
+  // const removeAgent = (index) => {
+  //   if (window.confirm("Are you sure to delete?")) {
+  //     const updatedAgents = [...agents];
+  //     updatedAgents.splice(index, 1);
+  //     setAgents(updatedAgents);
+  //   }
+  // };
+  const removeDynamicFields = (index) => {
+
+    const updatedAgents = [...agents];
+    updatedAgents.splice(index, 1);
+    setAgents(updatedAgents);
   };
 
-  console.log('projectOwner', projectData.projectOwner)
-  console.log('contractor', projectOwner)
+  const removeFields = (index) => {
+    const agentCatData = agents[index];
+    if (!agentCatData.agentId && !agentCatData.categoryId) {
+      removeDynamicFields(index);
+    } else {
+      handleRemoveAgentCategory(index);
+    }
+  };
   return (
     <div>
       {loading ? (
@@ -527,10 +548,7 @@ function AdminAssignAgent() {
                           </Form.Select>
                         </Form.Group>
                         <div className='d-flex align-items-center mx-2'>
-                          <Button className=' mt-2 ' onClick={() => handleRemoveAgentCategory(index)} disabled={agentCateRemoving && agentCateRemovingIndex == index} >
-                            <AiFillDelete className='mx-1' />
-                            {agentCateRemoving && agentCateRemovingIndex === index ? 'Removing' : 'Remove'}
-                          </Button>
+                          <Button className=' mt-2 ' disabled={agentCateRemoving && agentCateRemovingIndex == index} onClick={() => removeFields(index)}> {agentCateRemoving && agentCateRemovingIndex === index ? 'Removing' : 'Remove'}</Button>
                         </div>
                       </div>
                     ))}
@@ -541,9 +559,9 @@ function AdminAssignAgent() {
                         <GrAddCircle className='mx-2' style={{ backgroundColor: 'white' }} />
                         Assign Agent
                       </div>
-                      <Button className='mb-2 mx-2 bg-primary' type='submit' >
+                      <Button className='mb-2 mx-2 bg-primary' type='submit' disabled={submitting}>
 
-                        Submit
+                        {submitting ? "submitting" : "Submit"}
                       </Button>
                     </div>
 
