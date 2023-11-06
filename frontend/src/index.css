@@ -670,30 +670,42 @@ body {
   max-width: 60%;
 }
 .chat-senderMsg-inner {
-  background-color: #a0ddd0;
+  background-color: #0e0e3d;
   border-radius: 10px;
   border-top-left-radius: 0px !important;
   text-align: start;
   margin-bottom: 0;
+  max-width: 431px;
+  color: white;
+
 }
 .chat-receiverMsg {
   display: flex;
   justify-content: end;
-  align-items: end;
+  /* align-items: end; */
   max-width: 60%;
   margin-left: 40%;
   margin-top: 25px;
+  
+
+}
+.mediachats{
+display: flex;
+    flex-direction: column;
+align-items: self-end;
 }
 
 .chat-receiverMsg-inner {
-  background-color: #96df9c;
+  background-color: #afb4b9;
   border-radius: 10px;
   border-top-right-radius: 0px !important;
   text-align: start;
   margin-bottom: 0;
+  max-width: 431px;
 }
 .chatWindowBody {
-  overflow: auto; /* Add scrollbars when content overflows */
+  overflow-y: auto; /* Add scrollbars when content overflows */
+  
 }
 .Roonberg-logo {
   height: 50px !important;
@@ -799,6 +811,92 @@ body {
   align-items: center;
   margin-left: 7px !important;
 }
+.btn-send{
+  background-color: linear-gradient( 1deg, rgba(0, 0, 0, 1) 0%, rgba(17, 17, 74, 1) 68%, rgba(0, 0, 0, 1) 93% ) !important;
+}
+.projetStatusChat{
+  margin-top: 18px !important;
+}
+.rxfontstryle{
+  text-wrap: wrap;
+}
+.MuiTablePagination-displayedRows{
+  margin: 0;
+}
+.img-fornavs{
+  border: 2px solid white;
+}
+.richEditor{ max-width:  600px; /* Set the maximum width of the container */
+  overflow: hidden; /* Hide overflow content */
+  word-wrap: break-word; /* Wrap long words */
+}
+.richEditor .DraftEditor-root{overflow-y: scroll;max-height: 200px;}
+.forWidth{
+  width: 92% !important;
+}
+.mainfordata{
+  margin-top: 3% !important;
+}
+.row{
+  margin: 0 !important;
+}
+.MuiDataGrid-columnHeaderCheckbox{
+  display: none !important;
+}
+.MuiDataGrid-cellCheckbox{
+  display: none !important;
+
+}
+.dropdown-content{
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  width: 125px;
+  position: relative;
+  right: 69px;
+  text-align: justify;
+  text-decoration: none;
+  border-radius: 4px;
+  padding: 14px;
+  margin-top: 4px;
+  z-index: 1;
+  gap: 5px;
+}
+.dropdown-content a{
+  text-decoration: none;
+  color: #060612;
+}
+.dropdown-content hr{
+margin: 1px;
+}
+.modal-content1{
+  align-items: end;
+  position: relative;
+}
+.close-button{
+  font-size: 26px;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: #0000004a;
+  color: white;
+  border-radius: 2px;
+  padding: 2px;
+}
+.downloadBtn{
+  position: absolute;
+  font-size: 40px;
+  bottom: 10px;
+  padding: 6px;
+  border-radius: 6px;
+  right: 10px;
+  background: #0000004a;
+  color: white;
+}
+.badgesclass{
+  font-size: 10px !important;
+  left: 112% !important;
+}
 .btn-send {
   background-color: linear-gradient(
     1deg,
@@ -823,4 +921,73 @@ body {
 ::-webkit-scrollbar-thumb {
   border-radius: 5px;
   background: RGB(14, 14, 61); /* Blue color for the scrollbar handle */
+}
+.nav-link{
+  color: white !important;
+}
+.notification-badge{
+  font-size: 11px !important;
+  margin-top: 5px !important;
+  margin-left: 7px !important;
+}
+
+.notification-badgeApp{
+  font-size: 9px !important;
+margin-top: 11px !important;
+margin-left: -1px !important;
+
+}
+
+.navbar-nav-scroll{
+  align-items: center;
+}
+.custom-list {
+  list-style: none;
+  padding: 0;
+}
+
+.custom-list-item {
+  /* background-color: #07162c !important; */
+  color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+.pagination {
+  margin-top: 20px;
+}
+
+.pagination .page-link {
+  background-color: #07162c;
+  color: #fff;
+}
+
+.pagination .page-link.active {
+  background-color: #07162c;
+}
+.list-group-item{
+  display: flex !important;
+align-items: center;
+  color: white !important;
+}
+.NotificationMsg{
+  width: 88%;
+  text-align: start;
+}
+.MarkAsRead{
+  border-radius: 11px !important;
+  color: black;
+  background-color: #b9c9da;
+  width: 12%;
+  padding: 0 !important;
+}
+.list-group-item-dark{
+     background-color: #07162c !important; 
+
+}
+.list-group-item-light{
+  background-color: #afb4b9 !important;
+
 }

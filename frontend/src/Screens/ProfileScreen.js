@@ -11,7 +11,7 @@ import { TextField } from "@mui/material";
 function ProfileScreen() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
-  console.log("useringo", userInfo);
+  // console.log("useringo", userInfo);
   const theme = toggleState ? "dark" : "light";
   const navigate = useNavigate();
 
@@ -20,10 +20,6 @@ function ProfileScreen() {
   const [email, setEmail] = useState(userInfo.email);
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-
-
-  console.log("file", selectedFile);
-
   useEffect(() => {
     if (isSubmiting == false) {
       setFirstName(userInfo.first_name);
@@ -51,10 +47,10 @@ function ProfileScreen() {
           authorization: `Bearer ${userInfo.token}`,
         },
       });
+
       toast.success("Profile Updated Successfully !");
       ctxDispatch({ type: "USER_UPDATE", payload: data.userData });
       localStorage.setItem("userInfo", JSON.stringify(data.userData));
-
     } catch (err) {
       toast.error(err.response?.data?.message);
     } finally {

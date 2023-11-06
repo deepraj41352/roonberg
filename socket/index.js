@@ -353,6 +353,7 @@ io.on("connection", (socket) => {
             senderFirstName,
             senderLastName,
             Sender_Profile,
+
             senderId,
             text,
           });
@@ -362,6 +363,7 @@ io.on("connection", (socket) => {
             senderFirstName,
             senderLastName,
             Sender_Profile,
+
             senderId,
             text,
           });
@@ -377,7 +379,7 @@ io.on("connection", (socket) => {
             text,
           });
         } else {
-          console.log("kara");
+          console.log("karannn");
         }
         const AdminUser = users.filter(
           (item) => item.role === "admin" || item.role === "superadmin"
@@ -402,6 +404,10 @@ io.on("connection", (socket) => {
   socket.on('notifyProjectBackend', (notifyUser, message) => {
     console.log('notify and mesage', notifyUser, message)
     io.emit("notifyProjectFrontend", notifyUser, message);
+  });
+  socket.on('notifyUserBackend', (notifyUser, message) => {
+    console.log('notify and mesage for user', notifyUser, message)
+    io.emit("notifyUserFrontend", notifyUser, message);
   });
 
 

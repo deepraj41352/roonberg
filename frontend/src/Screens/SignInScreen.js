@@ -5,6 +5,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import Validations from '../Components/Validations';
 import { FaEye, FaRegEyeSlash } from 'react-icons/fa';
 import { useContext, useState, useEffect } from 'react';
+import { io } from 'socket.io-client';
+
 import { Store } from '../Store';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -49,10 +51,18 @@ function SignUpForm() {
         email,
         password,
       });
+      if (!data.profile_picture) {
+        data.profile_picture = "./avatar.png"; // Replace with your default avatar URL
+      }
       ctxDispatch({ type: 'USER_SIGNIN', payload: data });
       localStorage.setItem('userInfo', JSON.stringify(data));
 
       toast.success('Login successful');
+      const socket = io('ws://localhost:8900');
+      socket.on('connectionForNotify', (data) => {
+        console.log('oiuhjioyhi', data);
+      });
+    
       navigate('/dashboard');
     } catch (err) {
       toast.error(err.response?.data?.message);

@@ -114,7 +114,7 @@ projectRouter.post(
       if (checkMail) {
         for (const adminemailid of adminEmails) {
           const notifyUser = adminemailid._id;
-          const message = `${options.subject}Project Name - ${options.projectName},Description - ${options.projectDescription}`;
+          const message = `New Project Created  Project Name - ${options.projectName},Description - ${options.projectDescription}`;
           const status = "unseen";
           const type = "project";
           storeNotification(message, notifyUser, status, type);
@@ -122,7 +122,6 @@ projectRouter.post(
           socket.emit("notifyProjectBackend", notifyUser, message);
           // const resultNotify = await storeNotification.save();
           // console.log("resultNotify", resultNotify);
-
         }
       } else {
         console.log("email not send");
@@ -174,6 +173,14 @@ projectRouter.put(
       };
       const dataprojectupdate = await project.updateOne({ $set: updatedData });
       console.log("dataprojectupdate", dataprojectupdate);
+      const notifyUser = project.projectOwner;
+      const message = `Your Project has been updated `;
+      const status = "unseen";
+      const type = "project";
+      storeNotification(message, notifyUser, status, type);
+      console.log("notifyProjectBackend", notifyUser, message)
+      socket.emit("notifyProjectBackend", notifyUser, message);
+
       res.status(200).json("update successfully");
     } catch (err) {
       res.status(500).json({
@@ -323,10 +330,12 @@ projectRouter.post(
           const emailSendCheck = await sendEmailNotify(options);
           if (emailSendCheck) {
             const notifyUser = user._id;
-            const message = `${options.subject}Project Name - ${options.projectName},Description - ${options.projectDescription}`;
+            const message = `New Project Create  Project Name - ${options.projectName},Description - ${options.projectDescription}`;
             const status = "unseen";
             const type = "project";
             storeNotification(message, notifyUser, status, type);
+            socket.emit("notifyProjectBackend", notifyUser, message);
+
 
           } else {
             console.log("email not send");
@@ -347,12 +356,12 @@ projectRouter.post(
           if (emailSendCheck) {
             for (const userId of toUserIds) {
               const notifyUser = userId;
-              const message = `${options.subject}Project Name - ${options.projectName},Description - ${options.projectDescription}`;
+              const message = `New Project Assigned  Project Name - ${options.projectName},Description - ${options.projectDescription}`;
               const status = "unseen";
               const type = "project";
 
               storeNotification(message, notifyUser, status, type);
-              // const resultNotify = await storeNotification.save();
+              socket.emit("notifyProjectBackend", notifyUser, message);
 
               // console.log("resultNotify", resultNotify);
             }
@@ -521,11 +530,12 @@ projectRouter.post(
             const status = "unseen";
             const type = "project";
 
-            storeNotification(message, notifyUser, status, type);
-          }
-          // const resultNotify = await storeNotification.save();
 
-          // console.log("resultNotify", resultNotify);
+            storeNotification(message, notifyUser, status, type);
+            socket.emit("notifyProjectBackend", notifyUser, message);
+            console.log("resultNotify", resultNotify);
+
+          }
         }
       } else {
         console.log("email not send");
@@ -756,12 +766,12 @@ projectRouter.put(
         };
         const emailSendCheck = await sendEmailNotify(options);
         if (emailSendCheck) {
-          const notifyUser = contractorId;
-          const message = `${options.subject}Project Name - ${options.projectName},Description - ${options.projectDescription}`;
+          const notifyUser = user.email;
+          const message = `Your project is updated ${options.projectName}`;
           const status = "unseen";
           const type = "project";
           storeNotification(message, notifyUser, status, type);
-          // io.emit("emailSent", { userId: notifyUser });
+          socket.emit("notifyProjectBackend", notifyUser, message);
         }
       }
       else {
@@ -801,50 +811,52 @@ projectRouter.put(
               const status = "unseen";
               const type = "project";
               storeNotification(message, notifyUser, status, type);
+              socket.emit("notifyProjectBackend", notifyUser, message);
+
             }
           }
-        }
-        for (const agentId of agentIds) {
-          const existingConversation = await Conversation.findOne({
-            members: [agentId, contractorId],
-            projectId: projectId,
-          });
-          console.log("existingConversation", existingConversation)
-          if (!existingConversation) {
-            const newConversation = new Conversation({
+          for (const agentId of agentIds) {
+            const existingConversation = await Conversation.findOne({
               members: [agentId, contractorId],
               projectId: projectId,
             });
-            const con = await newConversation.save();
+            console.log("existingConversation", existingConversation)
+            if (!existingConversation) {
+              const newConversation = new Conversation({
+                members: [agentId, contractorId],
+                projectId: projectId,
+              });
+              const con = await newConversation.save();
 
-          } else {
+            } else {
+
+            }
+          }
+          for (const agentId of agentIds) {
+            const agentEmail = await User.findById(agentId, "email");
+            const newCustomEmail = new CustomEmail({
+              projectId: projectId,
+              contractorEmail: user.email,
+              contractorCustomEmail: `${contractorId}${projectId}${new Date()
+                .toISOString()
+                .replace(/[^0-9]/g, "")}`,
+              agentEmail: agentEmail.email,
+              agentCustomEmail: `${agentId}${projectId}${new Date()
+                .toISOString()
+                .replace(/[^0-9]/g, "")}`,
+            });
+            await newCustomEmail.save();
 
           }
         }
-        for (const agentId of agentIds) {
-          const agentEmail = await User.findById(agentId, "email");
-          const newCustomEmail = new CustomEmail({
-            projectId: projectId,
-            contractorEmail: user.email,
-            contractorCustomEmail: `${contractorId}${projectId}${new Date()
-              .toISOString()
-              .replace(/[^0-9]/g, "")}`,
-            agentEmail: agentEmail.email,
-            agentCustomEmail: `${agentId}${projectId}${new Date()
-              .toISOString()
-              .replace(/[^0-9]/g, "")}`,
-          });
-          await newCustomEmail.save();
-
-        }
+        res.status(200).json({ updatedProject, agent: user });
       }
-      res.status(200).json({ updatedProject, agent: user });
     } catch (error) {
       console.error("Error assigning the project:", error);
       res.status(500).json({ error: "Error assigning the project" });
+
     }
-  })
-);
+  }))
 
 export default projectRouter;
 

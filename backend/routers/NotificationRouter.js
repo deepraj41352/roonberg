@@ -11,7 +11,7 @@ NotificationRouter.get(
     isAuth,
     expressAsyncHandler(async (req, res) => {
         try {
-            const notification = await Notification.findOne({ userId: req.params.id });
+            const notification = await Notification.find({ userId: req.params.id });
             if (notification) {
                 res.json(notification);
                 console.log("Notification:", notification);
@@ -26,19 +26,19 @@ NotificationRouter.get(
 );
 
 NotificationRouter.put(
-    "updateStatus/:id",
+    "/updateStatus/:id",
     isAuth,
     expressAsyncHandler(async (req, res) => {
         try {
             const status = req.body.status;
+            console.log("status",status)
 
             if (status === 'unseen') {
                 const notification = await Notification.findOneAndUpdate(
-                    { userId: req.params.id },
+                    { _id: req.params.id },
                     { status: 'seen' },
                     { new: true }
                 );
-
                 if (notification) {
                     res.json(notification);
                     console.log("Notification updated to 'seen':", notification);

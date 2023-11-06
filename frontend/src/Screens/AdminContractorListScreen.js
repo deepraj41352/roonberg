@@ -218,7 +218,7 @@ export default function AdminContractorListScreen() {
                 height="80"
                 width="80"
                 radius="9"
-                className="ThreeDot justify-content-center"
+                className="ThreeDot justi`fy-content-center"
                 color="#0e0e3d"
                 ariaLabel="three-dots-loading"
                 wrapperStyle={{}}

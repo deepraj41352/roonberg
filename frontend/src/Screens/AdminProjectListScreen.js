@@ -6,7 +6,7 @@ import { MdEdit } from 'react-icons/md';
 import { MdAddCircleOutline, MdPlaylistRemove } from 'react-icons/md'
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
-import { Form } from 'react-bootstrap';
+import { Badge, Form } from 'react-bootstrap';
 import { BiPlusMedical } from 'react-icons/bi';
 import { Store } from '../Store';
 import axios from 'axios';
@@ -291,7 +291,7 @@ export default function AdminProjectListScreen() {
     return item.projectStatus === 'active';
   });
   const projectCompleteData = projectData.filter((item) => {
-    return item.projectStatus === 'complete';
+    return item.projectStatus === 'completed';
   });
   const projectQuedData = projectData.filter((item) => {
     return item.projectStatus === 'qued';
@@ -817,26 +817,28 @@ export default function AdminProjectListScreen() {
                       </Button>
                     </Form>
                   </Box>
-                </Modal> */}
-                </Tab>
-                <Tab className="tab-color" eventKey="Active" title="Active">
-                  <Box sx={{ height: 400, width: '100%' }}>
-                    <DataGrid
-                      className={
-                        theme == "light"
-                          ? `${theme}DataGrid`
-                          : `tableBg ${theme}DataGrid`
-                      }
-                      rows={projectActiveData}
-                      columns={[
-                        ...columns,
-                        {
-                          field: 'action',
-                          headerName: 'Action',
-                          width: 250,
-                          renderCell: (params) => {
-                            return (
-                              <Grid item xs={8}>
+                </Modal>
+              </Tab>
+              <Tab className="tab-color" eventKey="Active" title={<span  class="position-relative">Active   <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+   {projectActiveData.length}
+  </span></span>}>
+                <Box sx={{ height: 400, width: '100%' }}>
+                  <DataGrid
+                    className={
+                      theme == "light"
+                        ? `${theme}DataGrid`
+                        : `tableBg ${theme}DataGrid`
+                    }
+                    rows={projectActiveData}
+                    columns={[
+                      ...columns,
+                      {
+                        field: 'action',
+                        headerName: 'Action',
+                        width: 250,
+                        renderCell: (params) => {
+                          return (
+                            <Grid item xs={8}>
 
                                 <Button
                                   variant="contained"
@@ -852,47 +854,49 @@ export default function AdminProjectListScreen() {
                                   className="mx-2 tableDeletebtn"
                                   onClick={() => deleteHandle(params.row._id)}
 
-                                >
-                                  Delete
-                                </Button>
-                              </Grid>
-                            );
-                          },
+                              >
+                                Delete
+                              </Button>
+                            </Grid>
+                          );
                         },
-                      ]}
-                      getRowId={(row) => row._id}
-                      initialState={{
-                        pagination: {
-                          paginationModel: {
-                            pageSize: 5,
-                          },
+                      },
+                    ]}
+                    getRowId={(row) => row._id}
+                    initialState={{
+                      pagination: {
+                        paginationModel: {
+                          pageSize: 5,
                         },
-                      }}
-                      pageSizeOptions={[5]}
-                      checkboxSelection
-                      disableRowSelectionOnClick
-                    />
-                  </Box>
-                </Tab>
-                <Tab className="tab-color" eventKey="Completed" title="Completed">
-                  <Box sx={{ height: 400, width: '100%' }}>
-                    <DataGrid
-                      className={
-                        theme == "light"
-                          ? `${theme}DataGrid`
-                          : `tableBg ${theme}DataGrid`
-                      }
-                      rows={projectCompleteData}
-                      columns={[
-                        ...columns,
-                        {
-                          field: 'action',
-                          headerName: 'Action',
-                          width: 250,
-                          renderCell: (params) => {
-                            return (
-                              <Grid item xs={8}>
-                                <Link to={`/projectSingleScreen/${params.row._id}`}>
+                      },
+                    }}
+                    pageSizeOptions={[5]}
+                    checkboxSelection
+                    disableRowSelectionOnClick
+                  />
+                </Box>
+              </Tab>
+              <Tab className="tab-color" eventKey="Completed" title={<span  class="position-relative">Completed   <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+   {projectCompleteData.length}
+  </span></span>}>
+                <Box sx={{ height: 400, width: '100%' }}>
+                  <DataGrid
+                    className={
+                      theme == "light"
+                        ? `${theme}DataGrid`
+                        : `tableBg ${theme}DataGrid`
+                    }
+                    rows={projectCompleteData}
+                    columns={[
+                      ...columns,
+                      {
+                        field: 'action',
+                        headerName: 'Action',
+                        width: 250,
+                        renderCell: (params) => {
+                          return (
+                            <Grid item xs={8}>
+                              <Link to={`/projectSingleScreen/${params.row._id}`}>
 
                                   <Button
                                     variant="contained"
@@ -909,47 +913,49 @@ export default function AdminProjectListScreen() {
                                   className="mx-2 tableDeletebtn"
                                   onClick={() => deleteHandle(params.row._id)}
 
-                                >
-                                  Delete
-                                </Button>
-                              </Grid>
-                            );
-                          },
+                              >
+                                Delete
+                              </Button>
+                            </Grid>
+                          );
                         },
-                      ]}
-                      getRowId={(row) => row._id}
-                      initialState={{
-                        pagination: {
-                          paginationModel: {
-                            pageSize: 5,
-                          },
+                      },
+                    ]}
+                    getRowId={(row) => row._id}
+                    initialState={{
+                      pagination: {
+                        paginationModel: {
+                          pageSize: 5,
                         },
-                      }}
-                      pageSizeOptions={[5]}
-                      checkboxSelection
-                      disableRowSelectionOnClick
-                    />
-                  </Box>
-                </Tab>
-                <Tab className="tab-color" eventKey="Qued" title="Qued">
-                  <Box sx={{ height: 400, width: '100%' }}>
-                    <DataGrid
-                      className={
-                        theme == "light"
-                          ? `${theme}DataGrid`
-                          : `tableBg ${theme}DataGrid`
-                      }
-                      rows={projectQuedData}
-                      columns={[
-                        ...columns,
-                        {
-                          field: 'action',
-                          headerName: 'Action',
-                          width: 250,
-                          renderCell: (params) => {
-                            return (
-                              <Grid item xs={8}>
-                                <Link to={`/projectSingleScreen/${params.row._id}`}>
+                      },
+                    }}
+                    pageSizeOptions={[5]}
+                    checkboxSelection
+                    disableRowSelectionOnClick
+                  />
+                </Box>
+              </Tab>
+              <Tab className="tab-color" eventKey="Qued" title={<span  class="position-relative">Qued   <span class="badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+   {projectQuedData.length}
+  </span></span>}>
+                <Box sx={{ height: 400, width: '100%' }}>
+                  <DataGrid
+                    className={
+                      theme == "light"
+                        ? `${theme}DataGrid`
+                        : `tableBg ${theme}DataGrid`
+                    }
+                    rows={projectQuedData}
+                    columns={[
+                      ...columns,
+                      {
+                        field: 'action',
+                        headerName: 'Action',
+                        width: 250,
+                        renderCell: (params) => {
+                          return (
+                            <Grid item xs={8}>
+                              <Link to={`/projectSingleScreen/${params.row._id}`}>
 
                                   <Button
                                     variant="contained"
@@ -1005,6 +1011,48 @@ export default function AdminProjectListScreen() {
                           renderCell: (params) => {
                             return (
                               <Grid item xs={8}>
+                              >
+                                Delete
+                              </Button>
+                            </Grid>
+                          );
+                        },
+                      },
+                    ]}
+                    getRowId={(row) => row._id}
+                    initialState={{
+                      pagination: {
+                        paginationModel: {
+                          pageSize: 5,
+                        },
+                      },
+                    }}
+                    pageSizeOptions={[5]}
+                    checkboxSelection
+                    disableRowSelectionOnClick
+                  />
+                </Box>
+              </Tab>
+              <Tab className="tab-color" eventKey="Assigned" title={<span  class="position-relative">Assigned   <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+   {assignedAgent.length}
+  </span></span>}>
+                <Box sx={{ height: 400, width: '100%' }}>
+                  <DataGrid
+                    className={
+                      theme == "light"
+                        ? `${theme}DataGrid`
+                        : `tableBg ${theme}DataGrid`
+                    }
+                    rows={assignedAgent}
+                    columns={[
+                      ...columns,
+                      {
+                        field: 'action',
+                        headerName: 'Action',
+                        width: 250,
+                        renderCell: (params) => {
+                          return (
+                            <Grid item xs={8}>
 
 
                                 <Button
@@ -1025,29 +1073,30 @@ export default function AdminProjectListScreen() {
                             >
                               Delete
                             </Button> */}
-                              </Grid>
-                            );
+                </Grid>
+                );
                           },
                         },
                       ]}
-                      getRowId={(row) => row._id}
-                      initialState={{
-                        pagination: {
-                          paginationModel: {
-                            pageSize: 5,
-                          },
-                        },
-                      }}
-                      pageSizeOptions={[5]}
-                      checkboxSelection
-                      disableRowSelectionOnClick
+                getRowId={(row) => row._id}
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      pageSize: 5,
+                    },
+                  },
+                }}
+                pageSizeOptions={[5]}
+                checkboxSelection
+                disableRowSelectionOnClick
                     />
-                  </Box>
-                </Tab>
-              </Tabs>
-            </div>
-          </>
-        )}
+              </Box>
+            </Tab>
+          </Tabs>
+      </div>
+    </>
+  )
+}
       </div >
     </>
   );

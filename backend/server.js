@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from "path";
 import userRouter from "./routers/userRouter.js";
+import seedRouter from "./routers/seed.js";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import projectRouter from "./routers/projectRouter.js";
@@ -66,6 +67,7 @@ app.get("/api", (req, res) => {
   res.send("Welcome to Roonberg World");
 });
 
+app.use("/api/seed", seedRouter);
 app.use("/api/user", userRouter);
 app.use("/api/project", projectRouter);
 app.use("/api/category", categoryRouter);
