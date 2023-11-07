@@ -20,7 +20,7 @@ import {
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DatePicker from '@mui/lab/DatePicker';
-
+import dayjs from 'dayjs';
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FATCH_REQUEST':
@@ -91,7 +91,10 @@ function AdminEditProject() {
   const [projectStatus, setProjectStatus] = useState('active');
   const [projectOwner, setProjectOwner] = useState('priynashu');
   const [createdDate, setCreatedDate] = useState();
+  const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
+  const [startDateError, setStartDateError] = useState('');
+  const [endDateError, setEndDateError] = useState('');
 
   // get conversation
   useEffect(() => {
@@ -194,19 +197,19 @@ function AdminEditProject() {
 
   const selectAgentByCateHandle = (index) => {
     const category = agents[index].categoryId;
-    if (Array.isArray(categoryData)) {
-      if (category) {
-        const selectedCategory1 = categoryData.find(
-          (categoryItem) => categoryItem._id === category
-        );
-        if (selectedCategory1) {
-          const agentForCategory = agentData.filter(
-            (agentItem) => agentItem.agentCategory === selectedCategory1._id
-          );
-          if (agentForCategory) {
-            return agentForCategory;
-          }
-        }
+    if (category) {
+      const selectedCategory = categoryData.find(
+        (categoryItem) => categoryItem._id === category
+      );
+      const agentsForCategory = agentData.filter(
+        (agentItem) => agentItem.agentCategory === selectedCategory._id
+      );
+      const activeAgents = agentsForCategory.filter(
+        (agentItem) => agentItem.userStatus === true
+      );
+
+      if (activeAgents.length > 0) {
+        return activeAgents;
       }
     }
     return [];
@@ -330,6 +333,40 @@ function AdminEditProject() {
     }
   };
 
+  const currentDate = dayjs();
+
+  const validateDates = (newStartDate, newEndDate) => {
+    setCreatedDate(newStartDate);
+    setEndDate(newEndDate);
+    const selectedStartDate = dayjs(newStartDate);
+    const selectedEndDate = dayjs(newEndDate);
+
+    if (
+      selectedStartDate.isAfter(currentDate, 'day') ||
+      selectedStartDate.isSame(currentDate, 'day')
+    ) {
+      setCreatedDate(newStartDate);
+      setStartDateError('');
+
+      if (newEndDate) {
+        if (
+          selectedEndDate.isAfter(selectedStartDate, 'day') ||
+          selectedEndDate.isSame(selectedStartDate, 'day')
+        ) {
+          setEndDate(newEndDate);
+          setEndDateError('');
+        } else {
+          setEndDateError(
+            'End date must be greater than or equal to the Start Date.'
+          );
+        }
+      }
+    } else {
+      setStartDateError(
+        'Start date must be greater than or equal to the current date.'
+      );
+    }
+  };
   return (
     <div>
       {loading ? (
@@ -458,25 +495,46 @@ function AdminEditProject() {
              />
            </Form.Group>
          </div> */}
+                      {console.log(createdDate)}
                       <div className="d-flex gap-3 mb-3">
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
-                          <DatePicker
-                            label="Date"
-                            value={createdDate}
-                            onChange={(date) => setCreatedDate(date)}
-                            renderInput={(params) => <TextField {...params} />}
-                          />
-                          <DatePicker
-                            label="Date"
-                            value={endDate}
-                            onChange={(date) => setEndDate(date)}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                style={{ color: 'white' }}
-                              />
+                          <div className="d-flex flex-column">
+                            <DatePicker
+                              label="Start Date"
+                              value={createdDate}
+                              onChange={(newValue) =>
+                                validateDates(newValue, endDate)
+                              }
+                              renderInput={(params) => (
+                                <TextField {...params} />
+                              )}
+                            />
+                            {startDateError && (
+                              <div className="Datevalidation">
+                                {startDateError}
+                              </div>
                             )}
-                          />
+                          </div>
+                          <div className="d-flex flex-column">
+                            <DatePicker
+                              label="End Date"
+                              value={endDate}
+                              onChange={(newValue) =>
+                                validateDates(createdDate, newValue)
+                              }
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  style={{ color: 'white' }}
+                                />
+                              )}
+                            />
+                            {endDateError && (
+                              <div className="Datevalidation">
+                                {endDateError}
+                              </div>
+                            )}
+                          </div>
                         </LocalizationProvider>
                       </div>
                     </Form>

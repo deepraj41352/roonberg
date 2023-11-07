@@ -1,51 +1,51 @@
-import Box from "@mui/material/Box";
-import { DataGrid } from "@mui/x-data-grid";
-import { Grid } from "@mui/material";
+import Box from '@mui/material/Box';
+import { DataGrid } from '@mui/x-data-grid';
+import { Grid } from '@mui/material';
 // import { AiFillDelete } from 'react-icons/ai';
-import Modal from "@mui/material/Modal";
-import TextField from "@mui/material/TextField";
-import { Card, Form } from "react-bootstrap";
-import { BiPlusMedical } from "react-icons/bi";
-import { Store } from "../Store";
-import axios from "axios";
-import { toast } from "react-toastify";
-import Tab from "react-bootstrap/Tab";
-import { ColorRing, ThreeDots } from "react-loader-spinner";
-import Tabs from "react-bootstrap/Tabs";
+import Modal from '@mui/material/Modal';
+import TextField from '@mui/material/TextField';
+import { Card, Form } from 'react-bootstrap';
+import { BiPlusMedical } from 'react-icons/bi';
+import { Store } from '../Store';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import Tab from 'react-bootstrap/Tab';
+import { ColorRing, ThreeDots } from 'react-loader-spinner';
+import Tabs from 'react-bootstrap/Tabs';
 // import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DateField } from "@mui/x-date-pickers/DateField";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateField } from '@mui/x-date-pickers/DateField';
 import {
   FormControl,
   InputLabel,
   Select,
   MenuItem,
   Button,
-} from "@mui/material";
-import { Link } from "react-router-dom";
-import { useContext, useEffect, useReducer, useState } from "react";
+} from '@mui/material';
+import { Link } from 'react-router-dom';
+import { useContext, useEffect, useReducer, useState } from 'react';
 import dayjs from 'dayjs';
-import DatePicker from "@mui/lab/DatePicker";
-import AdapterDateFns from "@mui/lab/AdapterDateFns";
-import LocalizationProvider from "@mui/lab/LocalizationProvider";
-import { ImCross } from "react-icons/im";
+import DatePicker from '@mui/lab/DatePicker';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import { ImCross } from 'react-icons/im';
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "FATCH_REQUEST":
+    case 'FATCH_REQUEST':
       return { ...state, loading: true };
-    case "FATCH_SUCCESS":
+    case 'FATCH_SUCCESS':
       return { ...state, projectData: action.payload, loading: false };
-    case "FATCH_ERROR":
+    case 'FATCH_ERROR':
       return { ...state, error: action.payload, loading: false };
-    case "SUCCESS_CATEGORY":
+    case 'SUCCESS_CATEGORY':
       return { ...state, categoryData: action.payload };
-    case "ERROR_CATEGORY":
+    case 'ERROR_CATEGORY':
       return { ...state, error: action.payload };
-    case "UPDATE_SUCCESS":
+    case 'UPDATE_SUCCESS':
       return { ...state, successUpdate: action.payload };
 
-    case "UPDATE_RESET":
+    case 'UPDATE_RESET':
       return { ...state, successUpdate: false };
 
     default:
@@ -54,25 +54,25 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: "_id", headerName: "ID", width: 90 },
+  { field: '_id', headerName: 'ID', width: 90 },
   {
-    field: "projectName",
-    headerName: "Project",
+    field: 'projectName',
+    headerName: 'Project',
     width: 150,
   },
   {
-    field: "projectDescription",
-    headerName: "Description",
+    field: 'projectDescription',
+    headerName: 'Description',
     width: 150,
   },
   {
-    field: "projectCategory",
-    headerName: "Category",
+    field: 'projectCategory',
+    headerName: 'Category',
     width: 90,
   },
   {
-    field: "assignedAgent",
-    headerName: "Agent",
+    field: 'assignedAgent',
+    headerName: 'Agent',
     width: 110,
   },
 ];
@@ -85,20 +85,20 @@ export default function ContractorProject() {
 
   const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
-  const theme = toggleState ? "dark" : "light";
+  const theme = toggleState ? 'dark' : 'light';
   const [
     { loading, error, projectData, successDelete, successUpdate, categoryData },
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
-    error: "",
+    error: '',
     projectData: [],
     successDelete: false,
     successUpdate: false,
   });
 
-  const [projectName, setProjectName] = useState("");
-  const [projectDescription, setProjectDescription] = useState("");
+  const [projectName, setProjectName] = useState('');
+  const [projectDescription, setProjectDescription] = useState('');
   const [startDateError, setStartDateError] = useState('');
   const [endDateError, setEndDateError] = useState('');
   const [startDate, setStartDate] = useState();
@@ -111,14 +111,15 @@ export default function ContractorProject() {
 
   const handleNew = () => {
     setIsModelOpen(true);
-
   };
 
   useEffect(() => {
     const FatchProjectData = async () => {
       try {
-        dispatch({ type: "FATCH_REQUEST" });
-        const response = await axios.get(`/api/project/getproject/${userInfo._id}`);
+        dispatch({ type: 'FATCH_REQUEST' });
+        const response = await axios.get(
+          `/api/project/getproject/${userInfo._id}`
+        );
         const datas = response.data.projects;
         const rowData = datas.map((items) => ({
           ...items,
@@ -127,16 +128,16 @@ export default function ContractorProject() {
           projectDescription: items.projectDescription,
           projectCategory: items.projectCategory
             ? items.projectCategory.map((cat) => cat.categoryName)
-            : "",
+            : '',
           assignedAgent: items.assignedAgent
             ? items.assignedAgent.map((agent) => agent.agentName)
-            : "",
+            : '',
         }));
 
-        dispatch({ type: "FATCH_SUCCESS", payload: rowData });
+        dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
       } catch (error) {
         console.error(error);
-        dispatch({ type: "FATCH_ERROR", payload: error })
+        dispatch({ type: 'FATCH_ERROR', payload: error });
         if (error.response && error.response.status === 404) {
           toast.error('You Dont Have Any Projects At The Moment.');
         } else {
@@ -146,20 +147,20 @@ export default function ContractorProject() {
     };
 
     if (successUpdate) {
-      dispatch({ type: "UPDATE_RESET" });
+      dispatch({ type: 'UPDATE_RESET' });
     } else {
       FatchProjectData();
     }
   }, [successDelete, successUpdate, dispatch, userInfo.token]);
 
   const projectActiveData = projectData.filter((item) => {
-    return item.projectStatus === "active";
+    return item.projectStatus === 'active';
   });
   const projectCompleteData = projectData.filter((item) => {
-    return item.projectStatus === "complete";
+    return item.projectStatus === 'complete';
   });
   const projectQuedData = projectData.filter((item) => {
-    return item.projectStatus === "qued";
+    return item.projectStatus === 'qued';
   });
 
   const handleSubmit = async (e) => {
@@ -167,7 +168,7 @@ export default function ContractorProject() {
     setIsSubmiting(true);
     try {
       const response = await axios.post(
-        "/api/project/",
+        '/api/project/',
         {
           projectName: projectName,
           projectDescription: projectDescription,
@@ -191,12 +192,12 @@ export default function ContractorProject() {
       toast.error(error);
       setIsSubmiting(false);
     }
-  }
+  };
 
   useEffect(() => {
     const fetchCategoryData = async () => {
       try {
-        dispatch("FETCH_REQUEST");
+        dispatch('FETCH_REQUEST');
         const response = await axios.get(`/api/category`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
@@ -209,9 +210,9 @@ export default function ContractorProject() {
             }))
           )
         );
-        dispatch({ type: "SUCCESS_CATEGORY", payload: uniqueCategories });
+        dispatch({ type: 'SUCCESS_CATEGORY', payload: uniqueCategories });
       } catch (error) {
-        console.error("Error fetching category data:", error);
+        console.error('Error fetching category data:', error);
       }
     };
 
@@ -225,6 +226,8 @@ export default function ContractorProject() {
   const currentDate = dayjs();
 
   const validateDates = (newStartDate, newEndDate) => {
+    setStartDate(newStartDate);
+    setEndDate(newEndDate);
     const selectedStartDate = dayjs(newStartDate);
     const selectedEndDate = dayjs(newEndDate);
 
@@ -294,7 +297,7 @@ export default function ContractorProject() {
                 <BiPlusMedical className="mx-2" />
                 Add Project
               </Button>
-            </Card >
+            </Card>
           </div>
         ) : (
           <>
@@ -305,10 +308,10 @@ export default function ContractorProject() {
                 className={`mb-0  tab-btn ${theme}Tab`}
               >
                 <Tab className="tab-color" eventKey="All" title="All">
-                  <Box sx={{ height: 400, width: "100%" }}>
+                  <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
-                        theme == "light"
+                        theme == 'light'
                           ? `${theme}DataGrid`
                           : `tableBg ${theme}DataGrid`
                       }
@@ -316,8 +319,8 @@ export default function ContractorProject() {
                       columns={[
                         ...columns,
                         {
-                          field: "action",
-                          headerName: "Action",
+                          field: 'action',
+                          headerName: 'Action',
                           width: 250,
                           renderCell: (params) => {
                             return (
@@ -328,8 +331,8 @@ export default function ContractorProject() {
                                   <Button
                                     variant="contained"
                                     className="mx-2 tableEditbtn"
-                                  // onClick={() => handleEdit(params.row._id)}
-                                  // startIcon={<MdEdit />}
+                                    // onClick={() => handleEdit(params.row._id)}
+                                    // startIcon={<MdEdit />}
                                   >
                                     Edit
                                   </Button>
@@ -358,19 +361,21 @@ export default function ContractorProject() {
                       pageSizeOptions={[5]}
                       checkboxSelection
                       disableRowSelectionOnClick
-                      localeText={{ noRowsLabel: "Project Data Is Not Avalible" }}
+                      localeText={{
+                        noRowsLabel: 'Project Data Is Not Avalible',
+                      }}
                     />
                   </Box>
                   <Modal open={isModelOpen} onClose={handleCloseRow}>
                     <Box
                       className="modelBg  modalRespnsive"
                       sx={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
                         width: 400,
-                        bgcolor: "background.paper",
+                        bgcolor: 'background.paper',
                         boxShadow: 24,
                         p: isSubmiting ? 0 : 4,
                       }}
@@ -385,12 +390,23 @@ export default function ContractorProject() {
                               ariaLabel="blocks-loading"
                               wrapperStyle={{}}
                               wrapperClass="blocks-wrapper"
-                              colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
+                              colors={[
+                                'rgba(0, 0, 0, 1) 0%',
+                                'rgba(255, 255, 255, 1) 68%',
+                                'rgba(0, 0, 0, 1) 93%',
+                              ]}
                             />
                           </div>
                         )}
 
-                        <Form onSubmit={handleSubmit} className={isSubmiting ? 'scrollInAdminproject p-4 ' : 'scrollInAdminproject px-3'}>
+                        <Form
+                          onSubmit={handleSubmit}
+                          className={
+                            isSubmiting
+                              ? 'scrollInAdminproject p-4 '
+                              : 'scrollInAdminproject px-3'
+                          }
+                        >
                           <ImCross
                             color="black"
                             className="formcrossbtn"
@@ -420,8 +436,8 @@ export default function ContractorProject() {
                             rows={4}
                             fullWidth
                             variant="outlined"
-                          // value={'text'}
-                          // onChange={handleChange}
+                            // value={'text'}
+                            // onChange={handleChange}
                           />
                           <FormControl fullWidth className="mb-3">
                             <InputLabel>Select Categories</InputLabel>
@@ -430,19 +446,19 @@ export default function ContractorProject() {
                               multiple
                               value={selectedOptions}
                               onChange={handleChange}
-                            // renderValue={(selected) => (
-                            //   <div>
-                            //     {categoryData && selected
-                            //       ? selected.map((value) => (
-                            //           <span key={value}>
-                            //             {categoryData.find(
-                            //               (option) => option._id === value
-                            //             ).categoryName + ','}
-                            //           </span>
-                            //         ))
-                            //       : ''}
-                            //   </div>
-                            // )}
+                              // renderValue={(selected) => (
+                              //   <div>
+                              //     {categoryData && selected
+                              //       ? selected.map((value) => (
+                              //           <span key={value}>
+                              //             {categoryData.find(
+                              //               (option) => option._id === value
+                              //             ).categoryName + ','}
+                              //           </span>
+                              //         ))
+                              //       : ''}
+                              //   </div>
+                              // )}
                             >
                               {categoryData &&
                                 categoryData.map((option) => (
@@ -454,23 +470,41 @@ export default function ContractorProject() {
                           </FormControl>
                           <LocalizationProvider dateAdapter={AdapterDateFns}>
                             <DatePicker
-                              label="Date"
+                              className="marginDate"
+                              label="Start Date"
                               value={startDate}
                               onChange={(newValue) =>
                                 validateDates(newValue, endDate)
                               }
-                              renderInput={(params) => <TextField {...params} />}
-
-                            />
-                            <DatePicker
-                              label="Date"
-                              value={endDate}
-                              onChange={(date) => setEndDate(date)}
                               renderInput={(params) => (
-                                <TextField {...params} style={{ color: 'white' }} />
+                                <TextField {...params} />
                               )}
-
                             />
+                            {startDateError && (
+                              <div className="Datevalidation">
+                                {startDateError}
+                              </div>
+                            )}
+                            <DatePicker
+                              className="mb-3"
+                              label="End Date"
+                              value={endDate}
+                              // onChange={(date) => setEndDate(date)}
+                              onChange={(newValue) =>
+                                validateDates(startDate, newValue)
+                              }
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  style={{ color: 'white' }}
+                                />
+                              )}
+                            />
+                            {endDateError && (
+                              <div className="Datevalidation">
+                                {endDateError}
+                              </div>
+                            )}
                           </LocalizationProvider>
                           {/* <LocalizationProvider dateAdapter={AdapterDayjs} className="mb-3">
                           <DateField
@@ -505,9 +539,7 @@ export default function ContractorProject() {
                             disabled={isSubmiting}
                             className="mt-2 formbtn updatingBtn globalbtnColor"
                           >
-                            {isSubmiting ?
-                              "SUBMITTING"
-                              : "SUBMIT "}
+                            {isSubmiting ? 'SUBMITTING' : 'SUBMIT '}
                           </Button>
                         </Form>
                       </div>
@@ -515,10 +547,10 @@ export default function ContractorProject() {
                   </Modal>
                 </Tab>
                 <Tab className="tab-color" eventKey="Active" title="Active">
-                  <Box sx={{ height: 400, width: "100%" }}>
+                  <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
-                        theme == "light"
+                        theme == 'light'
                           ? `${theme}DataGrid`
                           : `tableBg ${theme}DataGrid`
                       }
@@ -526,8 +558,8 @@ export default function ContractorProject() {
                       columns={[
                         ...columns,
                         {
-                          field: "action",
-                          headerName: "Action",
+                          field: 'action',
+                          headerName: 'Action',
                           width: 250,
                           renderCell: (params) => {
                             return (
@@ -538,8 +570,8 @@ export default function ContractorProject() {
                                   <Button
                                     variant="contained"
                                     className="mx-2 tableEditbtn"
-                                  // onClick={() => handleEdit(params.row._id)}
-                                  // startIcon={<MdEdit />}
+                                    // onClick={() => handleEdit(params.row._id)}
+                                    // startIcon={<MdEdit />}
                                   >
                                     Edit
                                   </Button>
@@ -577,10 +609,10 @@ export default function ContractorProject() {
                   eventKey="Completed"
                   title="Completed"
                 >
-                  <Box sx={{ height: 400, width: "100%" }}>
+                  <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
-                        theme == "light"
+                        theme == 'light'
                           ? `${theme}DataGrid`
                           : `tableBg ${theme}DataGrid`
                       }
@@ -588,8 +620,8 @@ export default function ContractorProject() {
                       columns={[
                         ...columns,
                         {
-                          field: "action",
-                          headerName: "Action",
+                          field: 'action',
+                          headerName: 'Action',
                           width: 250,
                           renderCell: (params) => {
                             return (
@@ -600,8 +632,8 @@ export default function ContractorProject() {
                                   <Button
                                     variant="contained"
                                     className="mx-2 tableEditbtn"
-                                  // onClick={() => handleEdit(params.row._id)}
-                                  // startIcon={<MdEdit />}
+                                    // onClick={() => handleEdit(params.row._id)}
+                                    // startIcon={<MdEdit />}
                                   >
                                     Edit
                                   </Button>
@@ -635,10 +667,10 @@ export default function ContractorProject() {
                   </Box>
                 </Tab>
                 <Tab className="tab-color" eventKey="Qued" title="Qued">
-                  <Box sx={{ height: 400, width: "100%" }}>
+                  <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
-                        theme == "light"
+                        theme == 'light'
                           ? `${theme}DataGrid`
                           : `tableBg ${theme}DataGrid`
                       }
@@ -646,8 +678,8 @@ export default function ContractorProject() {
                       columns={[
                         ...columns,
                         {
-                          field: "action",
-                          headerName: "Action",
+                          field: 'action',
+                          headerName: 'Action',
                           width: 250,
                           renderCell: (params) => {
                             return (
@@ -658,8 +690,8 @@ export default function ContractorProject() {
                                   <Button
                                     variant="contained"
                                     className="mx-2 tableEditbtn"
-                                  // onClick={() => handleEdit(params.row._id)}
-                                  // startIcon={<MdEdit />}
+                                    // onClick={() => handleEdit(params.row._id)}
+                                    // startIcon={<MdEdit />}
                                   >
                                     Edit
                                   </Button>

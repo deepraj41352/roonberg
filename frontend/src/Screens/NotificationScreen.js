@@ -3,15 +3,12 @@ import { io } from 'socket.io-client';
 import { Store } from '../Store';
 import axios from 'axios';
 import Button from 'react-bootstrap/Button';
-import { toast } from "react-toastify";
-import {  ThreeDots } from "react-loader-spinner";
-
-
-
+import { toast } from 'react-toastify';
+import { ThreeDots } from 'react-loader-spinner';
 
 export default function NotificationScreen() {
   const [notificationMessage, setNotificationMessage] = useState([]);
-  const [notificationMark, setNotificationMark] = useState("");
+  const [notificationMark, setNotificationMark] = useState('');
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
@@ -21,13 +18,16 @@ export default function NotificationScreen() {
   const maxPageNumbers = 5; // Maximum page numbers to show directly
 
   const reversedNotifications = [...notificationMessage].reverse();
-const indexOfLastItem = currentPage * itemsPerPage;
-const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-const currentNotifications = reversedNotifications.slice(indexOfFirstItem, indexOfLastItem);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentNotifications = reversedNotifications.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
 
   const totalPages = Math.ceil(notificationMessage.length / itemsPerPage);
 
-  console.log('currentNotifications',currentNotifications)
+  console.log('currentNotifications', currentNotifications);
 
   const pageNumbers = [];
   for (let i = 1; i <= totalPages; i++) {
@@ -40,9 +40,10 @@ const currentNotifications = reversedNotifications.slice(indexOfFirstItem, index
     }
   };
 
-  const socket = io('ws://localhost:8900');
-  socket.on('connectionForNotify', (data) => {
-    console.log('oiuhjioyhi', data);
+  const SocketUrl = process.env.SOCKETURL;
+  const socket = io(SocketUrl);
+  socket.on('connectionForNotify', () => {
+    console.log('oiuhjioyhi');
   });
 
   useEffect(() => {
@@ -82,9 +83,8 @@ const currentNotifications = reversedNotifications.slice(indexOfFirstItem, index
   // }, []);
 
   useEffect(() => {
-
     const fetchNotificationData = async () => {
-        ctxDispatch({ type: 'NOTIFICATION-NULL' });
+      ctxDispatch({ type: 'NOTIFICATION-NULL' });
       try {
         const response = await axios.get(`/api/notification/${userInfo._id}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
@@ -93,19 +93,17 @@ const currentNotifications = reversedNotifications.slice(indexOfFirstItem, index
         setNotificationMessage(NotifyData);
         ctxDispatch({ type: 'NOTIFICATION-NULL' });
 
-
-NotifyData.map((item)=>{
-  if(item.status=="unseen")
-  ctxDispatch({ type: 'NOTIFICATION', payload: { item } });
-})
+        NotifyData.map((item) => {
+          if (item.status == 'unseen')
+            ctxDispatch({ type: 'NOTIFICATION', payload: { item } });
+        });
       } catch (error) {
         console.error('Error fetching notification data:', error);
       }
     };
 
     fetchNotificationData();
-  }, [userInfo._id ,notificationMark]);
-
+  }, [userInfo._id, notificationMark]);
 
   const handleUpdateStatus = async (e) => {
     try {
@@ -116,7 +114,7 @@ NotifyData.map((item)=>{
           headers: { Authorization: `Bearer ${userInfo.token}` },
         }
       );
-setNotificationMark(data)
+      setNotificationMark(data);
       // if (data.status === 200) {
       //   toast.success("Notification marked as read!");
       // }
@@ -125,86 +123,105 @@ setNotificationMark(data)
     }
   };
 
-
   return (
     <>
-{currentNotifications?(
-  <>
-  <div className="container mt-5">
-<div className="row">
-  <div className="col">
-    <h2 className="mb-3">Notifications</h2>
-    <ul className="list-group custom-list">
-      {currentNotifications.map((item, index) => (
-        <li
-          key={index}
-          className={`list-group-item custom-list-item ${item.status === 'seen' ? 'list-group-item-light' : 'list-group-item-dark'}`}
-        >
-          <div className='NotificationMsg'>
-          {item.message}
+      {currentNotifications ? (
+        <>
+          <div className="container mt-5">
+            <div className="row">
+              <div className="col">
+                <h2 className="mb-3">Notifications</h2>
+                <ul className="list-group custom-list">
+                  {currentNotifications.map((item, index) => (
+                    <li
+                      key={index}
+                      className={`list-group-item custom-list-item ${
+                        item.status === 'seen'
+                          ? 'list-group-item-light'
+                          : 'list-group-item-dark'
+                      }`}
+                    >
+                      <div className="NotificationMsg">{item.message}</div>
+                      <button
+                        className="MarkAsRead"
+                        style={{
+                          display: item.status == 'seen' ? 'none' : 'block',
+                        }}
+                        value={item._id}
+                        onClick={handleUpdateStatus}
+                      >
+                        Mark as read
+                      </button>{' '}
+                    </li>
+                  ))}
+                </ul>
+                <nav>
+                  <ul className="pagination justify-content-center">
+                    <li
+                      className={`page-item ${
+                        currentPage === 1 ? 'disabled' : ''
+                      }`}
+                    >
+                      <button
+                        className="page-link"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                      >
+                        Previous
+                      </button>
+                    </li>
+                    {pageNumbers
+                      .slice(currentPage - 1, currentPage - 1 + maxPageNumbers)
+                      .map((number) => (
+                        <li
+                          key={number}
+                          className={`page-item ${
+                            currentPage === number ? 'active' : ''
+                          }`}
+                        >
+                          <button
+                            onClick={() => handlePageChange(number)}
+                            className="page-link"
+                          >
+                            {number}
+                          </button>
+                        </li>
+                      ))}
+                    <li
+                      className={`page-item ${
+                        currentPage === totalPages ? 'disabled' : ''
+                      }`}
+                    >
+                      <button
+                        className="page-link"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                      >
+                        Next
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </div>
           </div>
-          <button className='MarkAsRead' style={{display: item.status=='seen'? "none":"block"}} value={item._id} onClick={handleUpdateStatus} >Mark as read</button>{' '}
-
-        </li>
-      ))}
-    </ul>
-    <nav>
-      <ul className="pagination justify-content-center">
-        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-          <button
-            className="page-link"
-            onClick={() => handlePageChange(currentPage - 1)}
-          >
-            Previous
-          </button>
-        </li>
-        {pageNumbers
-          .slice(currentPage - 1, currentPage - 1 + maxPageNumbers)
-          .map((number) => (
-            <li key={number} className={`page-item ${currentPage === number ? 'active' : ''}`}>
-              <button
-                onClick={() => handlePageChange(number)}
-                className="page-link"
-              >
-                {number}
-              </button>
-            </li>
-          ))}
-        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-          <button
-            className="page-link"
-            onClick={() => handlePageChange(currentPage + 1)}
-          >
-            Next
-          </button>
-        </li>
-      </ul>
-    </nav>
-  </div>
-</div>
-</div>
-</>
-):( 
-  
-  <>  <div className="d-flex mt-3 justify-content-center">
-<ThreeDots
-  height="50"
-  width="50"
-  radius="9"
-  className="ThreeDot  justify-content-center"
-  color="#0e0e3d"
-  ariaLabel="three-dots-loading"
-  wrapperStyle={{}}
-  wrapperClassName=""
-  visible={true}
-/>
-</div>
-</>
-
-)}
-
-</>
-
-  
+        </>
+      ) : (
+        <>
+          {' '}
+          <div className="d-flex mt-3 justify-content-center">
+            <ThreeDots
+              height="50"
+              width="50"
+              radius="9"
+              className="ThreeDot  justify-content-center"
+              color="#0e0e3d"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClassName=""
+              visible={true}
+            />
+          </div>
+        </>
+      )}
+    </>
   );
 }

@@ -326,9 +326,8 @@ code {
   margin-bottom: 8px !important;
   width: 100% !important;
 }
-.tableBg p,
-button {
-  /* color: white !important; */
+.MuiTablePagination-displayedRows.css-levciy-MuiTablePagination-displayedRows {
+  color: white !important;
 }
 .tableBg input[type='checkbox'] {
   border-color: white !important;
@@ -1000,4 +999,17 @@ body {
 }
 .css-kzyyzb-MuiDataGrid-root .MuiDataGrid-row {
   width: 100% !important;
+}
+
+.Datevalidation {
+  color: red;
+  font-size: 11px;
+  margin-top: -10px;
+  padding: 0px 10px 13px 10px;
+}
+.marginDate {
+  margin-bottom: 10px !important;
+}
+.css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root {
+  margin-bottom: 10px !important;
 }

@@ -8,7 +8,8 @@ import Category from '../Models/categoryModel.js';
 import CustomEmail from '../Models/customEmailModul.js';
 import { storeNotification } from '../server.js';
 import { Socket, io } from 'socket.io-client';
-const socket = io('ws://localhost:8900');
+const SocketUrl = process.env.SOCKETURL || 'ws://localhost:8900';
+const socket = io(SocketUrl);
 
 // const io = require('../socket/index.js');
 // import io from '../../socket/index.js'

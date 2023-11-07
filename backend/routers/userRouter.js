@@ -19,7 +19,8 @@ const upload = multer();
 import { storeNotification } from '../server.js';
 
 import { Socket, io } from 'socket.io-client';
-const socket = io('ws://localhost:8900');
+const SocketUrl = process.env.SOCKETURL || 'ws://localhost:8900';
+const socket = io(SocketUrl);
 
 socket.emit('connectionForNotify', () => {
   console.log('connectionForNotif user connnercted');

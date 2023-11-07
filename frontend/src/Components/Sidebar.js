@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { HiClipboardList, HiUserGroup } from 'react-icons/hi';
 import { CiBoxList } from 'react-icons/ci';
-import { FaListAlt, FaListUl , } from 'react-icons/fa';
+import { FaListAlt, FaListUl } from 'react-icons/fa';
 import { FaPeopleGroup } from 'react-icons/fa';
 
 import { IoMdNotifications } from 'react-icons/io';
@@ -21,8 +21,8 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isSmallScreen, setIsSmallScreen] = useState(true);
 
-  
-  const socket = io('ws://localhost:8900');
+  const SocketUrl = process.env.SOCKETURL;
+  const socket = io(SocketUrl);
   socket.on('connectionForNotify', (data) => {
     console.log('oiuhjioyhi', data);
   });
@@ -32,7 +32,6 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
       if (notifyUser == userInfo._id) {
         console.log('notifyProjectFrontend', notifyUser, message);
         ctxDispatch({ type: 'NOTIFICATION', payload: { notifyUser, message } });
-       
       }
     };
     socket.on('notifyProjectFrontend', handleNotification);
@@ -41,16 +40,22 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
     };
   }, []);
   useEffect(() => {
-    socket.on('notifyUserFrontend', (notifyUser, message) => {
-      if (notifyUser === userInfo._id) {
-        console.log('notifyProjectFrontend', notifyUser, message);
-        ctxDispatch({ type: 'NOTIFICATION', payload: { notifyUser, message } });
-      }
-    });
+    const handleNotification = async (notifyUser, message) => {
+      console.log('notificationformsocke');
+
+      const { data } = await axios.get(`/api/notification/${userInfo._id}`, {
+        headers: { Authorization: `Bearer ${userInfo.token}` },
+      });
+      ctxDispatch({ type: 'NOTIFICATION-NULL' });
+      data.map((item) => {
+        if (item.status == 'unseen')
+          ctxDispatch({ type: 'NOTIFICATION', payload: { item } });
+      });
+    };
+    socket.on('notifyUserFrontend', handleNotification);
   }, []);
 
-
-  console.log('NotificationData',NotificationData)
+  console.log('NotificationData', NotificationData);
 
   const signoutHandler = () => {
     const userConfirm = window.confirm('Are you sure you want to logout?');
@@ -83,9 +88,8 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
 
   // };
   useEffect(() => {
-
     const fetchNotificationData = async () => {
-        ctxDispatch({ type: 'NOTIFICATION-NULL' });
+      ctxDispatch({ type: 'NOTIFICATION-NULL' });
       try {
         const response = await axios.get(`/api/notification/${userInfo._id}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
@@ -93,11 +97,10 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
         const NotifyData = response.data;
         ctxDispatch({ type: 'NOTIFICATION-NULL' });
 
-
-NotifyData.map((item)=>{
-  if(item.status=="unseen")
-  ctxDispatch({ type: 'NOTIFICATION', payload: { item } });
-})
+        NotifyData.map((item) => {
+          if (item.status == 'unseen')
+            ctxDispatch({ type: 'NOTIFICATION', payload: { item } });
+        });
       } catch (error) {
         console.error('Error fetching notification data:', error);
       }
@@ -105,7 +108,6 @@ NotifyData.map((item)=>{
 
     fetchNotificationData();
   }, []);
-
 
   return (
     <div className={`sidebar ${sidebarVisible ? 'visible' : ''} `}>
@@ -261,7 +263,6 @@ NotifyData.map((item)=>{
                 Project List
               </li>
             </Link>
-
           </>
         ) : null}
         <Link
@@ -271,7 +272,9 @@ NotifyData.map((item)=>{
         >
           <li
             className={
-              selectedItem === 'notificationScreen' ? 'selected d-flex' : 'd-flex'
+              selectedItem === 'notificationScreen'
+                ? 'selected d-flex'
+                : 'd-flex'
             }
             onClick={() => {
               setSelectedItem('notificationScreen');
@@ -279,14 +282,13 @@ NotifyData.map((item)=>{
           >
             <IoMdNotifications className="me-3 fs-5 " />
             <div className="position-relative">
-  Notification
-  {NotificationData.length > 0 && (
-    <span className="position-absolute notification-badge top-0 start-110 translate-middle badge rounded-pill bg-danger">
-      {NotificationData.length}
-    </span>
-  )}
-</div>
-
+              Notification
+              {NotificationData.length > 0 && (
+                <span className="position-absolute notification-badge top-0 start-110 translate-middle badge rounded-pill bg-danger">
+                  {NotificationData.length}
+                </span>
+              )}
+            </div>
           </li>
         </Link>
         {/* <Link

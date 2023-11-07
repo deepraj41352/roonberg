@@ -43,15 +43,15 @@ const reducer = (state, action) => {
       return { ...state, error: action.payload, loading: false };
 
     case 'DELETE_SUCCESS':
-      return { ...state, successDelete: action.payload };
+      return { ...state, successDelete: action.payload, loading: false };
 
     case 'DELETE_RESET':
-      return { ...state, successDelete: false };
+      return { ...state, successDelete: false, loading: false };
 
     case 'UPDATE_SUCCESS':
       return { ...state, successUpdate: action.payload };
     case 'UPDATE_RESET':
-      return { ...state, successUpdate: false };
+      return { ...state, successUpdate: false, loading: false };
     case 'FATCH_CATEGORY':
       return { ...state, categoryData: action.payload };
     case 'FATCH_AGENTS':
@@ -140,14 +140,18 @@ export default function AdminProjectListScreen() {
   const assignedAgentByCateHandle = (index) => {
     const category = agents[index].categoryId;
     if (category) {
-      const selectedCategory1 = categoryData.find(
+      const selectedCategory = categoryData.find(
         (categoryItem) => categoryItem._id === category
       );
       const agentsForCategory = agentData.filter(
-        (agentItem) => agentItem.agentCategory === selectedCategory1._id
+        (agentItem) => agentItem.agentCategory === selectedCategory._id
       );
-      if (agentsForCategory.length > 0) {
-        return agentsForCategory;
+      const activeAgents = agentsForCategory.filter(
+        (agentItem) => agentItem.userStatus === true
+      );
+
+      if (activeAgents.length > 0) {
+        return activeAgents;
       }
     }
     return [];
@@ -271,17 +275,21 @@ export default function AdminProjectListScreen() {
             assignedAgent: items.assignedAgent
               ? items.assignedAgent.map((agent) => agent.agentName)
               : 'N/A',
+
             projectOwner: contractor ? contractor.first_name : '',
           };
         });
+        console.log(datas);
+
         dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
       } catch (error) {
         console.log(error);
       }
     };
-
+    console.log('successDelete', successDelete);
     if (successDelete) {
       dispatch({ type: 'DELETE_RESET' });
+      console.log('loading', loading);
     } else if (successUpdate) {
       dispatch({ type: 'UPDATE_RESET' });
     } else {
@@ -388,6 +396,8 @@ export default function AdminProjectListScreen() {
   const currentDate = dayjs();
 
   const validateDates = (newStartDate, newEndDate) => {
+    setStartDate(newStartDate);
+    setEndDate(newEndDate);
     const selectedStartDate = dayjs(newStartDate);
     const selectedEndDate = dayjs(newEndDate);
 
@@ -790,7 +800,8 @@ export default function AdminProjectListScreen() {
                           </FormControl>
                           <LocalizationProvider dateAdapter={AdapterDateFns}>
                             <DatePicker
-                              label="Date"
+                              className="marginDate"
+                              label="Start Date"
                               value={startDate}
                               onChange={(newValue) =>
                                 validateDates(newValue, endDate)
@@ -799,10 +810,19 @@ export default function AdminProjectListScreen() {
                                 <TextField {...params} />
                               )}
                             />
+                            {startDateError && (
+                              <div className="Datevalidation">
+                                {startDateError}
+                              </div>
+                            )}
                             <DatePicker
-                              label="Date"
+                              className="mb-3"
+                              label="End Date"
                               value={endDate}
-                              onChange={(date) => setEndDate(date)}
+                              // onChange={(date) => setEndDate(date)}
+                              onChange={(newValue) =>
+                                validateDates(startDate, newValue)
+                              }
                               renderInput={(params) => (
                                 <TextField
                                   {...params}
@@ -810,34 +830,12 @@ export default function AdminProjectListScreen() {
                                 />
                               )}
                             />
+                            {endDateError && (
+                              <div className="Datevalidation">
+                                {endDateError}
+                              </div>
+                            )}
                           </LocalizationProvider>
-
-                          {/* <LocalizationProvider dateAdapter={AdapterDayjs} className="mb-3">
-                          <DateField
-                            required
-                            label="Start Date"
-                            value={startDate}
-                            onChange={(newValue) =>
-                              validateDates(newValue, endDate)
-                            }
-                            format="MM-DD-YYYY"
-                          />
-                          {startDateError && (
-                            <div style={{ color: 'red' }}>{startDateError}</div>
-                          )}
-                          <DateField
-                            required
-                            label="End Date"
-                            value={endDate}
-                            onChange={(newValue) =>
-                              validateDates(startDate, newValue)
-                            }
-                            format="MM-DD-YYYY"
-                          />
-                          {endDateError && (
-                            <div style={{ color: 'red' }}>{endDateError}</div>
-                          )}
-                        </LocalizationProvider> */}
                           <Button
                             variant="contained"
                             color="primary"
