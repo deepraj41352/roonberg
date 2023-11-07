@@ -9,19 +9,19 @@ import {
   MenuItem,
   Select,
   Stack,
-} from "@mui/material";
-import Modal from "@mui/material/Modal";
-import TextField from "@mui/material/TextField";
-import { Form, } from "react-bootstrap";
-import { BiPlusMedical } from "react-icons/bi";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { Store } from "../Store";
-import { ImCross } from "react-icons/im";
+} from '@mui/material';
+import Modal from '@mui/material/Modal';
+import TextField from '@mui/material/TextField';
+import { Form } from 'react-bootstrap';
+import { BiPlusMedical } from 'react-icons/bi';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { Store } from '../Store';
+import { ImCross } from 'react-icons/im';
 import { ColorRing, ThreeDots } from 'react-loader-spinner';
-import { useNavigate } from "react-router-dom";
-import { useContext, useEffect, useReducer, useState } from "react";
-import Validations from "../Components/Validations";
+import { useNavigate } from 'react-router-dom';
+import { useContext, useEffect, useReducer, useState } from 'react';
+import Validations from '../Components/Validations';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -89,7 +89,7 @@ export default function AdminAgentListScreen() {
   const [status, setStatus] = useState();
   const [password, setPassword] = useState('');
   const [selectcategory, setSelectCategory] = useState();
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false);
   const [
     {
       loading,
@@ -205,13 +205,11 @@ export default function AdminAgentListScreen() {
     setIsDeleting(true);
     if (window.confirm('Are you Sure To Delete?')) {
       try {
-
         const response = await axios.delete(`/api/user/${userid}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
 
         if (response.status === 200) {
-
           toast.success('Agent Deleted Successfully!');
           dispatch({
             type: 'DELETE_SUCCESS',
@@ -226,8 +224,7 @@ export default function AdminAgentListScreen() {
       } finally {
         setIsDeleting(false);
       }
-    }
-    else {
+    } else {
       setIsDeleting(false);
     }
   };
@@ -243,7 +240,7 @@ export default function AdminAgentListScreen() {
   const handleEdit = (userid) => {
     navigate(`/adminEditAgent/${userid}`);
   };
-  console.log("selectcategory", selectcategory)
+  console.log('selectcategory', selectcategory);
 
   return (
     <>
@@ -266,7 +263,6 @@ export default function AdminAgentListScreen() {
       ) : error ? (
         <div>{error}</div>
       ) : (
-
         <>
           <Button
             variant="outlined"
@@ -277,7 +273,7 @@ export default function AdminAgentListScreen() {
             <BiPlusMedical className="mx-2" />
             Add Agent
           </Button>
-          <div className="overlayLoading" >
+          <div className="overlayLoading">
             {isDeleting && (
               <div className="overlayLoadingItem1">
                 <ColorRing
@@ -287,13 +283,12 @@ export default function AdminAgentListScreen() {
                   ariaLabel="blocks-loading"
                   wrapperStyle={{}}
                   wrapperClass="blocks-wrapper"
-                  const colors={["white", "white", "white", "white", "white"]}
+                  const
+                  colors={['white', 'white', 'white', 'white', 'white']}
                 />
               </div>
             )}
-            <Box sx={{ height: 400, width: "100%" }}>
-
-
+            <Box sx={{ height: 400, width: '100%' }}>
               <DataGrid
                 className={`tableBg mx-2 ${theme}DataGrid`}
                 rows={AgentData}
@@ -305,7 +300,9 @@ export default function AdminAgentListScreen() {
                     width: 100,
                     renderCell: (params) => {
                       const isInactive = params.row.userStatus === 'Inactive';
-                      const cellClassName = isInactive ? 'inactive-cell' : 'active-cell';
+                      const cellClassName = isInactive
+                        ? 'inactive-cell'
+                        : 'active-cell';
 
                       return (
                         <div className={`status-cell ${cellClassName}`}>
@@ -315,8 +312,8 @@ export default function AdminAgentListScreen() {
                     },
                   },
                   {
-                    field: "action",
-                    headerName: "Action",
+                    field: 'action',
+                    headerName: 'Action',
                     width: 250,
                     renderCell: (params) => {
                       return (
@@ -325,7 +322,6 @@ export default function AdminAgentListScreen() {
                             variant="contained"
                             className="mx-2 tableEditbtn"
                             onClick={() => handleEdit(params.row._id)}
-
                           >
                             Edit
                           </Button>
@@ -333,7 +329,6 @@ export default function AdminAgentListScreen() {
                             variant="outlined"
                             className="mx-2 tableDeletebtn"
                             onClick={() => deleteHandle(params.row._id)}
-
                           >
                             Delete
                           </Button>
@@ -353,12 +348,15 @@ export default function AdminAgentListScreen() {
                 pageSizeOptions={[5]}
                 checkboxSelection
                 disableRowSelectionOnClick
-                localeText={{ noRowsLabel: "Agent Data Is Not Avalible" }}
+                localeText={{ noRowsLabel: 'Agent Data Is Not Avalible' }}
               />
-
             </Box>
           </div>
-          <Modal open={isModelOpen} onClose={handleCloseRow} className='overlayLoading'>
+          <Modal
+            open={isModelOpen}
+            onClose={handleCloseRow}
+            className="overlayLoading"
+          >
             <Box
               className="modelBg"
               sx={{
@@ -372,9 +370,7 @@ export default function AdminAgentListScreen() {
                 p: submitting ? 0 : 4,
               }}
             >
-
-
-              <div className="overlayLoading" >
+              <div className="overlayLoading">
                 {submitting && (
                   <div className="overlayLoadingItem1">
                     <ColorRing
@@ -384,11 +380,22 @@ export default function AdminAgentListScreen() {
                       ariaLabel="blocks-loading"
                       wrapperStyle={{}}
                       wrapperClass="blocks-wrapper"
-                      colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
+                      colors={[
+                        'rgba(0, 0, 0, 1) 0%',
+                        'rgba(255, 255, 255, 1) 68%',
+                        'rgba(0, 0, 0, 1) 93%',
+                      ]}
                     />
                   </div>
                 )}
-                <Form className={submitting ? 'scrollInAdminproject p-4 ' : 'scrollInAdminproject px-1'} onSubmit={handleSubmit} >
+                <Form
+                  className={
+                    submitting
+                      ? 'scrollInAdminproject p-4 '
+                      : 'scrollInAdminproject px-1'
+                  }
+                  onSubmit={handleSubmit}
+                >
                   <ImCross
                     color="black"
                     className="formcrossbtn"
@@ -410,7 +417,6 @@ export default function AdminAgentListScreen() {
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     label="Last Name"
-
                     fullWidth
                   />
                   <TextField
@@ -421,7 +427,6 @@ export default function AdminAgentListScreen() {
                     type="email"
                     fullWidth
                     required
-
                   />
                   <Validations type="email" value={email} />
                   {/* <TextField
@@ -440,17 +445,21 @@ export default function AdminAgentListScreen() {
                       onChange={(e) => setStatus(e.target.value)}
                       required
                     >
-                      <MenuItem value={true} >Active</MenuItem>
+                      <MenuItem value={true}>Active</MenuItem>
                       <MenuItem value={false}>Inactive</MenuItem>
                     </Select>
                   </FormControl>
                   <FormControl className="mb-3">
                     <InputLabel>Select Category</InputLabel>
-                    <Select required
-                      value={selectcategory} onChange={(e) => setSelectCategory(e.target.value)}
+                    <Select
+                      required
+                      value={selectcategory}
+                      onChange={(e) => setSelectCategory(e.target.value)}
                     >
                       {categoryData.map((items) => (
-                        <MenuItem key={items._id} value={items._id} >{items.categoryName}</MenuItem>
+                        <MenuItem key={items._id} value={items._id}>
+                          {items.categoryName}
+                        </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
@@ -462,21 +471,14 @@ export default function AdminAgentListScreen() {
                     type="submit"
                     disabled={submitting}
                   >
-                    {submitting ?
-                      "SUBMITTING"
-                      : "SUBMIT "}
+                    {submitting ? 'SUBMITTING' : 'SUBMIT '}
                   </Button>
                 </Form>
               </div>
-
-
-
             </Box>
           </Modal>
         </>
-
-
-      ))}
+      )}
     </>
   );
 }

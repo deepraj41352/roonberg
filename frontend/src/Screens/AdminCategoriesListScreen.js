@@ -24,7 +24,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import AvatarImage from '../Components/Avatar';
 import { ImCross } from 'react-icons/im';
 import { ColorRing } from 'react-loader-spinner';
-import { ThreeDots } from "react-loader-spinner";
+import { ThreeDots } from 'react-loader-spinner';
 import Badge from '@mui/material/Badge';
 
 const reducer = (state, action) => {
@@ -47,9 +47,9 @@ const reducer = (state, action) => {
 
     case 'UPDATE_RESET':
       return { ...state, successUpdate: false };
-    case "CATEGORY_CRATED_REQ":
+    case 'CATEGORY_CRATED_REQ':
       return { ...state, isSubmiting: true };
-    case "FATCH_SUBMITTING":
+    case 'FATCH_SUBMITTING':
       return { ...state, submitting: action.payload };
     default:
       return state;
@@ -96,11 +96,9 @@ const columns = [
       );
     },
   },
-
 ];
 
 const getRowId = (row) => row._id;
-
 
 export default function AdminContractorListScreen() {
   const navigate = useNavigate();
@@ -111,9 +109,17 @@ export default function AdminContractorListScreen() {
   const [category, setCatogry] = useState('');
   const [status, setStatus] = useState('');
   const [categoryDesc, setCatogryDesc] = useState('');
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false);
   const [
-    { loading, error, categoryData, successDelete, successUpdate, isSubmiting, submitting },
+    {
+      loading,
+      error,
+      categoryData,
+      successDelete,
+      successUpdate,
+      isSubmiting,
+      submitting,
+    },
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
@@ -127,7 +133,6 @@ export default function AdminContractorListScreen() {
 
   const handleEdit = (rowId) => {
     navigate(`/adminEditCategory/${rowId}`);
-
 
     // setSelectedRowData(params);
     // setIsModelOpen(true);
@@ -163,7 +168,10 @@ export default function AdminContractorListScreen() {
             ...items,
             _id: items._id,
             categoryName: items.categoryName,
-            categoryDescription: items.categoryDescription == '' ? 'No description' : items.categoryDescription,
+            categoryDescription:
+              items.categoryDescription == ''
+                ? 'No description'
+                : items.categoryDescription,
             categoryImage: items.categoryImage,
             categoryStatus:
               items.categoryStatus == true ? 'Active' : 'Inactive',
@@ -186,7 +194,7 @@ export default function AdminContractorListScreen() {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    dispatch({ type: "FATCH_SUBMITTING", payload: true })
+    dispatch({ type: 'FATCH_SUBMITTING', payload: true });
     const formDatas = new FormData();
 
     formDatas.append('categoryImage', selectedFile);
@@ -204,16 +212,16 @@ export default function AdminContractorListScreen() {
         },
       });
       console.log(data.message);
-      toast.success("Category Created Successfully !");
-      dispatch({ type: "UPDATE_SUCCESS" })
-      dispatch({ type: "FATCH_SUBMITTING", payload: false })
+      toast.success('Category Created Successfully !');
+      dispatch({ type: 'UPDATE_SUCCESS' });
+      dispatch({ type: 'FATCH_SUBMITTING', payload: false });
       setCatogry('');
       setCatogryDesc('');
-      setSelectedFile(null)
-      setStatus('')
+      setSelectedFile(null);
+      setStatus('');
     } catch (err) {
       toast.error(err.response?.data?.message);
-      dispatch({ type: "FATCH_SUBMITTING", payload: false })
+      dispatch({ type: 'FATCH_SUBMITTING', payload: false });
     } finally {
       setIsModelOpen(false);
     }
@@ -247,8 +255,7 @@ export default function AdminContractorListScreen() {
         console.error(error);
         toast.error('An Error Occurred While Deleting Category.');
       }
-    }
-    else {
+    } else {
       setIsDeleting(false);
     }
   };
@@ -275,7 +282,6 @@ export default function AdminContractorListScreen() {
         ) : error ? (
           <div>{error}</div>
         ) : (
-
           <>
             <Button
               variant="outlined"
@@ -286,7 +292,7 @@ export default function AdminContractorListScreen() {
               <BiPlusMedical className="mx-2" />
               Add Category
             </Button>
-            <div className="overlayLoading" >
+            <div className="overlayLoading">
               {isDeleting && (
                 <div className="overlayLoadingItem1">
                   <ColorRing
@@ -296,18 +302,18 @@ export default function AdminContractorListScreen() {
                     ariaLabel="blocks-loading"
                     wrapperStyle={{}}
                     wrapperClass="blocks-wrapper"
-                    const colors={["white", "white", "white", "white", "white"]}
+                    const
+                    colors={['white', 'white', 'white', 'white', 'white']}
                   />
                 </div>
               )}
-              <Box sx={{ height: 400, width: "100%" }}>
+              <Box sx={{ height: 400, width: '100%' }}>
                 <DataGrid
                   className={
                     theme == 'light'
                       ? `${theme}DataGrid mx-2`
                       : `tableBg ${theme}DataGrid mx-2`
                   }
-
                   // rows={categoryData ? categoryData : noRows}
                   rows={categoryData}
                   columns={[
@@ -317,8 +323,11 @@ export default function AdminContractorListScreen() {
                       headerName: 'Status',
                       width: 100,
                       renderCell: (params) => {
-                        const isInactive = params.row.categoryStatus === 'Inactive';
-                        const cellClassName = isInactive ? 'inactive-cell' : 'active-cell';
+                        const isInactive =
+                          params.row.categoryStatus === 'Inactive';
+                        const cellClassName = isInactive
+                          ? 'inactive-cell'
+                          : 'active-cell';
 
                         return (
                           <div className={`status-cell ${cellClassName}`}>
@@ -328,18 +337,16 @@ export default function AdminContractorListScreen() {
                       },
                     },
                     {
-                      field: "action",
-                      headerName: "Action",
+                      field: 'action',
+                      headerName: 'Action',
                       width: 250,
                       renderCell: (params) => {
                         return (
                           <Grid item xs={8}>
-
                             <Button
                               variant="contained"
                               className="mx-2 tableEditbtn"
                               onClick={() => handleEdit(params.row._id)}
-
                             >
                               Edit
                             </Button>
@@ -347,7 +354,6 @@ export default function AdminContractorListScreen() {
                               variant="outlined"
                               className="mx-2 tableDeletebtn"
                               onClick={() => deleteHandle(params.row._id)}
-
                             >
                               Delete
                             </Button>
@@ -355,7 +361,6 @@ export default function AdminContractorListScreen() {
                         );
                       },
                     },
-
                   ]}
                   getRowId={getRowId}
                   initialState={{
@@ -368,11 +373,9 @@ export default function AdminContractorListScreen() {
                   pageSizeOptions={[5]}
                   checkboxSelection
                   disableRowSelectionOnClick
-
                   // gridOptions={gridOptions}
-                  localeText={{ noRowsLabel: "Category Data Is Not Avalible" }}
-                // getRowClassName={(params) => (params.row.categoryStatus === 'Inactive' ? 'inactive-row' : '')}
-
+                  localeText={{ noRowsLabel: 'Category Data Is Not Avalible' }}
+                  // getRowClassName={(params) => (params.row.categoryStatus === 'Inactive' ? 'inactive-row' : '')}
                 />
               </Box>
             </div>
@@ -380,17 +383,17 @@ export default function AdminContractorListScreen() {
               <Box
                 className="modelBg"
                 sx={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
                   width: 400,
-                  bgcolor: "background.paper",
+                  bgcolor: 'background.paper',
                   boxShadow: 24,
                   p: submitting ? 0 : 4,
                 }}
               >
-                <div className="overlayLoading" >
+                <div className="overlayLoading">
                   {submitting && (
                     <div className="overlayLoadingItem1">
                       <ColorRing
@@ -400,11 +403,21 @@ export default function AdminContractorListScreen() {
                         ariaLabel="blocks-loading"
                         wrapperStyle={{}}
                         wrapperClass="blocks-wrapper"
-                        colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
+                        colors={[
+                          'rgba(0, 0, 0, 1) 0%',
+                          'rgba(255, 255, 255, 1) 68%',
+                          'rgba(0, 0, 0, 1) 93%',
+                        ]}
                       />
                     </div>
                   )}
-                  <Form className={submitting ? 'scrollInAdminproject p-4 ' : 'scrollInAdminproject px-1'}>
+                  <Form
+                    className={
+                      submitting
+                        ? 'scrollInAdminproject p-4 '
+                        : 'scrollInAdminproject px-1'
+                    }
+                  >
                     <ImCross
                       color="black"
                       className="formcrossbtn"
@@ -421,7 +434,6 @@ export default function AdminContractorListScreen() {
                       fullWidth
                       onChange={(e) => setCatogry(e.target.value)}
                       required
-
                     />
                     <TextField
                       className="mb-3"
@@ -429,7 +441,6 @@ export default function AdminContractorListScreen() {
                       label="Add Description"
                       fullWidth
                       onChange={(e) => setCatogryDesc(e.target.value)}
-
                     />
                     <FormControl className="mb-3">
                       <InputLabel>Select Status</InputLabel>
@@ -438,7 +449,7 @@ export default function AdminContractorListScreen() {
                         onChange={(e) => setStatus(e.target.value)}
                         required
                       >
-                        <MenuItem value={true} >Active</MenuItem>
+                        <MenuItem value={true}>Active</MenuItem>
                         <MenuItem value={false}>Inactive</MenuItem>
                       </Select>
                     </FormControl>
@@ -451,7 +462,9 @@ export default function AdminContractorListScreen() {
                       style={{ display: 'none' }}
                     />
                     <FormControl className="mb-3 cateLogoImgContainer">
-                      <InputLabel className='cateLogoImgLabel'>Upload Category Logo</InputLabel>
+                      <InputLabel className="cateLogoImgLabel">
+                        Upload Category Logo
+                      </InputLabel>
                       <Input
                         type="file"
                         onChange={handleFileChange}
@@ -460,7 +473,11 @@ export default function AdminContractorListScreen() {
                         id="file-input"
                       />
                       <label htmlFor="file-input">
-                        <Button variant="contained" component="span" className='globalbtnColor'>
+                        <Button
+                          variant="contained"
+                          component="span"
+                          className="globalbtnColor"
+                        >
                           Browse
                         </Button>
                       </label>
@@ -472,14 +489,15 @@ export default function AdminContractorListScreen() {
                       onClick={submitHandler}
                       disabled={submitting}
                     >
-                      {submitting ?
-                        "SUBMITTING"
-                        : "SUBMIT "}
+                      {submitting ? 'SUBMITTING' : 'SUBMIT '}
                     </Button>
                   </Form>
                 </div>
               </Box>
             </Modal>
           </>
-        );
+        )}
+      </div>
+    </>
+  );
 }
