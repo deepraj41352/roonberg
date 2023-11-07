@@ -52,7 +52,7 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: '_id', headerName: 'ID', width: 150 },
+  { field: '_id', headerName: 'ID', width: 200 },
   {
     field: 'first_name',
     headerName: 'Agent Name',
@@ -68,11 +68,6 @@ const columns = [
     headerName: 'Category',
     width: 100,
   },
-  // {
-  //   field: 'userStatus',
-  //   headerName: 'Status',
-  //   width: 100,
-  // },
 ];
 
 export default function AdminAgentListScreen() {

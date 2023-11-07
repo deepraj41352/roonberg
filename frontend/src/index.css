@@ -677,7 +677,6 @@ body {
   margin-bottom: 0;
   max-width: 431px;
   color: white;
-
 }
 .chat-receiverMsg {
   display: flex;
@@ -686,13 +685,11 @@ body {
   max-width: 60%;
   margin-left: 40%;
   margin-top: 25px;
-  
-
 }
-.mediachats{
-display: flex;
-    flex-direction: column;
-align-items: self-end;
+.mediachats {
+  display: flex;
+  flex-direction: column;
+  align-items: self-end;
 }
 
 .chat-receiverMsg-inner {
@@ -705,7 +702,6 @@ align-items: self-end;
 }
 .chatWindowBody {
   overflow-y: auto; /* Add scrollbars when content overflows */
-  
 }
 .Roonberg-logo {
   height: 50px !important;
@@ -811,43 +807,51 @@ align-items: self-end;
   align-items: center;
   margin-left: 7px !important;
 }
-.btn-send{
-  background-color: linear-gradient( 1deg, rgba(0, 0, 0, 1) 0%, rgba(17, 17, 74, 1) 68%, rgba(0, 0, 0, 1) 93% ) !important;
+.btn-send {
+  background-color: linear-gradient(
+    1deg,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(17, 17, 74, 1) 68%,
+    rgba(0, 0, 0, 1) 93%
+  ) !important;
 }
-.projetStatusChat{
+.projetStatusChat {
   margin-top: 18px !important;
 }
-.rxfontstryle{
+.rxfontstryle {
   text-wrap: wrap;
 }
-.MuiTablePagination-displayedRows{
+.MuiTablePagination-displayedRows {
   margin: 0;
 }
-.img-fornavs{
+.img-fornavs {
   border: 2px solid white;
 }
-.richEditor{ max-width:  600px; /* Set the maximum width of the container */
+.richEditor {
+  max-width: 600px; /* Set the maximum width of the container */
   overflow: hidden; /* Hide overflow content */
   word-wrap: break-word; /* Wrap long words */
 }
-.richEditor .DraftEditor-root{overflow-y: scroll;max-height: 200px;}
-.forWidth{
+.richEditor .DraftEditor-root {
+  overflow-y: scroll;
+  max-height: 200px;
+}
+.forWidth {
   width: 92% !important;
 }
-.mainfordata{
+.mainfordata {
   margin-top: 3% !important;
 }
-.row{
+.row {
   margin: 0 !important;
 }
-.MuiDataGrid-columnHeaderCheckbox{
+.MuiDataGrid-columnHeaderCheckbox {
   display: none !important;
 }
-.MuiDataGrid-cellCheckbox{
+.MuiDataGrid-cellCheckbox {
   display: none !important;
-
 }
-.dropdown-content{
+.dropdown-content {
   display: flex;
   flex-direction: column;
   background-color: white;
@@ -862,18 +866,18 @@ align-items: self-end;
   z-index: 1;
   gap: 5px;
 }
-.dropdown-content a{
+.dropdown-content a {
   text-decoration: none;
   color: #060612;
 }
-.dropdown-content hr{
-margin: 1px;
+.dropdown-content hr {
+  margin: 1px;
 }
-.modal-content1{
+.modal-content1 {
   align-items: end;
   position: relative;
 }
-.close-button{
+.close-button {
   font-size: 26px;
   position: absolute;
   top: 4px;
@@ -883,7 +887,7 @@ margin: 1px;
   border-radius: 2px;
   padding: 2px;
 }
-.downloadBtn{
+.downloadBtn {
   position: absolute;
   font-size: 40px;
   bottom: 10px;
@@ -893,7 +897,7 @@ margin: 1px;
   background: #0000004a;
   color: white;
 }
-.badgesclass{
+.badgesclass {
   font-size: 10px !important;
   left: 112% !important;
 }
@@ -922,23 +926,22 @@ margin: 1px;
   border-radius: 5px;
   background: RGB(14, 14, 61); /* Blue color for the scrollbar handle */
 }
-.nav-link{
+.nav-link {
   color: white !important;
 }
-.notification-badge{
+.notification-badge {
   font-size: 11px !important;
   margin-top: 5px !important;
   margin-left: 7px !important;
 }
 
-.notification-badgeApp{
+.notification-badgeApp {
   font-size: 9px !important;
-margin-top: 11px !important;
-margin-left: -1px !important;
-
+  margin-top: 11px !important;
+  margin-left: -1px !important;
 }
 
-.navbar-nav-scroll{
+.navbar-nav-scroll {
   align-items: center;
 }
 .custom-list {
@@ -967,27 +970,34 @@ margin-left: -1px !important;
 .pagination .page-link.active {
   background-color: #07162c;
 }
-.list-group-item{
+.list-group-item {
   display: flex !important;
-align-items: center;
+  align-items: center;
   color: white !important;
 }
-.NotificationMsg{
+.NotificationMsg {
   width: 88%;
   text-align: start;
 }
-.MarkAsRead{
+.MarkAsRead {
   border-radius: 11px !important;
   color: black;
   background-color: #b9c9da;
   width: 12%;
   padding: 0 !important;
 }
-.list-group-item-dark{
-     background-color: #07162c !important; 
-
+.list-group-item-dark {
+  background-color: #07162c !important;
 }
-.list-group-item-light{
+.list-group-item-light {
   background-color: #afb4b9 !important;
-
+}
+.MuiDataGrid-cell.MuiDataGrid-withBorderColor {
+  width: 100% !important;
+}
+.css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone {
+  width: 100% !important;
+}
+.css-kzyyzb-MuiDataGrid-root .MuiDataGrid-row {
+  width: 100% !important;
 }
