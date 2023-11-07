@@ -20,7 +20,7 @@ transporter.verify().then(console.log).catch(console.error);
 export const sendEmailNotify = async (options) => {
   try {
     //options.from = 'BigCommerce <abhay.vyas25@gmail.com>';
-    options.from = '"RoonBerg" <deepraj932000@gmail.com>';
+    options.from = '"RoonBerg" <dodiyadsvv@gmail.com>';
     options.html = emailTemplate(options);
     const info = transporter.sendMail(options);
     console.log('Email Sent ');

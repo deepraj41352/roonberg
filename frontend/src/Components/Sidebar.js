@@ -1,22 +1,56 @@
 import React, { useContext, useEffect, useState } from 'react';
-
-import { HiClipboardList } from 'react-icons/hi';
+import { io } from 'socket.io-client';
+import { HiClipboardList, HiUserGroup } from 'react-icons/hi';
 import { CiBoxList } from 'react-icons/ci';
-import { FaListAlt, FaListUl } from 'react-icons/fa';
+import { FaListAlt, FaListUl , } from 'react-icons/fa';
+import { FaPeopleGroup } from 'react-icons/fa';
+
 import { IoMdNotifications } from 'react-icons/io';
 import { AiFillHome, AiOutlineProject } from 'react-icons/ai';
 import { CgProfile } from 'react-icons/cg';
-import { MdLogout } from 'react-icons/md';
+import { MdGroup, MdGroups2, MdLogout, MdOutlineGroups2 } from 'react-icons/md';
 import { BsFillChatLeftQuoteFill } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
 import { Store } from '../Store';
 import { ImCross } from 'react-icons/im';
+import axios from 'axios';
 
 function Sidebar({ sidebarVisible, setSidebarVisible }) {
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { userInfo } = state;
+  const { userInfo, NotificationData } = state;
   const [selectedItem, setSelectedItem] = useState(null);
   const [isSmallScreen, setIsSmallScreen] = useState(true);
+
+  
+  const socket = io('ws://localhost:8900');
+  socket.on('connectionForNotify', (data) => {
+    console.log('oiuhjioyhi', data);
+  });
+
+  useEffect(() => {
+    const handleNotification = (notifyUser, message) => {
+      if (notifyUser == userInfo._id) {
+        console.log('notifyProjectFrontend', notifyUser, message);
+        ctxDispatch({ type: 'NOTIFICATION', payload: { notifyUser, message } });
+       
+      }
+    };
+    socket.on('notifyProjectFrontend', handleNotification);
+    return () => {
+      socket.off('notifyProjectFrontend', handleNotification);
+    };
+  }, []);
+  useEffect(() => {
+    socket.on('notifyUserFrontend', (notifyUser, message) => {
+      if (notifyUser === userInfo._id) {
+        console.log('notifyProjectFrontend', notifyUser, message);
+        ctxDispatch({ type: 'NOTIFICATION', payload: { notifyUser, message } });
+      }
+    });
+  }, []);
+
+
+  console.log('NotificationData',NotificationData)
 
   const signoutHandler = () => {
     const userConfirm = window.confirm('Are you sure you want to logout?');
@@ -44,6 +78,34 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
       setSidebarVisible(!sidebarVisible);
     }
   };
+  // const handelforNOtification = () => {
+  //   ctxDispatch({ type: 'NOTIFICATION-NULL' });
+
+  // };
+  useEffect(() => {
+
+    const fetchNotificationData = async () => {
+        ctxDispatch({ type: 'NOTIFICATION-NULL' });
+      try {
+        const response = await axios.get(`/api/notification/${userInfo._id}`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        const NotifyData = response.data;
+        ctxDispatch({ type: 'NOTIFICATION-NULL' });
+
+
+NotifyData.map((item)=>{
+  if(item.status=="unseen")
+  ctxDispatch({ type: 'NOTIFICATION', payload: { item } });
+})
+      } catch (error) {
+        console.error('Error fetching notification data:', error);
+      }
+    };
+
+    fetchNotificationData();
+  }, []);
+
 
   return (
     <div className={`sidebar ${sidebarVisible ? 'visible' : ''} `}>
@@ -70,7 +132,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
         </Link>
         {userInfo.role == 'superadmin' ? (
           <Link
-            to="/adminList"
+            to="/adminList-screen"
             className="text-decoration-none"
             onClick={handlSmallScreeneClick}
           >
@@ -80,7 +142,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 setSelectedItem('adminList');
               }}
             >
-              <HiClipboardList className="me-3 fs-5" />
+              <MdOutlineGroups2 className="me-3 fs-5" />
               Admin List
             </li>
           </Link>
@@ -99,7 +161,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                   setSelectedItem('agentList');
                 }}
               >
-                <FaListAlt className="me-3 fs-5" />
+                <HiUserGroup className="me-3 fs-5" />
                 Agent List
               </li>
             </Link>
@@ -114,7 +176,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                   setSelectedItem('contractorList');
                 }}
               >
-                <FaListUl className="me-3 fs-5" />
+                <MdGroup className="me-3 fs-5" />
                 Contractor List
               </li>
             </Link>
@@ -129,7 +191,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                   setSelectedItem('categoriesList');
                 }}
               >
-                <CiBoxList className="me-3 fs-5" />
+                <FaListUl className="me-3 fs-5" />
                 Categories List
               </li>
             </Link>
@@ -170,7 +232,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 Project List
               </li>
             </Link>
-            <Link
+            {/* <Link
               to="/add-project"
               className="text-decoration-none"
               onClick={handlSmallScreeneClick}
@@ -184,7 +246,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 <AiFillHome className="me-3 fs-5" />
                 Add Project
               </li>
-            </Link>
+            </Link> */}
           </>
         ) : null}
         {userInfo.role == 'agent' ? (
@@ -199,67 +261,51 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 Project List
               </li>
             </Link>
-            <Link
-              to="/projectNotification"
-              className="text-decoration-none"
-              onClick={handlSmallScreeneClick}
-            >
-              <li
-                className={
-                  selectedItem === 'projectNotification' ? 'selected' : ''
-                }
-                onClick={() => {
-                  setSelectedItem('projectNotification');
-                }}
-              >
-                <IoMdNotifications className="me-3 fs-5" />
-                Project Notification
-              </li>
-            </Link>
+
           </>
         ) : null}
-
-        {/* <Link to="/adminProjectList" className="text-decoration-none">
+        <Link
+          to="/notificationScreen"
+          className="text-decoration-none"
+          onClick={handlSmallScreeneClick}
+        >
           <li
-            className={selectedItem === 'profileList' ? 'selected' : ''}
+            className={
+              selectedItem === 'notificationScreen' ? 'selected d-flex' : 'd-flex'
+            }
             onClick={() => {
-              setSelectedItem('profileList');
+              setSelectedItem('notificationScreen');
             }}
           >
-            <AiOutlineProject className="me-3 fs-5" />
-            Project List
+            <IoMdNotifications className="me-3 fs-5 " />
+            <div className="position-relative">
+  Notification
+  {NotificationData.length > 0 && (
+    <span className="position-absolute notification-badge top-0 start-110 translate-middle badge rounded-pill bg-danger">
+      {NotificationData.length}
+    </span>
+  )}
+</div>
+
+          </li>
+        </Link>
+        {/* <Link
+          to="/projectNotification"
+          className="text-decoration-none"
+          onClick={handlSmallScreeneClick}
+        >
+          <li
+            className={
+              selectedItem === 'projectNotification' ? 'selected' : ''
+            }
+            onClick={() => {
+              setSelectedItem('projectNotification');
+            }}
+          >
+            <IoMdNotifications className="me-3 fs-5" />
+            Project Notification
           </li>
         </Link> */}
-        <Link
-          to="/profile-screen"
-          className="text-decoration-none"
-          onClick={handlSmallScreeneClick}
-        >
-          <li
-            className={selectedItem === 'profile' ? 'selected' : ''}
-            onClick={() => {
-              setSelectedItem('profile');
-            }}
-          >
-            <CgProfile className="me-3 fs-5" />
-            Profile
-          </li>
-        </Link>
-        <Link
-          to="/ChatScreen"
-          className="text-decoration-none"
-          onClick={handlSmallScreeneClick}
-        >
-          <li
-            className={selectedItem === 'chat' ? 'selected' : ''}
-            onClick={() => {
-              setSelectedItem('chat');
-            }}
-          >
-            <BsFillChatLeftQuoteFill className="me-3 fs-5" />
-            Chat
-          </li>
-        </Link>
         <Link
           to="#Logout"
           onClick={signoutHandler}

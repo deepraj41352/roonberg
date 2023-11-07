@@ -113,6 +113,8 @@ const emailTemplate = (options) => {
       return templateHead + templateBody + templateFooter;
       break;
 
+   
+
     case 'CREATE-PROJECT':
       const templateBody1 = ` <!-- First Row --> 
   <p> New Project created with the following details</p>
@@ -140,7 +142,6 @@ const emailTemplate = (options) => {
          </table>`;
       return templateHead + templateBody1 + templateFooter;
       break;
-    default:
 
     case 'TEST_PRI':
       const templateBody2 = ` <!-- First Row --> 
@@ -153,8 +154,23 @@ const emailTemplate = (options) => {
          </table>`;
       return templateHead + templateBody2 + templateFooter;
       break;
-      break;
+
+      case 'RESET-PASS-ADD':
+        const templateBody3 = ` <!-- First Row --> 
+  
+        <table role="presentation" border="0" cellpadding="0" cellspacing="10px" style="padding: 30px 30px 30px 60px;">
+           <tr>
+         <td>
+         <p>Hello ${options.first_name}, </p>
+         <p>Please Click the following link to create your password:</p>
+         <a href="${options.resetLink}">Create Password</a></td>
+           </tr>
+                       </table>`;
+        return templateHead + templateBody3 + templateFooter;
+        break;
+
   }
+
 };
 
 export default emailTemplate;

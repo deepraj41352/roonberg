@@ -7,7 +7,11 @@ import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import { ColorRing, ThreeDots } from "react-loader-spinner";
+import { TextField } from "@mui/material";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
+import DatePicker from "@mui/lab/DatePicker";
 const reducer = (state, action) => {
   switch (action.type) {
     case "FATCH_REQUEST":
@@ -40,6 +44,7 @@ function ContractorEditProject() {
   const [createdDate, setCreatedDate] = useState();
   const [endDate, setEndDate] = useState();
   const theme = toggleState ? "dark" : "light";
+  const [isSubmit, setSubmit] = useState(false);
   const [
     { loading, error, projectData, categoryData, successUpdate },
     dispatch,
@@ -115,6 +120,7 @@ function ContractorEditProject() {
     e.preventDefault();
     try {
       // Construct the updated data object
+      setSubmit(true)
       const categoryIds = selectedOptions.split(",");
       const projectCategory = categoryIds.map((categoryId) => {
         const category = categoryData.find((cat) => cat._id === categoryId);
@@ -141,11 +147,13 @@ function ContractorEditProject() {
       );
 
       if (response.status === 200) {
-        toast.success("Project updated Successfully !");
-        console.log(response);
+        toast.success("Project Updated Successfully !");
+        navigate("/adminContractorList")
+        setSubmit(false)
       }
     } catch (error) {
       console.error("API Error:", error);
+      setSubmit(false)
     }
   };
 
@@ -175,155 +183,218 @@ function ContractorEditProject() {
   return (
     <div>
       {loading ? (
-        <div>Loading ...</div>
+        <>
+          <div className="ThreeDot">
+            <ThreeDots
+              height="80"
+              width="80"
+              radius="9"
+              className="ThreeDot justify-content-center"
+              color="#0e0e3d"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClassName=""
+              visible={true}
+            />
+          </div>
+        </>
       ) : error ? (
         <div>{error}</div>
       ) : (
         <div>
-          <div className="d-flex w-100 my-3 gap-4 justify-content-center align-item-center projectScreenCard-outer ">
-            <Card className={`projectScreenCard ${theme}CardBody`}>
-              <Card.Header className={`${theme}CardHeader`}>
-                Project Details
-              </Card.Header>
-              <Card.Body className="text-start">
-                <Form className="px-3" onSubmit={handleSubmit}>
-                  <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold">Project Name</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="projectName"
-                      value={projectData.projectName}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                  <Form.Group
-                    className="mb-3"
-                    controlId="exampleForm.ControlTextarea1"
-                  >
-                    <Form.Label className="fw-bold">
-                      Project Description
-                    </Form.Label>
-                    <Form.Control
-                      as="textarea"
-                      rows={3}
-                      name="projectDescription"
-                      value={projectData.projectDescription}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold">Select Options:</Form.Label>
-                    <MultiSelect
-                      className="categorieslist"
-                      onChange={handleCategoryChange}
-                      options={options}
-                      defaultValue={selectedOptions}
-                    />
-                  </Form.Group>
-                  <div className="d-flex gap-3 mb-3">
-                    <Form.Group className="w-100" controlId="start-date">
-                      <Form.Label className="fw-bold">Start Date</Form.Label>
-                      <Form.Control
-                        type="date"
-                        name="createdDate"
-                        value={createdDate}
-                        onChange={(e) => setCreatedDate(e.target.value)}
-                        placeholder="Start Date"
-                      />
-                    </Form.Group>
-                    <Form.Group className="w-100" controlId="end-date">
-                      <Form.Label className="fw-bold">End Date</Form.Label>
-                      <Form.Control
-                        type="date"
-                        name="endDate"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        placeholder="End Date"
-                      />
-                    </Form.Group>
-                  </div>
-                  <Button variant="primary" type="submit">
-                    Submit
-                  </Button>
-                </Form>
-              </Card.Body>
-            </Card>
-            <Card className={`projectScreenCard2 ${theme}CardBody`}>
-              <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
-              <Card.Body className="d-flex flex-wrap gap-3 ">
-                <div
-                  className="text-center w-100"
-                  style={{
-                    display:
-                      projectData &&
-                        projectData.conversions &&
-                        projectData.conversions.length < 1
-                        ? 'block'
-                        : 'none',
-                  }}
-                >
-                  No Chat Available
-                </div>
+          <div className="overlayLoading">
+            {isSubmit && (
+              <div className="overlayLoadingItem1">
 
-                {projectData?.conversions?.map((conversion) => {
-                  const assignedAgent = projectData.assignedAgent.find(
-                    (assignedAgent) =>
-                      assignedAgent.agentId === conversion.members[0]
-                  );
-                  return (
-                    <>
-                      {userInfo.role == 'agent' ? (
-                        <>
-                          {conversion.members.includes(userInfo._id) && (
-                            <>
+                <ColorRing
+                  visible={true}
+                  height="40"
+                  width="40"
+                  ariaLabel="blocks-loading"
+                  wrapperStyle={{}}
+                  wrapperClass="blocks-wrapper"
+                  colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
+                />
+              </div>
+            )}
+            <div className="d-flex w-100 my-3 gap-4 justify-content-center align-item-center projectScreenCard-outer ">
+              <Card className={`projectScreenCard ${theme}CardBody`}>
+                <Card.Header className={`${theme}CardHeader`}>
+                  Project Details
+                </Card.Header>
+                <div className='FormContainerEdit pt-4'>
+                  <Card.Body className="text-start">
+                    <Form className="px-3" onSubmit={handleSubmit}>
+                      <TextField
+                        required
+                        type="text"
+                        name="projectName"
+                        value={projectData.projectName}
+                        onChange={handleInputChange}
+                        className=" mb-3"
+                        label="Project Name"
+                        fullWidth
+                        InputLabelProps={{
+                          shrink: projectData.projectName ? true : false,
+
+                        }}
+
+                      />
+                      <TextField
+                        value={projectData.projectDescription}
+                        onChange={handleInputChange}
+                        name='projectDescription'
+                        className=" mb-3"
+                        label="Project Description"
+                        multiline
+                        rows={4}
+                        fullWidth
+                        variant="outlined"
+                        InputLabelProps={{
+                          shrink: projectData.projectDescription ? true : false,
+                        }} />
+
+                      <Form.Group className="mb-3">
+                        <Form.Label className="fw-bold">Select Options:</Form.Label>
+                        <MultiSelect
+                          className="categorieslist"
+                          onChange={handleCategoryChange}
+                          options={options}
+                          defaultValue={selectedOptions}
+                        />
+                      </Form.Group>
+                      <div className="d-flex gap-3 mb-3">
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                          <DatePicker
+                            label="Date"
+                            value={createdDate}
+                            onChange={(date) => setCreatedDate(date)}
+                            renderInput={(params) => <TextField {...params} />}
+
+                          />
+                          <DatePicker
+                            label="Date"
+                            value={endDate}
+                            onChange={(date) => setEndDate(date)}
+                            renderInput={(params) => (
+                              <TextField {...params} style={{ color: 'white' }} />
+                            )}
+
+                          />
+                        </LocalizationProvider>
+                      </div>
+                      {/* <div className="d-flex gap-3 mb-3">
+                        <Form.Group className="w-100" controlId="start-date">
+                          <Form.Label className="fw-bold">Start Date</Form.Label>
+                          <Form.Control
+                            type="date"
+                            name="createdDate"
+                            value={createdDate}
+                            onChange={(e) => setCreatedDate(e.target.value)}
+                            placeholder="Start Date"
+                          />
+                        </Form.Group>
+                        <Form.Group className="w-100" controlId="end-date">
+                          <Form.Label className="fw-bold">End Date</Form.Label>
+                          <Form.Control
+                            type="date"
+                            name="endDate"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                            placeholder="End Date"
+                          />
+                        </Form.Group>
+                      </div> */}
+                      <div className='d-flex justify-content-end'>
+                        <Button variant="primary" type="submit" className='globalbtnColor updatingBtn' disabled={isSubmit}>
+                          {isSubmit ? "UPDATING" : "UPDATE"}
+                        </Button>
+                      </div>
+                    </Form>
+                  </Card.Body>
+                </div>
+              </Card>
+              <Card className={`projectScreenCard2 ${theme}CardBody`}>
+                <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
+                <Card.Body className="d-flex flex-wrap gap-3 ">
+                  <div
+                    className="text-center w-100"
+                    style={{
+                      display:
+                        projectData &&
+                          projectData.conversions &&
+                          projectData.conversions.length < 1
+                          ? 'block'
+                          : 'none',
+                    }}
+                  >
+                    No Chat Available
+                  </div>
+
+                  {projectData?.conversions?.map((conversion) => {
+                    const assignedAgent = projectData.assignedAgent.find(
+                      (assignedAgent) =>
+                        assignedAgent.agentId === conversion.members[0]
+                    );
+                    return (
+                      <>
+                        {userInfo.role == 'agent' ? (
+                          <>
+                            {conversion.members.includes(userInfo._id) && (
+                              <>
+                                <Card className="chatboxes">
+                                  {/* <Card.Header>{assignedAgent.categoryId}</Card.Header> */}
+                                  <Card.Body>
+                                    <Link
+                                      to={`/chatWindowScreen/${conversion._id}`}
+                                    >
+                                      <Button
+                                        className="chatBtn"
+                                        type="button"
+                                      // onClick={conversionHandler(conversion._id)}
+                                      >
+                                        Chat Now
+                                      </Button>
+                                    </Link>
+                                  </Card.Body>
+                                </Card>
+                              </>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            {categoryData && assignedAgent && assignedAgent.categoryName && (
                               <Card className="chatboxes">
-                                {/* <Card.Header>{assignedAgent.categoryId}</Card.Header> */}
+                                <Card.Header>
+                                  {assignedAgent.categoryName}
+                                </Card.Header>
                                 <Card.Body>
-                                  <Link
-                                    to={`/chatWindowScreen/${conversion._id}`}
-                                  >
+                                  <Link to={`/chatWindowScreen/${conversion._id}`}>
                                     <Button
                                       className="chatBtn"
                                       type="button"
                                     // onClick={conversionHandler(conversion._id)}
                                     >
-                                      Chat Now
+                                      {assignedAgent.agentName}
                                     </Button>
                                   </Link>
                                 </Card.Body>
                               </Card>
-                            </>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          <Card className="chatboxes">
-                            <Card.Header>
-                              {categoryData && assignedAgent.categoryName}
-                            </Card.Header>
-                            <Card.Body>
-                              <Link to={`/chatWindowScreen/${conversion._id}`}>
-                                <Button
-                                  className="chatBtn"
-                                  type="button"
-                                // onClick={conversionHandler(conversion._id)}
-                                >
-                                  {categoryData && assignedAgent.agentName}
-                                </Button>
-                              </Link>
-                            </Card.Body>
-                          </Card>
-                        </>
-                      )}
-                    </>
-                  );
-                })}
-              </Card.Body>
-            </Card>
+                            )}
+
+                          </>
+                        )}
+                      </>
+                    );
+                  })}
+                </Card.Body>
+              </Card>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        </div >
+      )
+      }
+    </div >
   );
 }
 

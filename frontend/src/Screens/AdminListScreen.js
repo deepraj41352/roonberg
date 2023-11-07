@@ -19,7 +19,7 @@ import axios from 'axios';
 import { Store } from '../Store';
 import { toast } from 'react-toastify';
 import { ImCross } from 'react-icons/im';
-import { ThreeDots } from 'react-loader-spinner';
+import { ColorRing, ThreeDots } from 'react-loader-spinner';
 import { useContext, useEffect, useReducer, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Validations from '../Components/Validations';
@@ -87,7 +87,7 @@ export default function AdminListScreen() {
     adminData: [],
     successDelete: false,
     successUpdate: false,
-    submitting: false,
+    submitting: true,
   });
 
   const [firstname, setFirstname] = useState('');
@@ -196,171 +196,197 @@ export default function AdminListScreen() {
     setShowPassword(!showPassword);
   };
 
-  return (
-    <>
-      {loading ? (
-        <>
-          <div className="ThreeDot">
-            <ThreeDots
-              height="80"
-              width="80"
-              radius="9"
-              className="ThreeDot justify-content-center"
-              color="#0e0e3d"
-              ariaLabel="three-dots-loading"
-              wrapperStyle={{}}
-              wrapperClassName=""
-              visible={true}
-            />
-          </div>
-        </>
-      ) : error ? (
-        <div>{error}</div>
-      ) : (
-        <>
-          <Button
-            variant="outlined"
-            className=" m-2 d-flex globalbtnColor"
-            onClick={handleNew}
-          >
-            <BiPlusMedical className="mx-2" />
-            Add Admin
-          </Button>
-          <Box sx={{ height: 400, width: '100%' }}>
-            <DataGrid
-              className={`tableBg mx-2 ${theme}DataGrid`}
-              rows={adminData}
-              columns={[
-                ...columns,
-                {
-                  field: 'action',
-                  headerName: 'Action',
-                  width: 250,
-                  renderCell: (params) => {
-                    return (
-                      <Grid item xs={8}>
-                        <Button
-                          variant="contained"
-                          className="mx-2 tableEditbtn"
-                          onClick={() => handleEdit(params.row._id)}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          className="mx-2 tableDeletebtn"
-                          onClick={() => deleteHandle(params.row._id)}
-                        >
-                          Delete
-                        </Button>
-                      </Grid>
-                    );
-                  },
-                },
-              ]}
-              getRowId={(row) => row._id}
-              initialState={{
-                pagination: {
-                  paginationModel: {
-                    pageSize: 5,
-                  },
-                },
-              }}
-              pageSizeOptions={[5]}
-              checkboxSelection
-              disableRowSelectionOnClick
-            />
-          </Box>
-          <Modal open={isModelOpen} onClose={handleCloseRow}>
-            <Box
-              className="modelBg"
-              sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: 400,
-                bgcolor: 'background.paper',
-                boxShadow: 24,
-                p: 4,
-              }}
-            >
-              <Form onSubmit={handleSubmit}>
-                <ImCross
-                  color="black"
-                  className="formcrossbtn"
-                  onClick={handleCloseRow}
-                />
-                <h4 className="d-flex justify-content-center">Add Admin</h4>
+    return (
+      <>
 
-                <TextField
-                  className="mb-2"
-                  value={firstname}
-                  onChange={(e) => setFirstname(e.target.value)}
-                  label="First Name"
-                  fullWidth
-                />
-                <TextField
-                  className="mb-2"
-                  value={lastname}
-                  onChange={(e) => setLastname(e.target.value)}
-                  label="Last Name"
-                  fullWidth
-                />
-                <TextField
-                  className="mb-2"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  label="Email"
-                  type="email"
-                  fullWidth
-                />
-                <Validations type="email" value={email} />
-                {/* <div className="Password-input-eye">
-                  <div className=" rounded-2">
+        <h1>karan sharama</h1>
+        {loading ? (
+          <>
+            <div className="ThreeDot">
+              <ThreeDots
+                height="80"
+                width="80"
+                radius="9"
+                className="ThreeDot justify-content-center"
+                color="#0e0e3d"
+                ariaLabel="three-dots-loading"
+                wrapperStyle={{}}
+                wrapperClassName=""
+                visible={true}
+              />
+            </div>
+          </>
+        ) : error ? (
+          <div>{error}</div>
+        ) : (
+          <>
+            <Button
+              variant="outlined"
+              className=" m-2 d-flex globalbtnColor"
+              onClick={handleNew}
+            >
+              <BiPlusMedical className="mx-2" />
+              Add Admin
+            </Button>
+            <Box sx={{ height: 400, width: '100%' }}>
+              <DataGrid
+                className={`tableBg mx-2 ${theme}DataGrid`}
+                rows={adminData}
+                columns={[
+                  ...columns,
+                  {
+                    field: 'action',
+                    headerName: 'Action',
+                    width: 250,
+                    renderCell: (params) => {
+                      return (
+                        <Grid item xs={8}>
+                          <Button
+                            variant="contained"
+                            className="mx-2 tableEditbtn"
+                            onClick={() => handleEdit(params.row._id)}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            className="mx-2 tableDeletebtn"
+                            onClick={() => deleteHandle(params.row._id)}
+                          >
+                            Delete
+                          </Button>
+                        </Grid>
+                      );
+                    },
+                  },
+                ]}
+                getRowId={(row) => row._id}
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      pageSize: 5,
+                    },
+                  },
+                }}
+                pageSizeOptions={[5]}
+                checkboxSelection
+                disableRowSelectionOnClick
+              />
+            </Box>
+            <Modal open={isModelOpen} onClose={handleCloseRow}>
+              <Box
+                className="modelBg"
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: 400,
+                  bgcolor: 'background.paper',
+                  boxShadow: 24,
+                  p: submitting ? 0 : 4,
+                }}
+              >
+                <div className="overlayLoading">
+                  {submitting && (
+                    <div className="overlayLoadingItem1 y-3">
+
+                      <ColorRing
+                        visible={true}
+                        height="40"
+                        width="40"
+                        ariaLabel="blocks-loading"
+                        wrapperStyle={{}}
+                        wrapperClass="blocks-wrapper"
+                        colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
+                      />
+                    </div>
+                  )}
+                  <Form onSubmit={handleSubmit} >
+                    <ImCross
+                      color="black"
+                      className="formcrossbtn"
+                      onClick={handleCloseRow}
+                    />
+                    <h4 className="d-flex justify-content-center">
+                      Add Admin
+                    </h4>
+
                     <TextField
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      label="Password"
-                      className="pswd-input "
-                      type={showPassword ? 'text' : 'password'}
+                      className="mb-2"
+                      value={firstname}
+                      onChange={(e) => setFirstname(e.target.value)}
+                      label="First Name"
                       fullWidth
                     />
-                  </div>
-                  <div
-                    className="eye-bttn cent"
-                    onClick={togglePasswordVisibility}
-                  >
-                    {showPassword ? <FaEye /> : <FaRegEyeSlash />}
-                  </div>
-                </div>
-                <Validations type="password" value={password} /> */}
+                    <TextField
+                      className="mb-2"
+                      value={lastname}
+                      onChange={(e) => setLastname(e.target.value)}
+                      label="Last Name"
+                    />
+                    <TextField
+                      className="mb-2"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      label="Email"
+                      type='email'
+                      fullWidth
+                    />
+                    <Validations type="email" value={email} />
+                    <div className="Password-input-eye">
+                      <div className=" rounded-2">
+                        <TextField
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          label="Password"
+                          className="pswd-input "
+                          type={showPassword ? 'text' : 'password'}
+                          fullWidth
+                        />
+                      </div>
+                      <div
+                        className="eye-bttn cent"
+                        onClick={togglePasswordVisibility}
+                      >
+                        {showPassword ? <FaEye /> : <FaRegEyeSlash />}
+                      </div>
+                    </div>
+                    <Validations type="password" value={password} />
 
-                <FormControl className="formselect">
-                  <InputLabel>Select Status</InputLabel>
-                  <Select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                  >
-                    <MenuItem value={true}>Active</MenuItem>
-                    <MenuItem value={false}>Inactive</MenuItem>
-                  </Select>
-                </FormControl>
-                <br></br>
-                <Button
-                  className="mt-2 formbtn"
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                  disabled={submitting}
-                >
-                  {submitting ? 'Submitting' : 'Submit'}
-                </Button>
-              </Form>
-            </Box>
-          </Modal>
-        </>
-      )}
-    </>
-  );
+                    <FormControl className="formselect">
+                      <InputLabel>Choose Status</InputLabel>
+                      <InputLabel>Choose Status</InputLabel>
+                      <Select
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
+                      >
+                        <MenuItem value={true}>Active</MenuItem>
+                        <MenuItem value={false}>Inactive</MenuItem>
+                        <MenuItem value={true}>Active</MenuItem>
+                        <MenuItem value={false}>Inactive</MenuItem>
+                      </Select>
+                    </FormControl>
+                    <br></br>
+                    <Button
+                      className="mt-2 formbtn"
+                      variant="contained"
+                      color="primary"
+                      type="submit"
+                      disabled={submitting}
+
+                    >
+                      {submitting ?
+                        "SUBMITTING"
+                        : "SUBMIT "}
+                    </Button>
+                  </Form>
+                </div>
+              </Box>
+            </Modal>
+          </>
+        )}
+      </>
+    );
+  }
 }

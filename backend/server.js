@@ -3,16 +3,19 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
 import userRouter from './routers/userRouter.js';
+import seedRouter from './routers/seed.js';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import projectRouter from './routers/projectRouter.js';
 import categoryRouter from './routers/categoryRouter.js';
+import NotificationRouter from './routers/NotificationRouter.js';
 import conversationRouter from './routers/conversationRouter.js';
 import MessageRouter from './routers/MessageRoute.js';
 import cron from 'node-cron';
 import Imap from 'node-imap';
 import nodemailer from 'nodemailer';
-// import EmailParser from 'email-reply-parser';
+import EmailParser from 'email-reply-parser';
+import Notification from './Models/notificationModel.js';
 
 dotenv.config();
 mongoose
@@ -64,11 +67,13 @@ app.get('/api', (req, res) => {
   res.send('Welcome to Roonberg World');
 });
 
+app.use('/api/seed', seedRouter);
 app.use('/api/user', userRouter);
 app.use('/api/project', projectRouter);
 app.use('/api/category', categoryRouter);
 app.use('/api/conversation', conversationRouter);
 app.use('/api/message', MessageRouter);
+app.use('/api/notification', NotificationRouter);
 
 const transporter = nodemailer.createTransport({
   service: 'SMTP',
@@ -94,6 +99,20 @@ function sendEmail(to, subject, message) {
       console.log('Email sent: ' + info.response);
     }
   });
+}
+
+export async function storeNotification(message, notifyUser, status, type) {
+  const newNotification = new Notification({
+    type,
+    userId: notifyUser,
+    status,
+    message,
+  });
+  // console.log("newNotification-------", newNotification);
+
+  const notify = await newNotification.save();
+
+  console.log('notifyme-------', notify);
 }
 
 // Function to process emails

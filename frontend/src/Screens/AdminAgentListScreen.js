@@ -8,19 +8,20 @@ import {
   InputLabel,
   MenuItem,
   Select,
-} from '@mui/material';
-import Modal from '@mui/material/Modal';
-import TextField from '@mui/material/TextField';
-import { Form, Toast } from 'react-bootstrap';
-import { BiPlusMedical } from 'react-icons/bi';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import { Store } from '../Store';
-import { ImCross } from 'react-icons/im';
-import { ThreeDots } from 'react-loader-spinner';
-import { useNavigate } from 'react-router-dom';
-import { useContext, useEffect, useReducer, useState } from 'react';
-import Validations from '../Components/Validations';
+  Stack,
+} from "@mui/material";
+import Modal from "@mui/material/Modal";
+import TextField from "@mui/material/TextField";
+import { Form, } from "react-bootstrap";
+import { BiPlusMedical } from "react-icons/bi";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { Store } from "../Store";
+import { ImCross } from "react-icons/im";
+import { ColorRing, ThreeDots } from 'react-loader-spinner';
+import { useNavigate } from "react-router-dom";
+import { useContext, useEffect, useReducer, useState } from "react";
+import Validations from "../Components/Validations";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -67,11 +68,11 @@ const columns = [
     headerName: 'Category',
     width: 100,
   },
-  {
-    field: 'userStatus',
-    headerName: 'Status',
-    width: 100,
-  },
+  // {
+  //   field: 'userStatus',
+  //   headerName: 'Status',
+  //   width: 100,
+  // },
 ];
 
 export default function AdminAgentListScreen() {
@@ -88,7 +89,7 @@ export default function AdminAgentListScreen() {
   const [status, setStatus] = useState();
   const [password, setPassword] = useState('');
   const [selectcategory, setSelectCategory] = useState();
-
+  const [isDeleting, setIsDeleting] = useState(false)
   const [
     {
       loading,
@@ -104,7 +105,6 @@ export default function AdminAgentListScreen() {
     loading: true,
     error: '',
     AgentData: [],
-    successDelete: false,
     categoryData: [],
     successUpdate: false,
     submitting: false,
@@ -202,25 +202,33 @@ export default function AdminAgentListScreen() {
   };
 
   const deleteHandle = async (userid) => {
-    if (window.confirm('Are you sure to delete?')) {
+    setIsDeleting(true);
+    if (window.confirm('Are you Sure To Delete?')) {
       try {
+
         const response = await axios.delete(`/api/user/${userid}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
 
         if (response.status === 200) {
-          toast.success('Agent deleted successfully!');
+
+          toast.success('Agent Deleted Successfully!');
           dispatch({
             type: 'DELETE_SUCCESS',
             payload: true,
           });
         } else {
-          toast.error('Failed to delete agent data.');
+          toast.error('Failed To Delete Agent.');
         }
       } catch (error) {
         console.error(error);
-        toast.error('An error occurred while deleting agent data.');
+        toast.error('An Error Occurred While Deleting Agent.');
+      } finally {
+        setIsDeleting(false);
       }
+    }
+    else {
+      setIsDeleting(false);
     }
   };
 
@@ -235,7 +243,8 @@ export default function AdminAgentListScreen() {
   const handleEdit = (userid) => {
     navigate(`/adminEditAgent/${userid}`);
   };
-  console.log('selectcategory', selectcategory);
+  console.log("selectcategory", selectcategory)
+
   return (
     <>
       {loading ? (
@@ -257,61 +266,99 @@ export default function AdminAgentListScreen() {
       ) : error ? (
         <div>{error}</div>
       ) : (
+
         <>
           <Button
             variant="outlined"
             className=" m-2 d-flex globalbtnColor"
             onClick={handleModel}
+            disabled={isDeleting}
           >
             <BiPlusMedical className="mx-2" />
             Add Agent
           </Button>
-          <Box sx={{ height: 400, width: '100%' }}>
-            <DataGrid
-              className={`tableBg mx-2 ${theme}DataGrid`}
-              rows={AgentData}
-              columns={[
-                ...columns,
-                {
-                  field: 'action',
-                  headerName: 'Action',
-                  width: 250,
-                  renderCell: (params) => {
-                    return (
-                      <Grid item xs={8}>
-                        <Button
-                          variant="contained"
-                          className="mx-2 tableEditbtn"
-                          onClick={() => handleEdit(params.row._id)}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          className="mx-2 tableDeletebtn"
-                          onClick={() => deleteHandle(params.row._id)}
-                        >
-                          Delete
-                        </Button>
-                      </Grid>
-                    );
+          <div className="overlayLoading" >
+            {isDeleting && (
+              <div className="overlayLoadingItem1">
+                <ColorRing
+                  visible={true}
+                  height="40"
+                  width="40"
+                  ariaLabel="blocks-loading"
+                  wrapperStyle={{}}
+                  wrapperClass="blocks-wrapper"
+                  const colors={["white", "white", "white", "white", "white"]}
+                />
+              </div>
+            )}
+            <Box sx={{ height: 400, width: "100%" }}>
+
+
+              <DataGrid
+                className={`tableBg mx-2 ${theme}DataGrid`}
+                rows={AgentData}
+                columns={[
+                  ...columns,
+                  {
+                    field: 'userStatus',
+                    headerName: 'Status',
+                    width: 100,
+                    renderCell: (params) => {
+                      const isInactive = params.row.userStatus === 'Inactive';
+                      const cellClassName = isInactive ? 'inactive-cell' : 'active-cell';
+
+                      return (
+                        <div className={`status-cell ${cellClassName}`}>
+                          {params.row.userStatus}
+                        </div>
+                      );
+                    },
                   },
-                },
-              ]}
-              getRowId={(row) => row._id}
-              initialState={{
-                pagination: {
-                  paginationModel: {
-                    pageSize: 5,
+                  {
+                    field: "action",
+                    headerName: "Action",
+                    width: 250,
+                    renderCell: (params) => {
+                      return (
+                        <Grid item xs={8}>
+                          <Button
+                            variant="contained"
+                            className="mx-2 tableEditbtn"
+                            onClick={() => handleEdit(params.row._id)}
+
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            className="mx-2 tableDeletebtn"
+                            onClick={() => deleteHandle(params.row._id)}
+
+                          >
+                            Delete
+                          </Button>
+                        </Grid>
+                      );
+                    },
                   },
-                },
-              }}
-              pageSizeOptions={[5]}
-              checkboxSelection
-              disableRowSelectionOnClick
-            />
-          </Box>
-          <Modal open={isModelOpen} onClose={handleCloseRow}>
+                ]}
+                getRowId={(row) => row._id}
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      pageSize: 5,
+                    },
+                  },
+                }}
+                pageSizeOptions={[5]}
+                checkboxSelection
+                disableRowSelectionOnClick
+                localeText={{ noRowsLabel: "Agent Data Is Not Avalible" }}
+              />
+
+            </Box>
+          </div>
+          <Modal open={isModelOpen} onClose={handleCloseRow} className='overlayLoading'>
             <Box
               className="modelBg"
               sx={{
@@ -322,42 +369,62 @@ export default function AdminAgentListScreen() {
                 width: 400,
                 bgcolor: 'background.paper',
                 boxShadow: 24,
-                p: 4,
+                p: submitting ? 0 : 4,
               }}
             >
-              <Form onSubmit={handleSubmit}>
-                <ImCross
-                  color="black"
-                  className="formcrossbtn"
-                  onClick={handleCloseRow}
-                />
-                <h4 className="d-flex justify-content-center text-dark">
-                  Add Agent
-                </h4>
-                <TextField
-                  className="mb-3"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  label="First Name"
-                  fullWidth
-                />
-                <TextField
-                  className="mb-3"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  label="Last Name"
-                  fullWidth
-                />
-                <TextField
-                  className="mb-3"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  label="Email"
-                  type="email"
-                  fullWidth
-                />
-                <Validations type="email" value={email} />
-                {/* <TextField
+
+
+              <div className="overlayLoading" >
+                {submitting && (
+                  <div className="overlayLoadingItem1">
+                    <ColorRing
+                      visible={true}
+                      height="40"
+                      width="40"
+                      ariaLabel="blocks-loading"
+                      wrapperStyle={{}}
+                      wrapperClass="blocks-wrapper"
+                      colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
+                    />
+                  </div>
+                )}
+                <Form className={submitting ? 'scrollInAdminproject p-4 ' : 'scrollInAdminproject px-1'} onSubmit={handleSubmit} >
+                  <ImCross
+                    color="black"
+                    className="formcrossbtn"
+                    onClick={handleCloseRow}
+                  />
+                  <h4 className="d-flex justify-content-center text-dark">
+                    Add Agent
+                  </h4>
+                  <TextField
+                    className="mb-3"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    label="First Name"
+                    fullWidth
+                    required
+                  />
+                  <TextField
+                    className="mb-3"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    label="Last Name"
+
+                    fullWidth
+                  />
+                  <TextField
+                    className="mb-3"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    label="Email"
+                    type="email"
+                    fullWidth
+                    required
+
+                  />
+                  <Validations type="email" value={email} />
+                  {/* <TextField
                   className="mb-3"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -366,45 +433,50 @@ export default function AdminAgentListScreen() {
                   fullWidth
                 />
                 <Validations type="password" value={password} /> */}
-                <FormControl className="mb-3">
-                  <InputLabel>Select Status</InputLabel>
-                  <Select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
+                  <FormControl className="mb-3">
+                    <InputLabel>Select Status</InputLabel>
+                    <Select
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
+                      required
+                    >
+                      <MenuItem value={true} >Active</MenuItem>
+                      <MenuItem value={false}>Inactive</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <FormControl className="mb-3">
+                    <InputLabel>Select Category</InputLabel>
+                    <Select required
+                      value={selectcategory} onChange={(e) => setSelectCategory(e.target.value)}
+                    >
+                      {categoryData.map((items) => (
+                        <MenuItem key={items._id} value={items._id} >{items.categoryName}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <br></br>
+                  <Button
+                    className="mt-2 formbtn globalbtnColor"
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    disabled={submitting}
                   >
-                    <MenuItem value={true}>Active</MenuItem>
-                    <MenuItem value={false}>Inactive</MenuItem>
-                  </Select>
-                </FormControl>
-                <FormControl className="mb-3">
-                  <InputLabel>Select Category</InputLabel>
-                  <Select
-                    value={selectcategory}
-                    onChange={(e) => setSelectCategory(e.target.value)}
-                    required
-                  >
-                    {categoryData.map((items) => (
-                      <MenuItem key={items._id} value={items._id}>
-                        {items.categoryName}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <br></br>
-                <Button
-                  className="mt-2 formbtn"
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                  disabled={submitting}
-                >
-                  {submitting ? 'Submitting' : 'Submit'}
-                </Button>
-              </Form>
+                    {submitting ?
+                      "SUBMITTING"
+                      : "SUBMIT "}
+                  </Button>
+                </Form>
+              </div>
+
+
+
             </Box>
           </Modal>
         </>
-      )}
+
+
+      ))}
     </>
   );
 }

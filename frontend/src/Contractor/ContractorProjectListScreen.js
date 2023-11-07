@@ -10,9 +10,9 @@ import { Store } from "../Store";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Tab from "react-bootstrap/Tab";
-import { ThreeDots } from "react-loader-spinner";
+import { ColorRing, ThreeDots } from "react-loader-spinner";
 import Tabs from "react-bootstrap/Tabs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateField } from "@mui/x-date-pickers/DateField";
 import {
@@ -25,6 +25,10 @@ import {
 import { Link } from "react-router-dom";
 import { useContext, useEffect, useReducer, useState } from "react";
 import dayjs from 'dayjs';
+import DatePicker from "@mui/lab/DatePicker";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
+import { ImCross } from "react-icons/im";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -35,15 +39,9 @@ const reducer = (state, action) => {
     case "FATCH_ERROR":
       return { ...state, error: action.payload, loading: false };
     case "SUCCESS_CATEGORY":
-      return { ...state, categoryData: action.payload, loading: false };
+      return { ...state, categoryData: action.payload };
     case "ERROR_CATEGORY":
-      return { ...state, error: action.payload, loading: false };
-    case "DELETE_SUCCESS":
-      return { ...state, successDelete: action.payload };
-
-    case "DELETE_RESET":
-      return { ...state, successDelete: false };
-
+      return { ...state, error: action.payload };
     case "UPDATE_SUCCESS":
       return { ...state, successUpdate: action.payload };
 
@@ -140,16 +138,14 @@ export default function ContractorProject() {
         console.error(error);
         dispatch({ type: "FATCH_ERROR", payload: error })
         if (error.response && error.response.status === 404) {
-          toast.error('You dont have any projects at the moment.');
+          toast.error('You Dont Have Any Projects At The Moment.');
         } else {
-          toast.error('An error occurred while fetching data');
+          toast.error('An Error Occurred While Fetching Data');
         }
       }
     };
 
-    if (successDelete) {
-      dispatch({ type: "DELETE_RESET" });
-    } else if (successUpdate) {
+    if (successUpdate) {
       dispatch({ type: "UPDATE_RESET" });
     } else {
       FatchProjectData();
@@ -169,7 +165,7 @@ export default function ContractorProject() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmiting(true);
-    if (isNewProject) {
+    try {
       const response = await axios.post(
         "/api/project/",
         {
@@ -188,60 +184,14 @@ export default function ContractorProject() {
         const datas = response.data;
         setIsModelOpen(false);
         setIsSubmiting(false);
-
         // dispatch({ type: 'FATCH_SUCCESS', payload: datas });
-        dispatch({ type: "UPDATE_SUCCESS", payload: true });
-      } else if (response.status === 500) {
-        toast.error(response.data.error);
-        setIsSubmiting(false);
+        // dispatch({ type: "UPDATE_SUCCESS", payload: true });
       }
-    } else {
-      const response = await axios.put(
-        `/api/project/update/${selectedRowData._id}`,
-        {
-          projectName: projectName,
-          projectDescription: projectDescription,
-        },
-        {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        }
-      );
-
-      if (response.status === 200) {
-        toast.success(response.data);
-        setIsModelOpen(false);
-        setIsSubmiting(false);
-
-        dispatch({ type: "UPDATE_SUCCESS", payload: true });
-      } else if (response.status === 500) {
-        toast.error(response.message);
-        setIsSubmiting(false);
-      }
+    } catch (error) {
+      toast.error(error);
+      setIsSubmiting(false);
     }
-  };
-
-  const deleteHandle = async (productId) => {
-    if (window.confirm("Are you sure to delete?")) {
-      try {
-        const response = await axios.delete(`/api/project/${productId}`, {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        });
-
-        if (response.status === 200) {
-          toast.success("Data deleted successfully!");
-          dispatch({
-            type: "DELETE_SUCCESS",
-            payload: true,
-          });
-        } else {
-          toast.error("Failed to delete data.");
-        }
-      } catch (error) {
-        console.error(error);
-        toast.error("An error occurred while deleting data.");
-      }
-    }
-  };
+  }
 
   useEffect(() => {
     const fetchCategoryData = async () => {
@@ -408,6 +358,7 @@ export default function ContractorProject() {
                       pageSizeOptions={[5]}
                       checkboxSelection
                       disableRowSelectionOnClick
+                      localeText={{ noRowsLabel: "Project Data Is Not Avalible" }}
                     />
                   </Box>
                   <Modal open={isModelOpen} onClose={handleCloseRow}>
@@ -421,69 +372,107 @@ export default function ContractorProject() {
                         width: 400,
                         bgcolor: "background.paper",
                         boxShadow: 24,
-                        p: 4,
+                        p: isSubmiting ? 0 : 4,
                       }}
                     >
-                      <Form onSubmit={handleSubmit}>
+                      <div className="overlayLoading">
+                        {isSubmiting && (
+                          <div className="overlayLoadingItem1 y-3">
+                            <ColorRing
+                              visible={true}
+                              height="40"
+                              width="40"
+                              ariaLabel="blocks-loading"
+                              wrapperStyle={{}}
+                              wrapperClass="blocks-wrapper"
+                              colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
+                            />
+                          </div>
+                        )}
 
-                        <h4 className="d-flex justify-content-center">
-                          Add Project
-                        </h4>
-                        <TextField
-                          required
-                          className="mb-3"
-                          value={projectName}
-                          onChange={(e) => setProjectName(e.target.value)}
-                          label="Project Name"
-                          fullWidth
-                        />
-
-                        <TextField
-                          required
-                          className="mb-3"
-                          id="outlined-multiline-static"
-                          onChange={(e) =>
-                            setProjectDescription(e.target.value)
-                          }
-                          label="Project Description"
-                          multiline
-                          rows={4}
-                          fullWidth
-                          variant="outlined"
-                        // value={'text'}
-                        // onChange={handleChange}
-                        />
-                        <FormControl fullWidth className="mb-3">
-                          <InputLabel>Select Categories</InputLabel>
-                          <Select
+                        <Form onSubmit={handleSubmit} className={isSubmiting ? 'scrollInAdminproject p-4 ' : 'scrollInAdminproject px-3'}>
+                          <ImCross
+                            color="black"
+                            className="formcrossbtn"
+                            onClick={handleCloseRow}
+                          />
+                          <h4 className="d-flex justify-content-center">
+                            Add Project
+                          </h4>
+                          <TextField
                             required
-                            multiple
-                            value={selectedOptions}
-                            onChange={handleChange}
-                          // renderValue={(selected) => (
-                          //   <div>
-                          //     {categoryData && selected
-                          //       ? selected.map((value) => (
-                          //           <span key={value}>
-                          //             {categoryData.find(
-                          //               (option) => option._id === value
-                          //             ).categoryName + ','}
-                          //           </span>
-                          //         ))
-                          //       : ''}
-                          //   </div>
-                          // )}
-                          >
-                            {categoryData &&
-                              categoryData.map((option) => (
-                                <MenuItem key={option._id} value={option._id}>
-                                  {option.categoryName}
-                                </MenuItem>
-                              ))}
-                          </Select>
-                        </FormControl>
+                            className="mb-3"
+                            value={projectName}
+                            onChange={(e) => setProjectName(e.target.value)}
+                            label="Project Name"
+                            fullWidth
+                          />
 
-                        <LocalizationProvider dateAdapter={AdapterDayjs} className="mb-3">
+                          <TextField
+                            required
+                            className="mb-3"
+                            id="outlined-multiline-static"
+                            onChange={(e) =>
+                              setProjectDescription(e.target.value)
+                            }
+                            label="Project Description"
+                            multiline
+                            rows={4}
+                            fullWidth
+                            variant="outlined"
+                          // value={'text'}
+                          // onChange={handleChange}
+                          />
+                          <FormControl fullWidth className="mb-3">
+                            <InputLabel>Select Categories</InputLabel>
+                            <Select
+                              required
+                              multiple
+                              value={selectedOptions}
+                              onChange={handleChange}
+                            // renderValue={(selected) => (
+                            //   <div>
+                            //     {categoryData && selected
+                            //       ? selected.map((value) => (
+                            //           <span key={value}>
+                            //             {categoryData.find(
+                            //               (option) => option._id === value
+                            //             ).categoryName + ','}
+                            //           </span>
+                            //         ))
+                            //       : ''}
+                            //   </div>
+                            // )}
+                            >
+                              {categoryData &&
+                                categoryData.map((option) => (
+                                  <MenuItem key={option._id} value={option._id}>
+                                    {option.categoryName}
+                                  </MenuItem>
+                                ))}
+                            </Select>
+                          </FormControl>
+                          <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <DatePicker
+                              label="Date"
+                              value={startDate}
+                              onChange={(newValue) =>
+                                validateDates(newValue, endDate)
+                              }
+                              renderInput={(params) => <TextField {...params} />}
+
+                            />
+                            <DatePicker
+                              label="Date"
+                              value={endDate}
+                              onChange={(date) => setEndDate(date)}
+                              renderInput={(params) => (
+                                <TextField {...params} style={{ color: 'white' }} />
+                              )}
+
+                            />
+                          </LocalizationProvider>
+                          {/* <LocalizationProvider dateAdapter={AdapterDayjs} className="mb-3">
                           <DateField
                             required
                             label="Start Date"
@@ -508,19 +497,20 @@ export default function ContractorProject() {
                           {endDateError && (
                             <div style={{ color: 'red' }}>{endDateError}</div>
                           )}
-                        </LocalizationProvider>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          type="submit"
-                          disabled={isSubmiting}
-                        >
-                          {isSubmiting
-                            ? "Submitting"
-                            : "Submit"
-                          }
-                        </Button>
-                      </Form>
+                        </LocalizationProvider> */}
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            disabled={isSubmiting}
+                            className="mt-2 formbtn updatingBtn globalbtnColor"
+                          >
+                            {isSubmiting ?
+                              "SUBMITTING"
+                              : "SUBMIT "}
+                          </Button>
+                        </Form>
+                      </div>
                     </Box>
                   </Modal>
                 </Tab>
@@ -555,14 +545,14 @@ export default function ContractorProject() {
                                   </Button>
                                 </Link>
 
-                                <Button
+                                {/* <Button
                                   variant="outlined"
                                   className="mx-2 tableDeletebtn"
                                   onClick={() => deleteHandle(params.row._id)}
                                 // startIcon={<AiFillDelete />}
                                 >
                                   Delete
-                                </Button>
+                                </Button> */}
                               </Grid>
                             );
                           },
@@ -617,14 +607,14 @@ export default function ContractorProject() {
                                   </Button>
                                 </Link>
 
-                                <Button
+                                {/* <Button
                                   variant="outlined"
                                   className="mx-2 tableDeletebtn"
                                   onClick={() => deleteHandle(params.row._id)}
                                 // startIcon={<AiFillDelete />}
                                 >
                                   Delete
-                                </Button>
+                                </Button> */}
                               </Grid>
                             );
                           },
@@ -674,14 +664,14 @@ export default function ContractorProject() {
                                     Edit
                                   </Button>
                                 </Link>
-                                <Button
+                                {/* <Button
                                   variant="outlined"
                                   className="mx-2 tableDeletebtn"
                                   onClick={() => deleteHandle(params.row._id)}
                                 // startIcon={<AiFillDelete />}
                                 >
                                   Delete
-                                </Button>
+                                </Button> */}
                               </Grid>
                             );
                           },

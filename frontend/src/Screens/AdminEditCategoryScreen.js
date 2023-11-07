@@ -12,10 +12,10 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Store } from '../Store';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { ThreeDots } from 'react-loader-spinner';
-import { Avatar } from '@mui/material';
+import { ColorRing, ThreeDots } from 'react-loader-spinner';
+import { Avatar, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import AvatarImage from '../Components/Avatar';
-
+import { FaUserEdit } from 'react-icons/fa'
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FATCH_REQUEST':
@@ -57,7 +57,7 @@ function AdminEditCategory() {
     categoryData: {},
     successDelete: false,
     successUpdate: false,
-    isSubmiting: false,
+    // isSubmiting: true,
   });
 
   const navigate = useNavigate();
@@ -109,7 +109,7 @@ function AdminEditCategory() {
         }
       );
       dispatch({ type: "UPDATE_SUCCESS" })
-      toast.success("Category updated successfully");
+      toast.success("Category Updated Successfully");
       navigate('/adminCategoriesList')
 
     } catch (err) {
@@ -154,78 +154,100 @@ function AdminEditCategory() {
           </Row>
           <Row>
             <Col>
-              <Card className={`${theme}CardBody`}>
-                <Form onSubmit={submitHandler} className="p-4 w-100 formWidth ">
-                  <Row>
-                    <Col>
-                      {categoryData.categoryImage !== 'null' ? (
-                        <Avatar src={categoryData.categoryImage} />
-                      ) : (
-                        <AvatarImage name={category} bgColor={color} />
-                      )}
-                    </Col>
-                    <Col>
-                      <Form.Group
-                        className="mb-3"
-                        controlId="formBasicPassword"
-                      >
-                        <Form.Control
-                          className="input-box-inner"
-                          type="file"
-                          onChange={handleFileChange}
+              <div className="overlayLoading" >
+                <Card className={`${theme}CardBody`}>
+                  <div className="FormContainerEdit">
+
+                    {isSubmiting && (
+                      <div className="overlayLoadingItem1">
+                        <ColorRing
+                          visible={true}
+                          height="40"
+                          width="40"
+                          ariaLabel="blocks-loading"
+                          wrapperStyle={{}}
+                          wrapperClass="blocks-wrapper"
+                          colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
                         />
-                      </Form.Group>
-                    </Col>
-                  </Row>
+                      </div>
+                    )}
 
-                  <Form.Group className="mb-3 " controlId="formBasicEmail">
-                    <Form.Label className="mb-1 input-box">
-                      Category Name
-                    </Form.Label>
-                    <Form.Control
-                      className="input-box-inner"
-                      onChange={(e) => setCatogry(e.target.value)}
-                      type="text"
-                      value={category}
-                      required
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label className="mb-1 input-box">
-                      Description
-                    </Form.Label>
-                    <Form.Control
-                      className="input-box-inner"
-                      onChange={(e) => setCatogryDesc(e.target.value)}
-                      type="text"
-                      value={categoryDesc}
-                      placeholder='Add Description'
-                    />
-                  </Form.Group>
+                    <Form onSubmit={submitHandler} className="p-4 w-100 formWidth ">
+                      <Row>
+                        <Col>
 
-                  <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label className="mb-1">Status</Form.Label>
-                    <Form.Select
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value)}
-                    >
-                      <option value="">SELECT STATUS</option>
-                      <option value="true">Active</option>
-                      <option value="false">Inactive</option>
-                    </Form.Select>
-                  </Form.Group>
-                  <div className="d-flex justify-content-start mt-4">
-                    <Button
-                      className=" py-1 w-25 globalbtnColor updatingBtn"
-                      variant="primary"
-                      type="submit"
-                      disabled={isSubmiting}
-                    >
-                      {isSubmiting ? 'Updating' : 'Update'}
-                    </Button>
+                          {categoryData.categoryImage !== 'null' ? (
+                            <Avatar src={categoryData.categoryImage} />
+                          ) : (
+                            <AvatarImage name={category} bgColor={color} />
+                          )}
+                        </Col>
+                        <Col>
+                          <FaUserEdit />
+                          <Form.Group
+                            className="mb-3"
+                            controlId="formBasicPassword"
+                          >
+                            <Form.Control
+                              disabled={isSubmiting}
+                              className="input-box-inner"
+                              type="file"
+                              onChange={handleFileChange}
+                            />
+                          </Form.Group>
+                        </Col>
+                      </Row>
+
+
+                      <TextField
+                        className="mb-3"
+                        value={category}
+                        label="Category Name"
+                        fullWidth
+                        onChange={(e) => setCatogry(e.target.value)}
+                        required
+                        InputLabelProps={{
+                          shrink: categoryData.categoryName ? true : false,
+
+                        }}
+                      />
+                      <TextField
+                        className="mb-3"
+                        value={categoryDesc}
+                        label="Add Description"
+                        fullWidth
+                        onChange={(e) => setCatogryDesc(e.target.value)}
+
+                      />
+                      <FormControl className="mb-3">
+                        <InputLabel>Select Status</InputLabel>
+                        <Select
+                          value={status}
+                          onChange={(e) => setStatus(e.target.value)}
+                          required
+                        >
+                          <MenuItem value={true} >Active</MenuItem>
+                          <MenuItem value={false}>Inactive</MenuItem>
+                        </Select>
+                      </FormControl>
+                      <div className="d-flex justify-content-start mt-4">
+                        <Button
+                          className=" py-1 w-25 globalbtnColor updatingBtn"
+                          variant="primary"
+                          type="submit"
+                          disabled={isSubmiting}
+                        >
+                          {isSubmiting ? 'UPDATING' : 'UPDATE'}
+                        </Button>
+                      </div>
+                    </Form>
+
+
+
+
                   </div>
-                </Form>
-              </Card>
+                </Card>
+              </div>
             </Col>
           </Row>
         </div>
