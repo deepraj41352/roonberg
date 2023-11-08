@@ -21,6 +21,9 @@ function ProfileScreen() {
   const [email, setEmail] = useState(userInfo.email);
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+
+  console.log('file', selectedFile);
+
   useEffect(() => {
     if (isSubmiting == false) {
       setFirstName(userInfo.first_name);
@@ -48,10 +51,11 @@ function ProfileScreen() {
           authorization: `Bearer ${userInfo.token}`,
         },
       });
-
-      toast.success('Profile Updated Successfully !');
+      // console.log("data", data);
+      // console.log("data.userdata", data.userData);
       ctxDispatch({ type: 'USER_UPDATE', payload: data.userData });
       localStorage.setItem('userInfo', JSON.stringify(data.userData));
+      toast.success('Your Profile Has Been updated');
     } catch (err) {
       toast.error(err.response?.data?.message);
     } finally {
@@ -66,7 +70,7 @@ function ProfileScreen() {
 
   return (
     <Container className="Sign-up-container-regis d-flex w-100 profileDiv  flex-column justify-content-center align-items-center">
-      <div className="ProfileScreen-inner px-4 py-3 w-100">
+      <div className="ProfileScreen-inner px-4 py-3 w-100 d-flex justify-content-center align-items-center flex-column">
         <Row className="mb-3">
           <Col>
             <h4>User Profile</h4>
@@ -75,7 +79,7 @@ function ProfileScreen() {
         <Row>
           <Col>
             <div className="overlayLoading">
-              <Card className={`${theme}CardBody`}>
+              <Card className={`${theme}CardBody editCartForm`}>
                 <div className="FormContainerEdit">
                   {isSubmiting && (
                     <div className="overlayLoadingItem1">
@@ -96,42 +100,57 @@ function ProfileScreen() {
                   )}
                   <Form
                     onSubmit={submitHandler}
-                    className="p-4 w-100 formWidth "
+                    className="p-4 w-100 editFormWidth "
                   >
-                    <div className="classforprofile">
+                    {/* <div className="classforprofile">
                       <Form.Group
                         className="mb-2"
                         controlId="formBasicPassword"
                       >
-                        <Row className="editImgParent">
-                          <Col className="">
-                            <img
-                              className="profile-icon-inner editCateImgContainer"
-                              src={userInfo.profile_picture}
-                              alt="user-image"
-                            ></img>
-                          </Col>
-                          <Col className="editImgChild">
-                            <div className="mb-3">
-                              <input
-                                type="file"
-                                onChange={handleFileChange}
-                                required
-                                style={{ display: 'none' }}
-                                id="file-input"
-                              />
-                              <label
-                                htmlFor="file-input"
-                                className="editImgBtn "
-                              >
-                                <RiImageEditFill />
-                              </label>
-                            </div>
-                          </Col>
-                                    
-                        </Row>
+                        <div className="d-flex gap-3">
+                          <div>
+                            <Form.Label className="mb-1">
+                              <img
+                                className="profile-icon-inner "
+                                src={userInfo.profile_picture}
+                                alt="user-image"
+                              ></img>
+                            </Form.Label>
+                          </div>
+                          <div>
+                            <Form.Label className="mb-1">
+                              Profile Picture
+                            </Form.Label>
+                            <Form.Control
+                              type="file"
+                              onChange={handleFileChange}
+                            />
+                          </div>
+                        </div>
                       </Form.Group>
-                    </div>
+                    </div> */}
+                    <Row className="editImgParent">
+                      <Col className="">
+                        <img
+                          className="profile-icon-inner editCateImgContainer"
+                          src={userInfo.profile_picture}
+                          alt="user-image"
+                        ></img>
+                      </Col>
+                      <Col className="editImgChild">
+                        <div className="mb-3">
+                          <input
+                            type="file"
+                            onChange={handleFileChange}
+                            style={{ display: 'none' }}
+                            id="file-input"
+                          />
+                          <label htmlFor="file-input" className="editImgBtn ">
+                            <RiImageEditFill />
+                          </label>
+                        </div>
+                      </Col>
+                    </Row>
                     <TextField
                       className="mb-3"
                       value={firstName}

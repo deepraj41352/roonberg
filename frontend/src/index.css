@@ -167,9 +167,9 @@ code {
     max-width: 210px !important;
   }
 }
-.ProfileScreen-inner {
+/* .ProfileScreen-inner {
   max-width: 450px;
-}
+} */
 @media (max-width: 400px) {
   .ProfileScreen-inner {
     max-width: 330px;
@@ -1076,19 +1076,44 @@ body {
   height: 65px !important;
   width: 65px !important;
 }
-.formWidth {
+.resetFormWidth,
+.formWidth,
+.validationMsg {
   width: 100%;
   min-width: 400px;
 }
+.editFormWidth {
+  width: 100%;
+  min-width: 300px;
+}
+
+.editCartForm {
+  width: 100%;
+}
+.searchbar1 {
+  display: none;
+}
+
 @media screen and (max-width: 450px) {
+  .searchbar {
+    display: none;
+  }
+  .searchbar1 {
+    display: block !important;
+    width: 230px;
+    padding: 0 13px;
+  }
   .formWidth {
-    min-width: 275px;
+    min-width: 300px;
   }
   .validationMsg {
     min-width: 300px;
   }
-}
-.validationMsg {
-  width: 100%;
-  min-width: 400px;
+  .resetFormWidth {
+    min-width: 250px;
+  }
+  .editFormWidth {
+    width: 100%;
+    min-width: 232px;
+  }
 }

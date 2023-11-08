@@ -9,11 +9,12 @@ import { IoMdNotifications } from 'react-icons/io';
 import { AiFillHome, AiOutlineProject } from 'react-icons/ai';
 import { CgProfile } from 'react-icons/cg';
 import { MdGroup, MdGroups2, MdLogout, MdOutlineGroups2 } from 'react-icons/md';
-import { BsFillChatLeftQuoteFill } from 'react-icons/bs';
-import { Link } from 'react-router-dom';
+import { BsFillChatLeftQuoteFill, BsSearch } from 'react-icons/bs';
+import { Link, useNavigate } from 'react-router-dom';
 import { Store } from '../Store';
 import { ImCross } from 'react-icons/im';
 import axios from 'axios';
+import { Form, InputGroup } from 'react-bootstrap';
 
 function Sidebar({ sidebarVisible, setSidebarVisible }) {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -21,6 +22,8 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
   const [unseeNote, setUnseenNote] = useState(NotificationData);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isSmallScreen, setIsSmallScreen] = useState(true);
+  const [searchValue, setSearchValue] = useState('');
+  const navigate = useNavigate();
 
   const socketUrl = process.env.REACT_APP_SOCKETURL;
   const socket = io(socketUrl); // Replace with your server URL
@@ -60,7 +63,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
       console.log('notificationformsocke');
 
       const { data } = await axios.get(`/api/notification/${userInfo._id}`, {
-        headers: { Authorization: `Bearer ${userInfo.token}` },
+        headers: { Authorization: ` Bearer ${userInfo.token}` },
       });
       ctxDispatch({ type: 'NOTIFICATION-NULL' });
       data.map((item) => {
@@ -134,6 +137,13 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
       }
     });
   }, []);
+  const handleInputChange = (event) => {
+    setSearchValue(event.target.value);
+  };
+  const handleSearchScreen = () => {
+    navigate('/searchScreen');
+  };
+
   return (
     <div className={`sidebar ${sidebarVisible ? 'visible' : ''} `}>
       <div className="blank-box"></div>
@@ -142,6 +152,25 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
         onClick={handleResponsiveSidebarVisable}
       />
       <ul className="dash-list ">
+        <div className="searchbar1">
+          <Form className="d-flex">
+            <InputGroup className="search-bar-dash">
+              <Form.Control
+                type="search"
+                value={searchValue}
+                onChange={handleInputChange}
+                onClick={handleSearchScreen}
+                className="search-bar-dash-inner"
+                placeholder="Search..."
+                aria-label="Search"
+                aria-describedby="basic-addon2"
+              />
+              <InputGroup.Text id="basic-addon2">
+                <BsSearch className="fs-4" />
+              </InputGroup.Text>
+            </InputGroup>
+          </Form>
+        </div>
         <Link
           to="/dashboard"
           className="text-decoration-none"

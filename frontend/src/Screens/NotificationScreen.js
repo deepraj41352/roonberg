@@ -43,27 +43,26 @@ export default function NotificationScreen() {
   const socket = io(SocketUrl);
   socket.on('connectionForNotify', (data) => {});
 
-  // useEffect(() => {
-  //   const handleNotification = (notifyUser, message) => {
-  //     if (notifyUser == userInfo._id) {
-  //       console.log('notifyProjectFrontend', notifyUser, message);
-  //       ctxDispatch({ type: 'NOTIFICATION', payload: { notifyUser, message } });
-  //       setNotificationMessage((prevNotifications) => [
-  //         ...prevNotifications,
-  //         { notifyUser, message },
-  //       ]);
-  //     }
-  //   };
-  //   socket.on('notifyUserFrontend', handleNotification);
-  //   socket.on('notifyProjectFrontend', handleNotification);
-  //   // Consolidate both event listeners
+  useEffect(() => {
+    const handleNotification = (notifyUser, message) => {
+      if (notifyUser == userInfo._id) {
+        console.log('notifyProjectFrontend', notifyUser, message);
+        // ctxDispatch({ type: 'NOTIFICATION', payload: { notifyUser, message } });
+        setNotificationMessage((prevNotifications) => [
+          ...prevNotifications,
+          { notifyUser, message },
+        ]);
+      }
+    };
+    socket.on('notifyUserFrontend', handleNotification);
+    socket.on('notifyProjectFrontend', handleNotification);
+    // Consolidate both event listeners
 
-  //   return () => {
-  //     socket.off('notifyUserFrontend', handleNotification); // Remove the listeners
-  //     socket.off('notifyProjectFrontend', handleNotification);
-
-  //   };
-  // }, []);
+    return () => {
+      socket.off('notifyUserFrontend', handleNotification); // Remove the listeners
+      socket.off('notifyProjectFrontend', handleNotification);
+    };
+  }, []);
 
   // useEffect(() => {
   //   ctxDispatch({ type: 'NOTIFICATION-NULL' });
