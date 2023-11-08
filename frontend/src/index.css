@@ -1104,3 +1104,19 @@ body {
     min-width: 232px;
   }
 }
+
+/* dipak chouhan */
+
+.searchbar1 {
+  display: none;
+}
+@media screen and (max-width: 450px) {
+  .searchbar1 {
+    display: block !important;
+    max-width: 250px;
+    padding: 10px;
+  }
+  .searchbar {
+    display: none;
+  }
+}
