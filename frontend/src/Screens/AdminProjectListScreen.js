@@ -776,66 +776,49 @@ export default function AdminProjectListScreen() {
                               </div>
                             </div>
                           ))}
-                          {/* <div className='d-flex align-items-center mb-3'>
-                          <div className='d-flex align-items-center cateAgentPairBtn px-3' onClick={moreFieldsopen}>
-                            <MdAddCircleOutline color="black" className='mx-2 ' />
-                            Add Category/Agent
-                          </div>
-                          <div className='d-flex align-items-center cateAgentPairBtn mx-2 px-3' onClick={moreFieldsopen}>
-                            <MdRemoveCircleOutline color="black" className='mx-2'  />
-                            <p className='text-dark m-0 '>Remove</p>
-                          </div>
-                        </div> */}
-                          {/* <FormControl className="mb-3">
-                            <InputLabel>Select Status</InputLabel>
-                            <Select
-                              value={projectStatus}
-                              onChange={(e) => setProjectStatus(e.target.value)}
-                              required
-                            >
-                              <MenuItem value="active">Active</MenuItem>
-                              <MenuItem value="completed">Completed </MenuItem>
-                              <MenuItem value="qued">Qued </MenuItem>
-                            </Select>
-                          </FormControl> */}
-                          <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <DatePicker
-                              className="marginDate"
-                              label="Start Date"
-                              value={startDate}
-                              onChange={(newValue) =>
-                                validateDates(newValue, endDate)
-                              }
-                              renderInput={(params) => (
-                                <TextField {...params} />
+                          <div className="my-2">
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                              <DatePicker
+                                className="marginDate"
+                                label="Start Date"
+                                required
+                                value={startDate}
+                                onChange={(newValue) =>
+                                  validateDates(newValue, endDate)
+                                }
+                                renderInput={(params) => (
+                                  <TextField {...params} />
+                                )}
+                              />
+                              {startDateError && (
+                                <div className="Datevalidation">
+                                  {startDateError}
+                                </div>
                               )}
-                            />
-                            {startDateError && (
-                              <div className="Datevalidation">
-                                {startDateError}
-                              </div>
-                            )}
-                            <DatePicker
-                              className="mb-3"
-                              label="End Date"
-                              value={endDate}
-                              // onChange={(date) => setEndDate(date)}
-                              onChange={(newValue) =>
-                                validateDates(startDate, newValue)
-                              }
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  style={{ color: 'white' }}
-                                />
+                              <DatePicker
+                                className="mb-3"
+                                label="End Date"
+                                required
+                                value={endDate}
+                                // onChange={(date) => setEndDate(date)}
+                                onChange={(newValue) =>
+                                  validateDates(startDate, newValue)
+                                }
+                                renderInput={(params) => (
+                                  <TextField
+                                    {...params}
+                                    style={{ color: 'white' }}
+                                  />
+                                )}
+                              />
+                              {endDateError && (
+                                <div className="Datevalidation">
+                                  {endDateError}
+                                </div>
                               )}
-                            />
-                            {endDateError && (
-                              <div className="Datevalidation">
-                                {endDateError}
-                              </div>
-                            )}
-                          </LocalizationProvider>
+                            </LocalizationProvider>
+                          </div>
+
                           <Button
                             variant="contained"
                             color="primary"

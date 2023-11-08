@@ -115,110 +115,6 @@ function App() {
 
             <div className="px-0 w-100">
               {userInfo ? (
-                // <Navbar expand="lg" className=" admin-navbar">
-                //   <Container fluid>
-                //     <div
-                //       className="p-2 me-3 fs-5 admin-btn-logo"
-                //       onClick={toggleSidebar}
-                //     >
-                //       <AiOutlineAlignLeft />
-                //     </div>
-                //     <Navbar.Brand href="#home">
-                //       <Image
-                //         className="Roonberg-logo me-3 ms-2"
-                //         src="./logo2.png"
-                //         thumbnail
-                //       />
-                //     </Navbar.Brand>
-                //     <div className="sarchbar">
-                //       <Form className="d-flex">
-                //         <InputGroup className="search-bar-dash">
-                //           <Form.Control
-                //             type="search"
-                //             value={searchValue}
-                //             onChange={handleInputChange}
-                //             onClick={handleSearchScreen}
-                //             className="search-bar-dash-inner"
-                //             placeholder="Search..."
-                //             aria-label="Search"
-                //             aria-describedby="basic-addon2"
-                //           />
-                //           <InputGroup.Text id="basic-addon2">
-                //             <BsSearch className="fs-4" />
-                //           </InputGroup.Text>
-                //         </InputGroup>
-                //       </Form>
-                //     </div>
-
-                //     <Navbar.Toggle aria-controls="navbarScroll" />
-                //     <Navbar.Collapse
-                //       className="justify-content-end"
-                //       id="navbarScroll"
-                //     >
-                //       <Nav
-                //         className="gap-3"
-                //         style={{ maxHeight: '100px' }}
-                //         navbarScroll
-                //       >
-                //         <div className="py-2">
-                //           <Theme />
-                //         </div>
-
-                //         <Link href="#action1">
-                //           <BiShareAlt className="fs-4 admin-btn-logo" />
-                //         </Link>
-
-                //         <Link href="#">
-                //           <FiClock className="fs-4 admin-btn-logo " />
-                //         </Link>
-                //         <Link
-                //           to="/notificationScreen"
-                //           className="position-relative"
-                //         >
-                //           <MdOutlineNotifications className="fs-4 admin-btn-logo  " />
-
-                //           {NotificationData.length > 0 && (
-                //             <span className="position-absolute notification-badgeApp top-0 start-110 translate-middle badge rounded-pill bg-danger">
-                //               {NotificationData.length}
-                //             </span>
-                //           )}
-                //         </Link>
-                //       </Nav>
-                //     </Navbar.Collapse>
-                //     <div
-                //       className="profile-icon me-1 ms-3"
-                //       onClick={toggleDropdown}
-                //       // onClick={() => {
-                //       //   navigate('/profile-screen');
-                //       // }}
-                //     >
-                //       <img
-                //         className="w-100 h-100 profile-icon-inner img-fornavs"
-                //         src={
-                //           userInfo.profile_picture
-                //             ? userInfo.profile_picture
-                //             : './avatar.png'
-                //         }
-                //         alt="userimg"
-                //       ></img>
-                //       {isDropdownOpen && (
-                //         <div
-                //           className="dropdown-content"
-                //           onClick={closeDropdown}
-                //         >
-                //           <Link to="/profile-screen">Profile</Link>
-                //           <Link to="/projectNotification">Notification</Link>
-                //           <Link to="#">Setting</Link>
-                //           <hr></hr>
-                //           <Link onClick={signoutHandler} to="#">
-                //             Logout
-                //           </Link>
-                //           {/* Add more options as needed */}
-                //         </div>
-                //       )}
-                //     </div>
-                //   </Container>
-                // </Navbar>
                 <Navbar expand="lg" className="admin-navbar">
                   <Container fluid>
                     <div
@@ -346,8 +242,8 @@ function App() {
                       <Nav className=" login-button">
                         <Nav className="login-nav ">
                           <Link className="login-admin" to="/registration">
-                            <BsFillPersonFill className="fs-5 Icon-person me-1 " />
-                            Signup
+                            {/* <BsFillPersonFill className="fs-5 Icon-person me-1 " /> */}
+                            Login
                           </Link>
                           <Link className="login-admin" href="#link">
                             Admin Login
@@ -363,7 +259,6 @@ function App() {
                   <Routes>
                     <Route path="/" element={<SignUpForm />} />
                     <Route path="/test" element={<MyComponent />} />
-
 
                     <Route
                       path="/registration"

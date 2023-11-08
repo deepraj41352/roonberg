@@ -292,7 +292,7 @@ projectRouter.post(
   expressAsyncHandler(async (req, res) => {
     try {
       function capitalizeFirstLetter(data) {
-        return data.charAt(0).toUpperCase() + data.slice(1);
+        return data && data.charAt(0).toUpperCase() + data.slice(1);
       }
       const userRole = req.user.role;
       const contractorId = req.body.projectOwner;

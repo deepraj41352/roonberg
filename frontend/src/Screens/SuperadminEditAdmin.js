@@ -1,19 +1,17 @@
 import React, { useContext, useEffect, useReducer, useState } from 'react';
-import {
-  Button,
-  Card,
-  Col,
-  Container,
-  Form,
-  Row,
-
-} from 'react-bootstrap';
+import { Button, Card, Col, Container, Form, Row } from 'react-bootstrap';
 import { Store } from '../Store';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { ColorRing } from 'react-loader-spinner';
-import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from '@mui/material';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -103,7 +101,7 @@ function SuperadminEditAdmin() {
         }
       );
       dispatch({ type: 'UPDATE_SUCCESS' });
-      toast.success("Admin Updated Successfully !");
+      toast.success('Admin Updated Successfully !');
       navigate('/adminList-screen');
       setIsSubmiting(false);
     } catch (err) {
@@ -116,7 +114,7 @@ function SuperadminEditAdmin() {
   return (
     <>
       <Container className="Sign-up-container-regis d-flex w-100 profileDiv  flex-column justify-content-center align-items-center">
-        <div className="ProfileScreen-inner px-4 py-3 w-100">
+        <div className="ProfileScreen-inner px-4 py-3 w-100 d-flex justify-content-center align-items-center flex-column">
           <Row className="mb-3">
             <Col>
               <h4>Update Admin</h4>
@@ -124,10 +122,9 @@ function SuperadminEditAdmin() {
           </Row>
           <Row>
             <Col>
-              <div className="overlayLoading" >
+              <div className="overlayLoading">
                 <Card className={`${theme}CardBody`}>
                   <div className="FormContainerEdit">
-
                     <>
                       {isSubmiting && (
                         <div className="overlayLoadingItem1">
@@ -138,11 +135,18 @@ function SuperadminEditAdmin() {
                             ariaLabel="blocks-loading"
                             wrapperStyle={{}}
                             wrapperClass="blocks-wrapper"
-                            colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
+                            colors={[
+                              'rgba(0, 0, 0, 1) 0%',
+                              'rgba(255, 255, 255, 1) 68%',
+                              'rgba(0, 0, 0, 1) 93%',
+                            ]}
                           />
                         </div>
                       )}
-                      <Form onSubmit={submitHandler} className="p-4 w-100 formWidth " >
+                      <Form
+                        onSubmit={submitHandler}
+                        className="p-4 w-100 editFormWidth "
+                      >
                         <TextField
                           className="mb-3"
                           value={firstName}
@@ -166,7 +170,6 @@ function SuperadminEditAdmin() {
                           type="email"
                           fullWidth
                           disabled
-
                         />
                         <FormControl className="mb-3">
                           <InputLabel>Select Status</InputLabel>
@@ -175,7 +178,7 @@ function SuperadminEditAdmin() {
                             onChange={(e) => setStatus(e.target.value)}
                             required
                           >
-                            <MenuItem value={true} >Active</MenuItem>
+                            <MenuItem value={true}>Active</MenuItem>
                             <MenuItem value={false}>Inactive</MenuItem>
                           </Select>
                         </FormControl>
@@ -187,7 +190,7 @@ function SuperadminEditAdmin() {
                             type="submit"
                             disabled={isSubmiting}
                           >
-                            {isSubmiting ? "UPDATING" : "UPDATE"}
+                            {isSubmiting ? 'UPDATING' : 'UPDATE'}
                           </Button>
                         </div>
                       </Form>

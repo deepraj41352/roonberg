@@ -167,9 +167,9 @@ code {
     max-width: 210px !important;
   }
 }
-/* .ProfileScreen-inner {
-  max-width: 450px;
-} */
+.ProfileScreen-inner {
+  max-width: 500px;
+}
 @media (max-width: 400px) {
   .ProfileScreen-inner {
     max-width: 330px;
@@ -623,6 +623,13 @@ body {
 .projectScreenCard-outer {
   margin: 0 auto;
   padding: 12px 40px;
+  display: flex;
+}
+
+@media screen and (max-width: 800px) {
+  .projectScreenCard-outer {
+    flex-direction: column;
+  }
 }
 /* ---------Priyanshu-End------------- */
 
@@ -1032,15 +1039,6 @@ body {
 .list-group-item-light {
   background-color: #afb4b9 !important;
 }
-.MuiDataGrid-cell.MuiDataGrid-withBorderColor {
-  width: 100% !important;
-}
-.css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone {
-  width: 100% !important;
-}
-.css-kzyyzb-MuiDataGrid-root .MuiDataGrid-row {
-  width: 100% !important;
-}
 
 .Datevalidation {
   color: red;
@@ -1090,19 +1088,8 @@ body {
 .editCartForm {
   width: 100%;
 }
-.searchbar1 {
-  display: none;
-}
 
 @media screen and (max-width: 450px) {
-  .searchbar {
-    display: none;
-  }
-  .searchbar1 {
-    display: block !important;
-    width: 230px;
-    padding: 0 13px;
-  }
   .formWidth {
     min-width: 300px;
   }
