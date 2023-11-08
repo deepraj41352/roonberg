@@ -188,14 +188,14 @@ body {
 .Sign-up-container-inner {
   /* background-color: rgb(213, 245, 166); */
 }
-.formWidth {
+/* .formWidth {
   text-align: start;
   width: 400px;
-}
+} */
 
-.formWidth {
+/* .formWidth {
   width: 400px !important;
-}
+} */
 
 .tableBg,
 .lightmodelBg {
@@ -266,7 +266,7 @@ body {
   text-decoration: none;
   color: #2563eb;
 }
-@media (max-width: 450px) {
+/* @media (max-width: 450px) {
   .formWidth {
     width: 350px;
   }
@@ -276,7 +276,7 @@ body {
     width: 100%;
     min-width: 300px;
   }
-}
+} */
 /* -------P-Dashboard----- */
 
 body {
@@ -378,10 +378,10 @@ body {
 .Sign-up-container-inner {
   /* background-color: rgb(213, 245, 166); */
 }
-.formWidth {
+/* .formWidth {
   text-align: start;
   width: 400px;
-}
+} */
 .globalbtnColor {
   color: #ffffff !important;
   background-color: RGB(14, 14, 61) !important;
@@ -393,9 +393,9 @@ body {
   cursor: pointer;
 }
 
-.formWidth {
+/* .formWidth {
   width: 400px !important;
-}
+} */
 .scroll-form {
   height: 400px;
   overflow-y: auto;
@@ -455,7 +455,7 @@ body {
   text-decoration: none;
   color: #2563eb;
 }
-@media (max-width: 450px) {
+/* @media (max-width: 450px) {
   .formWidth {
     width: 350px;
   }
@@ -465,7 +465,7 @@ body {
     width: 100%;
     min-width: 300px;
   }
-}
+} */
 /* -------P-Dashboard----- */
 .admin-navbar {
   height: 66px !important;
@@ -489,6 +489,7 @@ body {
 .admin-btn-logo {
   color: white;
 }
+
 .search-bar-dash {
   width: 350px !important;
 }
@@ -497,20 +498,52 @@ body {
 }
 .sidebar.visible {
   width: 0px;
-  /* display: none; */
 }
 .sidebar {
   width: 21%;
   min-height: 100vh;
-
-  /* height: 100vh !important; */
-  /* background-color: #120c16; */
   background-color: #070719;
   color: #fff;
   white-space: nowrap;
   overflow-x: hidden;
   transition: width 0.3s ease-in-out;
 }
+.admin-btn-logo2 {
+  display: none;
+}
+.navbar > .container-fluid {
+  flex-wrap: nowrap !important;
+}
+
+@media (max-width: 992px) {
+  .disNonePro {
+    display: block !important;
+  }
+  #navbarScroll {
+    display: none !important;
+  }
+  .profile-icon {
+    display: none;
+  }
+
+  .admin-btn-logo2 {
+    display: block;
+    color: white;
+  }
+  .admin-btn-logo {
+    display: none;
+  }
+  .sidebar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0px;
+  }
+  .sidebar.visible {
+    width: 21%px;
+  }
+}
+
 @media (max-width: 960px) {
   .sidebar {
     width: 25%;
@@ -739,11 +772,9 @@ body {
 }
 
 /* saidbar responsive */
-@media only screen and (max-width: 1179px) {
+@media only screen and (max-width: 993px) {
   .sidebar.visible {
     width: 55%;
-
-    /* display: none; */
   }
   .sidebar {
     position: fixed;
@@ -792,6 +823,16 @@ body {
 .profile-icon {
   height: 40px;
   width: 40px;
+  border-radius: 50%;
+}
+.disNonePro {
+  display: none;
+}
+.profile-icon2 {
+  height: 1.5rem;
+  width: 1.5rem;
+  margin-right: 14px;
+
   border-radius: 50%;
 }
 .profile-icon-inner {
@@ -1034,4 +1075,20 @@ body {
 .editCateImgContainer {
   height: 65px !important;
   width: 65px !important;
+}
+.formWidth {
+  width: 100%;
+  min-width: 400px;
+}
+@media screen and (max-width: 450px) {
+  .formWidth {
+    min-width: 275px;
+  }
+  .validationMsg {
+    min-width: 300px;
+  }
+}
+.validationMsg {
+  width: 100%;
+  min-width: 400px;
 }

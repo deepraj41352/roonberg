@@ -26,6 +26,14 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
   socket.on('connectionForNotify', (data) => {
     console.log('oiuhjioyhi', data);
   });
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+  const closeDropdown = () => {
+    setIsDropdownOpen(false);
+  };
 
   useEffect(() => {
     const handleNotification = (notifyUser, message) => {
@@ -291,23 +299,49 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
             </div>
           </li>
         </Link>
-        {/* <Link
-          to="/projectNotification"
-          className="text-decoration-none"
-          onClick={handlSmallScreeneClick}
-        >
+        <Link to="/profile-screen" className="text-decoration-none disNonePro">
           <li
-            className={
-              selectedItem === 'projectNotification' ? 'selected' : ''
-            }
+            className={selectedItem === 'categoriesList' ? 'selected' : ''}
             onClick={() => {
-              setSelectedItem('projectNotification');
+              setSelectedItem('categoriesList');
             }}
           >
-            <IoMdNotifications className="me-3 fs-5" />
-            Project Notification
+            <img
+              className="profile-icon2 profile-icon-inner fs-5 img-fornavs"
+              src={
+                userInfo.profile_picture
+                  ? userInfo.profile_picture
+                  : './avatar.png'
+              }
+              alt="userimg"
+            />
+            Profile
           </li>
-        </Link> */}
+        </Link>
+        {/* <div className="profile-icon" onClick={toggleDropdown}>
+          <img
+            className="w-100 h-100 profile-icon-inner fs-5 img-fornavs"
+            src={
+              userInfo.profile_picture
+                ? userInfo.profile_picture
+                : './avatar.png'
+            }
+            alt="userimg"
+          />
+          {isDropdownOpen && (
+            <div className="dropdown-content" onClick={closeDropdown}>
+              <Link to="/profile-screen">Profile</Link>
+              <Link to="/projectNotification">Notification</Link>
+              <Link to="#">Setting</Link>
+              <hr />
+              <Link onClick={signoutHandler} to="#">
+                Logout
+              </Link>
+              {/* Add more options as needed *
+            </div>
+          )}
+        </div> */}
+
         <Link
           to="#Logout"
           onClick={signoutHandler}
