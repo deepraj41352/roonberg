@@ -7,6 +7,7 @@ import axios from 'axios';
 import Validations from '../Components/Validations';
 import { ColorRing } from 'react-loader-spinner';
 import { TextField } from '@mui/material';
+import { RiImageEditFill } from 'react-icons/ri';
 
 function ProfileScreen() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -102,26 +103,33 @@ function ProfileScreen() {
                         className="mb-2"
                         controlId="formBasicPassword"
                       >
-                        <div className="d-flex gap-3">
-                          <div>
-                            <Form.Label className="mb-1">
-                              <img
-                                className="profile-icon-inner "
-                                src={userInfo.profile_picture}
-                                alt="user-image"
-                              ></img>
-                            </Form.Label>
-                          </div>
-                          <div>
-                            <Form.Label className="mb-1">
-                              Profile Picture
-                            </Form.Label>
-                            <Form.Control
-                              type="file"
-                              onChange={handleFileChange}
-                            />
-                          </div>
-                        </div>
+                        <Row className="editImgParent">
+                          <Col className="">
+                            <img
+                              className="profile-icon-inner editCateImgContainer"
+                              src={userInfo.profile_picture}
+                              alt="user-image"
+                            ></img>
+                          </Col>
+                          <Col className="editImgChild">
+                            <div className="mb-3">
+                              <input
+                                type="file"
+                                onChange={handleFileChange}
+                                required
+                                style={{ display: 'none' }}
+                                id="file-input"
+                              />
+                              <label
+                                htmlFor="file-input"
+                                className="editImgBtn "
+                              >
+                                <RiImageEditFill />
+                              </label>
+                            </div>
+                          </Col>
+                                    
+                        </Row>
                       </Form.Group>
                     </div>
                     <TextField

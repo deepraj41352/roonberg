@@ -1013,3 +1013,25 @@ body {
 .css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root {
   margin-bottom: 10px !important;
 }
+
+.editImgParent {
+  position: relative;
+}
+.editImgChild {
+  position: absolute;
+  left: 44px;
+  top: 39px;
+}
+.editImgBtn {
+  border: none;
+  border-radius: 25px;
+  background-color: #052c65;
+  width: 28px;
+  height: 28px;
+  text-align: center;
+  cursor: pointer;
+}
+.editCateImgContainer {
+  height: 65px !important;
+  width: 65px !important;
+}

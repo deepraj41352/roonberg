@@ -786,7 +786,7 @@ export default function AdminProjectListScreen() {
                             <p className='text-dark m-0 '>Remove</p>
                           </div>
                         </div> */}
-                          <FormControl className="mb-3">
+                          {/* <FormControl className="mb-3">
                             <InputLabel>Select Status</InputLabel>
                             <Select
                               value={projectStatus}
@@ -797,7 +797,7 @@ export default function AdminProjectListScreen() {
                               <MenuItem value="completed">Completed </MenuItem>
                               <MenuItem value="qued">Qued </MenuItem>
                             </Select>
-                          </FormControl>
+                          </FormControl> */}
                           <LocalizationProvider dateAdapter={AdapterDateFns}>
                             <DatePicker
                               className="marginDate"
