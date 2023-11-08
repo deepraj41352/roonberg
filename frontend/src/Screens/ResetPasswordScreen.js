@@ -59,7 +59,7 @@ export default function ResetPasswordScreen() {
             <Card className="p-4 formColor">
               <Form
                 onSubmit={submitHandler}
-                className="formWidth d-flex flex-column"
+                className="resetFormWidth d-flex flex-column"
               >
                 {/* <Form.Label className="textLeft text-left">
                   Email Address
@@ -98,7 +98,7 @@ export default function ResetPasswordScreen() {
                   className="globalbtnColor px-2 py-1"
                   disabled={isSubmiting}
                 >
-                  {isSubmiting ? 'Submiting...' : 'Submit'}
+                  {isSubmiting ? 'SUBMITING' : 'SUBMIT'}
                 </Button>
               </Form>
             </Card>

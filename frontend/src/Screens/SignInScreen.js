@@ -62,7 +62,7 @@ function SignUpForm() {
       socket.on('connectionForNotify', (data) => {
         console.log('oiuhjioyhi', data);
       });
-    
+
       navigate('/dashboard');
     } catch (err) {
       toast.error(err.response?.data?.message);
@@ -79,14 +79,14 @@ function SignUpForm() {
 
   return (
     <Container className="loginPage d-flex  flex-column justify-content-center align-items-center">
-      <div className="Sign-up-container-inner px-4 py-3">
+      <div className="Sign-up-container-inner py-3">
         <Row className="mb-3 ">
-          <Col>
+          <Col className='p-0'>
             <h3>Login</h3>
           </Col>
         </Row>
         <Row>
-          <Col>
+          <Col className='p-0'>
             <Card>
               <Form onSubmit={submitHandler} className="p-4 formWidth ">
                 <Form.Group className="mb-3" controlId="formBasicEmail">

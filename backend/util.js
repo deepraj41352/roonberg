@@ -32,11 +32,17 @@ export const sendEmailNotify = async (options) => {
 };
 
 export const baseUrl = () =>
-  process.env.BASE_URL
-    ? process.env.BASE_URL
-    : process.env.NODE_ENV !== 'production'
-      ? 'http://localhost:3000'
-      : 'https://roonberg.onrender.com';
+  process.env.NODE_ENV === 'devlopment'
+    ? 'http://localhost:3000'
+    : 'https://roonberg.onrender.com';
+
+
+// export const baseUrl = () =>
+//   process.env.BASE_URL
+//     ? process.env.BASE_URL
+//     : process.env.NODE_ENV === 'devlopment'
+//       ? 'http://localhost:3000'
+//       : 'https://roonberg.onrender.com';
 
 export const generateToken = (user) => {
   return jwt.sign(

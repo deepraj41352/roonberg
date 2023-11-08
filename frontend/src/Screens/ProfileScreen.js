@@ -7,6 +7,7 @@ import axios from "axios";
 import Validations from "../Components/Validations";
 import { ColorRing } from "react-loader-spinner";
 import { TextField } from "@mui/material";
+import { RiImageEditFill } from 'react-icons/ri'
 
 function ProfileScreen() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -65,7 +66,7 @@ function ProfileScreen() {
 
   return (
     <Container className="Sign-up-container-regis d-flex w-100 profileDiv  flex-column justify-content-center align-items-center">
-      <div className="ProfileScreen-inner px-4 py-3 w-100">
+      <div className="ProfileScreen-inner px-4 py-3 w-100 d-flex justify-content-center align-items-center flex-column">
         <Row className="mb-3">
           <Col>
             <h4>User Profile</h4>
@@ -74,7 +75,7 @@ function ProfileScreen() {
         <Row>
           <Col>
             <div className="overlayLoading" >
-              <Card className={`${theme}CardBody`}>
+              <Card className={`${theme}CardBody editCartForm`}>
                 <div className="FormContainerEdit">
                   {isSubmiting && (
                     <div className="overlayLoadingItem1">
@@ -89,10 +90,10 @@ function ProfileScreen() {
                       />
                     </div>
                   )}
-                  <Form onSubmit={submitHandler} className="p-4 w-100 formWidth ">
+                  <Form onSubmit={submitHandler} className="p-4 w-100 editFormWidth ">
                     <div className="classforprofile">
                       <Form.Group className="mb-2" controlId="formBasicPassword">
-                        <div className="d-flex gap-3">
+                        {/* <div className="d-flex gap-3">
                           <div>
                             <Form.Label className="mb-1">
                               <img className="profile-icon-inner " src={userInfo.profile_picture} alt="user-image"></img>
@@ -104,11 +105,35 @@ function ProfileScreen() {
                             </Form.Label>
                             <Form.Control type="file" onChange={handleFileChange} />
                           </div>
-                        </div>
+                        </div> */}
+
+                        <Row className='editImgParent'>
+                          <Col className=''>
+                            <img className="profile-icon-inner editCateImgContainer" src={userInfo.profile_picture} alt="user-image"></img>
+
+                          </Col>
+                          <Col className='editImgChild'>
+
+                            <div className="mb-3">
+                              <input
+                                type="file"
+                                onChange={handleFileChange}
+
+                                style={{ display: 'none' }}
+                                id="file-input"
+                              />
+                              <label htmlFor="file-input" className="editImgBtn ">
+                                <RiImageEditFill />
+                              </label>
+                            </div>
+
+
+                          </Col>
+                        </Row>
                       </Form.Group>
                     </div>
                     <TextField
-                      className="mb-3"
+                      className="my-3"
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       label="First Name"

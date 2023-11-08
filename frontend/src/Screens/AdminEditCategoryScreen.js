@@ -13,9 +13,10 @@ import { Store } from '../Store';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { ColorRing, ThreeDots } from 'react-loader-spinner';
-import { Avatar, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { Avatar, FormControl, FormControlLabel, Input, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+
 import AvatarImage from '../Components/Avatar';
-import { FaUserEdit } from 'react-icons/fa'
+import { RiImageEditFill } from 'react-icons/ri'
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FATCH_REQUEST':
@@ -66,7 +67,7 @@ function AdminEditCategory() {
   const [categoryDesc, setCatogryDesc] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [color, setColor] = useState('');
-
+  const [selectedImage, setSelectedImage] = useState(null);
   const [isSubmiting, setIsSubmiting] = useState(false);
 
   useEffect(() => {
@@ -172,18 +173,30 @@ function AdminEditCategory() {
                     )}
 
                     <Form onSubmit={submitHandler} className="p-4 w-100 formWidth ">
-                      <Row>
-                        <Col>
-
+                      <Row className='editImgParent'>
+                        <Col className=''>
                           {categoryData.categoryImage !== 'null' ? (
-                            <Avatar src={categoryData.categoryImage} />
+                            <Avatar className='editCateImgContainer' src={categoryData.categoryImage} />
                           ) : (
                             <AvatarImage name={category} bgColor={color} />
                           )}
                         </Col>
-                        <Col>
-                          <FaUserEdit />
-                          <Form.Group
+                        <Col className='editImgChild'>
+
+                          <div className="mb-3">
+                            <input
+                              type="file"
+                              onChange={handleFileChange}
+                              required
+                              style={{ display: 'none' }}
+                              id="file-input"
+                            />
+                            <label htmlFor="file-input" className="editImgBtn ">
+                              <RiImageEditFill />
+                            </label>
+                          </div>
+
+                          {/* <Form.Group
                             className="mb-3"
                             controlId="formBasicPassword"
                           >
@@ -193,13 +206,13 @@ function AdminEditCategory() {
                               type="file"
                               onChange={handleFileChange}
                             />
-                          </Form.Group>
+                          </Form.Group>  */}
                         </Col>
                       </Row>
 
 
                       <TextField
-                        className="mb-3"
+                        className="my-3"
                         value={category}
                         label="Category Name"
                         fullWidth
@@ -248,9 +261,9 @@ function AdminEditCategory() {
                 </Card>
               </div>
             </Col>
-          </Row>
-        </div>
-      </Container>
+          </Row >
+        </div >
+      </Container >
     </>
   );
 }

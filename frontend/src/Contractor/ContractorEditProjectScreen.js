@@ -148,7 +148,7 @@ function ContractorEditProject() {
 
       if (response.status === 200) {
         toast.success("Project Updated Successfully !");
-        navigate("/adminContractorList")
+        navigate("/")
         setSubmit(false)
       }
     } catch (error) {

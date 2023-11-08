@@ -66,14 +66,14 @@ function RegistrationForm() {
 
   return (
     <Container className="Sign-up-container-regis d-flex  flex-column justify-content-center align-items-center">
-      <div className="Sign-up-container-inner px-4 py-3">
+      <div className="Sign-up-container-inner py-3">
         <Row className="mb-3">
-          <Col>
+          <Col className='p-0'>
             <h4>Registration</h4>
           </Col>
         </Row>
         <Row>
-          <Col>
+          <Col className='p-0'>
             <Card>
               <Form onSubmit={submitHandler} className="p-4 formWidth ">
                 <Form.Group className="mb-3" controlId="formBasicEmail">

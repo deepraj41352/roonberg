@@ -112,7 +112,7 @@ function AdminEditContractor() {
   return (
     <>
       <Container className="Sign-up-container-regis d-flex w-100 profileDiv  flex-column justify-content-center align-items-center">
-        <div className="ProfileScreen-inner px-4 py-3 w-100">
+        <div className="ProfileScreen-inner px-4 py-3 w-100 d-flex justify-content-center align-items-center flex-column">
           <Row className="mb-3">
             <Col>
               <h4>Update Contractor</h4>
@@ -139,7 +139,7 @@ function AdminEditContractor() {
                         </div>
                       )}
 
-                      <Form onSubmit={submitHandler} className="p-4 w-100 formWidth" >
+                      <Form onSubmit={submitHandler} className="p-4 w-100 editFormWidth" >
                         <TextField
                           className="mb-3"
                           value={firstName}
