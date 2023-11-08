@@ -8,7 +8,8 @@ import Category from "../Models/categoryModel.js";
 import CustomEmail from "../Models/customEmailModul.js";
 import { storeNotification } from "../server.js";
 import { Socket, io } from "socket.io-client";
-const socket = io('ws://localhost:8900');
+const SocketUrl = process.env.SOCKETURL || 'ws://localhost:8900';
+const socket = io(SocketUrl);
 
 // const io = require('../socket/index.js');
 // import io from '../../socket/index.js'
@@ -64,24 +65,24 @@ projectRouter.post(
   expressAsyncHandler(async (req, res) => {
     try {
       const categoryIds = req.body.projectCategory;
-      const getCategoryNames = async (categoryIds) => {
-        const categoryNames = [];
-        for (const categoryId of categoryIds) {
-          const category = await Category.findById(categoryId);
-          if (category) {
-            categoryNames.push(category.categoryName);
-          }
-        }
-        return categoryNames;
-      };
+      // const getCategoryNames = async (categoryIds) => {
+      //   const categoryNames = [];
+      //   for (const categoryId of categoryIds) {
+      //     const category = await Category.findById(categoryId);
+      //     if (category) {
+      //       categoryNames.push(category.categoryName);
+      //     }
+      //   }
+      //   return categoryNames;
+      // };
 
-      const categoryNames = await getCategoryNames(categoryIds);
+      // const categoryNames = await getCategoryNames(categoryIds);
       const projectCategorys = [];
 
       for (let i = 0; i < categoryIds.length; i++) {
         projectCategorys.push({
           categoryId: categoryIds[i],
-          categoryName: categoryNames[i],
+          // categoryName: categoryNames[i],
         });
       }
 
@@ -128,7 +129,7 @@ projectRouter.post(
       }
       res
         .status(201)
-        .json({ message: "Project Created", project, categoryNames });
+        .json({ message: "Project Created", project });
 
     } catch (error) {
       console.log(error);
@@ -160,7 +161,18 @@ projectRouter.put(
   expressAsyncHandler(async (req, res) => {
     try {
       const project = await Project.findById(req.params.id);
-      const dataprojectupdate = await project.updateOne({ $set: req.body });
+      const { projectName, projectDescription, assignedAgent, createdDate, endDate, projectStatus, projectOwner } = req.body;
+      const updatedData = {
+        projectName: projectName,
+        projectDescription: projectDescription,
+        // projectCategory: projectCategorys,
+        assignedAgent,
+        createdDate,
+        endDate,
+        projectStatus,
+        projectOwner,
+      };
+      const dataprojectupdate = await project.updateOne({ $set: updatedData });
       console.log("dataprojectupdate", dataprojectupdate);
         const notifyUser = project.projectOwner;
         const message = `Your Project has been updated `;
@@ -179,6 +191,7 @@ projectRouter.put(
     }
   })
 );
+
 
 // get single project by userid
 projectRouter.get(
@@ -239,34 +252,34 @@ projectRouter.get(
 
 // *************** Admin Api's *********************
 
-projectRouter.put(
-  "/remove-agentCategoryPair/:id",
-  isAuth,
-  isAdminOrSelf,
-  expressAsyncHandler(async (req, res) => {
-    try {
-      const projectId = req.params.id;
-      const agentIndexToRemove = req.body.agentIndex;
-      const updatedProject = await Project.findById(projectId);
-      if (!updatedProject) {
-        return res.status(404).json({ error: "Project not found" });
-      }
-      const removedAgent = updatedProject.assignedAgent[agentIndexToRemove];
-      const agentIdString = `${removedAgent.agentId.toString()}`;
-      const projectOwnerIdString = `${updatedProject.projectOwner.toString()}`;
-      const membersArray = [agentIdString, projectOwnerIdString];
-      await Conversation.deleteMany({
-        members: membersArray,
-        projectId: projectId,
-      });
-      updatedProject.assignedAgent.splice(agentIndexToRemove, 1);
-      await updatedProject.save();
-      res.status(200).json({ updatedProject });
-    } catch (error) {
-      res.status(500).json({ error: "Error removing agent" });
-    }
-  })
-);
+// projectRouter.put(
+//   "/remove-agentCategoryPair/:id",
+//   isAuth,
+//   isAdminOrSelf,
+//   expressAsyncHandler(async (req, res) => {
+//     try {
+//       const projectId = req.params.id;
+//       const agentIndexToRemove = req.body.agentIndex;
+//       const updatedProject = await Project.findById(projectId);
+//       if (!updatedProject) {
+//         return res.status(404).json({ error: "Project not found" });
+//       }
+//       const removedAgent = updatedProject.assignedAgent[agentIndexToRemove];
+//       const agentIdString = `${removedAgent.agentId.toString()}`;
+//       const projectOwnerIdString = `${updatedProject.projectOwner.toString()}`;
+//       const membersArray = [agentIdString, projectOwnerIdString];
+//       await Conversation.deleteMany({
+//         members: membersArray,
+//         projectId: projectId,
+//       });
+//       updatedProject.assignedAgent.splice(agentIndexToRemove, 1);
+//       await updatedProject.save();
+//       res.status(200).json({ updatedProject });
+//     } catch (error) {
+//       res.status(500).json({ error: "Error removing agent" });
+//     }
+//   })
+// );
 
 // admin add project
 projectRouter.post(
@@ -275,6 +288,9 @@ projectRouter.post(
   isAdminOrSelf,
   expressAsyncHandler(async (req, res) => {
     try {
+      function capitalizeFirstLetter(data) {
+        return data.charAt(0).toUpperCase() + data.slice(1);
+      }
       const userRole = req.user.role;
       const contractorId = req.body.projectOwner;
       const assignedAgent = req.body.assignedAgent;
@@ -286,12 +302,12 @@ projectRouter.post(
 
       if (userRole === "admin" || userRole === "superadmin") {
         const newProject = new Project({
-          projectName: req.body.projectName,
-          projectDescription: req.body.projectDescription,
+          projectName: capitalizeFirstLetter(req.body.projectName),
+          projectDescription: capitalizeFirstLetter(req.body.projectDescription),
           projectCategory: req.body.projectCategory,
           createdDate: req.body.createdDate,
           endDate: req.body.endDate,
-          projectStatus: req.body.projectStatus,
+          projectStatus: capitalizeFirstLetter(req.body.projectStatus),
           projectOwner: contractorId,
           assignedAgent: assignedAgent,
         });
@@ -340,6 +356,7 @@ projectRouter.post(
           const emailSendCheck = await sendEmailNotify(options);
           if (emailSendCheck) {
             for (const userId of toUserIds) {
+              if(userId !== undefined){
               const notifyUser = userId;
               const message = `New Project Assigned  Project Name - ${options.projectName},Description - ${options.projectDescription}`;
               const status = "unseen";
@@ -347,7 +364,7 @@ projectRouter.post(
 
               storeNotification(message, notifyUser, status, type);
               socket.emit("notifyProjectBackend", notifyUser, message);
-
+            }
               // console.log("resultNotify", resultNotify);
             }
           } else {
@@ -376,7 +393,7 @@ projectRouter.post(
             await newCustomEmail.save();
           }
         }
-        res.status(201).json({ message: "Project Created", project });
+        res.status(200).json({ message: "Project Created", project });
       } else {
         res.status(403).json({ message: "Access denied" });
       }
@@ -482,12 +499,12 @@ projectRouter.post(
 
       const newAssignedAgent = updatedAssignedAgent.filter((updatedAgent) => {
         return !previousAssignedAgent.some((previousAgent) =>
-          previousAgent.agentId.equals(updatedAgent.agentId)
+          previousAgent?.agentId?.equals(updatedAgent.agentId)
         );
       });
 
       const filterAgentIds = newAssignedAgent.map((agent) =>
-        agent.agentId.toString()
+        agent?.agentId?.toString()
       );
       const agentEmails = await User.find(
         { _id: { $in: filterAgentIds } },
@@ -509,20 +526,27 @@ projectRouter.post(
 
       if (emailSendCheck) {
         for (const userId of toUserIds) {
+
+          if(userId !== undefined){
           const notifyUser = userId;
-          const message = `New Project Assign  Project Name - ${options.projectName},Description - ${options.projectDescription}`;
+          const message = `${options.subject}Project Name - ${options.projectName},Description - ${options.projectDescription}`;
           const status = "unseen";
           const type = "project";
 
           storeNotification(message, notifyUser, status, type);
           socket.emit("notifyProjectBackend", notifyUser, message);
-          console.log("resultNotify", resultNotify);
+        }
+
+          // const resultNotify = await storeNotification.save();
+
+          // console.log("resultNotify", resultNotify);
         }
       } else {
         console.log("email not send");
       }
 
       for (const agentId of agentIds) {
+
         const existingConversation = await Conversation.findOne({
           members: [agentId, contractorId],
           projectId: projectId,
@@ -548,6 +572,154 @@ projectRouter.post(
 );
 
 // Admin Assign and Update Project
+// projectRouter.put(
+//   "/assign-update/:id",
+//   isAuth,
+//   isAdminOrSelf,
+//   expressAsyncHandler(async (req, res) => {
+//     try {
+//       if (req.user.role !== "admin" && req.user.role !== "superadmin") {
+//         return res.status(403).json({ error: "Access denied" });
+//       }
+//       const projectId = req.params.id;
+//       const previousProject = await Project.findById(projectId);
+//       const previousAssignedAgent = previousProject.assignedAgent;
+//       const contractorId = req.body.projectOwner;
+//       const assignedAgent = req.body.assignedAgent;
+//       const agentIds = assignedAgent
+//         .filter((agent) => agent.agentId)
+//         .map((agent) => agent.agentId);
+
+//       const user = await User.findById(contractorId, "first_name email");
+//       const contractorOnly = !agentIds.length;
+//       const updateFields = {
+//         assignedAgent,
+//         projectName: req.body.projectName,
+//         projectDescription: req.body.projectDescription,
+//         createdDate: req.body.createdDate,
+//         endDate: req.body.endDate,
+//         projectStatus: req.body.projectStatus,
+//         projectOwner: contractorId,
+//       };
+//       const agentIdss = [];
+
+//       updateFields.assignedAgent.forEach(agent => {
+//         if (agent.agentId && agent.categoryId) {
+//           agentIdss.push(agent.agentId, agent.categoryId);
+//         }
+//       });
+
+//       console.log(agentIdss);
+//       // const updatedProject = await Project.findByIdAndUpdate(
+//       //   projectId,
+//       //   { $set: updateFields },
+//       //   { new: true }
+//       // );
+
+//       // if (contractorOnly) {
+//       //   const options = {
+//       //     to: user.email,
+//       //     subject: "New Project Assigned ✔",
+//       //     template: "ASSIGN-PROJECT",
+//       //     projectName: updatedProject.projectName,
+//       //     projectDescription: updatedProject.projectDescription,
+//       //     user,
+//       //   };
+//       //   const emailSendCheck = await sendEmailNotify(options);
+//       //   if (emailSendCheck) {
+//       //     const notifyUser = contractorId;
+//       //     const message = `${options.subject}Project Name - ${options.projectName},Description - ${options.projectDescription}`;
+//       //     const status = "unseen";
+//       //     const type = "project";
+//       //     storeNotification(message, notifyUser, status, type);
+//       //     // io.emit("emailSent", { userId: notifyUser });
+//       //   }
+//       // }
+//       // else {
+//       //   const updatedAssignedAgent = updatedProject.assignedAgent;
+//       //   const newAssignedAgent = updatedAssignedAgent.filter((updatedAgent) => {
+//       //     return !previousAssignedAgent.some((previousAgent) =>
+//       //       previousAgent?.agentId?.equals(updatedAgent.agentId)
+//       //     );
+//       //   });
+
+//       //   const filterAgentIds = newAssignedAgent.map((agent) =>
+//       //     agent?.agentId?.toString()
+//       //   );
+//       //   const agentEmails = await User.find(
+//       //     { _id: { $in: filterAgentIds } },
+//       //     "email"
+//       //   );
+
+//       //   const agentEmailList = agentEmails.map((agent) => agent.email);
+
+//       //   const toUserIds = [...filterAgentIds, contractorId];
+
+//       //   const options = {
+//       //     to: [...agentEmailList, user.email],
+//       //     subject: "New Project Assigned ✔",
+//       //     template: "ASSIGN-PROJECT",
+//       //     projectName: updatedProject.projectName,
+//       //     projectDescription: updatedProject.projectDescription,
+//       //     user,
+//       //   };
+//       //   const emailSendCheck = await sendEmailNotify(options);
+
+//       //   if (emailSendCheck) {
+//       //     for (const userId of toUserIds) {
+//       //       console.log("userId", userId)
+//       //       const notifyUser = userId;
+//       //       const message = `${options.subject}Project Name - ${options.projectName},Description - ${options.projectDescription}`;
+//       //       const status = "unseen";
+//       //       const type = "project";
+//       //       storeNotification(message, notifyUser, status, type);
+
+//       //     }
+//       //   }
+
+//       //   for (const agentId of agentIds) {
+//       //     const existingConversation = await Conversation.findOne({
+//       //       members: [agentId, contractorId],
+//       //       projectId: projectId,
+//       //     });
+//       //     console.log("existingConversation", existingConversation)
+//       //     if (!existingConversation) {
+//       //       const newConversation = new Conversation({
+//       //         members: [agentId, contractorId],
+//       //         projectId: projectId,
+//       //       });
+//       //       const con = await newConversation.save();
+
+//       //     } else {
+
+//       //     }
+//       //   }
+//       //   for (const agentId of agentIds) {
+//       //     const agentEmail = await User.findById(agentId, "email");
+//       //     const newCustomEmail = new CustomEmail({
+//       //       projectId: projectId,
+//       //       contractorEmail: user.email,
+//       //       contractorCustomEmail: `${contractorId}${projectId}${new Date()
+//       //         .toISOString()
+//       //         .replace(/[^0-9]/g, "")}`,
+//       //       agentEmail: agentEmail.email,
+//       //       agentCustomEmail: `${agentId}${projectId}${new Date()
+//       //         .toISOString()
+//       //         .replace(/[^0-9]/g, "")}`,
+//       //     });
+//       //     await newCustomEmail.save();
+
+//       //   }
+//       // }
+//       // res.status(200).json({ updatedProject, agent: user });
+//     } catch (error) {
+//       console.error("Error assigning the project:", error);
+//       res.status(500).json({ error: "Error assigning the project" });
+//     }
+//   })
+// );
+
+
 projectRouter.put(
   "/assign-update/:id",
   isAuth,
@@ -568,15 +740,19 @@ projectRouter.put(
 
       const user = await User.findById(contractorId, "first_name email");
       const contractorOnly = !agentIds.length;
+      function capitalizeFirstLetter(data) {
+        return data.charAt(0).toUpperCase() + data.slice(1);
+      }
       const updateFields = {
         assignedAgent,
-        projectName: req.body.projectName,
-        projectDescription: req.body.projectDescription,
+        projectName: capitalizeFirstLetter(req.body.projectName),
+        projectDescription: capitalizeFirstLetter(req.body.projectDescription),
         createdDate: req.body.createdDate,
         endDate: req.body.endDate,
         projectStatus: req.body.projectStatus,
         projectOwner: contractorId,
       };
+
       const updatedProject = await Project.findByIdAndUpdate(
         projectId,
         { $set: updateFields },
@@ -601,23 +777,25 @@ projectRouter.put(
           storeNotification(message, notifyUser, status, type);
           socket.emit("notifyProjectBackend", notifyUser, message);
         }
-      } else {
+      }
+      else {
         const updatedAssignedAgent = updatedProject.assignedAgent;
-
         const newAssignedAgent = updatedAssignedAgent.filter((updatedAgent) => {
           return !previousAssignedAgent.some((previousAgent) =>
-            previousAgent.agentId.equals(updatedAgent.agentId)
+            previousAgent?.agentId?.equals(updatedAgent.agentId)
           );
         });
 
         const filterAgentIds = newAssignedAgent.map((agent) =>
-          agent.agentId.toString()
+          agent?.agentId?.toString()
         );
         const agentEmails = await User.find(
           { _id: { $in: filterAgentIds } },
           "email"
         );
+
         const agentEmailList = agentEmails.map((agent) => agent.email);
+
         const toUserIds = [...filterAgentIds, contractorId];
 
         const options = {
@@ -629,9 +807,9 @@ projectRouter.put(
           user,
         };
         const emailSendCheck = await sendEmailNotify(options);
-
         if (emailSendCheck) {
           for (const userId of toUserIds) {
+            if(userId !== undefined){
             const notifyUser = userId;
             const message = `New Project Assigned Project Name - ${options.projectName},Description - ${options.projectDescription}`;
             const status = "unseen";
@@ -639,11 +817,10 @@ projectRouter.put(
 
             storeNotification(message, notifyUser, status, type);
             socket.emit("notifyProjectBackend", notifyUser, message);
+
           }
-        } else {
-
+          }
         }
-
         for (const agentId of agentIds) {
           const existingConversation = await Conversation.findOne({
             members: [agentId, contractorId],
@@ -656,9 +833,9 @@ projectRouter.put(
               projectId: projectId,
             });
             const con = await newConversation.save();
-            console.log("conversation", newConversation);
+
           } else {
-            console.log("Conversation already exists:", existingConversation);
+
           }
         }
         for (const agentId of agentIds) {

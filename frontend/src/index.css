@@ -33,6 +33,41 @@ code {
 }
 
 /* Gaytri css start  */
+.assignCon {
+  height: 100%;
+
+  max-height: 200px;
+  overflow-y: auto;
+}
+.cateEdit,
+.agentEdit {
+  width: 100%;
+  min-width: 100px;
+}
+
+.active-cell {
+  background-color: RGB(37, 211, 102);
+  padding: 3px 8px;
+  border-radius: 5px;
+  width: 100%;
+}
+
+.inactive-cell {
+  background-color: rgb(238, 107, 107);
+  /* background-color: #686767; */
+  padding: 3px 8px;
+  border-radius: 5px;
+  width: 100%;
+}
+.inactive-row {
+  background-color: rgb(
+    190,
+    182,
+    182
+  ) !important; /* Red background for Inactive rows */
+  color: #ffffff; /* White text color for better contrast */
+}
+
 .cateAgentcontainerHide {
   display: none !important;
 }
@@ -70,7 +105,7 @@ code {
   display: flex;
   position: absolute;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgb(127 122 122 / 50%);
   z-index: 1000;
 }
 
@@ -331,6 +366,7 @@ button {
 .nav-tabs .nav-link {
   min-width: 100px;
   border-radius: 0px !important;
+  color: white;
 }
 
 body {
@@ -584,7 +620,7 @@ body {
 }
 /* ---------Priyanshu-End------------- */
 .css-1jy569b-MuiFormLabel-root-MuiInputLabel-root {
-  /* background-color: #fff !important; */
+  background-color: #fff !important;
   padding: 3px;
 }
 .darkCardBody {

@@ -61,6 +61,8 @@ function ChatWindowScreen() {
   const [mediaType, setMediaType] = useState("image");
   const audioChunks = useRef([]);
   const audioRef = useRef();
+  const SocketUrl = process.env.REACT_APP_SOCKETURL ;
+  // const socket = io(SocketUrl); // Replace with your server URL
 
   useEffect(() => {
     if (selectedfile && selectedfile.type) {
@@ -75,11 +77,11 @@ function ChatWindowScreen() {
     }
   }, [selectedfile]);
 
-  const socket = useRef(io("ws://localhost:8900"));
+  const socket = useRef(io(SocketUrl));
   const scrollRef = useRef();
 
   useEffect(() => {
-    socket.current = io("ws://localhost:8900");
+    socket.current = io(SocketUrl);
     socket.current.on("audio", (data) => {
       const audioBlob = new Blob([data.audio], { type: "audio/wav" });
       const audioUrl = URL.createObjectURL(audioBlob);
@@ -688,7 +690,7 @@ function ChatWindowScreen() {
                                 src={
                                   item.conversationId
                                     ? item.image
-                                    : `http://localhost:4500/${item.image}`
+                                    : `${SocketUrl}/${item.image}`
                                 }
                                 className="chat-receiverMsg-inner w-100 p-2"
                               />
@@ -774,12 +776,13 @@ function ChatWindowScreen() {
                                 <source src={item.video} type="video/mp4" />
                               </video>
                             ) : (
-                              <>                              <img
+                              <>   
+                                                         <img
                               onClick={handleforsetImage}
                                 src={
                                   item.conversationId
                                     ? item.image
-                                    : `http://localhost:4500/${item.image}`
+                                    : `${SocketUrl}/${item.image}`
                                 }
                                 className="chat-senderMsg-inner w-100 p-2"
                               />

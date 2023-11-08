@@ -39,43 +39,32 @@ const currentNotifications = reversedNotifications.slice(indexOfFirstItem, index
       setCurrentPage(pageNumber);
     }
   };
-
-  const socket = io('ws://localhost:8900');
+  const SocketUrl = process.env.REACT_APP_SOCKETURL ;
+  const socket = io(SocketUrl);
   socket.on('connectionForNotify', (data) => {
-    console.log('oiuhjioyhi', data);
   });
 
-  useEffect(() => {
-    const handleNotification = (notifyUser, message) => {
-      if (notifyUser == userInfo._id) {
-        console.log('notifyProjectFrontend', notifyUser, message);
-        ctxDispatch({ type: 'NOTIFICATION', payload: { notifyUser, message } });
-        setNotificationMessage((prevNotifications) => [
-          ...prevNotifications,
-          { notifyUser, message },
-        ]);
-      }
-    };
+  // useEffect(() => {
+  //   const handleNotification = (notifyUser, message) => {
+  //     if (notifyUser == userInfo._id) {
+  //       console.log('notifyProjectFrontend', notifyUser, message);
+  //       ctxDispatch({ type: 'NOTIFICATION', payload: { notifyUser, message } });
+  //       setNotificationMessage((prevNotifications) => [
+  //         ...prevNotifications,
+  //         { notifyUser, message },
+  //       ]);
+  //     }
+  //   };
+  //   socket.on('notifyUserFrontend', handleNotification);
+  //   socket.on('notifyProjectFrontend', handleNotification);
+  //   // Consolidate both event listeners
 
-    socket.on('notifyProjectFrontend', handleNotification);
-
-    return () => {
-      socket.off('notifyProjectFrontend', handleNotification);
-    };
-  }, [userInfo._id, ctxDispatch]);
-
-  useEffect(() => {
-    socket.on('notifyUserFrontend', (notifyUser, message) => {
-      if (notifyUser === userInfo._id) {
-        console.log('notifyProjectFrontend', notifyUser, message);
-        ctxDispatch({ type: 'NOTIFICATION', payload: { notifyUser, message } });
-        setNotificationMessage((prevNotifications) => [
-          ...prevNotifications,
-          { notifyUser, message },
-        ]);
-      }
-    });
-  }, []);
+  //   return () => {
+  //     socket.off('notifyUserFrontend', handleNotification); // Remove the listeners
+  //     socket.off('notifyProjectFrontend', handleNotification);
+     
+  //   };
+  // }, []);
 
   // useEffect(() => {
   //   ctxDispatch({ type: 'NOTIFICATION-NULL' });
@@ -117,9 +106,7 @@ NotifyData.map((item)=>{
         }
       );
 setNotificationMark(data)
-      // if (data.status === 200) {
-      //   toast.success("Notification marked as read!");
-      // }
+     
     } catch (err) {
       console.log(err);
     }

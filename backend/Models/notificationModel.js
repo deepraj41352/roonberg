@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const NotificationSchema = new mongoose.Schema(
   {
-    type:{type:String},
+    type: { type: String },
     userId: { type: String },
     status: { type: String },
     message: { type: String },

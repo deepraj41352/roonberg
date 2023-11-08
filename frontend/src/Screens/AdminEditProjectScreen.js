@@ -227,16 +227,6 @@ function AdminEditProject() {
       [key]: value,
     };
 
-    const agentName = agentData.find((agentItem) => agentItem._id === value);
-    if (agentName) {
-      updatedAgents[index].agentName = agentName.first_name;
-    }
-
-
-    const categoryName = categoryData.find((categoryItem) => categoryItem._id === value);
-    if (categoryName) {
-      updatedAgents[index].categoryName = categoryName.categoryName;
-    }
     if (key === 'categoryId' && value !== '') {
 
       const selectedCategory = categoryData.find((categoryItem) => categoryItem._id === value);
@@ -245,7 +235,6 @@ function AdminEditProject() {
 
         const categoryObject = {
           categoryId: selectedCategory._id,
-          categoryName: selectedCategory.categoryName,
 
         };
         setCategories((prevCategories) => {
@@ -385,11 +374,11 @@ function AdminEditProject() {
 
             <div className="d-flex w-100 my-3 gap-4 justify-content-center align-item-center projectScreenCard-outer ">
 
-              <Card className={`projectScreenCard ${theme}CardBody`}>
+              <Card className={`projectScreenCard ${theme}CardBody `}>
                 <Card.Header className={`${theme}CardHeader`}>
                   Project Details
                 </Card.Header>
-                <div className='FormContainerEdit'>
+                <div className='FormContainerEdit pt-4'>
                   <Card.Body className="text-start">
 
                     <Form className="px-3" onSubmit={handleSubmit}>
@@ -578,16 +567,16 @@ function AdminEditProject() {
                     })}
                   </Card.Body>
                 </Card>
-                <Card className={`projectScreenCard2 ${theme}CardBody`}>
+                <Card className={`projectScreenCard2 ${theme}CardBody `}>
                   <Card.Header className={`${theme}CardHeader`}>Assigned</Card.Header>
-                  <Card.Body className="d-flex justify-content-center flex-wrap gap-3 FormContainerEdit">
+                  <Card.Body className="d-flex justify-content-center flex-wrap gap-3 FormContainerEdit assignCon">
                     <div className="FormContainerEdit">
                       <Form className='scrollInAdminproject' >
                         {agents.map((agentCatData, index) => (
-                          <div className='moreFieldsDiv d-flex align-items-center gap-2' key={index}>
+                          <div className='moreFieldsDiv d-flex align-items-center gap-2 pt-3' key={index}>
                             <FormControl className="mb-3">
                               <InputLabel>Category</InputLabel>
-                              <Select
+                              <Select className='cateEdit'
                                 value={agentCatData.categoryId}
                                 onChange={(e) => selectedCateAgent(index, 'categoryId', e.target.value)}
                               >
@@ -605,7 +594,7 @@ function AdminEditProject() {
                             </FormControl>
                             <FormControl className="mb-3">
                               <InputLabel>Agent</InputLabel>
-                              <Select
+                              <Select className='agentEdit ml-2'
                                 value={agentCatData.agentId}
                                 onChange={(e) => selectedCateAgent(index, 'agentId', e.target.value)}
                               >
@@ -626,6 +615,7 @@ function AdminEditProject() {
                             </div>
                           </div>
                         ))}
+                        <IoMdAddCircleOutline onClick={addDynamicFields} className='text-success text-bold fs-5 pointCursor' />
                       </Form>
                     </div>
                     {/* -------- */}

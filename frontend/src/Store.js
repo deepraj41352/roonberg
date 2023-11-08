@@ -32,10 +32,14 @@ const reducer = (state, action) => {
         toggleState: action.payload,
       };
       case 'NOTIFICATION':
-        return {
-          ...state,
-          NotificationData: [...state.NotificationData, action.payload],
-        };
+       
+          return {
+            ...state,
+            NotificationData: [...state.NotificationData, action.payload],
+          };
+     
+
+     
         case 'NOTIFICATION-NULL':
           return {
             ...state,

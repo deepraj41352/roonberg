@@ -19,7 +19,8 @@ import { storeNotification } from "../server.js";
 
 
 import { Socket, io } from "socket.io-client";
-const socket = io('ws://localhost:8900');
+const SocketUrl = process.env.SOCKETURL || 'ws://localhost:8900';
+const socket = io(SocketUrl);
 
 socket.emit("connectionForNotify", () => {
   console.log("connectionForNotif user connnercted");
@@ -67,11 +68,26 @@ userRouter.put(
   isAdminOrSelf,
   expressAsyncHandler(async (req, res) => {
     try {
+
       const user = await User.findById(req.params.id);
       console.log('user', user);
       if (user._id == req.params.id) {
-        const data = await user.updateOne({ $set: req.body });
-        console.log('updateddata', data);
+        function capitalizeFirstLetter(data) {
+          return data.charAt(0).toUpperCase() + data.slice(1);
+        }
+
+        const { first_name, last_name, email, agentCategory, userStatus } =
+          req.body;
+        const updatedData = {
+          first_name: capitalizeFirstLetter(first_name),
+          last_name: capitalizeFirstLetter(last_name),
+          email,
+          userStatus,
+          agentCategory
+        }
+        await user.updateOne({ $set: updatedData });
+
+
         res.status(200).json('update successfully');
       } else {
         res.status(403).json('you can not update');
@@ -415,15 +431,19 @@ userRouter.post(
     try {
       const { first_name, last_name, email, role } = req.body;
       const existingUser = await User.findOne({ email: email });
+
       if (existingUser) {
         return res
           .status(400)
           .send({ message: 'Email is already registered.' });
       }
       const hashedPassword = await bcrypt.hash(req.body.password, 8);
+      function capitalizeFirstLetter(data) {
+        return data.charAt(0).toUpperCase() + data.slice(1);
+      }
       const newUser = new User({
-        first_name,
-        last_name,
+        first_name: capitalizeFirstLetter(first_name),
+        last_name: capitalizeFirstLetter(last_name),
         email,
         password: hashedPassword,
         role,
@@ -467,9 +487,24 @@ userRouter.put(
         if (req.body.password) {
           req.body.password = bcrypt.hashSync(req.body.password, 8);
         }
+        function capitalizeFirstLetter(data) {
+          return data.charAt(0).toUpperCase() + data.slice(1);
+        }
+        capitalizeFirstLetter(req.body.first_name);
+        capitalizeFirstLetter(req.body.last_name);
+
+        const { first_name, last_name, email, role, profile_picture, userStatus } = req.body;
+        const updatedData = {
+          first_name: capitalizeFirstLetter(first_name),
+          last_name: capitalizeFirstLetter(last_name),
+          email,
+          role,
+          profile_picture,
+          userStatus
+        }
         const updatedUser = await User.findOneAndUpdate(
           { _id: req.user._id },
-          { $set: req.body },
+          { $set: updatedData },
           { new: true }
         );
 
@@ -483,8 +518,9 @@ userRouter.put(
         const message = `Your profile is updated`;
         const status = "unseen";
         const type = "User";
-        storeNotification(message, notifyUser, status, type);
-        socket.emit("notifyUserBackend", notifyUser, message);
+        const notify = await storeNotification(message, notifyUser, status, type);
+        const notificationId =  notify._id;
+        socket.emit("notifyUserBackend", notifyUser, message,notificationId);
       } else {
         res.status(404).send({ message: 'User not found' });
       }
@@ -535,8 +571,12 @@ userRouter.post(
   isAdminOrSelf,
   expressAsyncHandler(async (req, res) => {
     try {
+      function capitalizeFirstLetter(data) {
+        return data.charAt(0).toUpperCase() + data.slice(1);
+      }
       const { first_name, last_name, email, role, agentCategory, userStatus } =
         req.body;
+
       const existingUser = await User.findOne({ email: email });
       if (existingUser) {
         return res
@@ -550,11 +590,11 @@ userRouter.post(
       }
       const hashedPassword = await bcrypt.hash('RoonBerg@123', 8);
       const data = {
-        first_name,
-        last_name,
+        first_name: capitalizeFirstLetter(first_name),
+        last_name: capitalizeFirstLetter(last_name),
         email,
         password: hashedPassword,
-        role,
+        role: capitalizeFirstLetter(role),
         agentCategory,
         userStatus,
         // Only assign the category field if the role is "agent"
