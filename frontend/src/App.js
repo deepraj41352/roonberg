@@ -58,6 +58,7 @@ import SuperadminEditAdmin from './Screens/SuperadminEditAdmin';
 import NotificationScreen from './Screens/NotificationScreen';
 import AdminListScreen from './Screens/AdminListScreen';
 import SuperadminAdminList from './Screens/SuperadminAdminList';
+import MyComponent from './Components/MyComponent';
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -361,6 +362,9 @@ function App() {
                 <div className="mainfordata">
                   <Routes>
                     <Route path="/" element={<SignUpForm />} />
+                    <Route path="/test" element={<MyComponent />} />
+
+
                     <Route
                       path="/registration"
                       element={<RegistrationForm />}
@@ -399,6 +403,7 @@ function App() {
                         </ProtectedRoute>
                       }
                     />
+
                     <Route
                       path="/adminAgentList/"
                       element={

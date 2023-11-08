@@ -359,14 +359,15 @@ projectRouter.post(
           const emailSendCheck = await sendEmailNotify(options);
           if (emailSendCheck) {
             for (const userId of toUserIds) {
-              const notifyUser = userId;
-              const message = `New Project Assigned  Project Name - ${options.projectName},Description - ${options.projectDescription}`;
-              const status = 'unseen';
-              const type = 'project';
+              if (userId !== undefined) {
+                const notifyUser = userId;
+                const message = `New Project Assigned  Project Name - ${options.projectName},Description - ${options.projectDescription}`;
+                const status = 'unseen';
+                const type = 'project';
 
-              storeNotification(message, notifyUser, status, type);
-              socket.emit('notifyProjectBackend', notifyUser, message);
-
+                storeNotification(message, notifyUser, status, type);
+                socket.emit('notifyProjectBackend', notifyUser, message);
+              }
               // console.log("resultNotify", resultNotify);
             }
           } else {
@@ -529,7 +530,7 @@ projectRouter.post(
 
       if (emailSendCheck) {
         for (const userId of toUserIds) {
-          if (userId != undefined) {
+          if (userId !== undefined) {
             const notifyUser = userId;
             const message = `${options.subject}Project Name - ${options.projectName},Description - ${options.projectDescription}`;
             const status = 'unseen';
@@ -537,8 +538,11 @@ projectRouter.post(
 
             storeNotification(message, notifyUser, status, type);
             socket.emit('notifyProjectBackend', notifyUser, message);
-            console.log('resultNotify', resultNotify);
           }
+
+          // const resultNotify = await storeNotification.save();
+
+          // console.log("resultNotify", resultNotify);
         }
       } else {
         console.log('email not send');
@@ -805,48 +809,49 @@ projectRouter.put(
         const emailSendCheck = await sendEmailNotify(options);
         if (emailSendCheck) {
           for (const userId of toUserIds) {
-            if (userId != undefined) {
+            if (userId !== undefined) {
               const notifyUser = userId;
-              const message = `${options.subject}Project Name - ${options.projectName},Description - ${options.projectDescription}`;
+              const message = `New Project Assigned Project Name - ${options.projectName},Description - ${options.projectDescription}`;
               const status = 'unseen';
               const type = 'project';
+
               storeNotification(message, notifyUser, status, type);
               socket.emit('notifyProjectBackend', notifyUser, message);
             }
           }
-          for (const agentId of agentIds) {
-            const existingConversation = await Conversation.findOne({
+        }
+        for (const agentId of agentIds) {
+          const existingConversation = await Conversation.findOne({
+            members: [agentId, contractorId],
+            projectId: projectId,
+          });
+          console.log('existingConversation', existingConversation);
+          if (!existingConversation) {
+            const newConversation = new Conversation({
               members: [agentId, contractorId],
               projectId: projectId,
             });
-            console.log('existingConversation', existingConversation);
-            if (!existingConversation) {
-              const newConversation = new Conversation({
-                members: [agentId, contractorId],
-                projectId: projectId,
-              });
-              const con = await newConversation.save();
-            } else {
-            }
-          }
-          for (const agentId of agentIds) {
-            const agentEmail = await User.findById(agentId, 'email');
-            const newCustomEmail = new CustomEmail({
-              projectId: projectId,
-              contractorEmail: user.email,
-              contractorCustomEmail: `${contractorId}${projectId}${new Date()
-                .toISOString()
-                .replace(/[^0-9]/g, '')}`,
-              agentEmail: agentEmail.email,
-              agentCustomEmail: `${agentId}${projectId}${new Date()
-                .toISOString()
-                .replace(/[^0-9]/g, '')}`,
-            });
-            await newCustomEmail.save();
+            const con = await newConversation.save();
+          } else {
           }
         }
-        res.status(200).json({ updatedProject, agent: user });
+        for (const agentId of agentIds) {
+          const agentEmail = await User.findById(agentId, 'email');
+          const newCustomEmail = new CustomEmail({
+            projectId: projectId,
+            contractorEmail: user.email,
+            contractorCustomEmail: `${contractorId}${projectId}${new Date()
+              .toISOString()
+              .replace(/[^0-9]/g, '')}`,
+            agentEmail: agentEmail.email,
+            agentCustomEmail: `${agentId}${projectId}${new Date()
+              .toISOString()
+              .replace(/[^0-9]/g, '')}`,
+          });
+          await newCustomEmail.save();
+        }
       }
+      res.status(200).json({ updatedProject, agent: user });
     } catch (error) {
       console.error('Error assigning the project:', error);
       res.status(500).json({ error: 'Error assigning the project' });

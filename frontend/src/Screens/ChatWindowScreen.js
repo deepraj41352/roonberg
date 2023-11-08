@@ -60,7 +60,8 @@ function ChatWindowScreen() {
   const [mediaType, setMediaType] = useState('image');
   const audioChunks = useRef([]);
   const audioRef = useRef();
-  const SocketUrl = process.env.SOCKETURL;
+  const SocketUrl = process.env.REACT_APP_SOCKETURL;
+  // const socket = io(SocketUrl); // Replace with your server URL
 
   useEffect(() => {
     if (selectedfile && selectedfile.type) {
@@ -79,7 +80,7 @@ function ChatWindowScreen() {
   const scrollRef = useRef();
 
   useEffect(() => {
-    const socket = io(SocketUrl);
+    socket.current = io(SocketUrl);
     socket.current.on('audio', (data) => {
       const audioBlob = new Blob([data.audio], { type: 'audio/wav' });
       const audioUrl = URL.createObjectURL(audioBlob);
@@ -780,7 +781,6 @@ function ChatWindowScreen() {
                                 </video>
                               ) : (
                                 <>
-                                  {' '}
                                   <img
                                     onClick={handleforsetImage}
                                     src={

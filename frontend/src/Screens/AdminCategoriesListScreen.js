@@ -24,8 +24,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import AvatarImage from '../Components/Avatar';
 import { ImCross } from 'react-icons/im';
 import { ColorRing } from 'react-loader-spinner';
-import { ThreeDots } from 'react-loader-spinner';
 import Badge from '@mui/material/Badge';
+import { ThreeDots } from 'react-loader-spinner';
 
 const reducer = (state, action) => {
   switch (action.type) {

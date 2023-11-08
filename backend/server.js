@@ -111,7 +111,7 @@ export async function storeNotification(message, notifyUser, status, type) {
   // console.log("newNotification-------", newNotification);
 
   const notify = await newNotification.save();
-
+  return notify;
   console.log('notifyme-------', notify);
 }
 

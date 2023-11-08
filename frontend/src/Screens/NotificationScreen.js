@@ -39,44 +39,31 @@ export default function NotificationScreen() {
       setCurrentPage(pageNumber);
     }
   };
-
-  const SocketUrl = process.env.SOCKETURL;
+  const SocketUrl = process.env.REACT_APP_SOCKETURL;
   const socket = io(SocketUrl);
-  socket.on('connectionForNotify', () => {
-    console.log('oiuhjioyhi');
-  });
+  socket.on('connectionForNotify', (data) => {});
 
-  useEffect(() => {
-    const handleNotification = (notifyUser, message) => {
-      if (notifyUser == userInfo._id) {
-        console.log('notifyProjectFrontend', notifyUser, message);
-        ctxDispatch({ type: 'NOTIFICATION', payload: { notifyUser, message } });
-        setNotificationMessage((prevNotifications) => [
-          ...prevNotifications,
-          { notifyUser, message },
-        ]);
-      }
-    };
+  // useEffect(() => {
+  //   const handleNotification = (notifyUser, message) => {
+  //     if (notifyUser == userInfo._id) {
+  //       console.log('notifyProjectFrontend', notifyUser, message);
+  //       ctxDispatch({ type: 'NOTIFICATION', payload: { notifyUser, message } });
+  //       setNotificationMessage((prevNotifications) => [
+  //         ...prevNotifications,
+  //         { notifyUser, message },
+  //       ]);
+  //     }
+  //   };
+  //   socket.on('notifyUserFrontend', handleNotification);
+  //   socket.on('notifyProjectFrontend', handleNotification);
+  //   // Consolidate both event listeners
 
-    socket.on('notifyProjectFrontend', handleNotification);
+  //   return () => {
+  //     socket.off('notifyUserFrontend', handleNotification); // Remove the listeners
+  //     socket.off('notifyProjectFrontend', handleNotification);
 
-    return () => {
-      socket.off('notifyProjectFrontend', handleNotification);
-    };
-  }, [userInfo._id, ctxDispatch]);
-
-  useEffect(() => {
-    socket.on('notifyUserFrontend', (notifyUser, message) => {
-      if (notifyUser === userInfo._id) {
-        console.log('notifyProjectFrontend', notifyUser, message);
-        ctxDispatch({ type: 'NOTIFICATION', payload: { notifyUser, message } });
-        setNotificationMessage((prevNotifications) => [
-          ...prevNotifications,
-          { notifyUser, message },
-        ]);
-      }
-    });
-  }, []);
+  //   };
+  // }, []);
 
   // useEffect(() => {
   //   ctxDispatch({ type: 'NOTIFICATION-NULL' });
@@ -115,9 +102,6 @@ export default function NotificationScreen() {
         }
       );
       setNotificationMark(data);
-      // if (data.status === 200) {
-      //   toast.success("Notification marked as read!");
-      // }
     } catch (err) {
       console.log(err);
     }

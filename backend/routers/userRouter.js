@@ -526,8 +526,14 @@ userRouter.put(
         const message = `Your profile is updated`;
         const status = 'unseen';
         const type = 'User';
-        storeNotification(message, notifyUser, status, type);
-        socket.emit('notifyUserBackend', notifyUser, message);
+        const notify = await storeNotification(
+          message,
+          notifyUser,
+          status,
+          type
+        );
+        const notificationId = notify._id;
+        socket.emit('notifyUserBackend', notifyUser, message, notificationId);
       } else {
         res.status(404).send({ message: 'User not found' });
       }

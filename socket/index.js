@@ -1,6 +1,8 @@
 const io = require('socket.io')(8900, {
   cors: {
-    origin: 'https://roonberg.onrender.com',
+    origin: process.env.BASEURL_LIVE
+      ? process.env.BASEURL_LIVE
+      : process.env.BASEURL_LOCAL,
   },
 });
 const fs = require('fs');
@@ -406,9 +408,15 @@ io.on('connection', (socket) => {
     console.log('notify and mesage', notifyUser, message);
     io.emit('notifyProjectFrontend', notifyUser, message);
   });
-  socket.on('notifyUserBackend', (notifyUser, message) => {
-    console.log('notify and mesage for user', notifyUser, message);
-    io.emit('notifyUserFrontend', notifyUser, message);
+
+  socket.on('notifyUserBackend', (notifyUser, message, notificationId) => {
+    console.log(
+      'notify and mesage for user',
+      notifyUser,
+      message,
+      notificationId
+    );
+    io.emit('notifyUserFrontend', notifyUser, message, notificationId);
   });
 
   // when disconnect

@@ -18,13 +18,20 @@ import axios from 'axios';
 function Sidebar({ sidebarVisible, setSidebarVisible }) {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo, NotificationData } = state;
+  const [unseeNote, setUnseenNote] = useState(NotificationData);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isSmallScreen, setIsSmallScreen] = useState(true);
 
-  const SocketUrl = process.env.SOCKETURL;
-  const socket = io(SocketUrl);
-  socket.on('connectionForNotify', (data) => {
-    console.log('oiuhjioyhi', data);
+  const socketUrl = process.env.REACT_APP_SOCKETURL;
+  const socket = io(socketUrl); // Replace with your server URL
+
+  // const SocketUrl = process.env.SOCKETURL;
+  // const socket = io(SocketUrl);
+  // const socket = io('https://roonsocket.onrender.com'); // Replace with your server URL
+
+  console.log('socket ', socket);
+  socket.emit('connectionForNotify', () => {
+    console.log('oiuhjioyhi');
   });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -47,6 +54,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
       socket.off('notifyProjectFrontend', handleNotification);
     };
   }, []);
+
   useEffect(() => {
     const handleNotification = async (notifyUser, message) => {
       console.log('notificationformsocke');
@@ -117,6 +125,15 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
     fetchNotificationData();
   }, []);
 
+  const uniqueNotificationData = [...new Set(NotificationData)];
+  console.log('uniqueNotificationData ', uniqueNotificationData);
+  useEffect(() => {
+    const noteData = [...NotificationData];
+    const data = noteData.filter((note) => {
+      if (note.notificationId) {
+      }
+    });
+  }, []);
   return (
     <div className={`sidebar ${sidebarVisible ? 'visible' : ''} `}>
       <div className="blank-box"></div>
@@ -291,9 +308,9 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
             <IoMdNotifications className="me-3 fs-5 " />
             <div className="position-relative">
               Notification
-              {NotificationData.length > 0 && (
+              {uniqueNotificationData.length > 0 && (
                 <span className="position-absolute notification-badge top-0 start-110 translate-middle badge rounded-pill bg-danger">
-                  {NotificationData.length}
+                  {uniqueNotificationData.length}
                 </span>
               )}
             </div>
