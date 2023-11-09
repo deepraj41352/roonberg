@@ -142,7 +142,9 @@ function SignUpForm() {
                   {isSubmiting ? 'Submiting...' : 'Submit'}
                 </Button>
                 <Form.Group className="my-3">
-                  <Link to="/ForgetPassword">Forgot Password?</Link>
+                  <Link to="/ForgetPassword" className="forgotPass">
+                    Forgot Password?
+                  </Link>
                 </Form.Group>
               </Form>
             </Card>

@@ -63,6 +63,8 @@ import MyComponent from './Components/MyComponent';
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [pathName, setPathName] = useState();
+
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo, NotificationData } = state;
   const theme = toggleState ? 'dark' : 'light';
@@ -87,6 +89,8 @@ function App() {
   };
 
   const signoutHandler = () => {
+    console.log(window.confirm);
+
     const userConfirm = window.confirm('Are you sure you want to logout?');
     if (userConfirm) {
       ctxDispatch({ type: 'USER_SIGNOUT' });
@@ -98,6 +102,12 @@ function App() {
   const handelforNOtification = () => {
     ctxDispatch({ type: 'NOTIFICATION-NULL' });
   };
+
+  useEffect(() => {
+    const pathname = window.location.pathname;
+    setPathName(pathname);
+    console.log('Pathname:', pathname);
+  }, []);
 
   return (
     <div className={userInfo ? `App ${theme}` : `App`}>
@@ -123,7 +133,7 @@ function App() {
                     >
                       <AiOutlineAlignLeft />
                     </div>
-                    <Navbar.Brand href="/dashb">
+                    <Navbar.Brand href="/dashboard">
                       <Image
                         className="Roonberg-logo me-3 ms-2"
                         src="./logo2.png"
@@ -228,7 +238,7 @@ function App() {
               ) : (
                 <Navbar expand="lg" className=" main-div">
                   <Container className="loginPageNav">
-                    <Navbar.Brand href="#home">
+                    <Navbar.Brand href="/">
                       <Image className="border-0" src="./logo2.png" thumbnail />
                     </Navbar.Brand>
                     <Navbar.Toggle
@@ -241,13 +251,16 @@ function App() {
                     >
                       <Nav className=" login-button">
                         <Nav className="login-nav ">
-                          <Link className="login-admin" to="/registration">
-                            {/* <BsFillPersonFill className="fs-5 Icon-person me-1 " /> */}
-                            Login
-                          </Link>
-                          <Link className="login-admin" href="#link">
-                            Admin Login
-                          </Link>
+                          {pathName && pathName === '/registration' ? (
+                            <a className="login-admin" href="/">
+                              {/* <BsFillPersonFill className="fs-5 Icon-person me-1 " /> */}
+                              Login
+                            </a>
+                          ) : (
+                            <a className="login-admin" href="/registration">
+                              Singnup
+                            </a>
+                          )}
                         </Nav>
                       </Nav>
                     </Navbar.Collapse>

@@ -146,7 +146,9 @@ function RegistrationForm() {
                   {isSubmiting ? 'Submiting...' : 'Submit'}
                 </Button>
                 <Form.Group className="my-3">
-                  <Link to="/">Signin ?</Link>
+                  <Link to="/" className="forgotPass">
+                    Signin ?
+                  </Link>
                 </Form.Group>
               </Form>
             </Card>

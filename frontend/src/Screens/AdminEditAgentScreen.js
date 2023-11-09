@@ -212,7 +212,7 @@ function AdminEditAgent() {
                         fullWidth
                         disabled
                       />
-                      <FormControl className="mb-3">
+                      <FormControl className="mb-3 selectStart">
                         <InputLabel>Select Status</InputLabel>
                         <Select
                           value={status}
@@ -224,7 +224,7 @@ function AdminEditAgent() {
                         </Select>
                       </FormControl>
 
-                      <FormControl className="mb-3">
+                      <FormControl className="mb-3 selectStart">
                         <InputLabel>Category</InputLabel>
                         <Select
                           required

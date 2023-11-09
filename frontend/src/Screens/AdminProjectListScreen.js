@@ -602,7 +602,11 @@ export default function AdminProjectListScreen() {
                             /> */}
                   </Box>
 
-                  <Modal open={isModelOpen} onClose={handleCloseRow}>
+                  <Modal
+                    open={isModelOpen}
+                    onClose={handleCloseRow}
+                    className="overlayLoading modaleWidth p-0"
+                  >
                     <Box
                       className="modelBg"
                       sx={{

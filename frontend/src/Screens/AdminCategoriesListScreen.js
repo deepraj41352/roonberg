@@ -377,7 +377,11 @@ export default function AdminContractorListScreen() {
                 />
               </Box>
             </div>
-            <Modal open={isModelOpen} onClose={handleCloseRow}>
+            <Modal
+              open={isModelOpen}
+              onClose={handleCloseRow}
+              className="overlayLoading modaleWidth"
+            >
               <Box
                 className="modelBg"
                 sx={{
@@ -413,7 +417,7 @@ export default function AdminContractorListScreen() {
                     className={
                       submitting
                         ? 'scrollInAdminproject p-4 '
-                        : 'scrollInAdminproject px-1'
+                        : 'scrollInAdminproject p-3'
                     }
                   >
                     <ImCross
@@ -461,7 +465,7 @@ export default function AdminContractorListScreen() {
                     />
                     <FormControl className="mb-3 cateLogoImgContainer">
                       <InputLabel className="cateLogoImgLabel">
-                        Upload Category Logo
+                        Upload Logo
                       </InputLabel>
                       <Input
                         type="file"

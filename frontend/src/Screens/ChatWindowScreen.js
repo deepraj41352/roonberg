@@ -776,7 +776,7 @@ function ChatWindowScreen() {
                               )}
                             </>
                           )}
-                          <div className="timeago">
+                          <div className="text-start timeago">
                             {format(item.createdAt)}
                           </div>
                         </div>

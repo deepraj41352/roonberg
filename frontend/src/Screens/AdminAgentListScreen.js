@@ -349,7 +349,7 @@ export default function AdminAgentListScreen() {
             <Modal
               open={isModelOpen}
               onClose={handleCloseRow}
-              className="overlayLoading"
+              className="overlayLoading modaleWidth"
             >
               <Box
                 className="modelBg"
@@ -386,7 +386,7 @@ export default function AdminAgentListScreen() {
                     className={
                       submitting
                         ? 'scrollInAdminproject p-4 '
-                        : 'scrollInAdminproject px-1'
+                        : 'scrollInAdminproject p-3'
                     }
                     onSubmit={handleSubmit}
                   >

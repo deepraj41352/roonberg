@@ -237,7 +237,7 @@ function AdminEditCategory() {
                         fullWidth
                         onChange={(e) => setCatogryDesc(e.target.value)}
                       />
-                      <FormControl className="mb-3">
+                      <FormControl className="mb-3 selectStart">
                         <InputLabel>Select Status</InputLabel>
                         <Select
                           value={status}

@@ -422,7 +422,7 @@ body {
   gap: 10px !important;
 }
 .login-admin {
-  background-color: #2563eb !important;
+  background-color: RGB(14, 14, 61) !important;
   padding: 4px 17px !important;
   border-radius: 8px;
   color: white !important;
@@ -618,7 +618,7 @@ body {
 .chatboxes {
   max-width: 50%;
   min-width: 48% !important;
-  max-height: 115px;
+  max-height: 120px;
 }
 .projectScreenCard-outer {
   margin: 0 auto;
@@ -1030,7 +1030,7 @@ body {
   border-radius: 11px !important;
   color: black;
   background-color: #b9c9da;
-  width: 12%;
+  width: 115px;
   padding: 0 !important;
 }
 .list-group-item-dark {
@@ -1058,8 +1058,8 @@ body {
 }
 .editImgChild {
   position: absolute;
-  left: 44px;
-  top: 39px;
+  left: 35px;
+  bottom: -20px;
 }
 .editImgBtn {
   border: none;
@@ -1111,6 +1111,24 @@ body {
   display: none;
 }
 @media screen and (max-width: 450px) {
+  .NotificationMsg {
+    text-align: center;
+    padding-bottom: 10px;
+  }
+  li.list-group-item.custom-list-item.list-group-item-dark {
+    flex-direction: column;
+  }
+  .modaleWidth > div {
+    max-width: 275px;
+    padding: 0;
+  }
+  .cateLogoImgLabel {
+    left: 30% !important;
+    width: 133px;
+    display: flex !important;
+    align-items: end;
+    justify-content: end;
+  }
   .searchbar1 {
     display: block !important;
     max-width: 250px;
@@ -1119,4 +1137,22 @@ body {
   .searchbar {
     display: none;
   }
+}
+.forgotPass {
+  color: RGB(14, 14, 61) !important;
+  text-decoration: none;
+  font-weight: bold;
+}
+.form-check-input:checked {
+  background-color: RGB(14, 14, 61) !important;
+  border-color: white !important;
+}
+.selectStart {
+  text-align: start;
+}
+.confirm-button {
+  background-color: RGB(14, 14, 61) !important;
+}
+.fade.error.validationMsg.alert.alert-danger.show {
+  max-width: 150px !important;
 }

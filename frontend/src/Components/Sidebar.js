@@ -340,7 +340,11 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
             </div>
           </li>
         </Link>
-        <Link to="/profile-screen" className="text-decoration-none disNonePro">
+        <Link
+          to="/profile-screen"
+          className="text-decoration-none disNonePro"
+          onClick={handlSmallScreeneClick}
+        >
           <li
             className={selectedItem === 'categoriesList' ? 'selected' : ''}
             onClick={() => {
