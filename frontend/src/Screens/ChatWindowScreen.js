@@ -70,8 +70,6 @@ function ChatWindowScreen() {
         selectedfile.type.includes('audio')
           ? 'video'
           : 'image';
-
-      //console.log('Media Type:', mediaType);
       setMediaType(mediaType);
     }
   }, [selectedfile]);
@@ -95,7 +93,6 @@ function ChatWindowScreen() {
       setAudioStream(data.audio);
     });
     socket.current.on('audioFile', (data) => {
-      // console.log("audioFile ", data.audio);
       setArrivalMessage({
         senderFirstName: data.senderFirstName,
         senderLastName: data.senderLastName,
@@ -107,7 +104,6 @@ function ChatWindowScreen() {
       setAudioStream(data.audio);
     });
     socket.current.on('video', (data) => {
-      // console.log("vedoodile ", data.video);
       setArrivalMessage({
         senderFirstName: data.senderFirstName,
         senderLastName: data.senderLastName,
@@ -120,7 +116,6 @@ function ChatWindowScreen() {
     });
 
     socket.current.on('image', (data) => {
-      // console.log("image", data);
       setArrivalMessage({
         senderFirstName: data.senderFirstName,
         senderLastName: data.senderLastName,
@@ -131,7 +126,6 @@ function ChatWindowScreen() {
       });
     });
     socket.current.on('getMessage', (data) => {
-      // console.log("data ", data);
       setArrivalMessage({
         senderFirstName: data.senderFirstName,
         senderLastName: data.senderLastName,
@@ -185,7 +179,6 @@ function ChatWindowScreen() {
           const audioBlob = new Blob(audioChunks.current, {
             type: 'audio/wav',
           });
-          //console.log('audiobulb', audioBlob);
           if (userInfo.role === 'admin' || userInfo.role === 'superadmin') {
             const messageData = {
               senderFirstName: userInfo.first_name,
@@ -195,9 +188,7 @@ function ChatWindowScreen() {
               receiverdId: conversationID.members,
               audio: audioBlob,
             };
-            //console.log('messageData', messageData);
             socket.current.emit('audio', messageData);
-            // socket.current.emit('audio', audioBlob);
             audioChunks.current.length = 0;
           } else {
             const messageData = {
@@ -208,9 +199,7 @@ function ChatWindowScreen() {
               receiverdId: receiverdId,
               audio: audioBlob,
             };
-            //console.log('messageData', messageData);
             socket.current.emit('audio', messageData);
-            // socket.current.emit('audio', audioBlob);
             audioChunks.current.length = 0;
           }
 
@@ -300,7 +289,6 @@ function ChatWindowScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         }
       );
-      console.log('dataaaa', data);
       if (data.status === 200) {
         toast.success('Project Status updated Successfully !');
       }
@@ -362,7 +350,6 @@ function ChatWindowScreen() {
       e.preventDefault();
     }
     const file = e.target.files[0];
-    console.log('file', file);
     if (isFileSizeValid(file)) {
       SetFileForModel(file);
       setShowModal(true);
@@ -398,7 +385,6 @@ function ChatWindowScreen() {
     const receiverdId = conversationID.members.find(
       (member) => member !== userInfo._id
     );
-    console.log('receiverdId', receiverdId);
     if (selectedImage) {
       if (userInfo.role === 'admin' || userInfo.role === 'superadmin') {
         const messageData = {
@@ -555,8 +541,6 @@ function ChatWindowScreen() {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages, newMessage]);
 
-  // console.log("conversationID ", conversationID);
-  // console.log("chatMessages ", chatMessages);
   const handleClose = () => {
     setShowImage(false);
     setShowModal(false);
@@ -584,7 +568,6 @@ function ChatWindowScreen() {
   const [editorValue, setEditorValue] = useState({ content: '' });
   const handleEditorChange = (data) => {
     // setEditorValue({content});
-    console.log('content ', data);
     setNewMessage(data);
   };
 
@@ -606,7 +589,6 @@ function ChatWindowScreen() {
     setImageUrl(e.target.src);
   };
 
-  console.log('image for the modal', imageUrl);
   return (
     <div className=" justify-content-center align-items-center">
       <div className="d-flex justify-content-center gap-3 ">

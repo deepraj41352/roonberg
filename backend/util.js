@@ -23,7 +23,6 @@ export const sendEmailNotify = async (options) => {
     options.from = '"RoonBerg" <dodiyadsvv@gmail.com>';
     options.html = emailTemplate(options);
     const info = transporter.sendMail(options);
-    console.log('Email Sent ');
     return info;
   } catch (err) {
     console.log('Email Error ', err);
@@ -53,7 +52,6 @@ export const generateToken = (user) => {
 
 export const isAuth = (req, res, next) => {
   const authorization = req.headers.authorization;
-  console.log(authorization);
   if (authorization) {
     const token = authorization.slice(7); // Remove 'Bearer ' prefix
     jwt.verify(token, process.env.JWT_SECRET, (err, decode) => {
@@ -72,8 +70,6 @@ export const isAuth = (req, res, next) => {
 export const isAdminOrSelf = async (req, res, next) => {
   const currentUser = req.user; // Current user making the request
   const userId = req.params.id; // User ID in the route parameter
-  console.log('userrole', currentUser.role);
-
   try {
     // Assuming you have a method to retrieve the project owner's ID
     const project = await Project.findById(req.params.id);

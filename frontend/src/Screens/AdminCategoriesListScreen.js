@@ -162,7 +162,6 @@ export default function AdminContractorListScreen() {
         dispatch('FATCH_REQUEST');
         const response = await axios.get(`/api/category/`);
         const datas = response.data;
-        console.log(datas);
         const rowData = datas.map((items) => {
           return {
             ...items,
@@ -211,7 +210,6 @@ export default function AdminContractorListScreen() {
           authorization: `Bearer ${userInfo.token}`,
         },
       });
-      console.log(data.message);
       toast.success('Category Created Successfully !');
       dispatch({ type: 'UPDATE_SUCCESS' });
       dispatch({ type: 'FATCH_SUBMITTING', payload: false });

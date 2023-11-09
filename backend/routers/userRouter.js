@@ -69,7 +69,6 @@ userRouter.put(
   expressAsyncHandler(async (req, res) => {
     try {
       const user = await User.findById(req.params.id);
-      console.log('user', user);
       if (user._id == req.params.id) {
         function capitalizeFirstLetter(data) {
           return data.charAt(0).toUpperCase() + data.slice(1);
@@ -199,8 +198,6 @@ userRouter.post(
       await user.save();
 
       const resetLink = `${baseUrl()}/reset-password/${token}`;
-      console.log(`${token}`);
-
       const options = {
         to: `<${user.email}>`,
         subject: 'Reset Password ✔',
@@ -354,7 +351,6 @@ userRouter.post(
           { lastLogin: new Date() },
           { new: true }
         );
-        console.log('updatedUser ', updatedUser);
         const { password, passresetToken, ...other } = updatedUser._doc;
         const userData = { ...other, token: generateToken(updatedUser) };
         res.send(userData);
@@ -515,8 +511,6 @@ userRouter.put(
           { $set: updatedData },
           { new: true }
         );
-
-        console.log('updatedUser ', updatedUser);
         const { password, passresetToken, ...other } = updatedUser._doc;
         const userData = { ...other, token: generateToken(updatedUser) };
         res.send({
@@ -613,7 +607,6 @@ userRouter.post(
         // Only assign the category field if the role is "agent"
         ...(role === 'agent' ? { agentCategory } : {}),
       };
-      console.log(data);
       const newUser = new User(data);
       const userinfo = await newUser.save();
       const user = await User.findOne({ email: req.body.email });
@@ -627,9 +620,6 @@ userRouter.post(
         await user.save();
 
         const resetLink = `${baseUrl()}/reset-password/${token}`;
-        console.log(`${token}`);
-        console.log(`${user.first_name}`);
-
         const options = {
           to: `<${user.email}>`,
           subject: 'Create Password ✔',

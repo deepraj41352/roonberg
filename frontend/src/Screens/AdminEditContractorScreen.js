@@ -40,12 +40,6 @@ const reducer = (state, action) => {
 
 function AdminEditContractor() {
   const { id } = useParams();
-  if (id) {
-    console.log('id exists:', id);
-  } else {
-    console.log('id does not exist');
-  }
-
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');

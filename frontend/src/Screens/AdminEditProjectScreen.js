@@ -102,7 +102,6 @@ function AdminEditProject() {
       try {
         const res = await axios.get(`/api/conversation/${id}`);
         setConversation(res.data);
-        console.log(res, 'conversation');
       } catch (err) {
         console.log(err);
       }
@@ -125,7 +124,6 @@ function AdminEditProject() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const ProjectDatas = response.data;
-        console.log('ProjectDatas', ProjectDatas);
         setEndDate(
           ProjectDatas.endDate ? ProjectDatas.endDate.split('T')[0] : null
         );
@@ -161,7 +159,6 @@ function AdminEditProject() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const category = response.data;
-        console.log('category', category);
         dispatch({ type: 'SUCCESS_CATEGORY', payload: category });
       } catch (error) {
         console.error('Error fetching category data:', error);
@@ -226,7 +223,6 @@ function AdminEditProject() {
   };
 
   const selectedCateAgent = (index, key, value) => {
-    console.log('Value received:', value);
     const updatedAgents = [...agents];
     updatedAgents[index] = {
       ...updatedAgents[index],
@@ -495,7 +491,6 @@ function AdminEditProject() {
              />
            </Form.Group>
          </div> */}
-                      {console.log(createdDate)}
                       <div className="d-flex gap-3 mb-3">
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                           <div className="d-flex flex-column">

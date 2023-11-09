@@ -26,7 +26,9 @@ categoryRouter.get(
   '/:id',
   expressAsyncHandler(async (req, res) => {
     try {
-      const category = await Category.findById(req.params.id).sort({ createdAt: -1 });
+      const category = await Category.findById(req.params.id).sort({
+        createdAt: -1,
+      });
       if (!category) {
         res.status(400).json({ message: 'category not found' });
       }
@@ -55,7 +57,9 @@ categoryRouter.post(
       //const user = await User.find();
       const newcategory = new Category({
         categoryName: capitalizeFirstLetter(req.body.categoryName),
-        categoryDescription: capitalizeFirstLetter(req.body.categoryDescription),
+        categoryDescription: capitalizeFirstLetter(
+          req.body.categoryDescription
+        ),
         categoryImage: req.body.categoryImage,
         categoryStatus: req.body.categoryStatus,
         createdDate: req.body.createdDate,
@@ -93,7 +97,6 @@ categoryRouter.put(
   expressAsyncHandler(async (req, res) => {
     try {
       const category = await Category.findById(req.params.id);
-      console.log('category', category);
       // const { categoryName, categoryDescription, categoryImage, categoryStatus } = req.body;
       // function capitalizeFirstLetter(data) {
       //   return data.charAt(0).toUpperCase() + data.slice(1);
@@ -127,7 +130,12 @@ categoryRouter.put(
           const categoryImage = await uploadDoc(req);
           req.body.categoryImage = categoryImage;
         }
-        const { categoryName, categoryDescription, categoryImage, categoryStatus } = req.body;
+        const {
+          categoryName,
+          categoryDescription,
+          categoryImage,
+          categoryStatus,
+        } = req.body;
         function capitalizeFirstLetter(data) {
           return data.charAt(0).toUpperCase() + data.slice(1);
         }
@@ -135,8 +143,8 @@ categoryRouter.put(
           categoryName: capitalizeFirstLetter(categoryName),
           categoryDescription: capitalizeFirstLetter(categoryDescription),
           categoryImage,
-          categoryStatus
-        }
+          categoryStatus,
+        };
         const updatedCat = await Category.findOneAndUpdate(
           { _id: req.params.id },
           { $set: updateData },

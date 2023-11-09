@@ -38,12 +38,6 @@ const reducer = (state, action) => {
 function AdminEditAgent() {
   const [selectcategory, setSelectCategory] = React.useState();
   const { id } = useParams();
-  if (id) {
-    console.log('id exists:', id);
-  } else {
-    console.log('id does not exist');
-  }
-
   const { state, dispatch: ctxDispatch } = useContext(Store);
 
   const { toggleState, userInfo } = state;

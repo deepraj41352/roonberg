@@ -178,7 +178,6 @@ export default function SuperadminAdminList() {
         },
         { headers: { Authorization: `Bearer ${userInfo.token}` } }
       );
-      console.log(response);
       if (response.status === 200) {
         toast.success('Admin Created Successfully !');
         setIsModelOpen(false);
@@ -235,7 +234,6 @@ export default function SuperadminAdminList() {
   const handleEdit = (userid) => {
     navigate(`/superadmineditadmin/${userid}`);
   };
-  console.log('selectcategory', selectcategory);
   return (
     <>
       {loading ? (

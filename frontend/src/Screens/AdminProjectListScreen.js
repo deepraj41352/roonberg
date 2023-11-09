@@ -158,7 +158,6 @@ export default function AdminProjectListScreen() {
   };
 
   const handleAgentChange = (index, key, value) => {
-    console.log('Value received:', value);
     const updatedAgents = [...agents];
     updatedAgents[index] = {
       ...updatedAgents[index],
@@ -279,17 +278,13 @@ export default function AdminProjectListScreen() {
             projectOwner: contractor ? contractor.first_name : '',
           };
         });
-        console.log(datas);
-
         dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
       } catch (error) {
         console.log(error);
       }
     };
-    console.log('successDelete', successDelete);
     if (successDelete) {
       dispatch({ type: 'DELETE_RESET' });
-      console.log('loading', loading);
     } else if (successUpdate) {
       dispatch({ type: 'UPDATE_RESET' });
     } else {
@@ -333,8 +328,6 @@ export default function AdminProjectListScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         }
       );
-      console.log(response.data.message);
-      console.log(response);
 
       if (response.status === 200) {
         toast.success('Project Created Successfully !');

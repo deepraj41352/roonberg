@@ -12,7 +12,6 @@ import { RiImageEditFill } from 'react-icons/ri';
 function ProfileScreen() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
-  // console.log("useringo", userInfo);
   const theme = toggleState ? 'dark' : 'light';
   const navigate = useNavigate();
 

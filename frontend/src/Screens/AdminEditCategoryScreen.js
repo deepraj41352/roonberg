@@ -46,14 +46,7 @@ const reducer = (state, action) => {
 
 function AdminEditCategory() {
   const { id } = useParams();
-  if (id) {
-    console.log('id exists:', id);
-  } else {
-    console.log('id does not exist');
-  }
-
   const { state, dispatch: ctxDispatch } = useContext(Store);
-
   const { toggleState, userInfo } = state;
   const theme = toggleState ? 'dark' : 'light';
   const [

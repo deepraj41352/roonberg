@@ -22,12 +22,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { GrSubtractCircle, GrAddCircle } from 'react-icons/gr';
 import { useContext, useEffect, useReducer, useState } from 'react';
-import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from '@mui/material';
+import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -61,7 +56,7 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: "_id", headerName: "ID", width: 200 },
+  { field: '_id', headerName: 'ID', width: 200 },
   {
     field: 'projectName',
     headerName: 'Project Name',
@@ -79,17 +74,16 @@ const columns = [
   },
 
   {
-    field: "projectOwner",
-    headerName: "Contractor",
+    field: 'projectOwner',
+    headerName: 'Contractor',
     width: 100,
   },
-
 ];
 
 export default function AgentProjectList() {
   const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
-  const theme = toggleState ? "dark" : "light";
+  const theme = toggleState ? 'dark' : 'light';
   const [
     {
       loading,
@@ -135,7 +129,7 @@ export default function AgentProjectList() {
         const response = await axios.post(`/api/user/`, { role: 'contractor' });
         const datas = response.data;
         dispatch({ type: 'FATCH_CONTRACTOR', payload: datas });
-      } catch (error) { }
+      } catch (error) {}
     };
     FatchContractorData();
   }, []);
@@ -146,7 +140,7 @@ export default function AgentProjectList() {
         const response = await axios.post(`/api/user/`, { role: 'agent' });
         const datas = response.data;
         dispatch({ type: 'FATCH_AGENTS', payload: datas });
-      } catch (error) { }
+      } catch (error) {}
     };
     FatchAgentData();
   }, []);
@@ -155,9 +149,10 @@ export default function AgentProjectList() {
     const FatchProjectData = async () => {
       try {
         dispatch({ type: 'FATCH_REQUEST' });
-        const response = await axios.get(`/api/project/getproject/${userInfo._id}`);
+        const response = await axios.get(
+          `/api/project/getproject/${userInfo._id}`
+        );
         const datas = response.data.projects;
-        console.log("agentdata", datas)
         const rowData = datas.map((items) => {
           const contractor = contractorData.find(
             (contractor) => contractor._id === items.projectOwner
@@ -177,10 +172,9 @@ export default function AgentProjectList() {
           };
         });
         dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
-
       } catch (error) {
         console.error(error);
-        dispatch({ type: "FATCH_ERROR", payload: error })
+        dispatch({ type: 'FATCH_ERROR', payload: error });
         if (error.response && error.response.status === 404) {
           toast.error('No projects have been assigned to you yet');
         } else {
@@ -188,7 +182,7 @@ export default function AgentProjectList() {
         }
       }
     };
-    FatchProjectData()
+    FatchProjectData();
   }, [contractorData]);
 
   const projectActiveData = projectData.filter((item) => {
@@ -206,7 +200,7 @@ export default function AgentProjectList() {
       <div className="px-4 mt-3">
         {loading ? (
           <>
-            <div className='ThreeDot' >
+            <div className="ThreeDot">
               <ThreeDots
                 height="80"
                 width="80"
@@ -219,13 +213,12 @@ export default function AgentProjectList() {
                 visible={true}
               />
             </div>
-
           </>
         ) : projectData.length < 0 || error ? (
           <div>
             <Card>
               <Card.Text>No projects have been assigned to you yet</Card.Text>
-            </Card >
+            </Card>
           </div>
         ) : (
           <>
@@ -239,34 +232,37 @@ export default function AgentProjectList() {
                   <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
-                        theme == "light"
+                        theme == 'light'
                           ? `${theme}DataGrid`
                           : `tableBg ${theme}DataGrid`
                       }
                       rows={projectData}
-                      columns={[...columns,
-                      {
-
-                        field: 'action',
-                        headerName: 'Action',
-                        width: 250,
-                        renderCell: (params) => {
-                          return (
-                            <Grid item xs={8}>
-                              <Link to={`/agentEditProject/${params.row._id}`}>
-                                <Button
-                                  variant="contained"
-                                  className="mx-2 tableEditbtn"
-                                // onClick={() => handleEdit(params.row._id)}
-                                // startIcon={<MdEdit />}
+                      columns={[
+                        ...columns,
+                        {
+                          field: 'action',
+                          headerName: 'Action',
+                          width: 250,
+                          renderCell: (params) => {
+                            return (
+                              <Grid item xs={8}>
+                                <Link
+                                  to={`/agentEditProject/${params.row._id}`}
                                 >
-                                  Edit
-                                </Button>
-                              </Link>
-                            </Grid>
-                          );
+                                  <Button
+                                    variant="contained"
+                                    className="mx-2 tableEditbtn"
+                                    // onClick={() => handleEdit(params.row._id)}
+                                    // startIcon={<MdEdit />}
+                                  >
+                                    Edit
+                                  </Button>
+                                </Link>
+                              </Grid>
+                            );
+                          },
                         },
-                      }]}
+                      ]}
                       getRowId={(row) => row._id}
                       initialState={{
                         pagination: {
@@ -278,7 +274,9 @@ export default function AgentProjectList() {
                       pageSizeOptions={[5]}
                       checkboxSelection
                       disableRowSelectionOnClick
-                      localeText={{ noRowsLabel: "Project Data Is Not Avalible" }}
+                      localeText={{
+                        noRowsLabel: 'Project Data Is Not Avalible',
+                      }}
                     />
                   </Box>
                 </Tab>
@@ -286,7 +284,7 @@ export default function AgentProjectList() {
                   <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
-                        theme == "light"
+                        theme == 'light'
                           ? `${theme}DataGrid`
                           : `tableBg ${theme}DataGrid`
                       }
@@ -300,12 +298,14 @@ export default function AgentProjectList() {
                           renderCell: (params) => {
                             return (
                               <Grid item xs={8}>
-                                <Link to={`/agentEditProject/${params.row._id}`}>
+                                <Link
+                                  to={`/agentEditProject/${params.row._id}`}
+                                >
                                   <Button
                                     variant="contained"
                                     className="mx-2 tableEditbtn"
-                                  // onClick={() => handleEdit(params.row._id)}
-                                  // startIcon={<MdEdit />}
+                                    // onClick={() => handleEdit(params.row._id)}
+                                    // startIcon={<MdEdit />}
                                   >
                                     Edit
                                   </Button>
@@ -329,11 +329,15 @@ export default function AgentProjectList() {
                     />
                   </Box>
                 </Tab>
-                <Tab className="tab-color" eventKey="Completed" title="Completed">
+                <Tab
+                  className="tab-color"
+                  eventKey="Completed"
+                  title="Completed"
+                >
                   <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
-                        theme == "light"
+                        theme == 'light'
                           ? `${theme}DataGrid`
                           : `tableBg ${theme}DataGrid`
                       }
@@ -347,12 +351,14 @@ export default function AgentProjectList() {
                           renderCell: (params) => {
                             return (
                               <Grid item xs={8}>
-                                <Link to={`/agentEditProject/${params.row._id}`}>
+                                <Link
+                                  to={`/agentEditProject/${params.row._id}`}
+                                >
                                   <Button
                                     variant="contained"
                                     className="mx-2 tableEditbtn"
-                                  // onClick={() => handleEdit(params.row._id)}
-                                  // startIcon={<MdEdit />}
+                                    // onClick={() => handleEdit(params.row._id)}
+                                    // startIcon={<MdEdit />}
                                   >
                                     Edit
                                   </Button>
@@ -380,7 +386,7 @@ export default function AgentProjectList() {
                   <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
-                        theme == "light"
+                        theme == 'light'
                           ? `${theme}DataGrid`
                           : `tableBg ${theme}DataGrid`
                       }
@@ -394,12 +400,14 @@ export default function AgentProjectList() {
                           renderCell: (params) => {
                             return (
                               <Grid item xs={8}>
-                                <Link to={`/agentEditProject/${params.row._id}`}>
+                                <Link
+                                  to={`/agentEditProject/${params.row._id}`}
+                                >
                                   <Button
                                     variant="contained"
                                     className="mx-2 tableEditbtn"
-                                  // onClick={() => handleEdit(params.row._id)}
-                                  // startIcon={<MdEdit />}
+                                    // onClick={() => handleEdit(params.row._id)}
+                                    // startIcon={<MdEdit />}
                                   >
                                     Edit
                                   </Button>
@@ -426,8 +434,7 @@ export default function AgentProjectList() {
               </Tabs>
             </div>
           </>
-        )
-        }
+        )}
       </div>
     </>
   );
