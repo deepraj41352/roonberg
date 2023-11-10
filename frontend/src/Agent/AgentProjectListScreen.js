@@ -166,14 +166,15 @@ export default function AgentProjectList() {
             ...items,
             _id: items._id,
             projectName: items.projectName,
-            projectDescription: items.projectDescription,
-            projectCategory: items.projectCategory
-              ? items.projectCategory.map((cat) => cat.categoryName)
-              : '',
-            assignedAgent: items.assignedAgent
-              ? items.assignedAgent.map((agent) => agent.agentName)
-              : '',
-            projectOwner: contractor ? contractor.first_name : '',
+            projectDescription:
+              items.projectDescription == ''
+                ? 'N/D'
+                : items.projectDescription,
+
+            projectCategory: items.assignedAgent.length > 0
+              ? items.assignedAgent.map((cat) => (cat.categoryName !== '' ? cat.categoryName : 'N/C'))
+              : 'N/C',
+            projectOwner: contractor ? contractor.first_name : 'N/C',
           };
         });
         dispatch({ type: 'FATCH_SUCCESS', payload: rowData });

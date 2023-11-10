@@ -14,9 +14,9 @@ import { toast } from 'react-toastify';
 import Tab from 'react-bootstrap/Tab';
 import { ColorRing, ThreeDots } from 'react-loader-spinner';
 import Tabs from 'react-bootstrap/Tabs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateField } from '@mui/x-date-pickers/DateField';
+// import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+// import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+// import { DateField } from '@mui/x-date-pickers/DateField';
 import {
   FormControl,
   InputLabel,
@@ -51,7 +51,7 @@ const reducer = (state, action) => {
     case 'UPDATE_SUCCESS':
       return { ...state, successUpdate: action.payload };
     case 'UPDATE_RESET':
-      return { ...state, successUpdate: false, loading: false };
+      return { ...state, successUpdate: false };
     case 'FATCH_CATEGORY':
       return { ...state, categoryData: action.payload };
     case 'FATCH_AGENTS':
@@ -133,7 +133,7 @@ export default function AdminProjectListScreen() {
   const [startDateError, setStartDateError] = useState('');
   const [endDateError, setEndDateError] = useState('');
   const navigate = useNavigate();
-  const [agents, setAgents] = useState([{ categoryId: '', agentId: '' }]);
+  const [agents, setAgents] = useState([{ categoryId: '' }]);
   const [categories, setCategories] = useState([]);
   const [projectStatus, setProjectStatus] = useState();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -166,39 +166,28 @@ export default function AdminProjectListScreen() {
       [key]: value,
     };
 
-    const categoryName = categoryData.find((categoryItem) => categoryItem._id === value);
-    if (categoryName) {
-      updatedAgents[index].categoryName = categoryName.categoryName;
-    }
-
-    const agentName = agentData.find((agentItem) => agentItem._id === value);
-    if (agentName) {
-      updatedAgents[index].agentName = agentName.first_name;
-    }
-
-
     if (key === 'categoryId' && value !== '') {
       const selectedCategory = categoryData.find(
         (categoryItem) => categoryItem._id === value
       );
 
-      if (selectedCategory) {
-        const categoryObject = {
-          categoryId: selectedCategory._id,
-        };
-        setCategories((prevCategories) => {
-          const updatedCategories = [...prevCategories];
-          updatedCategories[index] = categoryObject;
-          return updatedCategories;
-        });
-      }
+      // if (selectedCategory) {
+      //   const categoryObject = {
+      //     categoryId: selectedCategory._id,
+      //   };
+      //   setCategories((prevCategories) => {
+      //     const updatedCategories = [...prevCategories];
+      //     updatedCategories[index] = categoryObject;
+      //     return updatedCategories;
+      //   });
+      // }
     }
 
     setAgents(updatedAgents);
   };
 
   const addAgent = () => {
-    setAgents([...agents, { categoryId: '', agentId: '' }]);
+    setAgents([...agents, { categoryId: '' }]);
   };
   const removeAgent = (index) => {
     if (index > 0) {
@@ -278,17 +267,17 @@ export default function AdminProjectListScreen() {
             projectName: items.projectName,
             projectDescription:
               items.projectDescription == ''
-                ? 'No Description'
+                ? 'N/D'
                 : items.projectDescription,
 
-            projectCategory: items.assignedAgent
-              ? items.assignedAgent.map((cat) => cat.categoryName)
-              : '',
-            assignedAgent: items.assignedAgent
-              ? items.assignedAgent.map((agent) => agent.agentName)
+            projectCategory: items.assignedAgent.length > 0
+              ? items.assignedAgent.map((cat) => (cat.categoryName !== '' ? cat.categoryName : 'N/C'))
+              : 'N/C',
+            assignedAgent: items.assignedAgent.length > 0
+              ? items.assignedAgent.map((agent) => (agent.agentName !== '' ? agent.agentName : 'N/A'))
               : 'N/A',
 
-            projectOwner: contractor ? contractor.first_name : '',
+            projectOwner: contractor ? contractor.first_name : 'N/C',
           };
         });
         console.log(datas);
@@ -298,7 +287,6 @@ export default function AdminProjectListScreen() {
         console.log(error);
       }
     };
-    console.log('successDelete', successDelete);
     if (successDelete) {
       dispatch({ type: 'DELETE_RESET' });
       console.log('loading', loading);
@@ -323,13 +311,18 @@ export default function AdminProjectListScreen() {
   //   return item.assignedAgent.length === 0;
   // });
   const assignedAgent = projectData.filter((item) => {
-    return item.assignedAgent.every((agent) => !agent?.agentId);
+    return (
+      Array.isArray(item.assignedAgent) &&
+      item.assignedAgent.length > 0 &&
+      item.assignedAgent.every((agent) => !agent?.agentId)
+    );
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const filteredAgents = agents.filter(obj => Object.keys(obj).length > 1);
     setIsSubmiting(true);
+    console.log("agent", agents)
     try {
       const response = await axios.post(
         '/api/project/admin/addproject',
@@ -338,8 +331,7 @@ export default function AdminProjectListScreen() {
           projectDescription: projectDescription,
           createdDate: startDate,
           endDate: endDate,
-          assignedAgent: filteredAgents,
-          projectCategory: categories,
+          assignedAgent: agents,
           projectOwner: projectOwner,
           projectStatus: projectStatus,
         },
@@ -347,15 +339,13 @@ export default function AdminProjectListScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         }
       );
-      console.log(response.data.message);
-      console.log(response);
-      dispatch({ type: 'UPDATE_SUCCESS', payload: true });
-      dispatch({ type: 'UPDATE_SUCCESS', payload: true });
+      setIsSubmiting(false);
+      dispatch({ type: 'UPDATE_SUCCESS', payload: false });
       if (response.status === 201) {
         toast.success("Project Created Successfully !");
         const datas = response.data;
         setIsModelOpen(false);
-        setIsSubmiting(false);
+
         setProjectName('');
         setProjectDescription('');
         startDate();
@@ -363,7 +353,7 @@ export default function AdminProjectListScreen() {
         setAgents([{}]);
         setProjectStatus('');
         setProjectOwner('');
-        dispatch({ type: 'UPDATE_SUCCESS', payload: true });
+
       }
     } catch (error) {
       toast.error(error.response);
@@ -401,7 +391,7 @@ export default function AdminProjectListScreen() {
   };
 
   const handleRedirectToContractorScreen = () => {
-    navigate('/adminEditProject');
+    navigate('/adminContractorList');
   };
 
   const handleAssigndment = (userid) => {
@@ -939,17 +929,14 @@ export default function AdminProjectListScreen() {
                           renderCell: (params) => {
                             return (
                               <Grid item xs={8}>
-                                <Link
-                                  to={`/projectSingleScreen/${params.row._id}`}
+
+                                <Button
+                                  variant="contained"
+                                  className="mx-2 tableEditbtn"
+                                  onClick={() => handleEdit(params.row._id)}
                                 >
-                                  <Button
-                                    variant="contained"
-                                    className="mx-2 tableEditbtn"
-                                    onClick={() => handleEdit(params.row._id)}
-                                  >
-                                    Edit
-                                  </Button>
-                                </Link>
+                                  Edit
+                                </Button>
 
                                 <Button
                                   variant="outlined"
@@ -1004,7 +991,16 @@ export default function AdminProjectListScreen() {
                           headerName: 'Action',
                           width: 250,
                           renderCell: (params) => (
-                            <Link to={`/projectSingleScreen/${params.row._id}`}>
+                            <Grid item xs={8}>
+
+                              <Button
+                                variant="contained"
+                                className="mx-2 tableEditbtn"
+                                onClick={() => handleEdit(params.row._id)}
+                              >
+                                Edit
+                              </Button>
+
                               <Button
                                 variant="outlined"
                                 className="mx-2 tableDeletebtn"
@@ -1012,7 +1008,8 @@ export default function AdminProjectListScreen() {
                               >
                                 Delete
                               </Button>
-                            </Link>
+                            </Grid>
+
                           ),
                         },
                       ]}

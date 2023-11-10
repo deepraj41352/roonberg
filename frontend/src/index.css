@@ -33,6 +33,19 @@ code {
 }
 
 /* Gaytri css start  */
+#cateEditImgAvatar {
+  width: '65px' !important;
+  height: '65px' !important;
+}
+.cateEditImgChild {
+  position: absolute;
+  right: 119px;
+  top: 18px;
+}
+.tableBg .css-ptkaw2-MuiDataGrid-root .MuiDataGrid-columnHeader:focus,
+.css-ptkaw2-MuiDataGrid-root .MuiDataGrid-cell:focus {
+  outline: none !important;
+}
 .editImgParent {
   position: relative;
 }
@@ -63,7 +76,7 @@ code {
 .cateEdit,
 .agentEdit {
   width: 100%;
-  min-width: 100px;
+  min-width: 120px;
 }
 
 .active-cell {
@@ -217,11 +230,16 @@ body {
 
 /* css after render */
 .resetFormWidth,
-.formWidth,
-.validationMsg {
+.formWidth {
   width: 100%;
   min-width: 400px;
 }
+
+.validationMsg {
+  width: 100%;
+  max-width: 347px;
+}
+
 .editFormWidth {
   width: 100%;
   min-width: 300px;
@@ -233,10 +251,10 @@ body {
 
 @media screen and (max-width: 450px) {
   .formWidth {
-    min-width: 300px;
+    min-width: 250px;
   }
   .validationMsg {
-    min-width: 300px;
+    max-width: 250px;
   }
   .resetFormWidth {
     min-width: 250px;
@@ -278,7 +296,7 @@ body {
   gap: 10px !important;
 }
 .login-admin {
-  background-color: #2563eb !important;
+  background-color: #0e0e3d;
   padding: 4px 17px !important;
   border-radius: 8px;
   color: white !important;
@@ -328,7 +346,7 @@ body {
     min-width: 300px;
   }
 } */
-} */
+
 /* -------P-Dashboard----- */
 
 body {
@@ -435,7 +453,7 @@ body {
   text-align: start;
   width: 400px;
 } */
-} */
+
 .globalbtnColor {
   color: #ffffff !important;
   background-color: RGB(14, 14, 61) !important;
@@ -451,7 +469,7 @@ body {
 /* .formWidth {
   width: 400px !important;
 } */
-} */
+
 .scroll-form {
   height: 400px;
   overflow-y: auto;
@@ -477,13 +495,13 @@ body {
 .login-nav {
   gap: 10px !important;
 }
-.login-admin {
+/* .login-admin {
   background-color: #2563eb !important;
   padding: 4px 17px !important;
   border-radius: 8px;
   color: white !important;
   height: 33px !important;
-}
+} */
 .main-div {
   background-color: white !important;
   padding: 21px 21px !important;
@@ -523,7 +541,7 @@ body {
     min-width: 300px;
   }
 } */
-} */
+
 /* -------P-Dashboard----- */
 .admin-navbar {
   height: 66px !important;
@@ -1076,7 +1094,6 @@ body {
   background-color: #07162c;
 }
 .list-group-item {
-.list-group-item {
   display: flex !important;
   align-items: center;
   color: white !important;
@@ -1092,12 +1109,15 @@ body {
   width: 12%;
   padding: 0 !important;
 }
-.list-group-item-dark {
-  background-color: #07162c !important;
+
 .list-group-item-dark {
   background-color: #07162c !important;
 }
 .list-group-item-light {
-.list-group-item-light {
   background-color: #afb4b9 !important;
+}
+/* new */
+.assignContainer {
+  width: 100%;
+  min-width: 150px;
 }

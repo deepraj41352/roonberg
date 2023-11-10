@@ -241,7 +241,7 @@ function App() {
                     >
                       <Nav className=" login-button">
                         <Nav className="login-nav ">
-                          <Link className="login-admin" to="/registration">
+                          <Link className="login-admin" to="/registration" >
                             {/* <BsFillPersonFill className="fs-5 Icon-person me-1 " /> */}
                             Login
                           </Link>

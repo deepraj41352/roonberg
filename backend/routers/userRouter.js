@@ -72,7 +72,7 @@ userRouter.put(
       console.log('user', user);
       if (user._id == req.params.id) {
         function capitalizeFirstLetter(data) {
-          return data.charAt(0).toUpperCase() + data.slice(1);
+          return data && data.charAt(0).toUpperCase() + data.slice(1);
         }
 
         const { first_name, last_name, email, agentCategory, userStatus } =
@@ -440,7 +440,7 @@ userRouter.post(
       }
       const hashedPassword = await bcrypt.hash(req.body.password, 8);
       function capitalizeFirstLetter(data) {
-        return data.charAt(0).toUpperCase() + data.slice(1);
+        return data && data.charAt(0).toUpperCase() + data.slice(1);
       }
       const newUser = new User({
         first_name: capitalizeFirstLetter(first_name),
@@ -489,7 +489,7 @@ userRouter.put(
           req.body.password = bcrypt.hashSync(req.body.password, 8);
         }
         function capitalizeFirstLetter(data) {
-          return data.charAt(0).toUpperCase() + data.slice(1);
+          return data && data.charAt(0).toUpperCase() + data.slice(1);
         }
         capitalizeFirstLetter(req.body.first_name);
         capitalizeFirstLetter(req.body.last_name);
@@ -585,7 +585,7 @@ userRouter.post(
   expressAsyncHandler(async (req, res) => {
     try {
       function capitalizeFirstLetter(data) {
-        return data.charAt(0).toUpperCase() + data.slice(1);
+        return data && data.charAt(0).toUpperCase() + data.slice(1);
       }
       const { first_name, last_name, email, role, agentCategory, userStatus } =
         req.body;

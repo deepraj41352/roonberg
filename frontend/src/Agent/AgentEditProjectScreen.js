@@ -98,7 +98,7 @@ function AgentEditProject() {
                 setProjectStatus(projectData.projectStatus);
                 setProjectOwner(projectData.projectOwner);
                 setSelectedOptions(
-                    ProjectDatas.projectCategory.map((item) => item.categoryId).join(',')
+                    ProjectDatas.assignedAgent.map((item) => item.categoryId).join(',')
                 );
                 dispatch({ type: 'FATCH_SUCCESS', payload: ProjectDatas });
             } catch (error) {
@@ -160,21 +160,26 @@ function AgentEditProject() {
             setAgents(updatedAgents);
         }
     };
+
     const assignedAgentByCateHandle = (index) => {
         const category = agents[index].categoryId;
-        if (Array.isArray(categoryData)) {
-            if (category) {
-                const selectedCategory1 = categoryData.find(categoryItem => categoryItem._id === category);
-                if (selectedCategory1) {
-                    const agentForCategory = agentData.find(agentItem => agentItem.agentCategory === selectedCategory1._id);
-                    if (agentForCategory) {
-                        return [agentForCategory]
-                    }
-                }
+        if (category) {
+            const selectedCategory = categoryData.find(
+                (categoryItem) => categoryItem._id === category
+            );
+            const agentsForCategory = agentData.filter(
+                (agentItem) => agentItem.agentCategory === selectedCategory._id
+            );
+            const activeAgents = agentsForCategory.filter(
+                (agentItem) => agentItem.userStatus === true
+            );
+
+            if (activeAgents.length > 0) {
+                return activeAgents;
             }
         }
         return [];
-    }
+    };
 
     useEffect(() => {
         const fetchCategoryData = async () => {
@@ -377,8 +382,11 @@ function AgentEditProject() {
                             </Card.Body>
                         </Card>
                         <div className='projectScreenCard2 d-flex flex-column gap-4'>
+
                             <Card className={`projectScreenCard2 ${theme}CardBody`}>
-                                <Card.Header className={`${theme}CardHeader`}>Chats</Card.Header>
+                                <Card.Header className={`${theme}CardHeader`}>
+                                    Chats
+                                </Card.Header>
                                 <Card.Body className="d-flex flex-wrap gap-3 ">
                                     <div
                                         className="text-center w-100"
@@ -426,73 +434,33 @@ function AgentEditProject() {
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <Card className="chatboxes">
-                                                            <Card.Header>
-                                                                {categoryData && assignedAgent.categoryName}
-                                                            </Card.Header>
-                                                            <Card.Body>
-                                                                <Link to={`/chatWindowScreen/${conversion._id}`}>
-                                                                    <Button
-                                                                        className="chatBtn"
-                                                                        type="button"
-                                                                    // onClick={conversionHandler(conversion._id)}
-                                                                    >
-                                                                        {categoryData && assignedAgent.agentName}
-                                                                    </Button>
-                                                                </Link>
-                                                            </Card.Body>
-                                                        </Card>
+                                                        {categoryData &&
+                                                            assignedAgent &&
+                                                            assignedAgent.categoryName && (
+                                                                <Card className="chatboxes">
+                                                                    <Card.Header>
+                                                                        {assignedAgent.categoryName}
+                                                                    </Card.Header>
+                                                                    <Card.Body>
+                                                                        <Link
+                                                                            to={`/chatWindowScreen/${conversion._id}`}
+                                                                        >
+                                                                            <Button
+                                                                                className="chatBtn"
+                                                                                type="button"
+                                                                            // onClick={conversionHandler(conversion._id)}
+                                                                            >
+                                                                                {assignedAgent.agentName}
+                                                                            </Button>
+                                                                        </Link>
+                                                                    </Card.Body>
+                                                                </Card>
+                                                            )}
                                                     </>
                                                 )}
                                             </>
                                         );
                                     })}
-                                </Card.Body>
-                            </Card>
-                            <Card className={`projectScreenCard2 ${theme}CardBody`}>
-                                <Card.Header className={`${theme}CardHeader`}>Assigned</Card.Header>
-                                <Card.Body className="d-flex justify-content-center flex-wrap gap-3 ">
-                                    {/* -------- */}
-
-                                    <Form className='scrollInAdminproject' onSubmit={handleSubmit}>
-                                        {agents.map((agent, index) => (
-                                            <div key={index} className='d-flex justify-content-between align-items-center'>
-                                                <Form.Group className="mb-3 mx-2" controlId="formBasicPassword">
-                                                    <Form.Label className="mb-1">Category</Form.Label>
-                                                    <Form.Select
-                                                        value={agent.categoryId || categories}
-                                                        disabled onChange={(e) => handleAgentChange(index, 'categoryId', e.target.value)}>
-                                                        <option value="">SELECT</option>
-                                                        {Array.isArray(categoryData) ? (
-                                                            categoryData.map((category) => (
-                                                                <option key={category._id} value={category._id}>
-                                                                    {category.categoryName}
-                                                                </option>
-                                                            ))
-                                                        ) : (
-                                                            <option value="">Loading categories...</option>
-                                                        )}
-                                                    </Form.Select>
-                                                </Form.Group>
-                                                <Form.Group className="mb-3 mx-2" controlId="formBasicPassword">
-                                                    <Form.Label className="mb-1">Agent</Form.Label>
-                                                    <Form.Select value={agent.agentId}
-                                                        disabled onChange={(e) => handleAgentChange(index, 'agentId', e.target.value)}>
-                                                        <option value="">SELECT AGENT</option>
-                                                        {assignedAgentByCateHandle(index).map((agent) => (
-                                                            <option key={agent._id} value={agent._id}
-                                                            >
-                                                                {agent.first_name}
-                                                            </option>
-                                                        ))}
-                                                    </Form.Select>
-                                                </Form.Group>
-                                            </div>
-                                        ))}
-                                        <div className='d-flex align-items-center'>
-                                        </div>
-                                    </Form>
-                                    {/* -------- */}
                                 </Card.Body>
                             </Card>
                         </div>

@@ -67,44 +67,43 @@ function ProfileScreen() {
   return (
     <Container className="Sign-up-container-regis d-flex w-100 profileDiv  flex-column justify-content-center align-items-center">
       <div className="ProfileScreen-inner px-4 py-3 w-100 d-flex justify-content-center align-items-center flex-column">
-        <div className="ProfileScreen-inner px-4 py-3 w-100 d-flex justify-content-center align-items-center flex-column">
-          <Row className="mb-3">
-            <Col>
-              <h4>User Profile</h4>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <div className="overlayLoading">
-                <Card className={`${theme}CardBody editCartForm`}>
-                  <div className="FormContainerEdit">
-                    {isSubmiting && (
-                      <div className="overlayLoadingItem1">
-                        <ColorRing
-                          visible={true}
-                          height="40"
-                          width="40"
-                          ariaLabel="blocks-loading"
-                          wrapperStyle={{}}
-                          wrapperClass="blocks-wrapper"
-                          colors={[
-                            'rgba(0, 0, 0, 1) 0%',
-                            'rgba(255, 255, 255, 1) 68%',
-                            'rgba(0, 0, 0, 1) 93%',
-                          ]}
-                        />
-                      </div>
-                    )}
-                    <Form
-                      onSubmit={submitHandler}
-                      className="p-4 w-100 editFormWidth "
-                    >
-                      <div className="classforprofile">
-                        <Form.Group
-                          className="mb-2"
-                          controlId="formBasicPassword"
-                        >
-                          {/* <div className="d-flex gap-3">
+        <Row className="mb-3">
+          <Col>
+            <h4>User Profile</h4>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <div className="overlayLoading">
+              <Card className={`${theme}CardBody editCartForm`}>
+                <div className="FormContainerEdit">
+                  {isSubmiting && (
+                    <div className="overlayLoadingItem1">
+                      <ColorRing
+                        visible={true}
+                        height="40"
+                        width="40"
+                        ariaLabel="blocks-loading"
+                        wrapperStyle={{}}
+                        wrapperClass="blocks-wrapper"
+                        colors={[
+                          'rgba(0, 0, 0, 1) 0%',
+                          'rgba(255, 255, 255, 1) 68%',
+                          'rgba(0, 0, 0, 1) 93%',
+                        ]}
+                      />
+                    </div>
+                  )}
+                  <Form
+                    onSubmit={submitHandler}
+                    className="p-4 w-100 editFormWidth "
+                  >
+                    <div className="classforprofile">
+                      <Form.Group
+                        className="mb-2"
+                        controlId="formBasicPassword"
+                      >
+                        {/* <div className="d-flex gap-3">
                           <div>
                             <Form.Label className="mb-1">
                               <img className="profile-icon-inner " src={userInfo.profile_picture} alt="user-image"></img>
@@ -118,76 +117,76 @@ function ProfileScreen() {
                           </div>
                         </div> */}
 
-                          <Row className="editImgParent">
-                            <Col className="">
-                              <img
-                                className="profile-icon-inner editCateImgContainer"
-                                src={userInfo.profile_picture}
-                                alt="user-image"
-                              ></img>
-                            </Col>
-                            <Col className="editImgChild">
-                              <div className="mb-3">
-                                <input
-                                  type="file"
-                                  onChange={handleFileChange}
-                                  style={{ display: 'none' }}
-                                  id="file-input"
-                                />
-                                <label
-                                  htmlFor="file-input"
-                                  className="editImgBtn "
-                                >
-                                  <RiImageEditFill />
-                                </label>
-                              </div>
-                            </Col>
-                          </Row>
-                        </Form.Group>
-                      </div>
-                      <TextField
-                        className="my-3"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        label="First Name"
-                        fullWidth
-                        required
-                      />
+                        <Row className="editImgParent">
+                          <Col className="">
+                            <img
+                              className="profile-icon-inner editCateImgContainer"
+                              src={userInfo.profile_picture}
+                              alt="user-image"
+                            ></img>
+                          </Col>
+                          <Col className="editImgChild">
+                            <div className="mb-3">
+                              <input
+                                type="file"
+                                onChange={handleFileChange}
+                                style={{ display: 'none' }}
+                                id="file-input"
+                              />
+                              <label
+                                htmlFor="file-input"
+                                className="editImgBtn "
+                              >
+                                <RiImageEditFill />
+                              </label>
+                            </div>
+                          </Col>
+                        </Row>
+                      </Form.Group>
+                    </div>
+                    <TextField
+                      className="my-3"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      label="First Name"
+                      fullWidth
+                      required
+                    />
 
-                      <TextField
-                        className="mb-3"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        label="Last Name"
-                        fullWidth
-                      />
-                      <TextField
-                        className="mb-3"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        label="Email"
-                        type="email"
-                        fullWidth
-                        disabled
-                      />
+                    <TextField
+                      className="mb-3"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      label="Last Name"
+                      fullWidth
+                    />
+                    <TextField
+                      className="mb-3"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      label="Email"
+                      type="email"
+                      fullWidth
+                      disabled
+                    />
 
-                      <div className="d-flex justify-content-start mt-4">
-                        <Button
-                          className=" py-1  globalbtnColor"
-                          variant="primary"
-                          type="submit"
-                          disabled={isSubmiting}
-                        >
-                          {isSubmiting ? 'UPDATING' : 'UPDATE'}
-                        </Button>
-                      </div>
-                    </Form>
-                  </div>
-                </Card>
-              </div>
-            </Col>
-          </Row>
-        </div>
+                    <div className="d-flex justify-content-start mt-4">
+                      <Button
+                        className=" py-1  globalbtnColor"
+                        variant="primary"
+                        type="submit"
+                        disabled={isSubmiting}
+                      >
+                        {isSubmiting ? 'UPDATING' : 'UPDATE'}
+                      </Button>
+                    </div>
+                  </Form>
+                </div>
+              </Card>
+            </div>
+          </Col>
+        </Row>
+      </div>
     </Container>
   );
 }

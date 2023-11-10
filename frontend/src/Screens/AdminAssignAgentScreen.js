@@ -624,7 +624,7 @@ function AdminEditProject() {
                             </FormControl>
                             <div className='d-flex'>
                               <IoMdRemoveCircleOutline className='text-bold text-danger fs-5 pointCursor' onClick={() => removeDynamicFields(index)} />
-                              <IoMdAddCircleOutline onClick={addDynamicFields} className='text-success text-bold fs-5 pointCursor' />
+                              {/* <IoMdAddCircleOutline onClick={addDynamicFields} className='text-success text-bold fs-5 pointCursor' /> */}
                             </div>
                           </div>
                         ))}

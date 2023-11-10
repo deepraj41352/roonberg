@@ -125,13 +125,17 @@ export default function ContractorProject() {
           ...items,
           _id: items._id,
           projectName: items.projectName,
-          projectDescription: items.projectDescription,
-          projectCategory: items.projectCategory
-            ? items.projectCategory.map((cat) => cat.categoryName)
-            : '',
-          assignedAgent: items.assignedAgent
-            ? items.assignedAgent.map((agent) => agent.agentName)
-            : '',
+          projectDescription:
+            items.projectDescription == ''
+              ? 'N/D'
+              : items.projectDescription,
+
+          projectCategory: items.assignedAgent.length > 0
+            ? items.assignedAgent.map((cat) => (cat.categoryName !== '' ? cat.categoryName : 'N/C'))
+            : 'N/C',
+          assignedAgent: items.assignedAgent.length > 0
+            ? items.assignedAgent.map((agent) => (agent.agentName !== '' ? agent.agentName : 'N/A'))
+            : 'N/A',
         }));
 
         dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
@@ -185,8 +189,7 @@ export default function ContractorProject() {
         const datas = response.data;
         setIsModelOpen(false);
         setIsSubmiting(false);
-        // dispatch({ type: 'FATCH_SUCCESS', payload: datas });
-        // dispatch({ type: "UPDATE_SUCCESS", payload: true });
+        dispatch({ type: "UPDATE_SUCCESS", payload: true });
       }
     } catch (error) {
       toast.error(error);
@@ -331,8 +334,8 @@ export default function ContractorProject() {
                                   <Button
                                     variant="contained"
                                     className="mx-2 tableEditbtn"
-                                    // onClick={() => handleEdit(params.row._id)}
-                                    // startIcon={<MdEdit />}
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
                                   >
                                     Edit
                                   </Button>
@@ -436,8 +439,8 @@ export default function ContractorProject() {
                             rows={4}
                             fullWidth
                             variant="outlined"
-                            // value={'text'}
-                            // onChange={handleChange}
+                          // value={'text'}
+                          // onChange={handleChange}
                           />
                           <FormControl fullWidth className="mb-3">
                             <InputLabel>Select Categories</InputLabel>
@@ -446,19 +449,19 @@ export default function ContractorProject() {
                               multiple
                               value={selectedOptions}
                               onChange={handleChange}
-                              // renderValue={(selected) => (
-                              //   <div>
-                              //     {categoryData && selected
-                              //       ? selected.map((value) => (
-                              //           <span key={value}>
-                              //             {categoryData.find(
-                              //               (option) => option._id === value
-                              //             ).categoryName + ','}
-                              //           </span>
-                              //         ))
-                              //       : ''}
-                              //   </div>
-                              // )}
+                            // renderValue={(selected) => (
+                            //   <div>
+                            //     {categoryData && selected
+                            //       ? selected.map((value) => (
+                            //           <span key={value}>
+                            //             {categoryData.find(
+                            //               (option) => option._id === value
+                            //             ).categoryName + ','}
+                            //           </span>
+                            //         ))
+                            //       : ''}
+                            //   </div>
+                            // )}
                             >
                               {categoryData &&
                                 categoryData.map((option) => (
@@ -570,8 +573,8 @@ export default function ContractorProject() {
                                   <Button
                                     variant="contained"
                                     className="mx-2 tableEditbtn"
-                                    // onClick={() => handleEdit(params.row._id)}
-                                    // startIcon={<MdEdit />}
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
                                   >
                                     Edit
                                   </Button>
@@ -632,8 +635,8 @@ export default function ContractorProject() {
                                   <Button
                                     variant="contained"
                                     className="mx-2 tableEditbtn"
-                                    // onClick={() => handleEdit(params.row._id)}
-                                    // startIcon={<MdEdit />}
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
                                   >
                                     Edit
                                   </Button>
@@ -690,8 +693,8 @@ export default function ContractorProject() {
                                   <Button
                                     variant="contained"
                                     className="mx-2 tableEditbtn"
-                                    // onClick={() => handleEdit(params.row._id)}
-                                    // startIcon={<MdEdit />}
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
                                   >
                                     Edit
                                   </Button>

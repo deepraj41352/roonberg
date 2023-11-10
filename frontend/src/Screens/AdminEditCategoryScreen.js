@@ -23,7 +23,7 @@ import {
   TextField,
 } from '@mui/material';
 import AvatarImage from '../Components/Avatar';
-import { RiImageEditFill } from 'react-icons/ri';
+
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FATCH_REQUEST':
@@ -194,15 +194,14 @@ function AdminEditCategory() {
                               src={categoryData.categoryImage}
                             />
                           ) : (
-                            <AvatarImage name={category} bgColor={color} />
+                            <AvatarImage className="editCateImgContainer" id="cateEditImgAvatar" name={category} bgColor={color} />
                           )}
                         </Col>
-                        <Col className="editImgChild">
+                        <Col className="cateEditImgChild">
                           <div className="mb-3">
                             <input
                               type="file"
                               onChange={handleFileChange}
-                              required
                               style={{ display: 'none' }}
                               id="file-input"
                             />

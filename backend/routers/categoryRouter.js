@@ -50,7 +50,7 @@ categoryRouter.post(
         req.body.categoryImage = profile_picture;
       }
       function capitalizeFirstLetter(data) {
-        return data.charAt(0).toUpperCase() + data.slice(1);
+        return data && data.charAt(0).toUpperCase() + data.slice(1);
       }
       //const user = await User.find();
       const newcategory = new Category({
@@ -129,7 +129,7 @@ categoryRouter.put(
         }
         const { categoryName, categoryDescription, categoryImage, categoryStatus } = req.body;
         function capitalizeFirstLetter(data) {
-          return data.charAt(0).toUpperCase() + data.slice(1);
+          return data && data.charAt(0).toUpperCase() + data.slice(1);
         }
         const updateData = {
           categoryName: capitalizeFirstLetter(categoryName),

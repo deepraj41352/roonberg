@@ -134,7 +134,7 @@ function AdminEditProject() {
             ? ProjectDatas.createdDate.split('T')[0]
             : null
         );
-        setCategories(ProjectDatas.projectCategory);
+        setCategories(ProjectDatas.assignedAgent);
         setAgents(ProjectDatas.assignedAgent);
         setProjectStatus(projectData.projectStatus);
         setProjectOwner(projectData.projectOwner);
@@ -178,7 +178,7 @@ function AdminEditProject() {
         const response = await axios.post(`/api/user/`, { role: 'contractor' });
         const datas = response.data;
         dispatch({ type: 'FATCH_CONTRACTOR', payload: datas });
-      } catch (error) {}
+      } catch (error) { }
     };
     FatchContractorData();
   }, []);
@@ -190,7 +190,7 @@ function AdminEditProject() {
         const response = await axios.post(`/api/user/`, { role: 'agent' });
         const datas = response.data;
         dispatch({ type: 'FATCH_AGENTS', payload: datas });
-      } catch (error) {}
+      } catch (error) { }
     };
     FatchAgentData();
   }, []);
@@ -472,29 +472,6 @@ function AdminEditProject() {
                           <MenuItem value="qued">Qued</MenuItem>
                         </Select>
                       </FormControl>
-
-                      {/* <div className="d-flex gap-3 mb-3">
-           <Form.Group className="w-100" controlId="start-date">
-             <Form.Label className="fw-bold">Start Date</Form.Label>
-             <Form.Control
-               type="date"
-               name="createdDate"
-               value={createdDate}
-               onChange={(e) => setCreatedDate(e.target.value)}
-               placeholder="Start Date"
-             />
-           </Form.Group>
-           <Form.Group className="w-100" controlId="end-date">
-             <Form.Label className="fw-bold">End Date</Form.Label>
-             <Form.Control
-               type="date"
-               name="endDate"
-               value={endDate}
-               onChange={(e) => setEndDate(e.target.value)}
-               placeholder="End Date"
-             />
-           </Form.Group>
-         </div> */}
                       {console.log(createdDate)}
                       <div className="d-flex gap-3 mb-3">
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -553,8 +530,8 @@ function AdminEditProject() {
                       style={{
                         display:
                           projectData &&
-                          projectData.conversions &&
-                          projectData.conversions.length < 1
+                            projectData.conversions &&
+                            projectData.conversions.length < 1
                             ? 'block'
                             : 'none',
                       }}
@@ -582,7 +559,7 @@ function AdminEditProject() {
                                         <Button
                                           className="chatBtn"
                                           type="button"
-                                          // onClick={conversionHandler(conversion._id)}
+                                        // onClick={conversionHandler(conversion._id)}
                                         >
                                           Chat Now
                                         </Button>
@@ -608,7 +585,7 @@ function AdminEditProject() {
                                         <Button
                                           className="chatBtn"
                                           type="button"
-                                          // onClick={conversionHandler(conversion._id)}
+                                        // onClick={conversionHandler(conversion._id)}
                                         >
                                           {assignedAgent.agentName}
                                         </Button>
@@ -635,8 +612,8 @@ function AdminEditProject() {
                             className="moreFieldsDiv d-flex align-items-center gap-2 pt-3"
                             key={index}
                           >
-                            <FormControl className="mb-3">
-                              <InputLabel>Category</InputLabel>
+                            <FormControl className="mb-3 ">
+                              <InputLabel className='px-2'>Category</InputLabel>
                               <Select
                                 className="cateEdit"
                                 value={agentCatData.categoryId}
@@ -648,7 +625,7 @@ function AdminEditProject() {
                                   )
                                 }
                               >
-                                {categoryData.map((category) => (
+                                {categoryData && categoryData.map((category) => (
                                   <MenuItem
                                     key={category._id}
                                     value={category._id}
@@ -709,10 +686,10 @@ function AdminEditProject() {
                                 className="text-bold text-danger fs-5 pointCursor"
                                 onClick={() => removeDynamicFields(index)}
                               />
-                              <IoMdAddCircleOutline
+                              {/* <IoMdAddCircleOutline
                                 onClick={addDynamicFields}
                                 className="text-success text-bold fs-5 pointCursor"
-                              />
+                              /> */}
                             </div>
                           </div>
                         ))}

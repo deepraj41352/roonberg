@@ -25,27 +25,43 @@ projectRouter.get(
   isAuth,
   expressAsyncHandler(async (req, res) => {
     try {
-      // Check user's role and determine which projects to retrieve
-      const userRole = req.user.role; // Replace with the actual way you get the user's role
+
+      const userRole = req.user.role;
 
       if (userRole === 'admin' || userRole === 'superadmin') {
-        // Admin and superadmin can access all projects
         const projects = await Project.find();
-        projects.sort((a, b) => b.createdAt - a.createdAt); //for data descending order
+
+        for (const project of projects) {
+          if (Array.isArray(project.assignedAgent)) {
+            for (const assignee of project.assignedAgent) {
+              const agentId = assignee.agentId;
+              const categoryId = assignee.categoryId;
+              const agentName = await User.findById(agentId, 'first_name');
+              const categoryName = await Category.findById(categoryId, 'categoryName');
+
+              assignee.agentName = agentName?.first_name;
+              assignee.categoryName = categoryName.categoryName;
+            }
+          }
+        }
+
+
+        projects.sort((a, b) => b.createdAt - a.createdAt);
         res.json(projects);
       } else if (userRole === 'contractor') {
-        // Contractors can only access their own projects
-        const contractorId = req.user._id; // Replace with the actual way you identify the contractor
+
+        const contractorId = req.user._id;
         const projects = await Project.find({ projectOwner: contractorId });
-        projects.sort((a, b) => b.createdAt - a.createdAt); //for data descending order
+
+        projects.sort((a, b) => b.createdAt - a.createdAt);
         res.json(projects);
       } else if (userRole === 'agent') {
-        // Contractors can only access their own projects
-        const agentId = req.user._id; // Replace with the actual way you identify the contractor
+
+        const agentId = req.user._id;
         const projects = await Project.find({
           'assignedAgent.agentId': agentId,
         });
-        projects.sort((a, b) => b.createdAt - a.createdAt); //for data descending order
+        projects.sort((a, b) => b.createdAt - a.createdAt);
         res.json(projects);
       } else {
         res.status(403).json({ message: 'Access denied' });
@@ -196,13 +212,14 @@ projectRouter.put(
   })
 );
 
-// get single project by userid
+// get  projects by userid for agents and contractor
 projectRouter.get(
   '/getproject/:userId',
   expressAsyncHandler(async (req, res) => {
     try {
       const userId = req.params.userId;
       console.log('userid', userId);
+
       const projects = await Project.find({
         $or: [
           { projectOwner: userId },
@@ -211,21 +228,39 @@ projectRouter.get(
           },
         ],
       });
+
       if (!projects || projects.length === 0) {
         res.status(404).json({ message: 'No projects found for this user' });
-      } else {
-        const projectIds = projects.map((project) => project._id);
-        const conversations = await Conversation.find({
-          projectId: { $in: projectIds },
-        });
-        res.json({ projects, conversations });
+        return; // Return early to avoid further execution
       }
+
+      for (const project of projects) {
+        if (Array.isArray(project.assignedAgent)) {
+          for (const assignee of project.assignedAgent) {
+            const agentId = assignee.agentId;
+            const categoryId = assignee.categoryId;
+            const agent = await User.findById(agentId, 'first_name');
+            const category = await Category.findById(categoryId, 'categoryName');
+
+            assignee.agentName = agent?.first_name;
+            assignee.categoryName = category?.categoryName;
+          }
+        }
+      }
+
+      const projectIds = projects.map((project) => project._id);
+      const conversations = await Conversation.find({
+        projectId: { $in: projectIds },
+      });
+
+      res.json({ projects, conversations });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server error' });
     }
   })
 );
+
 
 // get single project
 projectRouter.get(
@@ -236,7 +271,20 @@ projectRouter.get(
       const project = await Project.findById(req.params.id);
       if (!project) {
         console.log(project);
+
         res.status(400).json({ message: 'Project not found' });
+      }
+
+      if (Array.isArray(project.assignedAgent)) {
+        for (const assignee of project.assignedAgent) {
+          const agentId = assignee.agentId;
+          const categoryId = assignee.categoryId;
+          const agentName = await User.findById(agentId, 'first_name');
+          const categoryName = await Category.findById(categoryId, 'categoryName');
+
+          assignee.agentName = agentName?.first_name;
+          assignee.categoryName = categoryName?.categoryName;
+        }
       }
       const conversions = await Conversation.find({ projectId: req.params.id });
       const customEmail = await CustomEmail.find({ projectId: req.params.id });
@@ -386,9 +434,8 @@ projectRouter.post(
             const newCustomEmail = new CustomEmail({
               projectId: project._id,
               contractorEmail: user.email,
-              contractorCustomEmail: `${contractorId}_${
-                project._id
-              }_${new Date().toISOString().replace(/[^0-9]/g, '')}`,
+              contractorCustomEmail: `${contractorId}_${project._id
+                }_${new Date().toISOString().replace(/[^0-9]/g, '')}`,
               agentEmail: agentEmail.email,
               agentCustomEmail: `${agentId}${project._id}${new Date()
                 .toISOString()
@@ -554,12 +601,18 @@ projectRouter.post(
           projectId: projectId,
         });
 
+        console.log("existingConversation", existingConversation)
         if (!existingConversation) {
-          const newConversation = new Conversation({
-            members: [agentId, contractorId],
-            projectId: projectId,
-          });
-          await newConversation.save();
+          try {
+            const newConversation = new Conversation({
+              members: [agentId, contractorId],
+              projectId: projectId,
+            });
+            const con = await newConversation.save();
+            console.log("New conversation saved:", con);
+          } catch (error) {
+            console.error("Error saving new conversation:", error);
+          }
         } else {
           console.log('Conversation already exists:', existingConversation);
         }
@@ -573,7 +626,7 @@ projectRouter.post(
   })
 );
 
-// Admin Assign and Update Project
+
 // projectRouter.put(
 //   "/assign-update/:id",
 //   isAuth,
@@ -742,7 +795,7 @@ projectRouter.put(
       const user = await User.findById(contractorId, 'first_name email');
       const contractorOnly = !agentIds.length;
       function capitalizeFirstLetter(data) {
-        return data.charAt(0).toUpperCase() + data.slice(1);
+        return data && data.charAt(0).toUpperCase() + data.slice(1);
       }
       const updateFields = {
         assignedAgent,
@@ -820,21 +873,53 @@ projectRouter.put(
             }
           }
         }
+        // for (const agentId of agentIds) {
+        //   const existingConversation = await Conversation.findOne({
+        //     members: [agentId, contractorId],
+        //     projectId: projectId,
+        //   });
+        //   console.log('existingConversation', existingConversation);
+        //   if (!existingConversation) {
+        //     const newConversation = new Conversation({
+        //       members: [agentId, contractorId],
+        //       projectId: projectId,
+        //     });
+        //     const con = await newConversation.save();
+        //   } else {
+        //   }
+        // }
+
         for (const agentId of agentIds) {
           const existingConversation = await Conversation.findOne({
             members: [agentId, contractorId],
             projectId: projectId,
           });
-          console.log('existingConversation', existingConversation);
-          if (!existingConversation) {
-            const newConversation = new Conversation({
-              members: [agentId, contractorId],
-              projectId: projectId,
-            });
-            const con = await newConversation.save();
+
+          console.log("existingConversation", existingConversation);
+
+          if (!existingConversation && agentIds.includes(agentId)) {
+            try {
+              const newConversation = new Conversation({
+                members: [agentId, contractorId],
+                projectId: projectId,
+              });
+              const con = await newConversation.save();
+              console.log("New conversation saved:", con);
+            } catch (error) {
+              console.error("Error saving new conversation:", error);
+            }
+          } else if (existingConversation && !agentIds.includes(agentId)) {
+            try {
+              await Conversation.findByIdAndRemove(existingConversation._id);
+              console.log("Conversation removed:", existingConversation);
+            } catch (error) {
+              console.error("Error removing conversation:", error);
+            }
           } else {
+            console.log('Conversation already exists:', existingConversation);
           }
         }
+
         for (const agentId of agentIds) {
           const agentEmail = await User.findById(agentId, 'email');
           const newCustomEmail = new CustomEmail({

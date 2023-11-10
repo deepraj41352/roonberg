@@ -52,7 +52,7 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: '_id', headerName: 'ID', width: 200 },
+  { field: '_id', headerName: 'ID', width: 220 },
   {
     field: 'first_name',
     headerName: 'Agent Name',
@@ -61,12 +61,12 @@ const columns = [
   {
     field: 'email',
     headerName: 'Email',
-    width: 100,
+    width: 210,
   },
   {
     field: 'agentCategory',
     headerName: 'Category',
-    width: 100,
+    width: 110,
   },
 ];
 
@@ -309,7 +309,7 @@ export default function AdminAgentListScreen() {
                   {
                     field: 'action',
                     headerName: 'Action',
-                    width: 250,
+                    width: 300,
                     renderCell: (params) => {
                       return (
                         <Grid item xs={8}>

@@ -90,7 +90,7 @@ function ContractorEditProject() {
             : null
         );
         setSelectedOptions(
-          ProjectDatas.projectCategory.map((item) => item.categoryId).join(',')
+          ProjectDatas.assignedAgent.map((item) => item.categoryId).join(',')
         );
 
         dispatch({ type: 'FATCH_SUCCESS', payload: ProjectDatas });
@@ -152,7 +152,7 @@ function ContractorEditProject() {
 
       if (response.status === 200) {
         toast.success('Project Updated Successfully !');
-        navigate('/adminContractorList');
+        navigate('/project-list-screen');
         setSubmit(false);
       }
     } catch (error) {
