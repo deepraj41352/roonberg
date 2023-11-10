@@ -423,12 +423,36 @@ projectRouter.post(
           }
 
           for (const agentId of agentIds) {
-            const newConversation = new Conversation({
+            const existingConversation = await Conversation.findOne({
               members: [agentId, contractorId],
-              projectId: project._id,
+              projectId: projectId,
             });
-            await newConversation.save();
+
+            console.log("existingConversation", existingConversation);
+
+            if (!existingConversation && agentIds.includes(agentId)) {
+              try {
+                const newConversation = new Conversation({
+                  members: [agentId, contractorId],
+                  projectId: projectId,
+                });
+                const con = await newConversation.save();
+                console.log("New conversation saved:", con);
+              } catch (error) {
+                console.error("Error saving new conversation:", error);
+              }
+            } else if (existingConversation && !agentIds.includes(agentId)) {
+              try {
+                await Conversation.findByIdAndRemove(existingConversation._id);
+                console.log("Conversation removed:", existingConversation);
+              } catch (error) {
+                console.error("Error removing conversation:", error);
+              }
+            } else {
+              console.log('Conversation already exists:', existingConversation);
+            }
           }
+
           for (const agentId of agentIds) {
             const agentEmail = await User.findById(agentId, 'email');
             const newCustomEmail = new CustomEmail({
@@ -601,8 +625,9 @@ projectRouter.post(
           projectId: projectId,
         });
 
-        console.log("existingConversation", existingConversation)
-        if (!existingConversation) {
+        console.log("existingConversation", existingConversation);
+
+        if (!existingConversation && agentIds.includes(agentId)) {
           try {
             const newConversation = new Conversation({
               members: [agentId, contractorId],
@@ -612,6 +637,13 @@ projectRouter.post(
             console.log("New conversation saved:", con);
           } catch (error) {
             console.error("Error saving new conversation:", error);
+          }
+        } else if (existingConversation && !agentIds.includes(agentId)) {
+          try {
+            await Conversation.findByIdAndRemove(existingConversation._id);
+            console.log("Conversation removed:", existingConversation);
+          } catch (error) {
+            console.error("Error removing conversation:", error);
           }
         } else {
           console.log('Conversation already exists:', existingConversation);
