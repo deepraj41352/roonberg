@@ -40,12 +40,6 @@ const reducer = (state, action) => {
 
 function AdminEditContractor() {
   const { id } = useParams();
-  if (id) {
-    console.log('id exists:', id);
-  } else {
-    console.log('id does not exist');
-  }
-
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -176,7 +170,7 @@ function AdminEditContractor() {
                           fullWidth
                           disabled
                         />
-                        <FormControl className="mb-3 ">
+                        <FormControl className="mb-3 selectStart">
                           <InputLabel>Select Status</InputLabel>
                           <Select
                             value={status}

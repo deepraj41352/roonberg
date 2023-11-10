@@ -80,7 +80,6 @@ function ContractorEditProject() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const ProjectDatas = response.data;
-        console.log('ProjectDatas', ProjectDatas);
         setEndDate(
           ProjectDatas.endDate ? ProjectDatas.endDate.split('T')[0] : null
         );
@@ -119,7 +118,6 @@ function ContractorEditProject() {
     fetchCategoryData();
   }, []);
 
-  console.log('selectedOptions', selectedOptions);
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -168,7 +166,6 @@ function ContractorEditProject() {
         value: item._id,
       }))
       : [];
-  // console.log(projectData);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

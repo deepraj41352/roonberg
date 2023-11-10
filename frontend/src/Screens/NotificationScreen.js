@@ -26,9 +26,6 @@ export default function NotificationScreen() {
   );
 
   const totalPages = Math.ceil(notificationMessage.length / itemsPerPage);
-
-  console.log('currentNotifications', currentNotifications);
-
   const pageNumbers = [];
   for (let i = 1; i <= totalPages; i++) {
     pageNumbers.push(i);
@@ -46,8 +43,6 @@ export default function NotificationScreen() {
   useEffect(() => {
     const handleNotification = (notifyUser, message) => {
       if (notifyUser == userInfo._id) {
-        console.log('notifyProjectFrontend', notifyUser, message);
-        // ctxDispatch({ type: 'NOTIFICATION', payload: { notifyUser, message } });
         setNotificationMessage((prevNotifications) => [
           ...prevNotifications,
           { notifyUser, message },

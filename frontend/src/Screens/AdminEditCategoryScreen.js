@@ -46,14 +46,7 @@ const reducer = (state, action) => {
 
 function AdminEditCategory() {
   const { id } = useParams();
-  if (id) {
-    console.log('id exists:', id);
-  } else {
-    console.log('id does not exist');
-  }
-
   const { state, dispatch: ctxDispatch } = useContext(Store);
-
   const { toggleState, userInfo } = state;
   const theme = toggleState ? 'dark' : 'light';
   const [
@@ -243,7 +236,7 @@ function AdminEditCategory() {
                         fullWidth
                         onChange={(e) => setCatogryDesc(e.target.value)}
                       />
-                      <FormControl className="mb-3">
+                      <FormControl className="mb-3 selectStart">
                         <InputLabel>Select Status</InputLabel>
                         <Select
                           value={status}

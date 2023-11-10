@@ -114,7 +114,6 @@ projectRouter.post(
       const project = await newProject.save();
 
       const adminEmails = await User.find({ role: 'admin' }, 'email');
-      console.log('adminId', adminEmails._id);
       const emails = adminEmails.map((user) => user.email);
       const user = await User.findById(req.user._id, 'first_name email');
 
@@ -134,7 +133,6 @@ projectRouter.post(
           const status = 'unseen';
           const type = 'project';
           storeNotification(message, notifyUser, status, type);
-          console.log('notifyProjectBackend', notifyUser, message);
           socket.emit('notifyProjectBackend', notifyUser, message);
           // const resultNotify = await storeNotification.save();
           // console.log("resultNotify", resultNotify);
@@ -193,13 +191,11 @@ projectRouter.put(
         projectOwner,
       };
       const dataprojectupdate = await project.updateOne({ $set: updatedData });
-      console.log('dataprojectupdate', dataprojectupdate);
       const notifyUser = project.projectOwner;
       const message = `Your Project has been updated `;
       const status = 'unseen';
       const type = 'project';
       storeNotification(message, notifyUser, status, type);
-      console.log('notifyProjectBackend', notifyUser, message);
       socket.emit('notifyProjectBackend', notifyUser, message);
 
       res.status(200).json('update successfully');
@@ -218,8 +214,6 @@ projectRouter.get(
   expressAsyncHandler(async (req, res) => {
     try {
       const userId = req.params.userId;
-      console.log('userid', userId);
-
       const projects = await Project.find({
         $or: [
           { projectOwner: userId },
@@ -270,8 +264,6 @@ projectRouter.get(
       const user = await Project.findById(req.params.id);
       const project = await Project.findById(req.params.id);
       if (!project) {
-        console.log(project);
-
         res.status(400).json({ message: 'Project not found' });
       }
 
@@ -366,8 +358,6 @@ projectRouter.post(
         });
 
         const project = await newProject.save();
-        console.log(project, 'projectproject');
-
         const agentEmails = await User.find(
           { _id: { $in: agentIds } },
           'email'
@@ -416,7 +406,6 @@ projectRouter.post(
                 storeNotification(message, notifyUser, status, type);
                 socket.emit('notifyProjectBackend', notifyUser, message);
               }
-              // console.log("resultNotify", resultNotify);
             }
           } else {
             console.log('email not send');

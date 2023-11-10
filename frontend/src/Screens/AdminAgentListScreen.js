@@ -178,7 +178,6 @@ export default function AdminAgentListScreen() {
         },
         { headers: { Authorization: `Bearer ${userInfo.token}` } }
       );
-      console.log(response);
       if (response.status === 200) {
         toast.success('Agent Created Successfully !');
         setIsModelOpen(false);
@@ -235,7 +234,6 @@ export default function AdminAgentListScreen() {
   const handleEdit = (userid) => {
     navigate(`/adminEditAgent/${userid}`);
   };
-  console.log('selectcategory', selectcategory);
 
   return (
     <>
@@ -351,7 +349,7 @@ export default function AdminAgentListScreen() {
             <Modal
               open={isModelOpen}
               onClose={handleCloseRow}
-              className="overlayLoading"
+              className="overlayLoading modaleWidth"
             >
               <Box
                 className="modelBg"
@@ -388,7 +386,7 @@ export default function AdminAgentListScreen() {
                     className={
                       submitting
                         ? 'scrollInAdminproject p-4 '
-                        : 'scrollInAdminproject px-1'
+                        : 'scrollInAdminproject p-3'
                     }
                     onSubmit={handleSubmit}
                   >

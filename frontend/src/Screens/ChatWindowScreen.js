@@ -17,7 +17,12 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { format } from 'timeago.js';
-import { BsDownload, BsFillMicFill, BsFillMicMuteFill } from 'react-icons/bs';
+import {
+  BsDownload,
+  BsFillMicFill,
+  BsFillMicMuteFill,
+  BsThreeDotsVertical,
+} from 'react-icons/bs';
 import { FiUpload } from 'react-icons/fi';
 import Modal from 'react-bootstrap/Modal';
 import { ColorRing, ThreeDots } from 'react-loader-spinner';
@@ -54,6 +59,7 @@ function ChatWindowScreen() {
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
 
   const [showImage, setShowImage] = useState(false);
 
@@ -70,8 +76,6 @@ function ChatWindowScreen() {
         selectedfile.type.includes('audio')
           ? 'video'
           : 'image';
-
-      //console.log('Media Type:', mediaType);
       setMediaType(mediaType);
     }
   }, [selectedfile]);
@@ -95,7 +99,6 @@ function ChatWindowScreen() {
       setAudioStream(data.audio);
     });
     socket.current.on('audioFile', (data) => {
-      // console.log("audioFile ", data.audio);
       setArrivalMessage({
         senderFirstName: data.senderFirstName,
         senderLastName: data.senderLastName,
@@ -107,7 +110,6 @@ function ChatWindowScreen() {
       setAudioStream(data.audio);
     });
     socket.current.on('video', (data) => {
-      // console.log("vedoodile ", data.video);
       setArrivalMessage({
         senderFirstName: data.senderFirstName,
         senderLastName: data.senderLastName,
@@ -120,7 +122,6 @@ function ChatWindowScreen() {
     });
 
     socket.current.on('image', (data) => {
-      // console.log("image", data);
       setArrivalMessage({
         senderFirstName: data.senderFirstName,
         senderLastName: data.senderLastName,
@@ -131,7 +132,6 @@ function ChatWindowScreen() {
       });
     });
     socket.current.on('getMessage', (data) => {
-      // console.log("data ", data);
       setArrivalMessage({
         senderFirstName: data.senderFirstName,
         senderLastName: data.senderLastName,
@@ -185,7 +185,6 @@ function ChatWindowScreen() {
           const audioBlob = new Blob(audioChunks.current, {
             type: 'audio/wav',
           });
-          //console.log('audiobulb', audioBlob);
           if (userInfo.role === 'admin' || userInfo.role === 'superadmin') {
             const messageData = {
               senderFirstName: userInfo.first_name,
@@ -195,9 +194,7 @@ function ChatWindowScreen() {
               receiverdId: conversationID.members,
               audio: audioBlob,
             };
-            //console.log('messageData', messageData);
             socket.current.emit('audio', messageData);
-            // socket.current.emit('audio', audioBlob);
             audioChunks.current.length = 0;
           } else {
             const messageData = {
@@ -208,9 +205,7 @@ function ChatWindowScreen() {
               receiverdId: receiverdId,
               audio: audioBlob,
             };
-            //console.log('messageData', messageData);
             socket.current.emit('audio', messageData);
-            // socket.current.emit('audio', audioBlob);
             audioChunks.current.length = 0;
           }
 
@@ -300,7 +295,6 @@ function ChatWindowScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         }
       );
-      console.log('dataaaa', data);
       if (data.status === 200) {
         toast.success('Project Status updated Successfully !');
       }
@@ -362,7 +356,6 @@ function ChatWindowScreen() {
       e.preventDefault();
     }
     const file = e.target.files[0];
-    console.log('file', file);
     if (isFileSizeValid(file)) {
       SetFileForModel(file);
       setShowModal(true);
@@ -398,7 +391,6 @@ function ChatWindowScreen() {
     const receiverdId = conversationID.members.find(
       (member) => member !== userInfo._id
     );
-    console.log('receiverdId', receiverdId);
     if (selectedImage) {
       if (userInfo.role === 'admin' || userInfo.role === 'superadmin') {
         const messageData = {
@@ -555,8 +547,6 @@ function ChatWindowScreen() {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages, newMessage]);
 
-  // console.log("conversationID ", conversationID);
-  // console.log("chatMessages ", chatMessages);
   const handleClose = () => {
     setShowImage(false);
     setShowModal(false);
@@ -584,7 +574,6 @@ function ChatWindowScreen() {
   const [editorValue, setEditorValue] = useState({ content: '' });
   const handleEditorChange = (data) => {
     // setEditorValue({content});
-    console.log('content ', data);
     setNewMessage(data);
   };
 
@@ -605,14 +594,86 @@ function ChatWindowScreen() {
     setShowImage(true);
     setImageUrl(e.target.src);
   };
+  const toggleSidebar = () => {
+    setSidebarVisible(!sidebarVisible);
+  };
 
-  console.log('image for the modal', imageUrl);
   return (
     <div className=" justify-content-center align-items-center">
       <div className="d-flex justify-content-center gap-3 ">
-        <Card className="chatWindow mt-3">
-          <CardHeader>{chatOpositeMember} </CardHeader>
+        <Card className="chatWindow">
+          <CardHeader className="d-flex">
+            <div className="ChatName">{chatOpositeMember}</div>
 
+            <div className="" onClick={toggleSidebar}>
+              <BsThreeDotsVertical className="pt-1 threeDot" />
+            </div>
+          </CardHeader>
+          {sidebarVisible ? (
+            <div className="Chatside">
+              <Card className="chatWindowProjectInfo1">
+                {projectData ? (
+                  <Form className="px-3">
+                    <Form.Group className="mb-3 projetStatusChat">
+                      <Form.Label className="fw-bold">Project Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="projectName"
+                        disabled
+                        value={projectData && projectData.projectName}
+                      />
+                    </Form.Group>
+                    <Form.Group className="mb-3 " controlId="formBasicPassword">
+                      <Form.Label className="mb-1 fw-bold">
+                        Project Status
+                      </Form.Label>
+                      <Form.Select
+                        value={projectStatus}
+                        onChange={handleStatusUpdate}
+                      >
+                        <option value="active">Active</option>
+                        <option value="completed">Completed </option>
+                        <option value="qued">Qued </option>
+                      </Form.Select>
+                    </Form.Group>
+                    <Modal show={showModal} onHide={handleClose}>
+                      <Modal.Header closeButton>
+                        <Modal.Title>File Selected</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                        Your file has been selected.
+                        <h4> {fileForModel?.name}</h4>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button
+                          className="btn-send"
+                          onClick={handleSendMessage}
+                        >
+                          send
+                        </Button>
+                      </Modal.Footer>
+                    </Modal>
+                  </Form>
+                ) : (
+                  <div className="d-flex mt-3 justify-content-center">
+                    <ThreeDots
+                      height="50"
+                      width="50"
+                      radius="9"
+                      className="ThreeDot  justify-content-center"
+                      color="#0e0e3d"
+                      ariaLabel="three-dots-loading"
+                      wrapperStyle={{}}
+                      wrapperClassName=""
+                      visible={true}
+                    />
+                  </div>
+                )}
+              </Card>
+            </div>
+          ) : (
+            ''
+          )}
           <CardBody className="chatWindowBody pb-0">
             {chatMessages.map((item) => (
               <>
@@ -794,7 +855,7 @@ function ChatWindowScreen() {
                               )}
                             </>
                           )}
-                          <div className="timeago">
+                          <div className="text-start timeago">
                             {format(item.createdAt)}
                           </div>
                         </div>
@@ -915,7 +976,7 @@ function ChatWindowScreen() {
             )}
           </CardFooter>
         </Card>
-        <Card className="chatWindowProjectInfo mt-3">
+        <Card className="chatWindowProjectInfo">
           {projectData ? (
             <Form className="px-3">
               <Form.Group className="mb-3 projetStatusChat">

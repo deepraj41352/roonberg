@@ -59,10 +59,7 @@ function SignUpForm() {
 
       toast.success('Login successful');
       const socket = io('ws://localhost:8900');
-      socket.on('connectionForNotify', (data) => {
-        console.log('oiuhjioyhi', data);
-      });
-
+      socket.on('connectionForNotify', (data) => { });
 
       navigate('/dashboard');
     } catch (err) {
@@ -145,7 +142,9 @@ function SignUpForm() {
                   {isSubmiting ? 'SUBMITTING' : 'SUBMIT '}
                 </Button>
                 <Form.Group className="my-3">
-                  <Link to="/ForgetPassword" >Forgot Password?</Link>
+                  <Link to="/ForgetPassword" className="forgotPass">
+                    Forgot Password?
+                  </Link>
                 </Form.Group>
               </Form>
             </Card>

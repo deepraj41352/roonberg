@@ -495,14 +495,14 @@ body {
 .login-nav {
   gap: 10px !important;
 }
-/* .login-admin {
-  background-color: #2563eb !important;
+.login-admin {
+  background-color: RGB(14, 14, 61) !important;
   padding: 4px 17px !important;
   border-radius: 8px;
   color: white !important;
   height: 33px !important;
-} */
-.main-div {
+}
+*/ .main-div {
   background-color: white !important;
   padding: 21px 21px !important;
   border-bottom: 1px solid #e2e8f0 !important;
@@ -694,7 +694,7 @@ body {
 .chatboxes {
   max-width: 50%;
   min-width: 48% !important;
-  max-height: 115px;
+  max-height: 120px;
 }
 .projectScreenCard-outer {
   margin: 0 auto;
@@ -767,8 +767,10 @@ body {
 .chatWindow {
   height: calc(100vh - 90px) !important;
   width: 60%;
+  margin: 0 0 10px 0 !important;
 }
 .chatWindowProjectInfo {
+  margin: 0 0 10px 0 !important;
   width: 25%;
 }
 .timeago {
@@ -1106,7 +1108,7 @@ body {
   border-radius: 11px !important;
   color: black;
   background-color: #b9c9da;
-  width: 12%;
+  width: 115px;
   padding: 0 !important;
 }
 
@@ -1116,8 +1118,189 @@ body {
 .list-group-item-light {
   background-color: #afb4b9 !important;
 }
-/* new */
-.assignContainer {
+
+.Datevalidation {
+  color: red;
+  font-size: 11px;
+  margin-top: -10px;
+  padding: 0px 10px 13px 10px;
+}
+.marginDate {
+  margin-bottom: 10px !important;
+}
+.css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root {
+  margin-bottom: 10px !important;
+}
+
+.editImgParent {
+  position: relative;
+}
+.editImgChild {
+  position: absolute;
+  left: 35px;
+  bottom: -20px;
+}
+.editImgBtn {
+  border: none;
+  border-radius: 25px;
+  background-color: #052c65;
+  width: 28px;
+  height: 28px;
+  text-align: center;
+  cursor: pointer;
+}
+.editCateImgContainer {
+  height: 65px !important;
+  width: 65px !important;
+}
+.resetFormWidth,
+.formWidth,
+.validationMsg {
   width: 100%;
-  min-width: 150px;
+  min-width: 400px;
+}
+.editFormWidth {
+  width: 100%;
+  min-width: 300px;
+}
+
+.editCartForm {
+  width: 100%;
+}
+
+@media screen and (max-width: 450px) {
+  .formWidth {
+    min-width: 300px;
+  }
+  .validationMsg {
+    min-width: 300px;
+  }
+  .resetFormWidth {
+    min-width: 250px;
+  }
+  .editFormWidth {
+    width: 100%;
+    min-width: 232px;
+  }
+}
+
+/* dipak chouhan */
+
+.searchbar1 {
+  display: none;
+}
+@media screen and (max-width: 450px) {
+  .NotificationMsg {
+    text-align: center;
+    padding-bottom: 10px;
+  }
+  li.list-group-item.custom-list-item.list-group-item-dark {
+    flex-direction: column;
+  }
+  .modaleWidth .modelBg.MuiBox-root.css-1acyv19 {
+    max-width: 275px;
+    padding: 0;
+  }
+  .cateLogoImgLabel {
+    left: 30% !important;
+    width: 133px;
+    display: flex !important;
+    align-items: end;
+    justify-content: end;
+  }
+  .searchbar1 {
+    display: block !important;
+    max-width: 250px;
+    padding: 10px;
+  }
+  .searchbar {
+    display: none;
+  }
+}
+.forgotPass {
+  color: RGB(14, 14, 61) !important;
+  text-decoration: none;
+  font-weight: bold;
+}
+.form-check-input:checked {
+  background-color: RGB(14, 14, 61) !important;
+  border-color: white !important;
+}
+.selectStart {
+  text-align: start;
+}
+.confirm-button {
+  background-color: RGB(14, 14, 61) !important;
+}
+.fade.error.validationMsg.alert.alert-danger.show {
+  max-width: 150px !important;
+}
+.dropTab1 {
+  display: none;
+}
+@media screen and (max-width: 580px) {
+  .dropTab {
+    display: none !important;
+  }
+  .dropTab1 {
+    display: block !important;
+  }
+  .dropTab1 button#dropdown-tabs {
+    width: 100% !important;
+    background-color: #3c3c5a !important;
+  }
+  .dropMenu {
+    inset: 0px 2px auto 2px !important;
+  }
+  .dropMenuCon {
+    display: flex !important;
+    justify-content: center !important;
+    color: RGB(14, 14, 61) !important;
+  }
+  .dropMenuCon:focus,
+  .dropMenuCon:hover {
+    color: white !important;
+    background-color: RGB(14, 14, 61) !important;
+  }
+  .badgeAll:focus,
+  .badgeAll:hover {
+    color: white !important;
+  }
+  .badgeAll {
+    background: transparent !important;
+    color: red !important;
+    top: 0px !important;
+    bottom: 15px !important;
+    right: 10px !important;
+    position: absolute !important;
+  }
+  .chatWindowProjectInfo {
+    display: none !important;
+  }
+  .chatWindow {
+    width: 95%;
+  }
+  .ChatName {
+    flex: 1;
+  }
+  .threeDot {
+    display: block !important;
+  }
+}
+.threeDot {
+  display: none;
+}
+.Chatside {
+  position: absolute;
+  /* width: auto; */
+  /* min-height: auto; */
+  padding: 15px;
+  right: 0;
+  top: 42px;
+  bottom: 55px;
+  background-color: #070719;
+  color: #fff;
+  white-space: nowrap;
+  overflow-x: hidden;
+  transition: width 0.8s ease-in-out;
 }

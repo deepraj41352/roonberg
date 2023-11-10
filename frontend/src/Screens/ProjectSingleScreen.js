@@ -71,7 +71,6 @@ function ProjectSingleScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const ProjectDatas = response.data;
-        console.log('ProjectDatas', ProjectDatas);
         setEndDate(
           ProjectDatas.endDate ? ProjectDatas.endDate.split('T')[0] : null
         );
@@ -92,7 +91,6 @@ function ProjectSingleScreen() {
 
     fetchProjectData();
   }, []);
-  console.log('project== datass', projectData);
   useEffect(() => {
     const fetchCategoryData = async () => {
       try {
@@ -110,7 +108,6 @@ function ProjectSingleScreen() {
     fetchCategoryData();
   }, []);
 
-  console.log('selectedOptions', selectedOptions);
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -142,7 +139,6 @@ function ProjectSingleScreen() {
 
       if (response.status === 200) {
         toast.success('Project updated Successfully !');
-        console.log(response);
       }
     } catch (error) {
       console.error('API Error:', error);
@@ -156,7 +152,6 @@ function ProjectSingleScreen() {
           value: item._id,
         }))
       : [];
-  // console.log(projectData);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

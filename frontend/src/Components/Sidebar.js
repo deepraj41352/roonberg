@@ -32,7 +32,6 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
   // const socket = io(SocketUrl);
   // const socket = io('https://roonsocket.onrender.com'); // Replace with your server URL
 
-  console.log('socket ', socket);
   socket.emit('connectionForNotify', () => {
     console.log('oiuhjioyhi');
   });
@@ -48,7 +47,6 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
   useEffect(() => {
     const handleNotification = (notifyUser, message) => {
       if (notifyUser == userInfo._id) {
-        console.log('notifyProjectFrontend', notifyUser, message);
         ctxDispatch({ type: 'NOTIFICATION', payload: { notifyUser, message } });
       }
     };
@@ -73,8 +71,6 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
     };
     socket.on('notifyUserFrontend', handleNotification);
   }, []);
-
-  console.log('NotificationData', NotificationData);
 
   const signoutHandler = () => {
     const userConfirm = window.confirm('Are you sure you want to logout?');
@@ -129,7 +125,6 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
   }, []);
 
   const uniqueNotificationData = [...new Set(NotificationData)];
-  console.log('uniqueNotificationData ', uniqueNotificationData);
   useEffect(() => {
     const noteData = [...NotificationData];
     const data = noteData.filter((note) => {
@@ -345,7 +340,11 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
             </div>
           </li>
         </Link>
-        <Link to="/profile-screen" className="text-decoration-none disNonePro">
+        <Link
+          to="/profile-screen"
+          className="text-decoration-none disNonePro"
+          onClick={handlSmallScreeneClick}
+        >
           <li
             className={selectedItem === 'categoriesList' ? 'selected' : ''}
             onClick={() => {

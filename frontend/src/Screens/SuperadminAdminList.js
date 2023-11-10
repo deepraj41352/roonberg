@@ -178,7 +178,6 @@ export default function SuperadminAdminList() {
         },
         { headers: { Authorization: `Bearer ${userInfo.token}` } }
       );
-      console.log(response);
       if (response.status === 200) {
         toast.success('Admin Created Successfully !');
         setIsModelOpen(false);
@@ -235,7 +234,6 @@ export default function SuperadminAdminList() {
   const handleEdit = (userid) => {
     navigate(`/superadmineditadmin/${userid}`);
   };
-  console.log('selectcategory', selectcategory);
   return (
     <>
       {loading ? (
@@ -267,7 +265,7 @@ export default function SuperadminAdminList() {
             <BiPlusMedical className="mx-2" />
             Add Admin
           </Button>
-          <div className="overlayLoading">
+          <div className="overlayLoading ">
             {isDeleting && (
               <div className="overlayLoadingItem1">
                 <ColorRing
@@ -349,7 +347,7 @@ export default function SuperadminAdminList() {
           <Modal
             open={isModelOpen}
             onClose={handleCloseRow}
-            className="overlayLoading"
+            className="overlayLoading modaleWidth"
           >
             <Box
               className="modelBg"
@@ -389,7 +387,7 @@ export default function SuperadminAdminList() {
                     className={
                       submitting
                         ? 'scrollInAdminproject p-4 '
-                        : 'scrollInAdminproject px-1'
+                        : 'scrollInAdminproject p-3'
                     }
                   >
                     <ImCross

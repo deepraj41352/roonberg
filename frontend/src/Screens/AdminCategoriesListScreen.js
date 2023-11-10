@@ -162,7 +162,6 @@ export default function AdminContractorListScreen() {
         dispatch('FATCH_REQUEST');
         const response = await axios.get(`/api/category/`);
         const datas = response.data;
-        console.log(datas);
         const rowData = datas.map((items) => {
           return {
             ...items,
@@ -211,7 +210,6 @@ export default function AdminContractorListScreen() {
           authorization: `Bearer ${userInfo.token}`,
         },
       });
-      console.log(data.message);
       toast.success('Category Created Successfully !');
       dispatch({ type: 'UPDATE_SUCCESS' });
       dispatch({ type: 'FATCH_SUBMITTING', payload: false });
@@ -379,7 +377,11 @@ export default function AdminContractorListScreen() {
                 />
               </Box>
             </div>
-            <Modal open={isModelOpen} onClose={handleCloseRow}>
+            <Modal
+              open={isModelOpen}
+              onClose={handleCloseRow}
+              className="overlayLoading modaleWidth"
+            >
               <Box
                 className="modelBg"
                 sx={{
@@ -415,7 +417,7 @@ export default function AdminContractorListScreen() {
                     className={
                       submitting
                         ? 'scrollInAdminproject p-4 '
-                        : 'scrollInAdminproject px-1'
+                        : 'scrollInAdminproject p-3'
                     }
                   >
                     <ImCross
@@ -463,7 +465,7 @@ export default function AdminContractorListScreen() {
                     />
                     <FormControl className="mb-3 cateLogoImgContainer">
                       <InputLabel className="cateLogoImgLabel">
-                        Upload Category Logo
+                        Upload Logo
                       </InputLabel>
                       <Input
                         type="file"

@@ -6,7 +6,7 @@ import { MdEdit } from 'react-icons/md';
 import { MdAddCircleOutline, MdPlaylistRemove } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
-import { Badge, Form } from 'react-bootstrap';
+import { Badge, Dropdown, Form } from 'react-bootstrap';
 import { BiPlusMedical } from 'react-icons/bi';
 import { Store } from '../Store';
 import axios from 'axios';
@@ -33,6 +33,7 @@ import { ImCross } from 'react-icons/im';
 import DatePicker from '@mui/lab/DatePicker';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import 'bootstrap/dist/css/bootstrap.min.css';
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FATCH_REQUEST':
@@ -159,7 +160,6 @@ export default function AdminProjectListScreen() {
   };
 
   const handleAgentChange = (index, key, value) => {
-    console.log('Value received:', value);
     const updatedAgents = [...agents];
     updatedAgents[index] = {
       ...updatedAgents[index],
@@ -280,8 +280,6 @@ export default function AdminProjectListScreen() {
             projectOwner: contractor ? contractor.first_name : 'N/C',
           };
         });
-        console.log(datas);
-
         dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
       } catch (error) {
         console.log(error);
@@ -289,7 +287,6 @@ export default function AdminProjectListScreen() {
     };
     if (successDelete) {
       dispatch({ type: 'DELETE_RESET' });
-      console.log('loading', loading);
     } else if (successUpdate) {
       dispatch({ type: 'UPDATE_RESET' });
     } else {
@@ -436,6 +433,11 @@ export default function AdminProjectListScreen() {
   const moreFieldsopen = () => {
     setMorefieldsModel(true);
   };
+  const [selectedTab, setSelectedTab] = useState('All');
+
+  const handleTabSelect = (tab) => {
+    setSelectedTab(tab);
+  };
 
   return (
     <>
@@ -483,17 +485,83 @@ export default function AdminProjectListScreen() {
                   />
                 </div>
               )}
+
+              <Dropdown className={`mb-0 dropTab1 tab-btn ${theme}Tab`}>
+                <Dropdown.Toggle variant="secondary" id="dropdown-tabs">
+                  Select a Tab
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu className="dropMenu">
+                  <Dropdown.Item
+                    className="dropMenuCon"
+                    onClick={() => handleTabSelect('All')}
+                  >
+                    <span class="position-relative">
+                      All
+                      <span class=" badgesclass badgeAll top-0 start-112 translate-middle badge rounded-pill">
+                        {projectData.length}
+                      </span>
+                    </span>
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    className="dropMenuCon"
+                    onClick={() => handleTabSelect('Active')}
+                  >
+                    <span class="position-relative">
+                      Active
+                      <span class=" badgesclass badgeAll top-0 start-112 translate-middle badge rounded-pill ">
+                        {projectActiveData.length}
+                      </span>
+                    </span>
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    className="dropMenuCon"
+                    onClick={() => handleTabSelect('Completed')}
+                  >
+                    <span class="position-relative">
+                      Completed
+                      <span class=" badgesclass badgeAll top-0 start-112 translate-middle badge rounded-pill">
+                        {projectCompleteData.length}
+                      </span>
+                    </span>
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    className="dropMenuCon"
+                    onClick={() => handleTabSelect('Qued')}
+                  >
+                    <span className="position-relative">
+                      Qued
+                      <span className="badgesclass badgeAll top-0 start-112 translate-middle badge rounded-pill">
+                        {projectQuedData.length}
+                      </span>
+                    </span>
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    className="dropMenuCon"
+                    onClick={() => handleTabSelect('Assigned')}
+                  >
+                    <span className="position-relative">
+                      Qued
+                      <span className="badgesclass badgeAll top-0 start-112 translate-middle badge rounded-pill">
+                        {projectQuedData.length}
+                      </span>
+                    </span>
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+
               <Tabs
-                defaultActiveKey="All"
+                activeKey={selectedTab}
+                onSelect={(tab) => handleTabSelect(tab)}
                 id="uncontrolled-tab-example"
-                className={`mb-0  tab-btn ${theme}Tab`}
+                className={`mb-0 dropTab tab-btn ${theme}Tab`}
               >
                 <Tab
                   className="tab-color"
                   eventKey="All"
                   title={
                     <span class="position-relative">
-                      All{' '}
+                      All
                       <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
                         {projectData.length}
                       </span>
@@ -549,71 +617,12 @@ export default function AdminProjectListScreen() {
                       checkboxSelection
                       disableRowSelectionOnClick
                     />
-
-                    {/* <Tabs
-                        defaultActiveKey="All"
-                        id="uncontrolled-tab-example"
-                        className={`mb-0  tab-btn ${theme}Tab`}
-                      >
-                        <Tab className="tab-color" eventKey="All" title="All"> */}
-
-                    {/* <Box sx={{ height: 400, width: '100%' }}>
-                            <DataGrid
-                              className={
-                                theme == "light"
-                                  ? `${theme}DataGrid`
-                                  : `tableBg ${theme}DataGrid`
-                              }
-                              rows={projectData}
-                              columns={[
-                                ...columns,
-                                {
-                                  field: 'action',
-                                  headerName: 'Action',
-                                  width: 250,
-                                  renderCell: (params) => {
-                                    return (
-                                      <Grid item xs={8}>
-
-                                        <Button
-                                          variant="contained"
-                                          className="mx-2 tableEditbtn"
-                                          onClick={() => handleEdit(params.row._id)}
-
-                                        >
-                                          Edit
-                                        </Button>
-
-                                        <Button
-                                          variant="outlined"
-                                          className="mx-2 tableDeletebtn"
-                                          onClick={() => deleteHandle(params.row._id)}
-
-                                        >
-                                          Delete
-                                        </Button>
-                                      </Grid>
-                                    );
-                                  },
-
-                                },
-                              ]}
-                              getRowId={(row) => row._id}
-                              initialState={{
-                                pagination: {
-                                  paginationModel: {
-                                    pageSize: 5,
-                                  },
-                                },
-                              }}
-                              pageSizeOptions={[5]}
-                              checkboxSelection
-                              disableRowSelectionOnClick
-                              localeText={{ noRowsLabel: "Project Data Is Not Avalible" }}
-                            /> */}
                   </Box>
-
-                  <Modal open={isModelOpen} onClose={handleCloseRow}>
+                  <Modal
+                    open={isModelOpen}
+                    onClose={handleCloseRow}
+                    className="overlayLoading modaleWidth p-0"
+                  >
                     <Box
                       className="modelBg"
                       sx={{
@@ -650,7 +659,7 @@ export default function AdminProjectListScreen() {
                           className={
                             isSubmiting
                               ? 'scrollInAdminproject p-4 '
-                              : 'scrollInAdminproject px-3'
+                              : 'scrollInAdminproject p-3'
                           }
                           onSubmit={handleSubmit}
                         >
@@ -723,7 +732,6 @@ export default function AdminProjectListScreen() {
                                     )
                                   }
                                 >
-                                  {/* <MenuItem disabled={agent.categoryId !== ''}>Category</MenuItem> */}
                                   {categoryData.map((category) => (
                                     <MenuItem
                                       key={category._id}
@@ -749,7 +757,6 @@ export default function AdminProjectListScreen() {
                                     )
                                   }
                                 >
-                                  {/* <MenuItem disabled={agent.agentId !== ''}>Agent</MenuItem> */}
                                   {assignedAgentByCateHandle(index).map(
                                     (agent) => (
                                       <MenuItem
@@ -804,7 +811,6 @@ export default function AdminProjectListScreen() {
                                 label="End Date"
                                 required
                                 value={endDate}
-                                // onChange={(date) => setEndDate(date)}
                                 onChange={(newValue) =>
                                   validateDates(startDate, newValue)
                                 }
@@ -842,7 +848,7 @@ export default function AdminProjectListScreen() {
                   eventKey="Active"
                   title={
                     <span class="position-relative">
-                      Active{' '}
+                      Active
                       <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
                         {projectActiveData.length}
                       </span>
@@ -905,7 +911,7 @@ export default function AdminProjectListScreen() {
                   eventKey="Completed"
                   title={
                     <span class="position-relative">
-                      Completed{' '}
+                      Completed
                       <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
                         {projectCompleteData.length}
                       </span>
@@ -1027,7 +1033,6 @@ export default function AdminProjectListScreen() {
                     />
                   </Box>
                 </Tab>
-
                 <Tab className="tab-color" eventKey="Assigned" title="Assigned">
                   <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
@@ -1055,15 +1060,6 @@ export default function AdminProjectListScreen() {
                                 >
                                   Assign
                                 </Button>
-
-                                {/* <Button
-                              variant="outlined"
-                              className="mx-2 tableDeletebtn"
-                              onClick={() => deleteHandle(params.row._id)}
-                              
-                            >
-                              Delete
-                            </Button> */}
                               </Grid>
                             );
                           },
@@ -1082,6 +1078,30 @@ export default function AdminProjectListScreen() {
                       disableRowSelectionOnClick
                     />
                   </Box>
+                </Tab>
+              </Tabs>
+
+              {/* Tabs */}
+              <Tabs
+                activeKey={selectedTab}
+                onSelect={(tab) => handleTabSelect(tab)}
+                id="uncontrolled-tab-example"
+                className="mb-0 dropTab tab-btn"
+              >
+                <Tab eventKey="All" title="All">
+                  1
+                </Tab>
+                <Tab eventKey="Active" title="Active">
+                  2
+                </Tab>
+                <Tab eventKey="Completed" title="Completed">
+                  3
+                </Tab>
+                <Tab eventKey="Qued" title="Qued">
+                  3
+                </Tab>
+                <Tab eventKey="Assigned" title="Assigned">
+                  4
                 </Tab>
               </Tabs>
             </div>
