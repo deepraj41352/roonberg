@@ -57,8 +57,7 @@ code {
 }
 .assignCon {
   height: 100%;
-
-  max-height: 200px;
+  max-height: 136px;
   overflow-y: auto;
 }
 .cateEdit,
@@ -1240,4 +1239,12 @@ body {
   white-space: nowrap;
   overflow-x: hidden;
   transition: width 0.8s ease-in-out;
+}
+.css-1ald77x {
+  background-color: white !important;
+}
+.startLabel,
+.startLabel .form-check-label {
+  display: flex !important;
+  padding-left: 10px;
 }

@@ -59,7 +59,7 @@ function SignUpForm() {
 
       toast.success('Login successful');
       const socket = io('ws://localhost:8900');
-      socket.on('connectionForNotify', (data) => { });
+      socket.on('connectionForNotify', (data) => {});
 
       navigate('/dashboard');
     } catch (err) {
@@ -88,7 +88,7 @@ function SignUpForm() {
             <Card>
               <Form onSubmit={submitHandler} className="p-4 formWidth ">
                 <Form.Group className="mb-3" controlId="formBasicEmail">
-                  <Form.Label className="mb-1 input-box">
+                  <Form.Label className="mb-1 input-box startLabel">
                     Email address
                   </Form.Label>
                   <Form.Control
@@ -103,7 +103,7 @@ function SignUpForm() {
                 </Form.Group>
                 <Validations type="email" value={email} />
                 <Form.Group className="mb-3" controlId="formBasicPassword">
-                  <Form.Label className="mb-1">Password</Form.Label>
+                  <Form.Label className="mb-1 startLabel">Password</Form.Label>
                   <div className="Password-input-eye">
                     <div className=" rounded-2">
                       <Form.Control
@@ -124,7 +124,7 @@ function SignUpForm() {
                     </div>
                   </div>
                   <Form.Check
-                    className="mt-3"
+                    className="mt-3 startLabel"
                     type="checkbox"
                     label="Remember me"
                     onChange={(e) => {

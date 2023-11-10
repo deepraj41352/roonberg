@@ -175,7 +175,7 @@ function AdminEditProject() {
         const response = await axios.post(`/api/user/`, { role: 'contractor' });
         const datas = response.data;
         dispatch({ type: 'FATCH_CONTRACTOR', payload: datas });
-      } catch (error) { }
+      } catch (error) {}
     };
     FatchContractorData();
   }, []);
@@ -187,7 +187,7 @@ function AdminEditProject() {
         const response = await axios.post(`/api/user/`, { role: 'agent' });
         const datas = response.data;
         dispatch({ type: 'FATCH_AGENTS', payload: datas });
-      } catch (error) { }
+      } catch (error) {}
     };
     FatchAgentData();
   }, []);
@@ -520,21 +520,21 @@ function AdminEditProject() {
                   <Card.Header className={`${theme}CardHeader`}>
                     Chats
                   </Card.Header>
-                  <Card.Body className="d-flex flex-wrap gap-3 ">
+                  <Card.Body className="d-flex justify-content-center flex-wrap gap-3 assignCon ">
                     <div
                       className="text-center w-100"
                       style={{
                         display:
                           projectData &&
-                            projectData.conversions &&
-                            projectData.conversions.length < 1
+                          projectData.conversions &&
+                          projectData.conversions.length < 1
                             ? 'block'
                             : 'none',
                       }}
                     >
                       No Chat Available
                     </div>
-
+                    {console.log(projectData?.conversions)}
                     {projectData?.conversions?.map((conversion) => {
                       const assignedAgent = projectData.assignedAgent.find(
                         (assignedAgent) =>
@@ -555,7 +555,7 @@ function AdminEditProject() {
                                         <Button
                                           className="chatBtn"
                                           type="button"
-                                        // onClick={conversionHandler(conversion._id)}
+                                          // onClick={conversionHandler(conversion._id)}
                                         >
                                           Chat Now
                                         </Button>
@@ -581,7 +581,7 @@ function AdminEditProject() {
                                         <Button
                                           className="chatBtn"
                                           type="button"
-                                        // onClick={conversionHandler(conversion._id)}
+                                          // onClick={conversionHandler(conversion._id)}
                                         >
                                           {assignedAgent.agentName}
                                         </Button>
@@ -609,7 +609,7 @@ function AdminEditProject() {
                             key={index}
                           >
                             <FormControl className="mb-3 ">
-                              <InputLabel className='px-2'>Category</InputLabel>
+                              <InputLabel className="px-2">Category</InputLabel>
                               <Select
                                 className="cateEdit"
                                 value={agentCatData.categoryId}
@@ -621,24 +621,25 @@ function AdminEditProject() {
                                   )
                                 }
                               >
-                                {categoryData && categoryData.map((category) => (
-                                  <MenuItem
-                                    key={category._id}
-                                    value={category._id}
-                                    disabled={agents.some(
-                                      (a) => a.categoryId === category._id
-                                    )}
-                                    className={
-                                      agents.some(
+                                {categoryData &&
+                                  categoryData.map((category) => (
+                                    <MenuItem
+                                      key={category._id}
+                                      value={category._id}
+                                      disabled={agents.some(
                                         (a) => a.categoryId === category._id
-                                      )
-                                        ? 'disabledMenuItem'
-                                        : ''
-                                    }
-                                  >
-                                    {category.categoryName}
-                                  </MenuItem>
-                                ))}
+                                      )}
+                                      className={
+                                        agents.some(
+                                          (a) => a.categoryId === category._id
+                                        )
+                                          ? 'disabledMenuItem'
+                                          : ''
+                                      }
+                                    >
+                                      {category.categoryName}
+                                    </MenuItem>
+                                  ))}
                               </Select>
                             </FormControl>
                             <FormControl className="mb-3">

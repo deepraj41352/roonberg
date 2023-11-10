@@ -350,9 +350,10 @@ export default function AdminProjectListScreen() {
         dispatch({ type: 'UPDATE_SUCCESS', payload: true });
       }
     } catch (error) {
-      toast.error(error.response);
-      console.log(error);
-      setIsSubmiting(false);
+      if (error.response.status === 500) {
+        toast.error('Server Error');
+        setIsSubmiting(false);
+      }
     }
   };
 
