@@ -359,6 +359,7 @@ function ChatWindowScreen() {
     if (isFileSizeValid(file)) {
       SetFileForModel(file);
       setShowModal(true);
+      e.target.value = null;
       if (file.type.includes('image')) {
         setSelectedfile(file);
       } else if (file.type.includes('audio')) {
