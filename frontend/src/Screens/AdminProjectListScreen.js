@@ -48,7 +48,6 @@ const reducer = (state, action) => {
 
     case 'DELETE_RESET':
       return { ...state, successDelete: false, loading: false };
-
     case 'UPDATE_SUCCESS':
       return { ...state, successUpdate: action.payload };
     case 'UPDATE_RESET':
@@ -295,7 +294,7 @@ export default function AdminProjectListScreen() {
     } else {
       FatchProjectData();
     }
-  }, [successDelete, successUpdate, dispatch, userInfo.token, contractorData]);
+  }, [successDelete, successUpdate, contractorData]);
 
   const projectActiveData = projectData.filter((item) => {
     return item.projectStatus === 'active';
@@ -338,20 +337,17 @@ export default function AdminProjectListScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         }
       );
-      setIsSubmiting(false);
-      dispatch({ type: 'UPDATE_SUCCESS', payload: false });
-      if (response.status === 201) {
+      console.log(response.status);
+      if (response.status === 200) {
         toast.success('Project Created Successfully !');
-        const datas = response.data;
-        setIsModelOpen(false);
-
         setProjectName('');
         setProjectDescription('');
-        startDate();
-        endDate();
         setAgents([{}]);
         setProjectStatus('');
         setProjectOwner('');
+        setIsSubmiting(false);
+        setIsModelOpen(false);
+        dispatch({ type: 'UPDATE_SUCCESS', payload: true });
       }
     } catch (error) {
       toast.error(error.response);
@@ -489,7 +485,7 @@ export default function AdminProjectListScreen() {
 
               <Dropdown className={`mb-0 dropTab1 tab-btn ${theme}Tab`}>
                 <Dropdown.Toggle variant="secondary" id="dropdown-tabs">
-                  Select a Tab
+                  {selectedTab}
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu className="dropMenu">
@@ -542,9 +538,9 @@ export default function AdminProjectListScreen() {
                     onClick={() => handleTabSelect('Assigned')}
                   >
                     <span className="position-relative">
-                      Qued
+                      Assigned
                       <span className="badgesclass badgeAll top-0 start-112 translate-middle badge rounded-pill">
-                        {projectQuedData.length}
+                        {assignedAgent.length}
                       </span>
                     </span>
                   </Dropdown.Item>
@@ -1031,7 +1027,18 @@ export default function AdminProjectListScreen() {
                     />
                   </Box>
                 </Tab>
-                <Tab className="tab-color" eventKey="Assigned" title="Assigned">
+                <Tab
+                  className="tab-color"
+                  eventKey="Assigned"
+                  title={
+                    <span class="position-relative">
+                      Assigned
+                      <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+                        {assignedAgent.length}
+                      </span>
+                    </span>
+                  }
+                >
                   <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
@@ -1076,30 +1083,6 @@ export default function AdminProjectListScreen() {
                       disableRowSelectionOnClick
                     />
                   </Box>
-                </Tab>
-              </Tabs>
-
-              {/* Tabs */}
-              <Tabs
-                activeKey={selectedTab}
-                onSelect={(tab) => handleTabSelect(tab)}
-                id="uncontrolled-tab-example"
-                className="mb-0 dropTab tab-btn"
-              >
-                <Tab eventKey="All" title="All">
-                  1
-                </Tab>
-                <Tab eventKey="Active" title="Active">
-                  2
-                </Tab>
-                <Tab eventKey="Completed" title="Completed">
-                  3
-                </Tab>
-                <Tab eventKey="Qued" title="Qued">
-                  3
-                </Tab>
-                <Tab eventKey="Assigned" title="Assigned">
-                  4
                 </Tab>
               </Tabs>
             </div>

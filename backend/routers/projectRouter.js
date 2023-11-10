@@ -25,7 +25,6 @@ projectRouter.get(
   isAuth,
   expressAsyncHandler(async (req, res) => {
     try {
-
       const userRole = req.user.role;
 
       if (userRole === 'admin' || userRole === 'superadmin') {
@@ -37,7 +36,10 @@ projectRouter.get(
               const agentId = assignee.agentId;
               const categoryId = assignee.categoryId;
               const agentName = await User.findById(agentId, 'first_name');
-              const categoryName = await Category.findById(categoryId, 'categoryName');
+              const categoryName = await Category.findById(
+                categoryId,
+                'categoryName'
+              );
 
               assignee.agentName = agentName?.first_name;
               assignee.categoryName = categoryName.categoryName;
@@ -45,18 +47,15 @@ projectRouter.get(
           }
         }
 
-
         projects.sort((a, b) => b.createdAt - a.createdAt);
         res.json(projects);
       } else if (userRole === 'contractor') {
-
         const contractorId = req.user._id;
         const projects = await Project.find({ projectOwner: contractorId });
 
         projects.sort((a, b) => b.createdAt - a.createdAt);
         res.json(projects);
       } else if (userRole === 'agent') {
-
         const agentId = req.user._id;
         const projects = await Project.find({
           'assignedAgent.agentId': agentId,
@@ -234,7 +233,10 @@ projectRouter.get(
             const agentId = assignee.agentId;
             const categoryId = assignee.categoryId;
             const agent = await User.findById(agentId, 'first_name');
-            const category = await Category.findById(categoryId, 'categoryName');
+            const category = await Category.findById(
+              categoryId,
+              'categoryName'
+            );
 
             assignee.agentName = agent?.first_name;
             assignee.categoryName = category?.categoryName;
@@ -255,7 +257,6 @@ projectRouter.get(
   })
 );
 
-
 // get single project
 projectRouter.get(
   '/:id',
@@ -272,7 +273,10 @@ projectRouter.get(
           const agentId = assignee.agentId;
           const categoryId = assignee.categoryId;
           const agentName = await User.findById(agentId, 'first_name');
-          const categoryName = await Category.findById(categoryId, 'categoryName');
+          const categoryName = await Category.findById(
+            categoryId,
+            'categoryName'
+          );
 
           assignee.agentName = agentName?.first_name;
           assignee.categoryName = categoryName?.categoryName;
@@ -414,28 +418,28 @@ projectRouter.post(
           for (const agentId of agentIds) {
             const existingConversation = await Conversation.findOne({
               members: [agentId, contractorId],
-              projectId: projectId,
+              projectId: project._id,
             });
 
-            console.log("existingConversation", existingConversation);
+            console.log('existingConversation', existingConversation);
 
             if (!existingConversation && agentIds.includes(agentId)) {
               try {
                 const newConversation = new Conversation({
                   members: [agentId, contractorId],
-                  projectId: projectId,
+                  projectId: project._id,
                 });
                 const con = await newConversation.save();
-                console.log("New conversation saved:", con);
+                console.log('New conversation saved:', con);
               } catch (error) {
-                console.error("Error saving new conversation:", error);
+                console.error('Error saving new conversation:', error);
               }
             } else if (existingConversation && !agentIds.includes(agentId)) {
               try {
                 await Conversation.findByIdAndRemove(existingConversation._id);
-                console.log("Conversation removed:", existingConversation);
+                console.log('Conversation removed:', existingConversation);
               } catch (error) {
-                console.error("Error removing conversation:", error);
+                console.error('Error removing conversation:', error);
               }
             } else {
               console.log('Conversation already exists:', existingConversation);
@@ -447,8 +451,9 @@ projectRouter.post(
             const newCustomEmail = new CustomEmail({
               projectId: project._id,
               contractorEmail: user.email,
-              contractorCustomEmail: `${contractorId}_${project._id
-                }_${new Date().toISOString().replace(/[^0-9]/g, '')}`,
+              contractorCustomEmail: `${contractorId}_${
+                project._id
+              }_${new Date().toISOString().replace(/[^0-9]/g, '')}`,
               agentEmail: agentEmail.email,
               agentCustomEmail: `${agentId}${project._id}${new Date()
                 .toISOString()
@@ -614,7 +619,7 @@ projectRouter.post(
           projectId: projectId,
         });
 
-        console.log("existingConversation", existingConversation);
+        console.log('existingConversation', existingConversation);
 
         if (!existingConversation && agentIds.includes(agentId)) {
           try {
@@ -623,16 +628,16 @@ projectRouter.post(
               projectId: projectId,
             });
             const con = await newConversation.save();
-            console.log("New conversation saved:", con);
+            console.log('New conversation saved:', con);
           } catch (error) {
-            console.error("Error saving new conversation:", error);
+            console.error('Error saving new conversation:', error);
           }
         } else if (existingConversation && !agentIds.includes(agentId)) {
           try {
             await Conversation.findByIdAndRemove(existingConversation._id);
-            console.log("Conversation removed:", existingConversation);
+            console.log('Conversation removed:', existingConversation);
           } catch (error) {
-            console.error("Error removing conversation:", error);
+            console.error('Error removing conversation:', error);
           }
         } else {
           console.log('Conversation already exists:', existingConversation);
@@ -646,7 +651,6 @@ projectRouter.post(
     }
   })
 );
-
 
 // projectRouter.put(
 //   "/assign-update/:id",
@@ -916,7 +920,7 @@ projectRouter.put(
             projectId: projectId,
           });
 
-          console.log("existingConversation", existingConversation);
+          console.log('existingConversation', existingConversation);
 
           if (!existingConversation && agentIds.includes(agentId)) {
             try {
@@ -925,16 +929,16 @@ projectRouter.put(
                 projectId: projectId,
               });
               const con = await newConversation.save();
-              console.log("New conversation saved:", con);
+              console.log('New conversation saved:', con);
             } catch (error) {
-              console.error("Error saving new conversation:", error);
+              console.error('Error saving new conversation:', error);
             }
           } else if (existingConversation && !agentIds.includes(agentId)) {
             try {
               await Conversation.findByIdAndRemove(existingConversation._id);
-              console.log("Conversation removed:", existingConversation);
+              console.log('Conversation removed:', existingConversation);
             } catch (error) {
-              console.error("Error removing conversation:", error);
+              console.error('Error removing conversation:', error);
             }
           } else {
             console.log('Conversation already exists:', existingConversation);
