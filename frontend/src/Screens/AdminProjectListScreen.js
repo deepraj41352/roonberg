@@ -33,7 +33,7 @@ import { ImCross } from 'react-icons/im';
 import DatePicker from '@mui/lab/DatePicker';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FATCH_REQUEST':
@@ -92,7 +92,6 @@ const columns = [
     headerName: 'Agent',
     width: 90,
   },
-
 ];
 
 export default function AdminProjectListScreen() {
@@ -232,7 +231,7 @@ export default function AdminProjectListScreen() {
         const response = await axios.post(`/api/user/`, { role: 'contractor' });
         const datas = response.data;
         dispatch({ type: 'FATCH_CONTRACTOR', payload: datas });
-      } catch (error) { }
+      } catch (error) {}
     };
     FatchContractorData();
   }, []);
@@ -243,7 +242,7 @@ export default function AdminProjectListScreen() {
         const response = await axios.post(`/api/user/`, { role: 'agent' });
         const datas = response.data;
         dispatch({ type: 'FATCH_AGENTS', payload: datas });
-      } catch (error) { }
+      } catch (error) {}
     };
     FatchAgentData();
   }, []);
@@ -266,16 +265,20 @@ export default function AdminProjectListScreen() {
             _id: items._id,
             projectName: items.projectName,
             projectDescription:
-              items.projectDescription == ''
-                ? 'N/D'
-                : items.projectDescription,
+              items.projectDescription == '' ? 'N/D' : items.projectDescription,
 
-            projectCategory: items.assignedAgent.length > 0
-              ? items.assignedAgent.map((cat) => (cat.categoryName !== '' ? cat.categoryName : 'N/C'))
-              : 'N/C',
-            assignedAgent: items.assignedAgent.length > 0
-              ? items.assignedAgent.map((agent) => (agent.agentName !== '' ? agent.agentName : 'N/A'))
-              : 'N/A',
+            projectCategory:
+              items.assignedAgent.length > 0
+                ? items.assignedAgent.map((cat) =>
+                    cat.categoryName !== '' ? cat.categoryName : 'N/C'
+                  )
+                : 'N/C',
+            assignedAgent:
+              items.assignedAgent.length > 0
+                ? items.assignedAgent.map((agent) =>
+                    agent.agentName !== '' ? agent.agentName : 'N/A'
+                  )
+                : 'N/A',
 
             projectOwner: contractor ? contractor.first_name : 'N/C',
           };
@@ -293,7 +296,6 @@ export default function AdminProjectListScreen() {
       FatchProjectData();
     }
   }, [successDelete, successUpdate, dispatch, userInfo.token, contractorData]);
-
 
   const projectActiveData = projectData.filter((item) => {
     return item.projectStatus === 'active';
@@ -317,9 +319,9 @@ export default function AdminProjectListScreen() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const filteredAgents = agents.filter(obj => Object.keys(obj).length > 1);
+    const filteredAgents = agents.filter((obj) => Object.keys(obj).length > 1);
     setIsSubmiting(true);
-    console.log("agent", agents)
+    console.log('agent', agents);
     try {
       const response = await axios.post(
         '/api/project/admin/addproject',
@@ -339,7 +341,7 @@ export default function AdminProjectListScreen() {
       setIsSubmiting(false);
       dispatch({ type: 'UPDATE_SUCCESS', payload: false });
       if (response.status === 201) {
-        toast.success("Project Created Successfully !");
+        toast.success('Project Created Successfully !');
         const datas = response.data;
         setIsModelOpen(false);
 
@@ -350,7 +352,6 @@ export default function AdminProjectListScreen() {
         setAgents([{}]);
         setProjectStatus('');
         setProjectOwner('');
-
       }
     } catch (error) {
       toast.error(error.response);
@@ -935,7 +936,6 @@ export default function AdminProjectListScreen() {
                           renderCell: (params) => {
                             return (
                               <Grid item xs={8}>
-
                                 <Button
                                   variant="contained"
                                   className="mx-2 tableEditbtn"
@@ -998,7 +998,6 @@ export default function AdminProjectListScreen() {
                           width: 250,
                           renderCell: (params) => (
                             <Grid item xs={8}>
-
                               <Button
                                 variant="contained"
                                 className="mx-2 tableEditbtn"
@@ -1015,7 +1014,6 @@ export default function AdminProjectListScreen() {
                                 Delete
                               </Button>
                             </Grid>
-
                           ),
                         },
                       ]}
