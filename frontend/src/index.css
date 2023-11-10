@@ -691,8 +691,10 @@ body {
 .chatWindow {
   height: calc(100vh - 90px) !important;
   width: 60%;
+  margin: 0 0 10px 0 !important;
 }
 .chatWindowProjectInfo {
+  margin: 0 0 10px 0 !important;
   width: 25%;
 }
 .timeago {
@@ -1118,7 +1120,7 @@ body {
   li.list-group-item.custom-list-item.list-group-item-dark {
     flex-direction: column;
   }
-  .modaleWidth > div {
+  .modaleWidth .modelBg.MuiBox-root.css-1acyv19 {
     max-width: 275px;
     padding: 0;
   }
@@ -1155,4 +1157,73 @@ body {
 }
 .fade.error.validationMsg.alert.alert-danger.show {
   max-width: 150px !important;
+}
+.dropTab1 {
+  display: none;
+}
+@media screen and (max-width: 580px) {
+  .dropTab {
+    display: none !important;
+  }
+  .dropTab1 {
+    display: block !important;
+  }
+  .dropTab1 button#dropdown-tabs {
+    width: 100% !important;
+    background-color: #3c3c5a !important;
+  }
+  .dropMenu {
+    inset: 0px 2px auto 2px !important;
+  }
+  .dropMenuCon {
+    display: flex !important;
+    justify-content: center !important;
+    color: RGB(14, 14, 61) !important;
+  }
+  .dropMenuCon:focus,
+  .dropMenuCon:hover {
+    color: white !important;
+    background-color: RGB(14, 14, 61) !important;
+  }
+  .badgeAll:focus,
+  .badgeAll:hover {
+    color: white !important;
+  }
+  .badgeAll {
+    background: transparent !important;
+    color: red !important;
+    top: 0px !important;
+    bottom: 15px !important;
+    right: 10px !important;
+    position: absolute !important;
+  }
+  .chatWindowProjectInfo {
+    display: none !important;
+  }
+  .chatWindow {
+    width: 95%;
+  }
+  .ChatName {
+    flex: 1;
+  }
+  .threeDot {
+    display: block !important;
+  }
+}
+.threeDot {
+  display: none;
+}
+.Chatside {
+  position: absolute;
+  /* width: auto; */
+  /* min-height: auto; */
+  padding: 15px;
+  right: 0;
+  top: 42px;
+  bottom: 55px;
+  background-color: #070719;
+  color: #fff;
+  white-space: nowrap;
+  overflow-x: hidden;
+  transition: width 0.8s ease-in-out;
 }
