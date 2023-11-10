@@ -81,12 +81,8 @@ code {
   width: 100%;
 }
 .inactive-row {
-  background-color: rgb(
-    190,
-    182,
-    182
-  ) !important; /* Red background for Inactive rows */
-  color: #ffffff; /* White text color for better contrast */
+  background-color: rgb(190, 182, 182) !important;
+  color: #ffffff;
 }
 
 .cateAgentcontainerHide {
@@ -489,7 +485,7 @@ body {
   color: white !important;
   height: 33px !important;
 }
-*/ .main-div {
+.main-div {
   background-color: white !important;
   padding: 21px 21px !important;
   border-bottom: 1px solid #e2e8f0 !important;
@@ -511,35 +507,14 @@ body {
   }
 }
 
-/* karan css end */
 .Fpswd-Clogin {
   text-decoration: none;
   color: #2563eb;
 }
-/* @media (max-width: 450px) {
-/* @media (max-width: 450px) {
-  .formWidth {
-    width: 350px;
-  }
-}
-@media (max-width: 380px) {
-  .formWidth {
-    width: 100%;
-    min-width: 300px;
-  }
-} */
 
-/* -------P-Dashboard----- */
 .admin-navbar {
   height: 66px !important;
-  /* background: rgb(23, 35, 103);
-  background: linear-gradient(
-    9deg,
-    rgba(23, 35, 103, 0.5410539215686274) 0%,
-    rgba(0, 0, 0, 1) 0%,
-    rgba(24, 24, 82, 1) 45%,
-    rgba(0, 0, 0, 1) 93%
-  );*/
+
   border-bottom: 1px solid #22455c;
   background: rgb(0, 0, 0);
   background: linear-gradient(
@@ -663,11 +638,9 @@ body {
   position: relative;
 }
 .projectScreenCard {
-  /* max-width: 500px !important; */
   width: 100%;
 }
 .projectScreenCard2 {
-  /* max-width: 500px !important; */
   width: 100%;
   height: min-content !important;
 }
@@ -694,7 +667,6 @@ body {
     flex-direction: column;
   }
 }
-/* ---------Priyanshu-End------------- */
 
 .dash-list li {
   list-style: none;
@@ -859,7 +831,6 @@ body {
 }
 @media (max-width: 600px) {
   .assign-card-input {
-    /* min-width: 100px; */
     max-width: 150px;
   }
 }
