@@ -1,20 +1,27 @@
-import Box from "@mui/material/Box";
-import { DataGrid } from "@mui/x-data-grid";
-import { Button, FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
-import { AiFillDelete } from "react-icons/ai";
-import { MdEdit } from "react-icons/md";
-import Modal from "@mui/material/Modal";
-import TextField from "@mui/material/TextField";
-import { Form } from "react-bootstrap";
-import { BiPlusMedical } from "react-icons/bi";
-import axios from "axios";
-import { Store } from "../Store";
-import { toast } from "react-toastify";
-import { ImCross } from "react-icons/im";
-import { ColorRing, ThreeDots } from "react-loader-spinner";
-import { useNavigate } from "react-router-dom";
-import { useContext, useEffect, useReducer, useState } from "react";
-import Validations from "../Components/Validations";
+import Box from '@mui/material/Box';
+import { DataGrid } from '@mui/x-data-grid';
+import {
+  Button,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+} from '@mui/material';
+import { AiFillDelete } from 'react-icons/ai';
+import { MdEdit } from 'react-icons/md';
+import Modal from '@mui/material/Modal';
+import TextField from '@mui/material/TextField';
+import { Form } from 'react-bootstrap';
+import { BiPlusMedical } from 'react-icons/bi';
+import axios from 'axios';
+import { Store } from '../Store';
+import { toast } from 'react-toastify';
+import { ImCross } from 'react-icons/im';
+import { ColorRing, ThreeDots } from 'react-loader-spinner';
+import { useNavigate } from 'react-router-dom';
+import { useContext, useEffect, useReducer, useState } from 'react';
+import Validations from '../Components/Validations';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -70,12 +77,12 @@ export default function AdminContractorListScreen() {
   const [isModelOpen, setIsModelOpen] = useState(false);
   const theme = toggleState ? 'dark' : 'light';
 
-  const [firstname, setFirstname] = useState("");
-  const [lastname, setLastname] = useState("");
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState("");
-  const [password, setPassword] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState('');
+  const [password, setPassword] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [
     {
@@ -147,7 +154,6 @@ export default function AdminContractorListScreen() {
         { headers: { Authorization: `Bearer ${userInfo.token}` } }
       );
       if (response.status === 200) {
-
         toast.success('Contractor Created Successfully !');
         setIsModelOpen(false);
         dispatch({ type: 'UPDATE_SUCCESS', payload: true });
@@ -164,7 +170,7 @@ export default function AdminContractorListScreen() {
   };
   // --------------------------
   const deleteHandle = async (userid) => {
-    setIsDeleting(true)
+    setIsDeleting(true);
     if (window.confirm('Are You Sure To Delete?')) {
       try {
         const response = await axios.delete(`/api/user/${userid}`, {
@@ -177,20 +183,17 @@ export default function AdminContractorListScreen() {
             type: 'DELETE_SUCCESS',
             payload: true,
           });
-          setIsDeleting(false)
-
+          setIsDeleting(false);
         } else {
           toast.error('Failed To Delete Constractor .');
-          setIsDeleting(false)
+          setIsDeleting(false);
         }
       } catch (error) {
-
         console.error(error);
         toast.error('An Error Occurred While Deleting Constractor .');
       }
-    }
-    else {
-      setIsDeleting(false)
+    } else {
+      setIsDeleting(false);
     }
   };
 
@@ -207,10 +210,8 @@ export default function AdminContractorListScreen() {
   };
 
   return (
-
     <>
       <div className="px-3 mt-3">
-
         {loading ? (
           <>
             <div className="ThreeDot">
@@ -240,7 +241,7 @@ export default function AdminContractorListScreen() {
               <BiPlusMedical className="mx-2" />
               Add Contractor
             </Button>
-            <div className="overlayLoading" >
+            <div className="overlayLoading">
               {isDeleting && (
                 <div className="overlayLoadingItem1">
                   <ColorRing
@@ -250,7 +251,8 @@ export default function AdminContractorListScreen() {
                     ariaLabel="blocks-loading"
                     wrapperStyle={{}}
                     wrapperClass="blocks-wrapper"
-                    const colors={["white", "white", "white", "white", "white"]}
+                    const
+                    colors={['white', 'white', 'white', 'white', 'white']}
                   />
                 </div>
               )}
@@ -270,7 +272,9 @@ export default function AdminContractorListScreen() {
                       width: 100,
                       renderCell: (params) => {
                         const isInactive = params.row.userStatus === 'Inactive';
-                        const cellClassName = isInactive ? 'inactive-cell' : 'active-cell';
+                        const cellClassName = isInactive
+                          ? 'inactive-cell'
+                          : 'active-cell';
 
                         return (
                           <div className={`status-cell ${cellClassName}`}>
@@ -316,7 +320,9 @@ export default function AdminContractorListScreen() {
                   pageSizeOptions={[5]}
                   checkboxSelection
                   disableRowSelectionOnClick
-                  localeText={{ noRowsLabel: "Contractor Data Is Not Avalible" }}
+                  localeText={{
+                    noRowsLabel: 'Contractor Data Is Not Avalible',
+                  }}
                 />
               </Box>
             </div>
@@ -334,7 +340,7 @@ export default function AdminContractorListScreen() {
                   p: submitting ? 0 : 4,
                 }}
               >
-                <div className="overlayLoading" >
+                <div className="overlayLoading">
                   {submitting && (
                     <div className="overlayLoadingItem1">
                       <ColorRing
@@ -344,11 +350,22 @@ export default function AdminContractorListScreen() {
                         ariaLabel="blocks-loading"
                         wrapperStyle={{}}
                         wrapperClass="blocks-wrapper"
-                        colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
+                        colors={[
+                          'rgba(0, 0, 0, 1) 0%',
+                          'rgba(255, 255, 255, 1) 68%',
+                          'rgba(0, 0, 0, 1) 93%',
+                        ]}
                       />
                     </div>
                   )}
-                  <Form onSubmit={handleSubmit} className={submitting ? 'scrollInAdminproject p-4 ' : 'scrollInAdminproject px-1'}>
+                  <Form
+                    onSubmit={handleSubmit}
+                    className={
+                      submitting
+                        ? 'scrollInAdminproject p-4 '
+                        : 'scrollInAdminproject px-1'
+                    }
+                  >
                     <ImCross
                       color="black"
                       className="formcrossbtn"
@@ -366,7 +383,6 @@ export default function AdminContractorListScreen() {
                       label="First Name"
                       fullWidth
                       required
-
                     />
                     <TextField
                       className="mb-3"
@@ -405,10 +421,7 @@ export default function AdminContractorListScreen() {
                       type="submit"
                       disabled={submitting}
                     >
-                      {submitting ?
-                        "SUBMITTING"
-                        : "SUBMIT "}
-
+                      {submitting ? 'SUBMITTING' : 'SUBMIT '}
                     </Button>
                   </Form>
                 </div>
@@ -418,6 +431,5 @@ export default function AdminContractorListScreen() {
         )}
       </div>
     </>
-
   );
 }

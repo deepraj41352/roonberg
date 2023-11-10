@@ -32,17 +32,9 @@ export const sendEmailNotify = async (options) => {
 };
 
 export const baseUrl = () =>
-  process.env.NODE_ENV === 'devlopment'
+  process.env.NODE_ENV == 'devlopment'
     ? 'http://localhost:3000'
     : 'https://roonberg.onrender.com';
-
-
-// export const baseUrl = () =>
-//   process.env.BASE_URL
-//     ? process.env.BASE_URL
-//     : process.env.NODE_ENV === 'devlopment'
-//       ? 'http://localhost:3000'
-//       : 'https://roonberg.onrender.com';
 
 export const generateToken = (user) => {
   return jwt.sign(
@@ -61,6 +53,7 @@ export const generateToken = (user) => {
 
 export const isAuth = (req, res, next) => {
   const authorization = req.headers.authorization;
+  console.log(authorization);
   if (authorization) {
     const token = authorization.slice(7); // Remove 'Bearer ' prefix
     jwt.verify(token, process.env.JWT_SECRET, (err, decode) => {

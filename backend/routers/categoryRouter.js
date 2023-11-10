@@ -7,6 +7,7 @@ import { uploadDoc } from './userRouter.js';
 const upload = multer();
 const categoryRouter = express.Router();
 
+// ........get all category........
 categoryRouter.get(
   '/',
   expressAsyncHandler(async (req, res) => {
@@ -20,7 +21,7 @@ categoryRouter.get(
   })
 );
 
-// get single category
+//.......... get single category.............
 categoryRouter.get(
   '/:id',
   expressAsyncHandler(async (req, res) => {

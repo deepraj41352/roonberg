@@ -13,19 +13,20 @@ import {
 } from '../util.js';
 import { v2 as cloudinary } from 'cloudinary';
 import streamifier from 'streamifier';
+
 const userRouter = express.Router();
 const upload = multer();
-import { storeNotification } from "../server.js";
+import { storeNotification } from '../server.js';
 
+import { Socket, io } from 'socket.io-client';
+const SocketUrl = process.env.SOCKETURL || 'ws://localhost:8900';
+const socket = io(SocketUrl);
 
-import { Socket, io } from "socket.io-client";
-const socket = io('ws://localhost:8900');
-
-socket.emit("connectionForNotify", () => {
-  console.log("connectionForNotif user connnercted");
+socket.emit('connectionForNotify', () => {
+  console.log('connectionForNotif user connnercted');
 });
 
-/** 
+/**
  * @swagger
  * /user/{role}:
  *   get:
@@ -67,7 +68,6 @@ userRouter.put(
   isAdminOrSelf,
   expressAsyncHandler(async (req, res) => {
     try {
-
       const user = await User.findById(req.params.id);
       console.log('user', user);
       if (user._id == req.params.id) {
@@ -82,10 +82,9 @@ userRouter.put(
           last_name: capitalizeFirstLetter(last_name),
           email,
           userStatus,
-          agentCategory
-        }
+          agentCategory,
+        };
         await user.updateOne({ $set: updatedData });
-
 
         res.status(200).json('update successfully');
       } else {
@@ -347,12 +346,15 @@ userRouter.post(
   '/signin',
   expressAsyncHandler(async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
-   
+
     if (user) {
       if (bcrypt.compareSync(req.body.password, user.password)) {
-        
-        const updatedUser = await User.findOneAndUpdate({ email: req.body.email },{lastLogin:new Date()},{new:true});
-        console.log('updatedUser ',updatedUser)
+        const updatedUser = await User.findOneAndUpdate(
+          { email: req.body.email },
+          { lastLogin: new Date() },
+          { new: true }
+        );
+        console.log('updatedUser ', updatedUser);
         const { password, passresetToken, ...other } = updatedUser._doc;
         const userData = { ...other, token: generateToken(updatedUser) };
         res.send(userData);
@@ -449,13 +451,13 @@ userRouter.post(
       });
       const user = await newUser.save();
       const { password, ...other } = user._doc;
-      if(user){
+      if (user) {
         const notifyUser = user._id;
         const message = `welcome ${user.first_name}`;
-        const status = "unseen";
-        const type = "User";
+        const status = 'unseen';
+        const type = 'User';
         storeNotification(message, notifyUser, status, type);
-        socket.emit("notifyUserBackend", notifyUser, message);
+        socket.emit('notifyUserBackend', notifyUser, message);
       }
       res
         .status(201)
@@ -492,15 +494,22 @@ userRouter.put(
         capitalizeFirstLetter(req.body.first_name);
         capitalizeFirstLetter(req.body.last_name);
 
-        const { first_name, last_name, email, role, profile_picture, userStatus } = req.body;
+        const {
+          first_name,
+          last_name,
+          email,
+          role,
+          profile_picture,
+          userStatus,
+        } = req.body;
         const updatedData = {
           first_name: capitalizeFirstLetter(first_name),
           last_name: capitalizeFirstLetter(last_name),
           email,
           role,
           profile_picture,
-          userStatus
-        }
+          userStatus,
+        };
         const updatedUser = await User.findOneAndUpdate(
           { _id: req.user._id },
           { $set: updatedData },
@@ -515,10 +524,16 @@ userRouter.put(
         });
         const notifyUser = updatedUser._id;
         const message = `Your profile is updated`;
-        const status = "unseen";
-        const type = "User";
-        storeNotification(message, notifyUser, status, type);
-        socket.emit("notifyUserBackend", notifyUser, message);
+        const status = 'unseen';
+        const type = 'User';
+        const notify = await storeNotification(
+          message,
+          notifyUser,
+          status,
+          type
+        );
+        const notificationId = notify._id;
+        socket.emit('notifyUserBackend', notifyUser, message, notificationId);
       } else {
         res.status(404).send({ message: 'User not found' });
       }
@@ -619,8 +634,8 @@ userRouter.post(
           to: `<${user.email}>`,
           subject: 'Create Password ✔',
           template: 'RESET-PASS-ADD',
-          resetLink:resetLink,
-          first_name:user.first_name,
+          resetLink: resetLink,
+          first_name: user.first_name,
         };
 
         // Send the email
@@ -647,7 +662,9 @@ userRouter.post(
     }
   })
 );
-// get single category
+
+// get single user
+
 userRouter.get(
   '/:id',
   expressAsyncHandler(async (req, res) => {

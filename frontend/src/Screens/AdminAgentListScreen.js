@@ -9,19 +9,19 @@ import {
   MenuItem,
   Select,
   Stack,
-} from "@mui/material";
-import Modal from "@mui/material/Modal";
-import TextField from "@mui/material/TextField";
-import { Form, } from "react-bootstrap";
-import { BiPlusMedical } from "react-icons/bi";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { Store } from "../Store";
-import { ImCross } from "react-icons/im";
+} from '@mui/material';
+import Modal from '@mui/material/Modal';
+import TextField from '@mui/material/TextField';
+import { Form } from 'react-bootstrap';
+import { BiPlusMedical } from 'react-icons/bi';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { Store } from '../Store';
+import { ImCross } from 'react-icons/im';
 import { ColorRing, ThreeDots } from 'react-loader-spinner';
-import { useNavigate } from "react-router-dom";
-import { useContext, useEffect, useReducer, useState } from "react";
-import Validations from "../Components/Validations";
+import { useNavigate } from 'react-router-dom';
+import { useContext, useEffect, useReducer, useState } from 'react';
+import Validations from '../Components/Validations';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -52,7 +52,7 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: '_id', headerName: 'ID', width: 150 },
+  { field: '_id', headerName: 'ID', width: 200 },
   {
     field: 'first_name',
     headerName: 'Agent Name',
@@ -68,11 +68,6 @@ const columns = [
     headerName: 'Category',
     width: 100,
   },
-  // {
-  //   field: 'userStatus',
-  //   headerName: 'Status',
-  //   width: 100,
-  // },
 ];
 
 export default function AdminAgentListScreen() {
@@ -89,7 +84,7 @@ export default function AdminAgentListScreen() {
   const [status, setStatus] = useState();
   const [password, setPassword] = useState('');
   const [selectcategory, setSelectCategory] = useState();
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false);
   const [
     {
       loading,
@@ -118,7 +113,7 @@ export default function AdminAgentListScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const datas = response.data;
-        dispatch({ type: "FATCH_CATEGORY", payload: datas });
+        dispatch({ type: 'FATCH_CATEGORY', payload: datas });
       } catch (error) {
         console.log(error);
       }
@@ -131,9 +126,7 @@ export default function AdminAgentListScreen() {
   };
 
   const handleNew = () => {
-
     setIsModelOpen(true);
-
   };
 
   useEffect(() => {
@@ -143,13 +136,15 @@ export default function AdminAgentListScreen() {
         const response = await axios.post(`/api/user/`, { role: role });
         const datas = response.data;
         const rowData = datas.map((items) => {
-          const categoryName = categoryData.find((category) => category._id === items.agentCategory);
+          const categoryName = categoryData.find(
+            (category) => category._id === items.agentCategory
+          );
           return {
             ...items,
             _id: items._id,
             first_name: items.first_name,
             email: items.email,
-            userStatus: items.userStatus ? "Active" : "Inactive",
+            userStatus: items.userStatus ? 'Active' : 'Inactive',
             agentCategory: categoryName ? categoryName.categoryName : '',
           };
         });
@@ -205,13 +200,11 @@ export default function AdminAgentListScreen() {
     setIsDeleting(true);
     if (window.confirm('Are you Sure To Delete?')) {
       try {
-
         const response = await axios.delete(`/api/user/${userid}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
 
         if (response.status === 200) {
-
           toast.success('Agent Deleted Successfully!');
           dispatch({
             type: 'DELETE_SUCCESS',
@@ -226,8 +219,7 @@ export default function AdminAgentListScreen() {
       } finally {
         setIsDeleting(false);
       }
-    }
-    else {
+    } else {
       setIsDeleting(false);
     }
   };
@@ -241,15 +233,15 @@ export default function AdminAgentListScreen() {
   };
 
   const handleEdit = (userid) => {
-    navigate(`/adminEditAgent/${userid}`)
+    navigate(`/adminEditAgent/${userid}`);
   };
-  console.log("selectcategory", selectcategory)
+  console.log('selectcategory', selectcategory);
 
   return (
     <>
       {loading ? (
         <>
-          <div className='ThreeDot' >
+          <div className="ThreeDot">
             <ThreeDots
               height="80"
               width="80"
@@ -262,12 +254,10 @@ export default function AdminAgentListScreen() {
               visible={true}
             />
           </div>
-
         </>
-      ) : (error ? (
+      ) : error ? (
         <div>{error}</div>
       ) : (
-
         <>
           <Button
             variant="outlined"
@@ -278,7 +268,7 @@ export default function AdminAgentListScreen() {
             <BiPlusMedical className="mx-2" />
             Add Agent
           </Button>
-          <div className="overlayLoading" >
+          <div className="overlayLoading">
             {isDeleting && (
               <div className="overlayLoadingItem1">
                 <ColorRing
@@ -288,13 +278,12 @@ export default function AdminAgentListScreen() {
                   ariaLabel="blocks-loading"
                   wrapperStyle={{}}
                   wrapperClass="blocks-wrapper"
-                  const colors={["white", "white", "white", "white", "white"]}
+                  const
+                  colors={['white', 'white', 'white', 'white', 'white']}
                 />
               </div>
             )}
-            <Box sx={{ height: 400, width: "100%" }}>
-
-
+            <Box sx={{ height: 400, width: '100%' }}>
               <DataGrid
                 className={`tableBg mx-2 ${theme}DataGrid`}
                 rows={AgentData}
@@ -306,7 +295,9 @@ export default function AdminAgentListScreen() {
                     width: 100,
                     renderCell: (params) => {
                       const isInactive = params.row.userStatus === 'Inactive';
-                      const cellClassName = isInactive ? 'inactive-cell' : 'active-cell';
+                      const cellClassName = isInactive
+                        ? 'inactive-cell'
+                        : 'active-cell';
 
                       return (
                         <div className={`status-cell ${cellClassName}`}>
@@ -316,8 +307,8 @@ export default function AdminAgentListScreen() {
                     },
                   },
                   {
-                    field: "action",
-                    headerName: "Action",
+                    field: 'action',
+                    headerName: 'Action',
                     width: 250,
                     renderCell: (params) => {
                       return (
@@ -326,7 +317,6 @@ export default function AdminAgentListScreen() {
                             variant="contained"
                             className="mx-2 tableEditbtn"
                             onClick={() => handleEdit(params.row._id)}
-
                           >
                             Edit
                           </Button>
@@ -334,7 +324,6 @@ export default function AdminAgentListScreen() {
                             variant="outlined"
                             className="mx-2 tableDeletebtn"
                             onClick={() => deleteHandle(params.row._id)}
-
                           >
                             Delete
                           </Button>
@@ -354,78 +343,89 @@ export default function AdminAgentListScreen() {
                 pageSizeOptions={[5]}
                 checkboxSelection
                 disableRowSelectionOnClick
-                localeText={{ noRowsLabel: "Agent Data Is Not Avalible" }}
+                localeText={{ noRowsLabel: 'Agent Data Is Not Avalible' }}
               />
-
             </Box>
           </div>
-          <Modal open={isModelOpen} onClose={handleCloseRow} className='overlayLoading'>
-            <Box
-              className="modelBg"
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                width: 400,
-                bgcolor: "background.paper",
-                boxShadow: 24,
-                p: submitting ? 0 : 4,
-              }}
+          <div>
+            <Modal
+              open={isModelOpen}
+              onClose={handleCloseRow}
+              className="overlayLoading"
             >
-
-
-              <div className="overlayLoading" >
-                {submitting && (
-                  <div className="overlayLoadingItem1">
-                    <ColorRing
-                      visible={true}
-                      height="40"
-                      width="40"
-                      ariaLabel="blocks-loading"
-                      wrapperStyle={{}}
-                      wrapperClass="blocks-wrapper"
-                      colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
+              <Box
+                className="modelBg"
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: 400,
+                  bgcolor: 'background.paper',
+                  boxShadow: 24,
+                  p: submitting ? 0 : 4,
+                }}
+              >
+                <div className="overlayLoading">
+                  {submitting && (
+                    <div className="overlayLoadingItem1">
+                      <ColorRing
+                        visible={true}
+                        height="40"
+                        width="40"
+                        ariaLabel="blocks-loading"
+                        wrapperStyle={{}}
+                        wrapperClass="blocks-wrapper"
+                        colors={[
+                          'rgba(0, 0, 0, 1) 0%',
+                          'rgba(255, 255, 255, 1) 68%',
+                          'rgba(0, 0, 0, 1) 93%',
+                        ]}
+                      />
+                    </div>
+                  )}
+                  <Form
+                    className={
+                      submitting
+                        ? 'scrollInAdminproject p-4 '
+                        : 'scrollInAdminproject px-1'
+                    }
+                    onSubmit={handleSubmit}
+                  >
+                    <ImCross
+                      color="black"
+                      className="formcrossbtn"
+                      onClick={handleCloseRow}
                     />
-                  </div>
-                )}
-                <Form className={submitting ? 'scrollInAdminproject p-4 ' : 'scrollInAdminproject px-1'} onSubmit={handleSubmit} >
-                  <ImCross
-                    color="black"
-                    className="formcrossbtn"
-                    onClick={handleCloseRow}
-                  />
-                  <h4 className="d-flex justify-content-center text-dark">
-                    Add Agent
-                  </h4>
-                  <TextField
-                    className="mb-3"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    label="First Name"
-                    fullWidth
-                    required
-                  />
-                  <TextField
-                    className="mb-3"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    label="Last Name"
-
-                    fullWidth
-                  />
-                  <TextField
-                    className="mb-3"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    label="Email"
-                    type="email"
-                    fullWidth
-                    required
-
-                  />
-                  <Validations type="email" value={email} />
-                  {/* <TextField
+                    <h4 className="d-flex justify-content-center text-dark">
+                      Add Agent
+                    </h4>
+                    <TextField
+                      className="mb-3"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      label="First Name"
+                      fullWidth
+                      required
+                    />
+                    <TextField
+                      className="mb-3"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      label="Last Name"
+                      fullWidth
+                    />
+                    <TextField
+                      className="mb-3"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      label="Email"
+                      type="email"
+                      fullWidth
+                      required
+                    />
+                    <Validations type="email" value={email} />
+                    {/* <TextField
                   className="mb-3"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -434,50 +434,48 @@ export default function AdminAgentListScreen() {
                   fullWidth
                 />
                 <Validations type="password" value={password} /> */}
-                  <FormControl className="mb-3">
-                    <InputLabel>Select Status</InputLabel>
-                    <Select
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value)}
-                      required
+                    <FormControl className="mb-3">
+                      <InputLabel>Select Status</InputLabel>
+                      <Select
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
+                        required
+                      >
+                        <MenuItem value={true}>Active</MenuItem>
+                        <MenuItem value={false}>Inactive</MenuItem>
+                      </Select>
+                    </FormControl>
+                    <FormControl className="mb-3">
+                      <InputLabel>Select Category</InputLabel>
+                      <Select
+                        required
+                        value={selectcategory}
+                        onChange={(e) => setSelectCategory(e.target.value)}
+                      >
+                        {categoryData.map((items) => (
+                          <MenuItem key={items._id} value={items._id}>
+                            {items.categoryName}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    <br></br>
+                    <Button
+                      className="mt-2 formbtn globalbtnColor"
+                      variant="contained"
+                      color="primary"
+                      type="submit"
+                      disabled={submitting}
                     >
-                      <MenuItem value={true} >Active</MenuItem>
-                      <MenuItem value={false}>Inactive</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <FormControl className="mb-3">
-                    <InputLabel>Select Category</InputLabel>
-                    <Select required
-                      value={selectcategory} onChange={(e) => setSelectCategory(e.target.value)}
-                    >
-                      {categoryData.map((items) => (
-                        <MenuItem key={items._id} value={items._id} >{items.categoryName}</MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                  <br></br>
-                  <Button
-                    className="mt-2 formbtn globalbtnColor"
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                    disabled={submitting}
-                  >
-                    {submitting ?
-                      "SUBMITTING"
-                      : "SUBMIT "}
-                  </Button>
-                </Form>
-              </div>
-
-
-
-            </Box>
-          </Modal>
+                      {submitting ? 'SUBMITTING' : 'SUBMIT '}
+                    </Button>
+                  </Form>
+                </div>
+              </Box>
+            </Modal>
+          </div>
         </>
-
-
-      ))}
+      )}
     </>
   );
 }

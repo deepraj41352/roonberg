@@ -1,21 +1,21 @@
-import express from "express";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import path from "path";
-import userRouter from "./routers/userRouter.js";
-import seedRouter from "./routers/seed.js";
-import swaggerJSDoc from "swagger-jsdoc";
-import swaggerUi from "swagger-ui-express";
-import projectRouter from "./routers/projectRouter.js";
-import categoryRouter from "./routers/categoryRouter.js";
-import NotificationRouter from "./routers/NotificationRouter.js";
-import conversationRouter from "./routers/conversationRouter.js";
-import MessageRouter from "./routers/MessageRoute.js";
-import cron from "node-cron";
-import Imap from "node-imap";
-import nodemailer from "nodemailer";
-import EmailParser from "email-reply-parser";
-import Notification from "./Models/notificationModel.js";
+import express from 'express';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import path from 'path';
+import userRouter from './routers/userRouter.js';
+import seedRouter from './routers/seed.js';
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import projectRouter from './routers/projectRouter.js';
+import categoryRouter from './routers/categoryRouter.js';
+import NotificationRouter from './routers/NotificationRouter.js';
+import conversationRouter from './routers/conversationRouter.js';
+import MessageRouter from './routers/MessageRoute.js';
+import cron from 'node-cron';
+import Imap from 'node-imap';
+import nodemailer from 'nodemailer';
+// import EmailParser from 'email-reply-parser';
+import Notification from './Models/notificationModel.js';
 
 dotenv.config();
 mongoose
@@ -25,7 +25,7 @@ mongoose
     autoIndex: true, // Make this also true
   })
   .then(() => {
-    console.log("Connected to the database");
+    console.log('Connected to the database');
   })
   .catch((err) => {
     console.error(err.message);
@@ -35,48 +35,48 @@ const app = express();
 
 const options = {
   definition: {
-    openapi: "3.0.0",
+    openapi: '3.0.0',
     info: {
-      title: "RoonBerg",
-      version: "1.0.6",
+      title: 'RoonBerg',
+      version: '1.0.6',
     },
     contact: {
-      email: "deepraj41352@gmail.com",
+      email: 'deepraj41352@gmail.com',
     },
     servers: [
       {
         url:
-          process.env.NODE_ENV !== "production"
-            ? "http://localhost:5001"
-            : "https://roonberg.onrender.com",
+          process.env.NODE_ENV !== 'production'
+            ? 'http://localhost:5000'
+            : 'https://roonberg.onrender.com',
       },
     ],
-    schemes: ["https", "http"],
+    schemes: ['https', 'http'],
   },
-  apis: ["./server.js", "./routers/userRouter.js"],
+  apis: ['./server.js', './routers/userRouter.js'],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
 
-app.use("/api/doc", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api/doc', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/api", (req, res) => {
-  res.send("Welcome to Roonberg World");
+app.get('/api', (req, res) => {
+  res.send('Welcome to Roonberg World');
 });
 
-app.use("/api/seed", seedRouter);
-app.use("/api/user", userRouter);
-app.use("/api/project", projectRouter);
-app.use("/api/category", categoryRouter);
-app.use("/api/conversation", conversationRouter);
-app.use("/api/message", MessageRouter);
-app.use("/api/notification", NotificationRouter);
+app.use('/api/seed', seedRouter);
+app.use('/api/user', userRouter);
+app.use('/api/project', projectRouter);
+app.use('/api/category', categoryRouter);
+app.use('/api/conversation', conversationRouter);
+app.use('/api/message', MessageRouter);
+app.use('/api/notification', NotificationRouter);
 
 const transporter = nodemailer.createTransport({
-  service: "SMTP",
+  service: 'SMTP',
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS_KEY,
@@ -86,7 +86,7 @@ const transporter = nodemailer.createTransport({
 // Function to send an email
 function sendEmail(to, subject, message) {
   const mailOptions = {
-    from: "deepraj41352@email.com",
+    from: 'deepraj41352@email.com',
     to,
     subject,
     html: message,
@@ -96,7 +96,7 @@ function sendEmail(to, subject, message) {
     if (error) {
       console.error(error);
     } else {
-      console.log("Email sent: " + info.response);
+      console.log('Email sent: ' + info.response);
     }
   });
 }
@@ -111,8 +111,8 @@ export async function storeNotification(message, notifyUser, status, type) {
   // console.log("newNotification-------", newNotification);
 
   const notify = await newNotification.save();
-
-  console.log("notifyme-------", notify);
+  return notify;
+  console.log('notifyme-------', notify);
 }
 
 // Function to process emails
@@ -188,9 +188,9 @@ export async function storeNotification(message, notifyUser, status, type) {
 // });
 
 const _dirname = path.resolve();
-app.use(express.static(path.join(_dirname, "frontend/build")));
-app.get("*", (req, res) =>
-  res.sendFile(path.join(_dirname, "frontend/build/index.html"))
+app.use(express.static(path.join(_dirname, 'frontend/build')));
+app.get('*', (req, res) =>
+  res.sendFile(path.join(_dirname, 'frontend/build/index.html'))
 );
 
 app.use((err, req, res, next) => {

@@ -20,7 +20,7 @@ import SearchScreen from './Screens/SearchScreen';
 import ProjectSingleScreen from './Screens/ProjectSingleScreen';
 import ChatWindowScreen from './Screens/ChatWindowScreen';
 import AdminEditAgent from './Screens/AdminEditAgentScreen';
-import { useContext, useState,useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import {
   Container,
   Form,
@@ -58,14 +58,13 @@ import SuperadminEditAdmin from './Screens/SuperadminEditAdmin';
 import NotificationScreen from './Screens/NotificationScreen';
 import AdminListScreen from './Screens/AdminListScreen';
 import SuperadminAdminList from './Screens/SuperadminAdminList';
-
-
+import MyComponent from './Components/MyComponent';
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { toggleState, userInfo,NotificationData } = state;
+  const { toggleState, userInfo, NotificationData } = state;
   const theme = toggleState ? 'dark' : 'light';
   const [searchValue, setSearchValue] = useState('');
   const navigate = useNavigate();
@@ -86,7 +85,7 @@ function App() {
   const closeDropdown = () => {
     setIsDropdownOpen(false);
   };
-  
+
   const signoutHandler = () => {
     const userConfirm = window.confirm('Are you sure you want to logout?');
     if (userConfirm) {
@@ -98,13 +97,12 @@ function App() {
 
   const handelforNOtification = () => {
     ctxDispatch({ type: 'NOTIFICATION-NULL' });
-
   };
 
   return (
     <div className={userInfo ? `App ${theme}` : `App`}>
       <ToastContainer position="bottom-center" autoClose={500} limit={1} />
- 
+
       <div>
         <Container fluid className="px-0">
           <div className="d-flex ">
@@ -117,7 +115,7 @@ function App() {
 
             <div className="px-0 w-100">
               {userInfo ? (
-                <Navbar expand="lg" className=" admin-navbar">
+                <Navbar expand="lg" className="admin-navbar">
                   <Container fluid>
                     <div
                       className="p-2 me-3 fs-5 admin-btn-logo"
@@ -125,33 +123,37 @@ function App() {
                     >
                       <AiOutlineAlignLeft />
                     </div>
-                    <Navbar.Brand href="#home">
+                    <Navbar.Brand href="/dashb">
                       <Image
                         className="Roonberg-logo me-3 ms-2"
                         src="./logo2.png"
                         thumbnail
                       />
                     </Navbar.Brand>
-                    <Form className="d-flex">
-                      <InputGroup className="search-bar-dash">
-                        <Form.Control
-                          type="search"
-                          value={searchValue}
-                          onChange={handleInputChange}
-                          onClick={handleSearchScreen}
-                          className="search-bar-dash-inner"
-                          placeholder="Search..."
-                          aria-label="Search"
-                          aria-describedby="basic-addon2"
-                        />
-                        <InputGroup.Text id="basic-addon2">
-                          <BsSearch className="fs-4" />
-                        </InputGroup.Text>
-                      </InputGroup>
-                    </Form>
-                    <Navbar.Toggle aria-controls="navbarScroll" />
+                    <div className="searchbar">
+                      <Form className="d-flex">
+                        <InputGroup className="search-bar-dash">
+                          <Form.Control
+                            type="search"
+                            value={searchValue}
+                            onChange={handleInputChange}
+                            onClick={handleSearchScreen}
+                            className="search-bar-dash-inner"
+                            placeholder="Search..."
+                            aria-label="Search"
+                            aria-describedby="basic-addon2"
+                          />
+                          <InputGroup.Text id="basic-addon2">
+                            <BsSearch className="fs-4" />
+                          </InputGroup.Text>
+                        </InputGroup>
+                      </Form>
+                    </div>
+
+                    {/* <Navbar.Toggle aria-controls="navbarScroll" /> */}
+
                     <Navbar.Collapse
-                      className="justify-content-end"
+                      className="justify-content-end disNone"
                       id="navbarScroll"
                     >
                       <Nav
@@ -166,42 +168,60 @@ function App() {
                         <Link href="#action1">
                           <BiShareAlt className="fs-4 admin-btn-logo" />
                         </Link>
-                       
+
                         <Link href="#">
-                          <FiClock className="fs-4 admin-btn-logo " />
+                          <FiClock className="fs-4 admin-btn-logo" />
                         </Link>
-                        <Link to="/notificationScreen" className="position-relative" >
-                          <MdOutlineNotifications className="fs-4 admin-btn-logo  " />
-    
-  {NotificationData.length > 0 && (
-    <span className="position-absolute notification-badgeApp top-0 start-110 translate-middle badge rounded-pill bg-danger">
-      {NotificationData.length}
-    </span>
-  )}
+
+                        <Link
+                          to="/notificationScreen"
+                          className="position-relative"
+                        >
+                          <MdOutlineNotifications className="fs-4 admin-btn-logo" />
+                          {NotificationData.length > 0 && (
+                            <span className="position-absolute notification-badgeApp top-0 start-110 translate-middle badge rounded-pill bg-danger">
+                              {NotificationData.length}
+                            </span>
+                          )}
                         </Link>
                       </Nav>
                     </Navbar.Collapse>
+
                     <div
                       className="profile-icon me-1 ms-3"
                       onClick={toggleDropdown}
-                      // onClick={() => {
-                      //   navigate('/profile-screen');
-                      // }}
                     >
                       <img
                         className="w-100 h-100 profile-icon-inner img-fornavs"
-                        src={userInfo.profile_picture?(userInfo.profile_picture):("./avatar.png")} alt="userimg"
-                      ></img>
-                         {isDropdownOpen && (
-        <div className="dropdown-content" onClick={closeDropdown}>
-          <Link to="/profile-screen">Profile</Link>
-          <Link to="/projectNotification">Notification</Link>
-          <Link to="#">Setting</Link>
-          <hr></hr>
-          <Link  onClick={signoutHandler} to="#">Logout</Link>
-          {/* Add more options as needed */}
-        </div>
-      )}
+                        src={
+                          userInfo.profile_picture
+                            ? userInfo.profile_picture
+                            : './avatar.png'
+                        }
+                        alt="userimg"
+                      />
+                      {isDropdownOpen && (
+                        <div
+                          className="dropdown-content"
+                          onClick={closeDropdown}
+                        >
+                          <Link to="/profile-screen">Profile</Link>
+                          <Link to="/projectNotification">Notification</Link>
+                          <Link to="#">Setting</Link>
+                          <hr />
+                          <Link onClick={signoutHandler} to="#">
+                            Logout
+                          </Link>
+                          {/* Add more options as needed */}
+                        </div>
+                      )}
+                    </div>
+
+                    <div
+                      className="p-2 me-3 fs-5 admin-btn-logo2"
+                      onClick={toggleSidebar}
+                    >
+                      <AiOutlineAlignLeft />
                     </div>
                   </Container>
                 </Navbar>
@@ -222,8 +242,8 @@ function App() {
                       <Nav className=" login-button">
                         <Nav className="login-nav ">
                           <Link className="login-admin" to="/registration">
-                            <BsFillPersonFill className="fs-5 Icon-person me-1 " />
-                            Signup
+                            {/* <BsFillPersonFill className="fs-5 Icon-person me-1 " /> */}
+                            Login
                           </Link>
                           <Link className="login-admin" href="#link">
                             Admin Login
@@ -235,9 +255,11 @@ function App() {
                 </Navbar>
               )}
               <main>
-                <div className='mainfordata'>
+                <div className="mainfordata">
                   <Routes>
                     <Route path="/" element={<SignUpForm />} />
+                    <Route path="/test" element={<MyComponent />} />
+
                     <Route
                       path="/registration"
                       element={<RegistrationForm />}
@@ -276,6 +298,7 @@ function App() {
                         </ProtectedRoute>
                       }
                     />
+
                     <Route
                       path="/adminAgentList/"
                       element={
@@ -382,9 +405,9 @@ function App() {
               </main>
             </div>
           </div>
-        </Container >
-      </div >
-    </div >
+        </Container>
+      </div>
+    </div>
   );
 }
 

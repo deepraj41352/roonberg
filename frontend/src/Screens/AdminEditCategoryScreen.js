@@ -8,15 +8,22 @@ import {
   Row,
   Toast,
 } from 'react-bootstrap';
+import { RiImageEditFill } from 'react-icons/ri';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Store } from '../Store';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { ColorRing, ThreeDots } from 'react-loader-spinner';
-import { Avatar, FormControl, FormControlLabel, Input, InputLabel, MenuItem, Select, TextField } from '@mui/material';
-
+import {
+  Avatar,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from '@mui/material';
 import AvatarImage from '../Components/Avatar';
-import { RiImageEditFill } from 'react-icons/ri'
+import { RiImageEditFill } from 'react-icons/ri';
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FATCH_REQUEST':
@@ -94,25 +101,24 @@ function AdminEditCategory() {
     setIsSubmiting(true);
     const formDatas = new FormData();
 
-    formDatas.append("file", selectedFile);
-    formDatas.append("categoryName", category);
-    formDatas.append("categoryDescription", categoryDesc);
-    formDatas.append("categoryStatus", status);
+    formDatas.append('file', selectedFile);
+    formDatas.append('categoryName', category);
+    formDatas.append('categoryDescription', categoryDesc);
+    formDatas.append('categoryStatus', status);
     try {
       const data = await axios.put(
         `/api/category/CategoryUpdate/${id}`,
         formDatas,
         {
           headers: {
-            "content-type": "multipart/form-data",
+            'content-type': 'multipart/form-data',
             authorization: `Bearer ${userInfo.token}`,
           },
         }
       );
-      dispatch({ type: "UPDATE_SUCCESS" })
-      toast.success("Category Updated Successfully");
-      navigate('/adminCategoriesList')
-
+      dispatch({ type: 'UPDATE_SUCCESS' });
+      toast.success('Category Updated Successfully');
+      navigate('/adminCategoriesList');
     } catch (err) {
       toast.error(err.response?.data?.message);
     } finally {
@@ -121,6 +127,7 @@ function AdminEditCategory() {
   };
 
   const handleFileChange = (e) => {
+    setSelectedFile(categoryData.categoryImage);
     const file = e.target.files[0];
     setSelectedFile(file);
   };
@@ -146,7 +153,7 @@ function AdminEditCategory() {
   return (
     <>
       <Container className="Sign-up-container-regis d-flex w-100 profileDiv  flex-column justify-content-center align-items-center">
-        <div className="ProfileScreen-inner px-4 py-3 w-100">
+        <div className="ProfileScreen-inner px-4 py-3 w-100 d-flex justify-content-center align-items-center flex-column">
           <Row className="mb-3">
             <Col>
               <h4>Update Category</h4>
@@ -154,10 +161,9 @@ function AdminEditCategory() {
           </Row>
           <Row>
             <Col>
-              <div className="overlayLoading" >
+              <div className="overlayLoading">
                 <Card className={`${theme}CardBody`}>
                   <div className="FormContainerEdit">
-
                     {isSubmiting && (
                       <div className="overlayLoadingItem1">
                         <ColorRing
@@ -167,22 +173,31 @@ function AdminEditCategory() {
                           ariaLabel="blocks-loading"
                           wrapperStyle={{}}
                           wrapperClass="blocks-wrapper"
-                          colors={["rgba(0, 0, 0, 1) 0%", "rgba(255, 255, 255, 1) 68%", "rgba(0, 0, 0, 1) 93%"]}
+                          colors={[
+                            'rgba(0, 0, 0, 1) 0%',
+                            'rgba(255, 255, 255, 1) 68%',
+                            'rgba(0, 0, 0, 1) 93%',
+                          ]}
                         />
                       </div>
                     )}
 
-                    <Form onSubmit={submitHandler} className="p-4 w-100 formWidth ">
-                      <Row className='editImgParent'>
-                        <Col className=''>
+                    <Form
+                      onSubmit={submitHandler}
+                      className="p-4 w-100 editFormWidth "
+                    >
+                      <Row className="editImgParent">
+                        <Col className="">
                           {categoryData.categoryImage !== 'null' ? (
-                            <Avatar className='editCateImgContainer' src={categoryData.categoryImage} />
+                            <Avatar
+                              className="editCateImgContainer"
+                              src={categoryData.categoryImage}
+                            />
                           ) : (
                             <AvatarImage name={category} bgColor={color} />
                           )}
                         </Col>
-                        <Col className='editImgChild'>
-
+                        <Col className="editImgChild">
                           <div className="mb-3">
                             <input
                               type="file"
@@ -208,8 +223,8 @@ function AdminEditCategory() {
                             />
                           </Form.Group>  */}
                         </Col>
-                      </Row>
 
+                      </Row>
 
                       <TextField
                         className="my-3"
@@ -220,7 +235,6 @@ function AdminEditCategory() {
                         required
                         InputLabelProps={{
                           shrink: categoryData.categoryName ? true : false,
-
                         }}
                       />
                       <TextField
@@ -229,7 +243,6 @@ function AdminEditCategory() {
                         label="Add Description"
                         fullWidth
                         onChange={(e) => setCatogryDesc(e.target.value)}
-
                       />
                       <FormControl className="mb-3">
                         <InputLabel>Select Status</InputLabel>
@@ -238,7 +251,7 @@ function AdminEditCategory() {
                           onChange={(e) => setStatus(e.target.value)}
                           required
                         >
-                          <MenuItem value={true} >Active</MenuItem>
+                          <MenuItem value={true}>Active</MenuItem>
                           <MenuItem value={false}>Inactive</MenuItem>
                         </Select>
                       </FormControl>
@@ -253,10 +266,6 @@ function AdminEditCategory() {
                         </Button>
                       </div>
                     </Form>
-
-
-
-
                   </div>
                 </Card>
               </div>

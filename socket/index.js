@@ -1,17 +1,20 @@
-const io = require("socket.io")(8900, {
+const io = require('socket.io')(8900, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: process.env.BASEURL_LIVE
+      ? process.env.BASEURL_LIVE
+      : process.env.BASEURL_LOCAL,
   },
 });
-const fs = require("fs");
-const path = require("path");
-const express = require("express");
-const http = require("http");
+const fs = require('fs');
+const path = require('path');
+const express = require('express');
+const http = require('http');
 
 const app = express();
+console.log(process.env.PORT);
 const port = process.env.PORT || 4500;
 const server = http.createServer(app);
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 server.listen(port, () => {
   console.log(`Server is working on port ${port}`);
@@ -33,20 +36,20 @@ const getUser = (userId) => {
   return users.find((user) => user.userId === userId);
 };
 
-io.on("connection", (socket) => {
+io.on('connection', (socket) => {
   //   //when ceonnect
-  console.log("a user connected.");
-  socket.on("addUser", (userId, role) => {
+  console.log('a user connected.');
+  socket.on('addUser', (userId, role) => {
     addUser(userId, socket.id, role);
-    io.emit("getUsers", users);
+    io.emit('getUsers', users);
   });
-  socket.on("video", (data) => {
+  socket.on('video', (data) => {
     if (data.receiverdId.length == 2) {
       const video = data.video;
       const senderId = getUser(data.senderId);
       const agent = getUser(data.receiverdId[0]);
       const contractor = getUser(data.receiverdId[1]);
-      io.to(senderId.socketId).emit("video", {
+      io.to(senderId.socketId).emit('video', {
         senderFirstName: data.senderFirstName,
         senderLastName: data.senderLastName,
         Sender_Profile: data.Sender_Profile,
@@ -54,7 +57,7 @@ io.on("connection", (socket) => {
         video,
       });
       if (agent) {
-        io.to(agent.socketId).emit("video", {
+        io.to(agent.socketId).emit('video', {
           senderFirstName: data.senderFirstName,
           senderLastName: data.senderLastName,
           Sender_Profile: data.Sender_Profile,
@@ -63,7 +66,7 @@ io.on("connection", (socket) => {
         });
       }
       if (contractor) {
-        io.to(contractor.socketId).emit("video", {
+        io.to(contractor.socketId).emit('video', {
           senderFirstName: data.senderFirstName,
           senderLastName: data.senderLastName,
           Sender_Profile: data.Sender_Profile,
@@ -76,10 +79,10 @@ io.on("connection", (socket) => {
       const senderId = getUser(data.senderId);
       const user = getUser(data.receiverdId);
       const AdminUser = users.filter(
-        (item) => item.role === "admin" || item.role === "superadmin"
+        (item) => item.role === 'admin' || item.role === 'superadmin'
       );
       AdminUser.map((item) => {
-        io.to(item.socketId).emit("video", {
+        io.to(item.socketId).emit('video', {
           senderFirstName: data.senderFirstName,
           senderLastName: data.senderLastName,
           Sender_Profile: data.Sender_Profile,
@@ -87,7 +90,7 @@ io.on("connection", (socket) => {
           video,
         });
       });
-      io.to(senderId.socketId).emit("video", {
+      io.to(senderId.socketId).emit('video', {
         senderFirstName: data.senderFirstName,
         senderLastName: data.senderLastName,
         Sender_Profile: data.Sender_Profile,
@@ -95,7 +98,7 @@ io.on("connection", (socket) => {
         video,
       });
       if (user) {
-        io.to(user.socketId).emit("video", {
+        io.to(user.socketId).emit('video', {
           senderFirstName: data.senderFirstName,
           senderLastName: data.senderLastName,
           Sender_Profile: data.Sender_Profile,
@@ -108,14 +111,14 @@ io.on("connection", (socket) => {
     // io.emit('audio', audioData);
   });
 
-  socket.on("audio", (data) => {
+  socket.on('audio', (data) => {
     if (data.receiverdId.length == 2) {
       const audio = data.audio;
       const senderId = getUser(data.senderId);
       const agent = getUser(data.receiverdId[0]);
       const contractor = getUser(data.receiverdId[1]);
       if (senderId) {
-        io.to(senderId.socketId).emit("audio", {
+        io.to(senderId.socketId).emit('audio', {
           senderFirstName: data.senderFirstName,
           senderLastName: data.senderLastName,
           Sender_Profile: data.Sender_Profile,
@@ -124,7 +127,7 @@ io.on("connection", (socket) => {
         });
       }
       if (agent) {
-        io.to(agent.socketId).emit("audio", {
+        io.to(agent.socketId).emit('audio', {
           senderFirstName: data.senderFirstName,
           senderLastName: data.senderLastName,
           Sender_Profile: data.Sender_Profile,
@@ -133,7 +136,7 @@ io.on("connection", (socket) => {
         });
       }
       if (contractor) {
-        io.to(contractor.socketId).emit("audio", {
+        io.to(contractor.socketId).emit('audio', {
           senderFirstName: data.senderFirstName,
           senderLastName: data.senderLastName,
           Sender_Profile: data.Sender_Profile,
@@ -146,10 +149,10 @@ io.on("connection", (socket) => {
       const senderId = getUser(data.senderId);
       const user = getUser(data.receiverdId);
       const AdminUser = users.filter(
-        (item) => item.role === "admin" || item.role === "superadmin"
+        (item) => item.role === 'admin' || item.role === 'superadmin'
       );
       AdminUser.map((item) => {
-        io.to(item.socketId).emit("audio", {
+        io.to(item.socketId).emit('audio', {
           senderFirstName: data.senderFirstName,
           senderLastName: data.senderLastName,
           Sender_Profile: data.Sender_Profile,
@@ -157,7 +160,7 @@ io.on("connection", (socket) => {
           audio,
         });
       });
-      io.to(senderId.socketId).emit("audio", {
+      io.to(senderId.socketId).emit('audio', {
         senderFirstName: data.senderFirstName,
         senderLastName: data.senderLastName,
         Sender_Profile: data.Sender_Profile,
@@ -165,7 +168,7 @@ io.on("connection", (socket) => {
         audio,
       });
       if (user) {
-        io.to(user.socketId).emit("audio", {
+        io.to(user.socketId).emit('audio', {
           senderFirstName: data.senderFirstName,
           senderLastName: data.senderLastName,
           Sender_Profile: data.Sender_Profile,
@@ -176,13 +179,13 @@ io.on("connection", (socket) => {
     }
     // io.emit('audio', audioData);
   });
-  socket.on("audioFile", (data) => {
+  socket.on('audioFile', (data) => {
     if (data.receiverdId.length == 2) {
       const audio = data.audio;
       const senderId = getUser(data.senderId);
       const agent = getUser(data.receiverdId[0]);
       const contractor = getUser(data.receiverdId[1]);
-      io.to(senderId.socketId).emit("audioFile", {
+      io.to(senderId.socketId).emit('audioFile', {
         senderFirstName: data.senderFirstName,
         senderLastName: data.senderLastName,
         Sender_Profile: data.Sender_Profile,
@@ -191,7 +194,7 @@ io.on("connection", (socket) => {
       });
 
       if (agent) {
-        io.to(agent.socketId).emit("audioFile", {
+        io.to(agent.socketId).emit('audioFile', {
           senderFirstName: data.senderFirstName,
           senderLastName: data.senderLastName,
           Sender_Profile: data.Sender_Profile,
@@ -200,7 +203,7 @@ io.on("connection", (socket) => {
         });
       }
       if (contractor) {
-        io.to(contractor.socketId).emit("audioFile", {
+        io.to(contractor.socketId).emit('audioFile', {
           senderFirstName: data.senderFirstName,
           senderLastName: data.senderLastName,
           Sender_Profile: data.Sender_Profile,
@@ -216,7 +219,7 @@ io.on("connection", (socket) => {
       const audio = data.audio;
       const senderId = getUser(data.senderId);
       const user = getUser(data.receiverdId);
-      io.to(senderId.socketId).emit("audioFile", {
+      io.to(senderId.socketId).emit('audioFile', {
         senderFirstName: data.senderFirstName,
         senderLastName: data.senderLastName,
         Sender_Profile: data.Sender_Profile,
@@ -224,10 +227,10 @@ io.on("connection", (socket) => {
         audio,
       });
       const AdminUser = users.filter(
-        (item) => item.role === "admin" || item.role === "superadmin"
+        (item) => item.role === 'admin' || item.role === 'superadmin'
       );
       AdminUser.map((item) => {
-        io.to(item.socketId).emit("audioFile", {
+        io.to(item.socketId).emit('audioFile', {
           senderFirstName: data.senderFirstName,
           senderLastName: data.senderLastName,
           Sender_Profile: data.Sender_Profile,
@@ -236,7 +239,7 @@ io.on("connection", (socket) => {
         });
       });
       if (user) {
-        io.to(user.socketId).emit("audioFile", {
+        io.to(user.socketId).emit('audioFile', {
           senderFirstName: data.senderFirstName,
           senderLastName: data.senderLastName,
           Sender_Profile: data.Sender_Profile,
@@ -248,15 +251,15 @@ io.on("connection", (socket) => {
     // io.emit('audio', audioData);
   });
 
-  socket.on("image", (data) => {
+  socket.on('image', (data) => {
     const base64Image = data.image;
     const senderId = getUser(data.senderId);
 
     // if (base64Image) {
     // Remove the data:image/jpeg;base64 prefix and convert to a Buffer
     const imageBuffer = Buffer.from(
-      base64Image.replace(/^data:image\/\w+;base64,/, ""),
-      "base64"
+      base64Image.replace(/^data:image\/\w+;base64,/, ''),
+      'base64'
     );
     const imageFileName = `uploads/${Date.now()}.jpeg`;
 
@@ -269,7 +272,7 @@ io.on("connection", (socket) => {
         //   senderId: data.senderId,
         //   image: imageFileName,
         // });
-        io.to(senderId.socketId).emit("image", {
+        io.to(senderId.socketId).emit('image', {
           senderFirstName: data.senderFirstName,
           senderLastName: data.senderLastName,
           Sender_Profile: data.Sender_Profile,
@@ -288,7 +291,7 @@ io.on("connection", (socket) => {
       const agent = getUser(data.receiverdId[0]);
       const contractor = getUser(data.receiverdId[1]);
       if (agent) {
-        io.to(agent.socketId).emit("image", {
+        io.to(agent.socketId).emit('image', {
           senderFirstName: data.senderFirstName,
           senderLastName: data.senderLastName,
           Sender_Profile: data.Sender_Profile,
@@ -297,7 +300,7 @@ io.on("connection", (socket) => {
         });
       }
       if (contractor) {
-        io.to(contractor.socketId).emit("image", {
+        io.to(contractor.socketId).emit('image', {
           senderFirstName: data.senderFirstName,
           senderLastName: data.senderLastName,
           Sender_Profile: data.Sender_Profile,
@@ -308,10 +311,10 @@ io.on("connection", (socket) => {
     } else {
       const user = getUser(data.receiverdId);
       const AdminUser = users.filter(
-        (item) => item.role === "admin" || item.role === "superadmin"
+        (item) => item.role === 'admin' || item.role === 'superadmin'
       );
       AdminUser.map((item) => {
-        io.to(item.socketId).emit("image", {
+        io.to(item.socketId).emit('image', {
           senderFirstName: data.senderFirstName,
           senderLastName: data.senderLastName,
           Sender_Profile: data.Sender_Profile,
@@ -321,7 +324,7 @@ io.on("connection", (socket) => {
       });
       if (user) {
         // Broadcast the image URL to all clients
-        io.to(user.socketId).emit("image", {
+        io.to(user.socketId).emit('image', {
           senderFirstName: data.senderFirstName,
           senderLastName: data.senderLastName,
           Sender_Profile: data.Sender_Profile,
@@ -334,7 +337,7 @@ io.on("connection", (socket) => {
 
   // send and get message
   socket.on(
-    "sendMessage",
+    'sendMessage',
     ({
       senderFirstName,
       senderLastName,
@@ -343,13 +346,13 @@ io.on("connection", (socket) => {
       receiverdId,
       text,
     }) => {
-      console.log("users", users)
+      console.log('users', users);
 
       if (receiverdId.length == 2) {
         const agent = getUser(receiverdId[0]);
         const contractor = getUser(receiverdId[1]);
         if (agent) {
-          io.to(agent.socketId).emit("getMessage", {
+          io.to(agent.socketId).emit('getMessage', {
             senderFirstName,
             senderLastName,
             Sender_Profile,
@@ -359,7 +362,7 @@ io.on("connection", (socket) => {
           });
         }
         if (contractor) {
-          io.to(contractor.socketId).emit("getMessage", {
+          io.to(contractor.socketId).emit('getMessage', {
             senderFirstName,
             senderLastName,
             Sender_Profile,
@@ -371,7 +374,7 @@ io.on("connection", (socket) => {
       } else {
         const user = getUser(receiverdId);
         if (user) {
-          io.to(user.socketId).emit("getMessage", {
+          io.to(user.socketId).emit('getMessage', {
             senderFirstName,
             senderLastName,
             Sender_Profile,
@@ -379,13 +382,13 @@ io.on("connection", (socket) => {
             text,
           });
         } else {
-          console.log("karannn");
+          console.log('karannn');
         }
         const AdminUser = users.filter(
-          (item) => item.role === "admin" || item.role === "superadmin"
+          (item) => item.role === 'admin' || item.role === 'superadmin'
         );
         AdminUser.map((item) => {
-          io.to(item.socketId).emit("getMessage", {
+          io.to(item.socketId).emit('getMessage', {
             senderFirstName,
             senderLastName,
             Sender_Profile,
@@ -402,22 +405,24 @@ io.on("connection", (socket) => {
   });
 
   socket.on('notifyProjectBackend', (notifyUser, message) => {
-    console.log('notify and mesage', notifyUser, message)
-    io.emit("notifyProjectFrontend", notifyUser, message);
-  });
-  socket.on('notifyUserBackend', (notifyUser, message) => {
-    console.log('notify and mesage for user', notifyUser, message)
-    io.emit("notifyUserFrontend", notifyUser, message);
+    console.log('notify and mesage', notifyUser, message);
+    io.emit('notifyProjectFrontend', notifyUser, message);
   });
 
+  socket.on('notifyUserBackend', (notifyUser, message, notificationId) => {
+    console.log(
+      'notify and mesage for user',
+      notifyUser,
+      message,
+      notificationId
+    );
+    io.emit('notifyUserFrontend', notifyUser, message, notificationId);
+  });
 
   // when disconnect
-  socket.on("disconnect", () => {
-    console.log("a user disconnected");
+  socket.on('disconnect', () => {
+    console.log('a user disconnected');
     removeUser(socket.id);
-    io.emit("getUsers", users);
+    io.emit('getUsers', users);
   });
 });
-
-
-

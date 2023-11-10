@@ -52,7 +52,7 @@ function SignUpForm() {
         password,
       });
       if (!data.profile_picture) {
-        data.profile_picture = "./avatar.png"; // Replace with your default avatar URL
+        data.profile_picture = './avatar.png'; // Replace with your default avatar URL
       }
       ctxDispatch({ type: 'USER_SIGNIN', payload: data });
       localStorage.setItem('userInfo', JSON.stringify(data));
@@ -62,6 +62,7 @@ function SignUpForm() {
       socket.on('connectionForNotify', (data) => {
         console.log('oiuhjioyhi', data);
       });
+
 
       navigate('/dashboard');
     } catch (err) {
@@ -80,77 +81,78 @@ function SignUpForm() {
   return (
     <Container className="loginPage d-flex  flex-column justify-content-center align-items-center">
       <div className="Sign-up-container-inner py-3">
-        <Row className="mb-3 ">
-          <Col className='p-0'>
-            <h3>Login</h3>
-          </Col>
-        </Row>
-        <Row>
-          <Col className='p-0'>
-            <Card>
-              <Form onSubmit={submitHandler} className="p-4 formWidth ">
-                <Form.Group className="mb-3" controlId="formBasicEmail">
-                  <Form.Label className="mb-1 input-box">
-                    Email address
-                  </Form.Label>
-                  <Form.Control
-                    id="username"
-                    value={email}
-                    type="email"
-                    required
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                    }}
-                  />
-                </Form.Group>
+        <div className="Sign-up-container-inner py-3">
+          <Row className="mb-3 ">
+            <Col className="p-0">
+              <h3>Login</h3>
+            </Col>
+          </Row>
+          <Row>
+            <Col className="p-0">
+              <Card>
+                <Form onSubmit={submitHandler} className="p-4 formWidth ">
+                  <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Label className="mb-1 input-box">
+                      Email address
+                    </Form.Label>
+                    <Form.Control
+                      id="username"
+                      value={email}
+                      type="email"
+                      required
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                      }}
+                    />
+                  </Form.Group>
 
-                <Form.Group className="mb-3" controlId="formBasicPassword">
-                  <Form.Label className="mb-1">Password</Form.Label>
-                  <div className="Password-input-eye">
-                    <div className=" rounded-2">
-                      <Form.Control
-                        id="password"
-                        value={password}
-                        className="pswd-input"
-                        type={showPassword ? 'text' : 'password'}
-                        onChange={(e) => {
-                          setPassword(e.target.value);
-                        }}
-                      />
+                  <Form.Group className="mb-3" controlId="formBasicPassword">
+                    <Form.Label className="mb-1">Password</Form.Label>
+                    <div className="Password-input-eye">
+                      <div className=" rounded-2">
+                        <Form.Control
+                          id="password"
+                          value={password}
+                          className="pswd-input"
+                          type={showPassword ? 'text' : 'password'}
+                          onChange={(e) => {
+                            setPassword(e.target.value);
+                          }}
+                        />
+                      </div>
+                      <div
+                        className="eye-bttn "
+                        onClick={togglePasswordVisibility}
+                      >
+                        {showPassword ? <FaEye /> : <FaRegEyeSlash />}
+                      </div>
                     </div>
-                    <div
-                      className="eye-bttn "
-                      onClick={togglePasswordVisibility}
-                    >
-                      {showPassword ? <FaEye /> : <FaRegEyeSlash />}
-                    </div>
-                  </div>
-                  <Form.Check
-                    className="mt-3"
-                    type="checkbox"
-                    label="Remember me"
-                    onChange={(e) => {
-                      setRememberMe(e.target.checked);
-                    }}
-                  />
-                  <Validations type="password" value={password} />
-                </Form.Group>
-                <Button
-                  className="w-100 py-1 globalbtnColor"
-                  variant="primary"
-                  type="submit"
-                  disabled={isSubmiting}
-                >
-                  {isSubmiting ? 'Submiting...' : 'Submit'}
-                </Button>
-                <Form.Group className="my-3">
-                  <Link to="/ForgetPassword">Forgot Password?</Link>
-                </Form.Group>
-              </Form>
-            </Card>
-          </Col>
-        </Row>
-      </div>
+                    <Form.Check
+                      className="mt-3"
+                      type="checkbox"
+                      label="Remember me"
+                      onChange={(e) => {
+                        setRememberMe(e.target.checked);
+                      }}
+                    />
+                    <Validations type="password" value={password} />
+                  </Form.Group>
+                  <Button
+                    className="w-100 py-1 globalbtnColor"
+                    variant="primary"
+                    type="submit"
+                    disabled={isSubmiting}
+                  >
+                    {isSubmiting ? 'Submiting...' : 'Submit'}
+                  </Button>
+                  <Form.Group className="my-3">
+                    <Link to="/ForgetPassword">Forgot Password?</Link>
+                  </Form.Group>
+                </Form>
+              </Card>
+            </Col>
+          </Row>
+        </div>
     </Container>
   );
 }

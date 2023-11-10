@@ -16,16 +16,14 @@ conversationRouter.get('/:projectId', async (req, res) => {
   }
 });
 
-conversationRouter.post("/:conversationId", async (req, res) => {
+conversationRouter.post('/:conversationId', async (req, res) => {
   try {
     const conversation = await Conversation.findById(req.params.conversationId);
     res.status(200).json(conversation);
-
   } catch (err) {
     res.status(500).json(err);
   }
 });
-
 
 // get conv includes two userId
 

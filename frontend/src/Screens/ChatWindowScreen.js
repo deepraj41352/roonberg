@@ -1,32 +1,32 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   Card,
   CardBody,
   CardFooter,
   CardHeader,
   Form,
-  Image ,
+  Image,
   InputGroup,
-} from "react-bootstrap";
-import { IoSendSharp } from "react-icons/io5";
-import { RxFontStyle } from "react-icons/rx";
-import MyStatefulEditor from "../Components/rte_test";
-import { Store } from "../Store";
-import { Socket, io } from "socket.io-client";
-import axios from "axios";
-import { useParams } from "react-router-dom";
-import { toast } from "react-toastify";
-import { format } from "timeago.js";
-import { BsDownload, BsFillMicFill, BsFillMicMuteFill } from "react-icons/bs";
-import { FiUpload } from "react-icons/fi";
-import Modal from "react-bootstrap/Modal";
-import { ColorRing, ThreeDots } from "react-loader-spinner";
-import Button from "react-bootstrap/Button";
-import { Editor } from "@tinymce/tinymce-react";
+} from 'react-bootstrap';
+import { IoSendSharp } from 'react-icons/io5';
+import { RxFontStyle } from 'react-icons/rx';
+import MyStatefulEditor from '../Components/rte_test';
+import { Store } from '../Store';
+import { Socket, io } from 'socket.io-client';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { format } from 'timeago.js';
+import { BsDownload, BsFillMicFill, BsFillMicMuteFill } from 'react-icons/bs';
+import { FiUpload } from 'react-icons/fi';
+import Modal from 'react-bootstrap/Modal';
+import { ColorRing, ThreeDots } from 'react-loader-spinner';
+import Button from 'react-bootstrap/Button';
+import { Editor } from '@tinymce/tinymce-react';
 // import { EditorValue } from "react-rte";
 import MUIRichTextEditor from 'mui-rte';
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { MdCancel } from "react-icons/md";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { MdCancel } from 'react-icons/md';
 
 function ChatWindowScreen() {
   const { id } = useParams();
@@ -57,31 +57,32 @@ function ChatWindowScreen() {
 
   const [showImage, setShowImage] = useState(false);
 
-
-  const [mediaType, setMediaType] = useState("image");
+  const [mediaType, setMediaType] = useState('image');
   const audioChunks = useRef([]);
   const audioRef = useRef();
+  const SocketUrl = process.env.REACT_APP_SOCKETURL;
+  // const socket = io(SocketUrl); // Replace with your server URL
 
   useEffect(() => {
     if (selectedfile && selectedfile.type) {
       const mediaType =
-        selectedfile.type.includes("video") ||
-          selectedfile.type.includes("audio")
-          ? "video"
-          : "image";
+        selectedfile.type.includes('video') ||
+        selectedfile.type.includes('audio')
+          ? 'video'
+          : 'image';
 
       //console.log('Media Type:', mediaType);
       setMediaType(mediaType);
     }
   }, [selectedfile]);
 
-  const socket = useRef(io("ws://localhost:8900"));
+  const socket = useRef(io(SocketUrl));
   const scrollRef = useRef();
 
   useEffect(() => {
-    socket.current = io("ws://localhost:8900");
-    socket.current.on("audio", (data) => {
-      const audioBlob = new Blob([data.audio], { type: "audio/wav" });
+    socket.current = io(SocketUrl);
+    socket.current.on('audio', (data) => {
+      const audioBlob = new Blob([data.audio], { type: 'audio/wav' });
       const audioUrl = URL.createObjectURL(audioBlob);
       setArrivalMessage({
         senderFirstName: data.senderFirstName,
@@ -93,7 +94,7 @@ function ChatWindowScreen() {
       });
       setAudioStream(data.audio);
     });
-    socket.current.on("audioFile", (data) => {
+    socket.current.on('audioFile', (data) => {
       // console.log("audioFile ", data.audio);
       setArrivalMessage({
         senderFirstName: data.senderFirstName,
@@ -105,7 +106,7 @@ function ChatWindowScreen() {
       });
       setAudioStream(data.audio);
     });
-    socket.current.on("video", (data) => {
+    socket.current.on('video', (data) => {
       // console.log("vedoodile ", data.video);
       setArrivalMessage({
         senderFirstName: data.senderFirstName,
@@ -118,7 +119,7 @@ function ChatWindowScreen() {
       setAudioStream(data.video);
     });
 
-    socket.current.on("image", (data) => {
+    socket.current.on('image', (data) => {
       // console.log("image", data);
       setArrivalMessage({
         senderFirstName: data.senderFirstName,
@@ -129,7 +130,7 @@ function ChatWindowScreen() {
         createdAt: Date.now(),
       });
     });
-    socket.current.on("getMessage", (data) => {
+    socket.current.on('getMessage', (data) => {
       // console.log("data ", data);
       setArrivalMessage({
         senderFirstName: data.senderFirstName,
@@ -146,9 +147,9 @@ function ChatWindowScreen() {
     const getSendRole = async () => {
       try {
         const { data } = await axios.get(
-          "/api/user/role/" + arrivalMessage.sender
+          '/api/user/role/' + arrivalMessage.sender
         );
-        if (data.role === "admin" || data.role === "superadmin") {
+        if (data.role === 'admin' || data.role === 'superadmin') {
           arrivalMessage &&
             setChatMessages((prev) => [...prev, arrivalMessage]);
         } else {
@@ -182,10 +183,10 @@ function ChatWindowScreen() {
         );
         recorder.onstop = async () => {
           const audioBlob = new Blob(audioChunks.current, {
-            type: "audio/wav",
+            type: 'audio/wav',
           });
           //console.log('audiobulb', audioBlob);
-          if (userInfo.role === "admin" || userInfo.role === "superadmin") {
+          if (userInfo.role === 'admin' || userInfo.role === 'superadmin') {
             const messageData = {
               senderFirstName: userInfo.first_name,
               senderLastName: userInfo.last_name,
@@ -195,7 +196,7 @@ function ChatWindowScreen() {
               audio: audioBlob,
             };
             //console.log('messageData', messageData);
-            socket.current.emit("audio", messageData);
+            socket.current.emit('audio', messageData);
             // socket.current.emit('audio', audioBlob);
             audioChunks.current.length = 0;
           } else {
@@ -208,22 +209,22 @@ function ChatWindowScreen() {
               audio: audioBlob,
             };
             //console.log('messageData', messageData);
-            socket.current.emit("audio", messageData);
+            socket.current.emit('audio', messageData);
             // socket.current.emit('audio', audioBlob);
             audioChunks.current.length = 0;
           }
 
           const formDatas = new FormData();
-          formDatas.append("media", audioBlob);
-          formDatas.append("mediaType", "video");
-          formDatas.append("conversationId", id);
-          formDatas.append("sender", userInfo._id);
-          formDatas.append("senderFirstName", userInfo.first_name);
-          formDatas.append("senderLastName", userInfo.last_name);
-          formDatas.append("Sender_Profile", userInfo.profile_picture);
+          formDatas.append('media', audioBlob);
+          formDatas.append('mediaType', 'video');
+          formDatas.append('conversationId', id);
+          formDatas.append('sender', userInfo._id);
+          formDatas.append('senderFirstName', userInfo.first_name);
+          formDatas.append('senderLastName', userInfo.last_name);
+          formDatas.append('Sender_Profile', userInfo.profile_picture);
 
           try {
-            const { data } = await axios.post("/api/message/audio", formDatas);
+            const { data } = await axios.post('/api/message/audio', formDatas);
           } catch (err) {
             console.log(err.response?.data?.message);
           }
@@ -233,7 +234,7 @@ function ChatWindowScreen() {
         setIsRecording(true);
       })
       .catch((error) => {
-        console.error("Error accessing the microphone:", error);
+        console.error('Error accessing the microphone:', error);
         setIsRecording(false); // Ensure that the button is disabled in case of an error
       });
   };
@@ -246,8 +247,8 @@ function ChatWindowScreen() {
   };
 
   useEffect(() => {
-    socket.current.emit("addUser", userInfo._id, userInfo.role);
-    socket.current.on("getUsers", (users) => { });
+    socket.current.emit('addUser', userInfo._id, userInfo.role);
+    socket.current.on('getUsers', (users) => {});
   }, []);
 
   useEffect(() => {
@@ -299,9 +300,9 @@ function ChatWindowScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         }
       );
-      console.log("dataaaa", data);
+      console.log('dataaaa', data);
       if (data.status === 200) {
-        toast.success("Project Status updated Successfully !");
+        toast.success('Project Status updated Successfully !');
       }
       setProjectStatus(data.projectStatus);
     } catch (err) {
@@ -309,17 +310,14 @@ function ChatWindowScreen() {
     }
   };
 
-
   useEffect(() => {
     const receiverdId = conversationID?.members.find(
       (member) => member !== userInfo._id
     );
     const getChatMemberName = async () => {
       try {
-        const { data } = await axios.get(
-          `/api/user/${receiverdId}`
-        );
-        SetChatOpositeMember(data.first_name)
+        const { data } = await axios.get(`/api/user/${receiverdId}`);
+        SetChatOpositeMember(data.first_name);
       } catch (err) {
         console.log(err);
       }
@@ -327,17 +325,15 @@ function ChatWindowScreen() {
     getChatMemberName();
   }, [conversationID]);
 
-
-
   const showFontStyleBox = () => {
     setShowFontStyle(!showFontStyle);
   };
-  
+
   // const [messages, setMessages] = useState([]);
   const [clearEditor, setClearEditor] = useState(false);
-  const [newMessage, setNewMessage] = useState("");
+  const [newMessage, setNewMessage] = useState('');
   const handleSendMessage = async () => {
-    setClearEditor(true); 
+    setClearEditor(true);
     setShowModal(false);
     const messageObject = {
       senderFirstName: userInfo.first_name,
@@ -346,9 +342,9 @@ function ChatWindowScreen() {
       Sender_Profile: userInfo.profile_picture,
       sender: userInfo._id,
     };
-    if (newMessage.trim() !== "") {
+    if (newMessage.trim() !== '') {
       setChatMessages([...chatMessages, messageObject]);
-      setNewMessage("");
+      setNewMessage('');
     }
 
     submitHandler();
@@ -366,15 +362,15 @@ function ChatWindowScreen() {
       e.preventDefault();
     }
     const file = e.target.files[0];
-    console.log("file", file)
+    console.log('file', file);
     if (isFileSizeValid(file)) {
-      SetFileForModel(file)
+      SetFileForModel(file);
       setShowModal(true);
-      if (file.type.includes("image")) {
+      if (file.type.includes('image')) {
         setSelectedfile(file);
-      } else if (file.type.includes("audio")) {
+      } else if (file.type.includes('audio')) {
         setSelectedFileAudio(file);
-      } else if (file.type.includes("video")) {
+      } else if (file.type.includes('video')) {
         setSelectedFileVideo(file);
       }
 
@@ -383,18 +379,18 @@ function ChatWindowScreen() {
         const base64Data = event.target.result;
 
         //setSelectedImage(base64Data);
-        if (file.type.includes("image")) {
+        if (file.type.includes('image')) {
           setSelectedImage(base64Data);
-        } else if (file.type.includes("audio")) {
+        } else if (file.type.includes('audio')) {
           setSelectedAudio(base64Data);
-        } else if (file.type.includes("video")) {
+        } else if (file.type.includes('video')) {
           setSelectedVideo(base64Data);
         }
       };
 
       reader.readAsDataURL(file);
     } else if (file) {
-      alert("Selected image file size exceeds the 40 MB limit.");
+      alert('Selected image file size exceeds the 40 MB limit.');
     }
   };
 
@@ -402,9 +398,9 @@ function ChatWindowScreen() {
     const receiverdId = conversationID.members.find(
       (member) => member !== userInfo._id
     );
-    console.log('receiverdId', receiverdId)
+    console.log('receiverdId', receiverdId);
     if (selectedImage) {
-      if (userInfo.role === "admin" || userInfo.role === "superadmin") {
+      if (userInfo.role === 'admin' || userInfo.role === 'superadmin') {
         const messageData = {
           senderFirstName: userInfo.first_name,
           senderLastName: userInfo.last_name,
@@ -413,7 +409,7 @@ function ChatWindowScreen() {
           receiverdId: conversationID.members,
           image: selectedImage,
         };
-        socket.current.emit("image", messageData);
+        socket.current.emit('image', messageData);
       } else {
         const messageData = {
           senderFirstName: userInfo.first_name,
@@ -423,25 +419,25 @@ function ChatWindowScreen() {
           receiverdId: receiverdId,
           image: selectedImage,
         };
-        socket.current.emit("image", messageData);
+        socket.current.emit('image', messageData);
       }
       const formDatas = new FormData();
-      formDatas.append("media", selectedfile);
-      formDatas.append("mediaType", mediaType);
-      formDatas.append("conversationId", id);
-      formDatas.append("sender", userInfo._id);
-      formDatas.append("text", newMessage);
-      formDatas.append("senderFirstName", userInfo.first_name);
-      formDatas.append("senderLastName", userInfo.last_name);
-      formDatas.append("Sender_Profile", userInfo.profile_picture);
+      formDatas.append('media', selectedfile);
+      formDatas.append('mediaType', mediaType);
+      formDatas.append('conversationId', id);
+      formDatas.append('sender', userInfo._id);
+      formDatas.append('text', newMessage);
+      formDatas.append('senderFirstName', userInfo.first_name);
+      formDatas.append('senderLastName', userInfo.last_name);
+      formDatas.append('Sender_Profile', userInfo.profile_picture);
       try {
-        const { data } = await axios.post("/api/message/", formDatas);
+        const { data } = await axios.post('/api/message/', formDatas);
       } catch (err) {
         console.log(err.response?.data?.message);
       }
       setSelectedImage(null);
     } else if (selectedAudio && selectedAudio != null) {
-      if (userInfo.role === "admin" || userInfo.role === "superadmin") {
+      if (userInfo.role === 'admin' || userInfo.role === 'superadmin') {
         const messageData = {
           senderFirstName: userInfo.first_name,
           senderLastName: userInfo.last_name,
@@ -450,7 +446,7 @@ function ChatWindowScreen() {
           receiverdId: conversationID.members,
           audio: selectedAudio,
         };
-        socket.current.emit("audioFile", messageData);
+        socket.current.emit('audioFile', messageData);
       } else {
         const messageData = {
           senderFirstName: userInfo.first_name,
@@ -460,38 +456,38 @@ function ChatWindowScreen() {
           receiverdId: receiverdId,
           audio: selectedAudio,
         };
-        socket.current.emit("audioFile", messageData);
+        socket.current.emit('audioFile', messageData);
       }
       const formDatas = new FormData();
-      formDatas.append("media", selectedFileAudio);
-      formDatas.append("mediaType", "video");
-      formDatas.append("conversationId", id);
-      formDatas.append("sender", userInfo._id);
-      formDatas.append("text", newMessage);
-      formDatas.append("senderFirstName", userInfo.first_name);
-      formDatas.append("senderLastName", userInfo.last_name);
-      formDatas.append("Sender_Profile", userInfo.profile_picture);
+      formDatas.append('media', selectedFileAudio);
+      formDatas.append('mediaType', 'video');
+      formDatas.append('conversationId', id);
+      formDatas.append('sender', userInfo._id);
+      formDatas.append('text', newMessage);
+      formDatas.append('senderFirstName', userInfo.first_name);
+      formDatas.append('senderLastName', userInfo.last_name);
+      formDatas.append('Sender_Profile', userInfo.profile_picture);
       try {
-        const { data } = await axios.post("/api/message/audio", formDatas);
+        const { data } = await axios.post('/api/message/audio', formDatas);
         setSelectedAudio(null);
       } catch (err) {
         console.log(err.response?.data?.message);
       }
     } else if (selectedVideo && selectedVideo != null) {
       const formDatas = new FormData();
-      formDatas.append("media", selectedFileVideo);
-      formDatas.append("mediaType", "video");
-      formDatas.append("conversationId", id);
-      formDatas.append("sender", userInfo._id);
-      formDatas.append("text", newMessage);
-      formDatas.append("senderFirstName", userInfo.first_name);
-      formDatas.append("senderLastName", userInfo.last_name);
-      formDatas.append("Sender_Profile", userInfo.profile_picture);
+      formDatas.append('media', selectedFileVideo);
+      formDatas.append('mediaType', 'video');
+      formDatas.append('conversationId', id);
+      formDatas.append('sender', userInfo._id);
+      formDatas.append('text', newMessage);
+      formDatas.append('senderFirstName', userInfo.first_name);
+      formDatas.append('senderLastName', userInfo.last_name);
+      formDatas.append('Sender_Profile', userInfo.profile_picture);
 
       try {
         setIsSubmiting(true);
-        const { data } = await axios.post("/api/message/video", formDatas);
-        if (userInfo.role === "admin" || userInfo.role === "superadmin") {
+        const { data } = await axios.post('/api/message/video', formDatas);
+        if (userInfo.role === 'admin' || userInfo.role === 'superadmin') {
           const messageData = {
             senderFirstName: userInfo.first_name,
             senderLastName: userInfo.last_name,
@@ -500,7 +496,7 @@ function ChatWindowScreen() {
             receiverdId: conversationID.members,
             video: data.video,
           };
-          socket.current.emit("video", messageData);
+          socket.current.emit('video', messageData);
         } else {
           const messageData = {
             senderFirstName: userInfo.first_name,
@@ -510,7 +506,7 @@ function ChatWindowScreen() {
             receiverdId: receiverdId,
             video: data.video,
           };
-          socket.current.emit("video", messageData);
+          socket.current.emit('video', messageData);
         }
         setIsSubmiting(false);
       } catch (err) {
@@ -520,8 +516,8 @@ function ChatWindowScreen() {
 
       setSelectedVideo(null);
     } else {
-      if (userInfo.role === "admin" || userInfo.role === "superadmin") {
-        socket.current.emit("sendMessage", {
+      if (userInfo.role === 'admin' || userInfo.role === 'superadmin') {
+        socket.current.emit('sendMessage', {
           senderFirstName: userInfo.first_name,
           senderLastName: userInfo.last_name,
           Sender_Profile: userInfo.profile_picture,
@@ -530,7 +526,7 @@ function ChatWindowScreen() {
           text: newMessage,
         });
       } else {
-        socket.current.emit("sendMessage", {
+        socket.current.emit('sendMessage', {
           senderFirstName: userInfo.first_name,
           senderLastName: userInfo.last_name,
           Sender_Profile: userInfo.profile_picture,
@@ -539,9 +535,9 @@ function ChatWindowScreen() {
           text: newMessage,
         });
       }
-      setEditorValue({content: "" });
+      setEditorValue({ content: '' });
       try {
-        const { data } = await axios.post("/api/message/", {
+        const { data } = await axios.post('/api/message/', {
           senderFirstName: userInfo.first_name,
           senderLastName: userInfo.last_name,
           Sender_Profile: userInfo.profile_picture,
@@ -553,32 +549,30 @@ function ChatWindowScreen() {
         console.log(err.response?.data?.message);
       }
     }
-
   };
 
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages, newMessage]);
 
   // console.log("conversationID ", conversationID);
   // console.log("chatMessages ", chatMessages);
   const handleClose = () => {
-    setShowImage(false)
+    setShowImage(false);
     setShowModal(false);
-    setSelectedfile(null)
+    setSelectedfile(null);
     setSelectedFileAudio(null);
     setSelectedFileVideo(null);
-    setSelectedAudio(null)
-    setSelectedImage(null)
-    setSelectedVideo(null)
+    setSelectedAudio(null);
+    setSelectedImage(null);
+    setSelectedVideo(null);
   };
- const handleforshowimage=(e)=>{
-    setShowImage(true)
-  }
-
+  const handleforshowimage = (e) => {
+    setShowImage(true);
+  };
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       e.preventDefault();
       handleSendMessage();
     }
@@ -586,12 +580,12 @@ function ChatWindowScreen() {
   // const myTheme = createTheme({
   //   // Set up your custom MUI theme here
   // });
-  
-  const [editorValue,setEditorValue]=useState({content:''})
+
+  const [editorValue, setEditorValue] = useState({ content: '' });
   const handleEditorChange = (data) => {
-   // setEditorValue({content});
-   console.log('content ',data);
-    setNewMessage(data)
+    // setEditorValue({content});
+    console.log('content ', data);
+    setNewMessage(data);
   };
 
   const handleDownload = () => {
@@ -608,13 +602,11 @@ function ChatWindowScreen() {
   };
 
   const handleforsetImage = (e) => {
-    setShowImage(true)
-    setImageUrl(e.target.src)
-    };
+    setShowImage(true);
+    setImageUrl(e.target.src);
+  };
 
-
-
-  console.log("image for the modal",imageUrl)
+  console.log('image for the modal', imageUrl);
   return (
     <div className=" justify-content-center align-items-center">
       <div className="d-flex justify-content-center gap-3 ">
@@ -645,70 +637,77 @@ function ChatWindowScreen() {
                             </div>
                           </div>
                           <div>
-                            {" "}
-                            <img 
+                            {' '}
+                            <img
                               className="chat-dp"
-                              src={item.Sender_Profile?(item.Sender_Profile):("./avatar.png")}
+                              src={
+                                item.Sender_Profile
+                                  ? item.Sender_Profile
+                                  : './avatar.png'
+                              }
                             ></img>
                           </div>
                         </div>
                       </div>
                     ) : (
                       <>
-                      <div
-                        ref={scrollRef}
-                        className="chat-receiverMsg d-flex flex-row"
-                      >
-                        <div className="w-100 mediachats" >
-                        <div className="d-flex flex-row">
-                          <div className="text-start px-2 timeago2">
-                            {item.senderFirstName} {item.senderLastName}
-                          </div>
-                        
-                        </div>
-                        {item.audio ? (
-                          <audio
-                            className="chat-receiverMsg-inner w-100 p-2"
-                            controls
-                          >
-                            <source src={item.audio} type="audio/wav" />
-                          </audio>
-                        ) : (
-                          <>
-                            {item.video ? (
-                              <video
+                        <div
+                          ref={scrollRef}
+                          className="chat-receiverMsg d-flex flex-row"
+                        >
+                          <div className="w-100 mediachats">
+                            <div className="d-flex flex-row">
+                              <div className="text-start px-2 timeago2">
+                                {item.senderFirstName} {item.senderLastName}
+                              </div>
+                            </div>
+                            {item.audio ? (
+                              <audio
                                 className="chat-receiverMsg-inner w-100 p-2"
                                 controls
                               >
-                                <source src={item.video} type="video/mp4" />
-                              </video>
+                                <source src={item.audio} type="audio/wav" />
+                              </audio>
                             ) : (
                               <>
-                              <img onClick={handleforsetImage}
-                                src={
-                                  item.conversationId
-                                    ? item.image
-                                    : `http://localhost:4500/${item.image}`
-                                }
-                                className="chat-receiverMsg-inner w-100 p-2"
-                              />
-                            </>
+                                {item.video ? (
+                                  <video
+                                    className="chat-receiverMsg-inner w-100 p-2"
+                                    controls
+                                  >
+                                    <source src={item.video} type="video/mp4" />
+                                  </video>
+                                ) : (
+                                  <>
+                                    <img
+                                      onClick={handleforsetImage}
+                                      src={
+                                        item.conversationId
+                                          ? item.image
+                                          : `${SocketUrl}/${item.image}`
+                                      }
+                                      className="chat-receiverMsg-inner w-100 p-2"
+                                    />
+                                  </>
+                                )}
+                              </>
                             )}
-                          </>
-                        )}
 
-                        <div className="timeago">{format(item.createdAt)}</div>
+                            <div className="timeago">
+                              {format(item.createdAt)}
+                            </div>
+                          </div>
+
+                          <img
+                            className="chat-dp"
+                            src={
+                              item.Sender_Profile
+                                ? item.Sender_Profile
+                                : './avatar.png'
+                            }
+                          ></img>
                         </div>
-
-                        <img
-                        className="chat-dp"
-                        src={item.Sender_Profile?(item.Sender_Profile):("./avatar.png")}
-                        ></img>
-
-
-                      </div>
-                       
-                        </>
+                      </>
                     )}
                   </>
                 ) : (
@@ -720,10 +719,14 @@ function ChatWindowScreen() {
                       >
                         <div className="d-flex w-100">
                           <div>
-                            {" "}
+                            {' '}
                             <img
                               className="chat-dp"
-                              src={item.Sender_Profile?(item.Sender_Profile):("./avatar.png")}
+                              src={
+                                item.Sender_Profile
+                                  ? item.Sender_Profile
+                                  : './avatar.png'
+                              }
                             ></img>
                           </div>
                           <div className="d-flex flex-column  forWidth  ">
@@ -745,52 +748,55 @@ function ChatWindowScreen() {
                         ref={scrollRef}
                         className="chat-senderMsg d-flex flex-row "
                       >
-                         <img
-                            className="chat-dp"
-                            src={item.Sender_Profile?(item.Sender_Profile):("./avatar.png")}
-                            ></img>
+                        <img
+                          className="chat-dp"
+                          src={
+                            item.Sender_Profile
+                              ? item.Sender_Profile
+                              : './avatar.png'
+                          }
+                        ></img>
                         <div className="w-100">
-                        <div className="d-flex flex-row">
-                         
-                          <div className="text-start px-2 timeago2">
-                            {item.senderFirstName} {item.senderLastName}
+                          <div className="d-flex flex-row">
+                            <div className="text-start px-2 timeago2">
+                              {item.senderFirstName} {item.senderLastName}
+                            </div>
                           </div>
-                        </div>
 
-                        {item.audio ? (
-                          <audio
-                            className="chat-senderMsg-inner w-100 p-2"
-                            controls
-                          >
-                            <source src={item.audio} type="audio/wav" />
-                          </audio>
-                        ) : (
-                          <>
-                            {item.video ? (
-                              <video
-                                className="chat-senderMsg-inner w-100 p-2"
-                                controls
-                              >
-                                <source src={item.video} type="video/mp4" />
-                              </video>
-                            ) : (
-                              <>                              <img
-                              onClick={handleforsetImage}
-                                src={
-                                  item.conversationId
-                                    ? item.image
-                                    : `http://localhost:4500/${item.image}`
-                                }
-                                className="chat-senderMsg-inner w-100 p-2"
-                              />
-                              
+                          {item.audio ? (
+                            <audio
+                              className="chat-senderMsg-inner w-100 p-2"
+                              controls
+                            >
+                              <source src={item.audio} type="audio/wav" />
+                            </audio>
+                          ) : (
+                            <>
+                              {item.video ? (
+                                <video
+                                  className="chat-senderMsg-inner w-100 p-2"
+                                  controls
+                                >
+                                  <source src={item.video} type="video/mp4" />
+                                </video>
+                              ) : (
+                                <>
+                                  <img
+                                    onClick={handleforsetImage}
+                                    src={
+                                      item.conversationId
+                                        ? item.image
+                                        : `${SocketUrl}/${item.image}`
+                                    }
+                                    className="chat-senderMsg-inner w-100 p-2"
+                                  />
+                                </>
+                              )}
                             </>
-
-                            )}
-                          </>
-                        )}
-                        <div className="timeago">{format(item.createdAt)}</div>
-
+                          )}
+                          <div className="timeago">
+                            {format(item.createdAt)}
+                          </div>
                         </div>
                       </div>
                     )}
@@ -798,16 +804,19 @@ function ChatWindowScreen() {
                 )}
               </>
             ))}
-               <Modal className="modal-content1" show={showImage} onHide={handleClose}>
-                              
-                              <MdCancel className="close-button" onClick={handleClose}/>
-      
-                              <img
-                              className="w-100"
-                                src={imageUrl}
-                              />
-                                <BsDownload className="btn-send downloadBtn" onClick={handleDownload}/>
-                            </Modal>
+            <Modal
+              className="modal-content1"
+              show={showImage}
+              onHide={handleClose}
+            >
+              <MdCancel className="close-button" onClick={handleClose} />
+
+              <img className="w-100" src={imageUrl} />
+              <BsDownload
+                className="btn-send downloadBtn"
+                onClick={handleDownload}
+              />
+            </Modal>
           </CardBody>
           <CardFooter className="d-flex align-items-center">
             <Form className="w-100">
@@ -815,7 +824,7 @@ function ChatWindowScreen() {
                 <Form.Control
                   disabled={isSubmiting}
                   type="text"
-                  style={{ display: showFontStyle ? "none" : "block" }}
+                  style={{ display: showFontStyle ? 'none' : 'block' }}
                   placeholder="Type your message here..."
                   aria-label="Search"
                   aria-describedby="basic-addon2"
@@ -823,14 +832,17 @@ function ChatWindowScreen() {
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                 />
-                <div style={{ display: showFontStyle ? "block" : "none" }} className="richEditor" >
+                <div
+                  style={{ display: showFontStyle ? 'block' : 'none' }}
+                  className="richEditor"
+                >
                   <MyStatefulEditor
                     markup=""
                     clearEditor={clearEditor}
-        setClearEditor={setClearEditor}
+                    setClearEditor={setClearEditor}
                     onChange={onChange}
                   />
-                   {/* <Editor
+                  {/* <Editor
           value={editorValue.content}
           init={{
             height: 200,
@@ -838,7 +850,7 @@ function ChatWindowScreen() {
           }}
           onEditorChange={handleEditorChange}
         /> */}
-    {/* <ThemeProvider theme={myTheme}>
+                  {/* <ThemeProvider theme={myTheme}>
     <MUIRichTextEditor
       label="Type something here..."
       onSave={handleEditorChange}
@@ -847,33 +859,38 @@ function ChatWindowScreen() {
   </ThemeProvider>, */}
                 </div>
                 <Form.Group className="icon-for-upload">
-                  <Form.Label htmlFor="file-input" className="custom-file-upload">
+                  <Form.Label
+                    htmlFor="file-input"
+                    className="custom-file-upload"
+                  >
                     <FiUpload />
                   </Form.Label>
                   <Form.Control
-                    style={{ display: "none" }}
+                    style={{ display: 'none' }}
                     id="file-input"
                     type="file"
                     disabled={isSubmiting}
                     onChange={handleFileChange}
                   />
-
                 </Form.Group>
                 <div className="App d-flex align-items-center ps-2">
                   <BsFillMicFill
                     onClick={startRecording}
                     disabled={isRecording}
-                    style={{ display: isRecording ? "none" : "block" }}
+                    style={{ display: isRecording ? 'none' : 'block' }}
                   />
 
                   <BsFillMicMuteFill
                     onClick={stopRecording}
                     disabled={!isRecording}
-                    style={{ display: !isRecording ? "none" : "block" }}
+                    style={{ display: !isRecording ? 'none' : 'block' }}
                   />
                 </div>
                 <div className="d-flex justify-content-center align-items-center ps-2 ">
-                  <RxFontStyle className="w-100 rxfontstryle" onClick={showFontStyleBox} />
+                  <RxFontStyle
+                    className="w-100 rxfontstryle"
+                    onClick={showFontStyleBox}
+                  />
                 </div>
               </InputGroup>
             </Form>
@@ -885,7 +902,9 @@ function ChatWindowScreen() {
                 ariaLabel="blocks-loading"
                 wrapperStyle={{}}
                 wrapperClass="blocks-wrapper"
-                colors={["rgba(0, 0, 0, 1) 0%, rgba(17, 17, 74, 1) 68%, rgba(0, 0, 0, 1) 93%"]}
+                colors={[
+                  'rgba(0, 0, 0, 1) 0%, rgba(17, 17, 74, 1) 68%, rgba(0, 0, 0, 1) 93%',
+                ]}
               />
             ) : (
               <IoSendSharp
@@ -895,7 +914,7 @@ function ChatWindowScreen() {
               />
             )}
           </CardFooter>
-        </Card> 
+        </Card>
         <Card className="chatWindowProjectInfo mt-3">
           {projectData ? (
             <Form className="px-3">

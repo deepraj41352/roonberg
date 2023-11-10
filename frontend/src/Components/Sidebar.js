@@ -2,37 +2,54 @@ import React, { useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { HiClipboardList, HiUserGroup } from 'react-icons/hi';
 import { CiBoxList } from 'react-icons/ci';
-import { FaListAlt, FaListUl , } from 'react-icons/fa';
+import { FaListAlt, FaListUl } from 'react-icons/fa';
 import { FaPeopleGroup } from 'react-icons/fa';
 
 import { IoMdNotifications } from 'react-icons/io';
 import { AiFillHome, AiOutlineProject } from 'react-icons/ai';
 import { CgProfile } from 'react-icons/cg';
 import { MdGroup, MdGroups2, MdLogout, MdOutlineGroups2 } from 'react-icons/md';
-import { BsFillChatLeftQuoteFill } from 'react-icons/bs';
-import { Link } from 'react-router-dom';
+import { BsFillChatLeftQuoteFill, BsSearch } from 'react-icons/bs';
+import { Link, useNavigate } from 'react-router-dom';
 import { Store } from '../Store';
 import { ImCross } from 'react-icons/im';
 import axios from 'axios';
+import { Form, InputGroup } from 'react-bootstrap';
 
 function Sidebar({ sidebarVisible, setSidebarVisible }) {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo, NotificationData } = state;
+  const [unseeNote, setUnseenNote] = useState(NotificationData);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isSmallScreen, setIsSmallScreen] = useState(true);
+  const [searchValue, setSearchValue] = useState('');
+  const navigate = useNavigate();
 
-  
-  const socket = io('ws://localhost:8900');
-  socket.on('connectionForNotify', (data) => {
-    console.log('oiuhjioyhi', data);
+  const socketUrl = process.env.REACT_APP_SOCKETURL;
+  const socket = io(socketUrl); // Replace with your server URL
+
+  // const SocketUrl = process.env.SOCKETURL;
+  // const socket = io(SocketUrl);
+  // const socket = io('https://roonsocket.onrender.com'); // Replace with your server URL
+
+  console.log('socket ', socket);
+  socket.emit('connectionForNotify', () => {
+    console.log('oiuhjioyhi');
   });
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+  const closeDropdown = () => {
+    setIsDropdownOpen(false);
+  };
 
   useEffect(() => {
     const handleNotification = (notifyUser, message) => {
       if (notifyUser == userInfo._id) {
         console.log('notifyProjectFrontend', notifyUser, message);
         ctxDispatch({ type: 'NOTIFICATION', payload: { notifyUser, message } });
-       
       }
     };
     socket.on('notifyProjectFrontend', handleNotification);
@@ -40,17 +57,24 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
       socket.off('notifyProjectFrontend', handleNotification);
     };
   }, []);
+
   useEffect(() => {
-    socket.on('notifyUserFrontend', (notifyUser, message) => {
-      if (notifyUser === userInfo._id) {
-        console.log('notifyProjectFrontend', notifyUser, message);
-        ctxDispatch({ type: 'NOTIFICATION', payload: { notifyUser, message } });
-      }
-    });
+    const handleNotification = async (notifyUser, message) => {
+      console.log('notificationformsocke');
+
+      const { data } = await axios.get(`/api/notification/${userInfo._id}`, {
+        headers: { Authorization: ` Bearer ${userInfo.token}` },
+      });
+      ctxDispatch({ type: 'NOTIFICATION-NULL' });
+      data.map((item) => {
+        if (item.status == 'unseen')
+          ctxDispatch({ type: 'NOTIFICATION', payload: { item } });
+      });
+    };
+    socket.on('notifyUserFrontend', handleNotification);
   }, []);
 
-
-  console.log('NotificationData',NotificationData)
+  console.log('NotificationData', NotificationData);
 
   const signoutHandler = () => {
     const userConfirm = window.confirm('Are you sure you want to logout?');
@@ -83,9 +107,8 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
 
   // };
   useEffect(() => {
-
     const fetchNotificationData = async () => {
-        ctxDispatch({ type: 'NOTIFICATION-NULL' });
+      ctxDispatch({ type: 'NOTIFICATION-NULL' });
       try {
         const response = await axios.get(`/api/notification/${userInfo._id}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
@@ -93,11 +116,10 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
         const NotifyData = response.data;
         ctxDispatch({ type: 'NOTIFICATION-NULL' });
 
-
-NotifyData.map((item)=>{
-  if(item.status=="unseen")
-  ctxDispatch({ type: 'NOTIFICATION', payload: { item } });
-})
+        NotifyData.map((item) => {
+          if (item.status == 'unseen')
+            ctxDispatch({ type: 'NOTIFICATION', payload: { item } });
+        });
       } catch (error) {
         console.error('Error fetching notification data:', error);
       }
@@ -106,6 +128,21 @@ NotifyData.map((item)=>{
     fetchNotificationData();
   }, []);
 
+  const uniqueNotificationData = [...new Set(NotificationData)];
+  console.log('uniqueNotificationData ', uniqueNotificationData);
+  useEffect(() => {
+    const noteData = [...NotificationData];
+    const data = noteData.filter((note) => {
+      if (note.notificationId) {
+      }
+    });
+  }, []);
+  const handleInputChange = (event) => {
+    setSearchValue(event.target.value);
+  };
+  const handleSearchScreen = () => {
+    navigate('/searchScreen');
+  };
 
   return (
     <div className={`sidebar ${sidebarVisible ? 'visible' : ''} `}>
@@ -115,6 +152,25 @@ NotifyData.map((item)=>{
         onClick={handleResponsiveSidebarVisable}
       />
       <ul className="dash-list ">
+        <div className="searchbar1">
+          <Form className="d-flex">
+            <InputGroup className="search-bar-dash">
+              <Form.Control
+                type="search"
+                value={searchValue}
+                onChange={handleInputChange}
+                onClick={handleSearchScreen}
+                className="search-bar-dash-inner"
+                placeholder="Search..."
+                aria-label="Search"
+                aria-describedby="basic-addon2"
+              />
+              <InputGroup.Text id="basic-addon2">
+                <BsSearch className="fs-4" />
+              </InputGroup.Text>
+            </InputGroup>
+          </Form>
+        </div>
         <Link
           to="/dashboard"
           className="text-decoration-none"
@@ -261,7 +317,6 @@ NotifyData.map((item)=>{
                 Project List
               </li>
             </Link>
-
           </>
         ) : null}
         <Link
@@ -271,7 +326,9 @@ NotifyData.map((item)=>{
         >
           <li
             className={
-              selectedItem === 'notificationScreen' ? 'selected d-flex' : 'd-flex'
+              selectedItem === 'notificationScreen'
+                ? 'selected d-flex'
+                : 'd-flex'
             }
             onClick={() => {
               setSelectedItem('notificationScreen');
@@ -279,33 +336,58 @@ NotifyData.map((item)=>{
           >
             <IoMdNotifications className="me-3 fs-5 " />
             <div className="position-relative">
-  Notification
-  {NotificationData.length > 0 && (
-    <span className="position-absolute notification-badge top-0 start-110 translate-middle badge rounded-pill bg-danger">
-      {NotificationData.length}
-    </span>
-  )}
-</div>
-
+              Notification
+              {uniqueNotificationData.length > 0 && (
+                <span className="position-absolute notification-badge top-0 start-110 translate-middle badge rounded-pill bg-danger">
+                  {uniqueNotificationData.length}
+                </span>
+              )}
+            </div>
           </li>
         </Link>
-        {/* <Link
-          to="/projectNotification"
-          className="text-decoration-none"
-          onClick={handlSmallScreeneClick}
-        >
+        <Link to="/profile-screen" className="text-decoration-none disNonePro">
           <li
-            className={
-              selectedItem === 'projectNotification' ? 'selected' : ''
-            }
+            className={selectedItem === 'categoriesList' ? 'selected' : ''}
             onClick={() => {
-              setSelectedItem('projectNotification');
+              setSelectedItem('categoriesList');
             }}
           >
-            <IoMdNotifications className="me-3 fs-5" />
-            Project Notification
+            <img
+              className="profile-icon2 profile-icon-inner fs-5 img-fornavs"
+              src={
+                userInfo.profile_picture
+                  ? userInfo.profile_picture
+                  : './avatar.png'
+              }
+              alt="userimg"
+            />
+            Profile
           </li>
-        </Link> */}
+        </Link>
+        {/* <div className="profile-icon" onClick={toggleDropdown}>
+          <img
+            className="w-100 h-100 profile-icon-inner fs-5 img-fornavs"
+            src={
+              userInfo.profile_picture
+                ? userInfo.profile_picture
+                : './avatar.png'
+            }
+            alt="userimg"
+          />
+          {isDropdownOpen && (
+            <div className="dropdown-content" onClick={closeDropdown}>
+              <Link to="/profile-screen">Profile</Link>
+              <Link to="/projectNotification">Notification</Link>
+              <Link to="#">Setting</Link>
+              <hr />
+              <Link onClick={signoutHandler} to="#">
+                Logout
+              </Link>
+              {/* Add more options as needed *
+            </div>
+          )}
+        </div> */}
+
         <Link
           to="#Logout"
           onClick={signoutHandler}
