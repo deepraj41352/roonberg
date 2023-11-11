@@ -22,6 +22,7 @@ const projectRouter = express.Router();
 // get all projects
 projectRouter.get(
   '/',
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     try {
       const userRole = req.user.role;
