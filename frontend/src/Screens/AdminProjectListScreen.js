@@ -250,9 +250,7 @@ export default function AdminProjectListScreen() {
     const FatchProjectData = async () => {
       try {
         dispatch({ type: 'FATCH_REQUEST' });
-        const response = await axios.get('/api/project', {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        });
+        const response = await axios.get('/api/project');
         const datas = response.data;
         const rowData = datas.map((items) => {
           const contractor = contractorData.find(
