@@ -351,6 +351,7 @@ export default function AdminProjectListScreen() {
       }
     } catch (error) {
       if (error.response.status === 500) {
+        setIsModelOpen(false);
         toast.error('Server Error');
         setIsSubmiting(false);
       }

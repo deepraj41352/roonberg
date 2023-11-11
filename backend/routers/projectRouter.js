@@ -26,44 +26,44 @@ projectRouter.get(
   expressAsyncHandler(async (req, res) => {
     try {
       const userRole = req.user.role;
-
       if (userRole === 'admin' || userRole === 'superadmin') {
         const projects = await Project.find();
+        if (projects) {
+          for (const project of projects) {
+            if (Array.isArray(project.assignedAgent)) {
+              for (const assignee of project.assignedAgent) {
+                const agentId = assignee.agentId;
+                const categoryId = assignee.categoryId;
+                const agentName = await User.findById(agentId, 'first_name');
+                const categoryName = await Category.findById(
+                  categoryId,
+                  'categoryName'
+                );
 
-        for (const project of projects) {
-          if (Array.isArray(project.assignedAgent)) {
-            for (const assignee of project.assignedAgent) {
-              const agentId = assignee.agentId;
-              const categoryId = assignee.categoryId;
-              const agentName = await User.findById(agentId, 'first_name');
-              const categoryName = await Category.findById(
-                categoryId,
-                'categoryName'
-              );
-
-              assignee.agentName = agentName?.first_name;
-              assignee.categoryName = categoryName.categoryName;
+                assignee.agentName = agentName?.first_name;
+                assignee.categoryName = categoryName.categoryName;
+              }
             }
           }
+
+          projects.sort((a, b) => b.createdAt - a.createdAt);
+          res.json(projects);
+        } else if (userRole === 'contractor') {
+          const contractorId = req.user._id;
+          const projects = await Project.find({ projectOwner: contractorId });
+
+          projects.sort((a, b) => b.createdAt - a.createdAt);
+          res.json(projects);
+        } else if (userRole === 'agent') {
+          const agentId = req.user._id;
+          const projects = await Project.find({
+            'assignedAgent.agentId': agentId,
+          });
+          projects.sort((a, b) => b.createdAt - a.createdAt);
+          res.json(projects);
+        } else {
+          res.status(403).json({ message: 'Access denied' });
         }
-
-        projects.sort((a, b) => b.createdAt - a.createdAt);
-        res.json(projects);
-      } else if (userRole === 'contractor') {
-        const contractorId = req.user._id;
-        const projects = await Project.find({ projectOwner: contractorId });
-
-        projects.sort((a, b) => b.createdAt - a.createdAt);
-        res.json(projects);
-      } else if (userRole === 'agent') {
-        const agentId = req.user._id;
-        const projects = await Project.find({
-          'assignedAgent.agentId': agentId,
-        });
-        projects.sort((a, b) => b.createdAt - a.createdAt);
-        res.json(projects);
-      } else {
-        res.status(403).json({ message: 'Access denied' });
       }
     } catch (error) {
       console.error(error);
