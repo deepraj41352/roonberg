@@ -373,7 +373,7 @@ export default function AdminContractorListScreen() {
                   disableRowSelectionOnClick
                   // gridOptions={gridOptions}
                   localeText={{ noRowsLabel: 'Category Data Is Not Avalible' }}
-                // getRowClassName={(params) => (params.row.categoryStatus === 'Inactive' ? 'inactive-row' : '')}
+                  // getRowClassName={(params) => (params.row.categoryStatus === 'Inactive' ? 'inactive-row' : '')}
                 />
               </Box>
             </div>
@@ -465,7 +465,7 @@ export default function AdminContractorListScreen() {
                     />
                     <FormControl className="mb-3 cateLogoImgContainer">
                       <InputLabel className="cateLogoImgLabel">
-                        Upload Logo
+                        {selectedFile ? selectedFile.name : 'Upload Logo'}
                       </InputLabel>
                       <Input
                         type="file"
