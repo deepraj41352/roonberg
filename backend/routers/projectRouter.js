@@ -28,7 +28,6 @@ projectRouter.get(
       const userRole = req.user.role;
       if (userRole === 'admin' || userRole === 'superadmin') {
         const projects = await Project.find();
-        console.log(projects);
         if (projects) {
           for (const project of projects) {
             if (Array.isArray(project.assignedAgent)) {
