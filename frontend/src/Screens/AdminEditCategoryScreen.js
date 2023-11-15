@@ -183,11 +183,10 @@ function AdminEditCategory() {
                         <Col className="">
                           {categoryData.categoryImage !== 'null' ? (
                             <Avatar
-                              className="editCateImgContainer"
                               src={categoryData.categoryImage}
                             />
                           ) : (
-                            <AvatarImage className="editCateImgContainer" id="cateEditImgAvatar" name={category} bgColor={color} />
+                            <AvatarImage id="cateEditImgAvatar" name={category} bgColor={color} />
                           )}
                         </Col>
                         <Col className="cateEditImgChild">

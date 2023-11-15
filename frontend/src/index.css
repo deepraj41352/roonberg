@@ -34,13 +34,14 @@ code {
 
 /* Gaytri css start  */
 #cateEditImgAvatar {
-  width: '65px' !important;
-  height: '65px' !important;
+  width: '65px';
+  height: '65px';
 }
+
 .cateEditImgChild {
   position: absolute;
-  right: 99px;
-  top: 36px;
+  right: 119px;
+  top: 21px;
 }
 .tableBg .css-ptkaw2-MuiDataGrid-root .MuiDataGrid-columnHeader:focus,
 .css-ptkaw2-MuiDataGrid-root .MuiDataGrid-cell:focus {

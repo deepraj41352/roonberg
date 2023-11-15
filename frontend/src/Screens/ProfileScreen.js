@@ -20,13 +20,13 @@ function ProfileScreen() {
   const [email, setEmail] = useState(userInfo.email);
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  useEffect(() => {
-    if (isSubmiting == false) {
-      setFirstName(userInfo.first_name);
-      setFirstName(userInfo.last_name);
-      setEmail(userInfo.email);
-    }
-  }, [isSubmiting, userInfo]);
+  // useEffect(() => {
+  //   if (isSubmiting == false) {
+  //     setFirstName(userInfo.first_name);
+  //     setFirstName(userInfo.last_name);
+  //     setEmail(userInfo.email);
+  //   }
+  // }, [isSubmiting, userInfo]);
 
   const submitHandler = async (e) => {
     e.preventDefault();

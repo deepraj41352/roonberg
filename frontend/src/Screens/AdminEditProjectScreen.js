@@ -409,7 +409,7 @@ function AdminEditProject() {
                 <Card.Header className={`${theme}CardHeader`}>
                   Project Details
                 </Card.Header>
-                <div className="FormContainerEdit pt-4">
+                <div className="FormContainerEdit pt-4 ">
                   <Card.Body className="text-start">
                     <Form className="px-3" onSubmit={handleSubmit}>
                       <TextField
@@ -520,7 +520,7 @@ function AdminEditProject() {
                   <Card.Header className={`${theme}CardHeader`}>
                     Chats
                   </Card.Header>
-                  <Card.Body className="d-flex flex-wrap gap-3 ">
+                  <Card.Body className="d-flex flex-wrap gap-3 assignCon">
                     <div
                       className="text-center w-100"
                       style={{

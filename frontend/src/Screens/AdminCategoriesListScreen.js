@@ -455,6 +455,7 @@ export default function AdminContractorListScreen() {
                         <MenuItem value={false}>Inactive</MenuItem>
                       </Select>
                     </FormControl>
+                    <div></div>
                     <TextField
                       className="mb-3"
                       type="file"
@@ -465,7 +466,7 @@ export default function AdminContractorListScreen() {
                     />
                     <FormControl className="mb-3 cateLogoImgContainer">
                       <InputLabel className="cateLogoImgLabel">
-                        Upload Logo
+                        {selectedFile ? selectedFile.name : ' Upload Logo'}
                       </InputLabel>
                       <Input
                         type="file"

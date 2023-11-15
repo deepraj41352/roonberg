@@ -27,6 +27,7 @@ projectRouter.get(
     try {
 
       const userRole = req.user.role;
+      console.log("uaerRole", userRole)
 
       if (userRole === 'admin' || userRole === 'superadmin') {
         const projects = await Project.find();
@@ -43,9 +44,11 @@ projectRouter.get(
               assignee.categoryName = categoryName.categoryName;
             }
           }
+          else {
+            console.log("issue in agent cate name")
+            res.status(403).json({ message: 'issue in get name' });
+          }
         }
-
-
         projects.sort((a, b) => b.createdAt - a.createdAt);
         res.json(projects);
       } else if (userRole === 'contractor') {
@@ -414,7 +417,7 @@ projectRouter.post(
           for (const agentId of agentIds) {
             const existingConversation = await Conversation.findOne({
               members: [agentId, contractorId],
-              projectId: projectId,
+              projectId: project._id,
             });
 
             console.log("existingConversation", existingConversation);
@@ -423,7 +426,7 @@ projectRouter.post(
               try {
                 const newConversation = new Conversation({
                   members: [agentId, contractorId],
-                  projectId: projectId,
+                  projectId: project._id,
                 });
                 const con = await newConversation.save();
                 console.log("New conversation saved:", con);
@@ -616,27 +619,30 @@ projectRouter.post(
 
         console.log("existingConversation", existingConversation);
 
-        if (!existingConversation && agentIds.includes(agentId)) {
-          try {
-            const newConversation = new Conversation({
-              members: [agentId, contractorId],
-              projectId: projectId,
-            });
-            const con = await newConversation.save();
-            console.log("New conversation saved:", con);
-          } catch (error) {
-            console.error("Error saving new conversation:", error);
-          }
-        } else if (existingConversation && !agentIds.includes(agentId)) {
-          try {
-            await Conversation.findByIdAndRemove(existingConversation._id);
-            console.log("Conversation removed:", existingConversation);
-          } catch (error) {
-            console.error("Error removing conversation:", error);
-          }
-        } else {
-          console.log('Conversation already exists:', existingConversation);
+        if (existingConversation == null) {
+
         }
+        // if (existingConversation && agentIds.includes(agentId)) {
+        //   try {
+        //     const newConversation = new Conversation({
+        //       members: [agentId, contractorId],
+        //       projectId: projectId,
+        //     });
+        //     const con = await newConversation.save();
+        //     console.log("New conversation saved:", con);
+        //   } catch (error) {
+        //     console.error("Error saving new conversation:", error);
+        //   }
+        // } else if (existingConversation && !agentIds.includes(agentId)) {
+        //   try {
+        //     await Conversation.findByIdAndRemove(existingConversation._id);
+        //     console.log("Conversation removed:", existingConversation);
+        //   } catch (error) {
+        //     console.error("Error removing conversation:", error);
+        //   }
+        // } else {
+        //   console.log('Conversation already exists:', existingConversation);
+        // }
       }
 
       res.status(200).json({ updatedProject, agent: agentIds });

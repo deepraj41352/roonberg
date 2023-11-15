@@ -44,10 +44,10 @@ const reducer = (state, action) => {
       return { ...state, error: action.payload, loading: false };
 
     case 'DELETE_SUCCESS':
-      return { ...state, successDelete: action.payload, loading: false };
+      return { ...state, successDelete: action.payload };
 
     case 'DELETE_RESET':
-      return { ...state, successDelete: false, loading: false };
+      return { ...state, successDelete: false };
 
     case 'UPDATE_SUCCESS':
       return { ...state, successUpdate: action.payload };
@@ -336,13 +336,13 @@ export default function AdminProjectListScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         }
       );
-      setIsSubmiting(false);
-      dispatch({ type: 'UPDATE_SUCCESS', payload: false });
-      if (response.status === 201) {
+
+      if (response.status === 200) {
         toast.success("Project Created Successfully !");
         const datas = response.data;
         setIsModelOpen(false);
-
+        setIsSubmiting(false);
+        dispatch({ type: 'UPDATE_SUCCESS', payload: true });
         setProjectName('');
         setProjectDescription('');
         startDate();
@@ -540,12 +540,7 @@ export default function AdminProjectListScreen() {
                     className="dropMenuCon"
                     onClick={() => handleTabSelect('Assigned')}
                   >
-                    <span className="position-relative">
-                      Qued
-                      <span className="badgesclass badgeAll top-0 start-112 translate-middle badge rounded-pill">
-                        {projectQuedData.length}
-                      </span>
-                    </span>
+                    kkkkkkk
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
@@ -1033,7 +1028,14 @@ export default function AdminProjectListScreen() {
                     />
                   </Box>
                 </Tab>
-                <Tab className="tab-color" eventKey="Assigned" title="Assigned">
+                <Tab className="tab-color" eventKey="Assigned" title={
+                  <span class="position-relative">
+                    Assigned
+                    <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+                      {assignedAgent.length}
+                    </span>
+                  </span>
+                }>
                   <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
@@ -1082,28 +1084,7 @@ export default function AdminProjectListScreen() {
               </Tabs>
 
               {/* Tabs */}
-              <Tabs
-                activeKey={selectedTab}
-                onSelect={(tab) => handleTabSelect(tab)}
-                id="uncontrolled-tab-example"
-                className="mb-0 dropTab tab-btn"
-              >
-                <Tab eventKey="All" title="All">
-                  1
-                </Tab>
-                <Tab eventKey="Active" title="Active">
-                  2
-                </Tab>
-                <Tab eventKey="Completed" title="Completed">
-                  3
-                </Tab>
-                <Tab eventKey="Qued" title="Qued">
-                  3
-                </Tab>
-                <Tab eventKey="Assigned" title="Assigned">
-                  4
-                </Tab>
-              </Tabs>
+
             </div>
           </>
         )}
