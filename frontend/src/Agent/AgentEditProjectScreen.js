@@ -8,6 +8,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AiFillDelete } from 'react-icons/ai';
 import MultiSelect from 'react-multiple-select-dropdown-lite';
+import { ThreeDots } from 'react-loader-spinner';
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FATCH_REQUEST':
@@ -104,7 +105,10 @@ function AgentEditProject() {
             : null
         );
         setCategories(ProjectDatas.projectCategory);
-        console.log("ProjectDatas.projectCategory", ProjectDatas.projectCategory)
+        console.log(
+          'ProjectDatas.projectCategory',
+          ProjectDatas.projectCategory
+        );
         setAgents(ProjectDatas.assignedAgent);
         setProjectStatus(projectData.projectStatus);
         setProjectOwner(projectData.projectOwner);
@@ -114,7 +118,6 @@ function AgentEditProject() {
         dispatch({ type: 'FATCH_SUCCESS', payload: ProjectDatas });
       } catch (error) {
         console.error('Error fetching project data:', error);
-
       }
     };
 
@@ -164,7 +167,7 @@ function AgentEditProject() {
     setAgents([...agents, { categoryId: '', agentId: '' }]);
   };
   const removeAgent = (index) => {
-    if (window.confirm("Are you sure to delete?")) {
+    if (window.confirm('Are you sure to delete?')) {
       const updatedAgents = [...agents];
       updatedAgents.splice(index, 1);
       setAgents(updatedAgents);
@@ -243,9 +246,9 @@ function AgentEditProject() {
   const options =
     categoryData && Array.isArray(categoryData)
       ? categoryData.map((item) => ({
-        label: item.categoryName,
-        value: item._id,
-      }))
+          label: item.categoryName,
+          value: item._id,
+        }))
       : [];
 
   const handleInputChange = (e) => {
@@ -269,29 +272,39 @@ function AgentEditProject() {
         const response = await axios.post(`/api/user/`, { role: 'contractor' });
         const datas = response.data;
         dispatch({ type: 'FATCH_CONTRACTOR', payload: datas });
-      } catch (error) { }
+      } catch (error) {}
     };
     FatchContractorData();
   }, []);
 
   useEffect(() => {
-
     const FatchAgentData = async () => {
       try {
-        const response = await axios.post(`/api/user/`, { role: "agent" });
+        const response = await axios.post(`/api/user/`, { role: 'agent' });
         const datas = response.data;
-        dispatch({ type: "FATCH_AGENTS", payload: datas })
-
-      } catch (error) {
-      }
-    }
+        dispatch({ type: 'FATCH_AGENTS', payload: datas });
+      } catch (error) {}
+    };
     FatchAgentData();
-
-  }, [])
+  }, []);
   return (
     <div>
       {loading ? (
-        <div>Loading ...</div>
+        <>
+          <div className="ThreeDot">
+            <ThreeDots
+              height="80"
+              width="80"
+              radius="9"
+              className="ThreeDot justify-content-center"
+              color="#0e0e3d"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClassName=""
+              visible={true}
+            />
+          </div>
+        </>
       ) : error ? (
         <div>{error}</div>
       ) : (
@@ -309,7 +322,8 @@ function AgentEditProject() {
                       type="text"
                       name="projectName"
                       value={projectData.projectName}
-                      disabled onChange={handleInputChange}
+                      disabled
+                      onChange={handleInputChange}
                     />
                   </Form.Group>
                   <Form.Group
@@ -324,7 +338,8 @@ function AgentEditProject() {
                       rows={3}
                       name="projectDescription"
                       value={projectData.projectDescription}
-                      disabled onChange={handleInputChange}
+                      disabled
+                      onChange={handleInputChange}
                     />
                   </Form.Group>
                   <Form.Group className="mb-3">
@@ -333,24 +348,33 @@ function AgentEditProject() {
                       className="categorieslist"
                       onChange={handleCategoryChange}
                       options={options}
-                      defaultValue={selectedOptions} disabled
+                      defaultValue={selectedOptions}
+                      disabled
                     />
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="formBasicPassword">
                     <Form.Label className="mb-1">Contractor</Form.Label>
                     {console.log('projectOwner', projectOwner)}
-                    <Form.Select value={projectData && projectData.projectOwner} disabled onChange={(e) => setProjectOwner(e.target.value)}>
+                    <Form.Select
+                      value={projectData && projectData.projectOwner}
+                      disabled
+                      onChange={(e) => setProjectOwner(e.target.value)}
+                    >
                       <option value="">SELECT CONTRACTOR</option>
                       {contractorData.map((items) => (
-                        <option key={items._id} value={items._id} >{items.first_name}</option>
-
+                        <option key={items._id} value={items._id}>
+                          {items.first_name}
+                        </option>
                       ))}
-
                     </Form.Select>
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="formBasicPassword">
                     <Form.Label className="mb-1">Project Status</Form.Label>
-                    <Form.Select value={projectStatus} disabled onChange={(e) => setProjectStatus(e.target.value)}>
+                    <Form.Select
+                      value={projectStatus}
+                      disabled
+                      onChange={(e) => setProjectStatus(e.target.value)}
+                    >
                       <option value="active">Active </option>
                       <option value="inactive">Inactive </option>
                       <option value="queue">In Proccess </option>
@@ -363,7 +387,8 @@ function AgentEditProject() {
                         type="date"
                         name="createdDate"
                         value={createdDate}
-                        disabled onChange={(e) => setCreatedDate(e.target.value)}
+                        disabled
+                        onChange={(e) => setCreatedDate(e.target.value)}
                         placeholder="Start Date"
                       />
                     </Form.Group>
@@ -373,7 +398,8 @@ function AgentEditProject() {
                         type="date"
                         name="endDate"
                         value={endDate}
-                        disabled onChange={(e) => setEndDate(e.target.value)}
+                        disabled
+                        onChange={(e) => setEndDate(e.target.value)}
                         placeholder="End Date"
                       />
                     </Form.Group>
@@ -381,8 +407,7 @@ function AgentEditProject() {
                 </Form>
               </Card.Body>
             </Card>
-            <div className='projectScreenCard2 d-flex flex-column gap-4'>
-
+            <div className="projectScreenCard2 d-flex flex-column gap-4">
               <Card className={`projectScreenCard2 ${theme}CardBody`}>
                 <Card.Header className={`${theme}CardHeader`}>
                   Chats
@@ -393,8 +418,8 @@ function AgentEditProject() {
                     style={{
                       display:
                         projectData &&
-                          projectData.conversions &&
-                          projectData.conversions.length < 1
+                        projectData.conversions &&
+                        projectData.conversions.length < 1
                           ? 'block'
                           : 'none',
                     }}
@@ -422,7 +447,7 @@ function AgentEditProject() {
                                       <Button
                                         className="chatBtn"
                                         type="button"
-                                      // onClick={conversionHandler(conversion._id)}
+                                        // onClick={conversionHandler(conversion._id)}
                                       >
                                         Chat Now
                                       </Button>
@@ -448,7 +473,7 @@ function AgentEditProject() {
                                       <Button
                                         className="chatBtn"
                                         type="button"
-                                      // onClick={conversionHandler(conversion._id)}
+                                        // onClick={conversionHandler(conversion._id)}
                                       >
                                         {assignedAgent.agentName}
                                       </Button>
@@ -464,7 +489,6 @@ function AgentEditProject() {
                 </Card.Body>
               </Card>
             </div>
-
           </div>
         </div>
       )}

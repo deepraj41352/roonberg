@@ -443,6 +443,7 @@ function AdminEditProject() {
                       <FormControl className="mb-3">
                         <InputLabel>Contractor</InputLabel>
                         <Select
+                          disabled
                           InputLabelProps={{
                             shrink: projectData.projectOwner ? true : false,
                           }}
