@@ -16,7 +16,7 @@ export default function AdminDashboard() {
   const { toggleState, userInfo } = state;
   const theme = toggleState ? 'dark' : 'light';
 
-  return userInfo.role == 'superadmin' && userInfo.role == 'admin' ? (
+  return userInfo.role == 'superadmin' || userInfo.role == 'admin' ? (
     <>
       <div className="px-4 mt-3">
         <Row className="px-2 gap-3">
