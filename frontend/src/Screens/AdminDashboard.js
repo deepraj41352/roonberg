@@ -7,6 +7,7 @@ import data from '../dummyData';
 import Chart from 'react-google-charts';
 import { Store } from '../Store';
 import WidgetsDropdown from '../widgets/widgets/WidgetsDropdown';
+import WidgetsDropdown2 from '../widgets/widgets/WidgetsDropdown2';
 
 import axios from 'axios';
 
@@ -15,7 +16,7 @@ export default function AdminDashboard() {
   const { toggleState, userInfo } = state;
   const theme = toggleState ? 'dark' : 'light';
 
-  return userInfo.role == 'superadmin' ? (
+  return userInfo.role == 'superadmin' && userInfo.role == 'admin' ? (
     <>
       <div className="px-4 mt-3">
         <Row className="px-2 gap-3">
@@ -96,7 +97,9 @@ export default function AdminDashboard() {
   ) : (
     <>
       <Row>
-        <h2>Well Come {userInfo.first_name}</h2>
+        <Col className=" p-0 ">
+          <WidgetsDropdown2 />
+        </Col>
       </Row>
     </>
   );
