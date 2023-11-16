@@ -134,7 +134,7 @@ export default function AdminProjectListScreen() {
   const navigate = useNavigate();
   const [agents, setAgents] = useState([{ categoryId: '' }]);
   const [categories, setCategories] = useState([]);
-  const [projectStatus, setProjectStatus] = useState();
+  const [projectStatus, setProjectStatus] = useState('active');
   const [isDeleting, setIsDeleting] = useState(false);
 
   const assignedAgentByCateHandle = (index) => {
@@ -316,39 +316,76 @@ export default function AdminProjectListScreen() {
     );
   });
 
+  const currentDate = dayjs();
+  console.log('currentDate', currentDate);
+
+  const validateDates = (newStartDate, newEndDate) => {
+    setStartDate(currentDate);
+    setEndDate(currentDate);
+    const selectedStartDate = dayjs(newStartDate);
+    const selectedEndDate = dayjs(newEndDate);
+
+    if (
+      selectedStartDate.isAfter(currentDate, 'day') ||
+      selectedStartDate.isSame(currentDate, 'day')
+    ) {
+      setStartDate(newStartDate);
+      setStartDateError('');
+
+      if (newEndDate) {
+        if (
+          selectedEndDate.isAfter(selectedStartDate, 'day') ||
+          selectedEndDate.isSame(selectedStartDate, 'day')
+        ) {
+          setEndDate(newEndDate);
+          setEndDateError('');
+        } else {
+          setEndDateError(
+            'End date must be greater than or equal to the Start Date.'
+          );
+        }
+      }
+    } else {
+      setStartDateError(
+        'Start date must be greater than or equal to the current date.'
+      );
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const filteredAgents = agents.filter((obj) => Object.keys(obj).length > 1);
     setIsSubmiting(true);
-    console.log('agent', agents);
+    console.log('startDate', startDate);
+    console.log('endDate', endDate);
     try {
-      const response = await axios.post(
-        '/api/project/admin/addproject',
-        {
-          projectName: projectName,
-          projectDescription: projectDescription,
-          createdDate: startDate,
-          endDate: endDate,
-          assignedAgent: agents,
-          projectOwner: projectOwner,
-          projectStatus: projectStatus,
-        },
-        {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        }
-      );
-      console.log(response.status);
-      if (response.status === 200) {
-        toast.success('Project Created Successfully !');
-        setProjectName('');
-        setProjectDescription('');
-        setAgents([{}]);
-        setProjectStatus('');
-        setProjectOwner('');
-        setIsSubmiting(false);
-        setIsModelOpen(false);
-        dispatch({ type: 'UPDATE_SUCCESS', payload: true });
-      }
+      // const response = await axios.post(
+      //   '/api/project/admin/addproject',
+      //   {
+      //     projectName: projectName,
+      //     projectDescription: projectDescription,
+      //     createdDate: startDate,
+      //     endDate: endDate,
+      //     assignedAgent: agents,
+      //     projectOwner: projectOwner,
+      //     projectStatus: projectStatus,
+      //   },
+      //   {
+      //     headers: { Authorization: `Bearer ${userInfo.token}` },
+      //   }
+      // );
+      // console.log(response.status);
+      // if (response.status === 200) {
+      //   toast.success('Project Created Successfully !');
+      //   setProjectName('');
+      //   setProjectDescription('');
+      //   setAgents([{}]);
+      //   setProjectStatus('');
+      //   setProjectOwner('');
+      //   setIsSubmiting(false);
+      //   setIsModelOpen(false);
+      //   dispatch({ type: 'UPDATE_SUCCESS', payload: true });
+      // }
     } catch (error) {
       if (error.response.status === 500) {
         setIsModelOpen(false);
@@ -392,41 +429,6 @@ export default function AdminProjectListScreen() {
 
   const handleAssigndment = (userid) => {
     navigate(`/AdminAssignAgent/${userid}`);
-  };
-
-  const currentDate = dayjs();
-
-  const validateDates = (newStartDate, newEndDate) => {
-    setStartDate(newStartDate);
-    setEndDate(newEndDate);
-    const selectedStartDate = dayjs(newStartDate);
-    const selectedEndDate = dayjs(newEndDate);
-
-    if (
-      selectedStartDate.isAfter(currentDate, 'day') ||
-      selectedStartDate.isSame(currentDate, 'day')
-    ) {
-      setStartDate(newStartDate);
-      setStartDateError('');
-
-      if (newEndDate) {
-        if (
-          selectedEndDate.isAfter(selectedStartDate, 'day') ||
-          selectedEndDate.isSame(selectedStartDate, 'day')
-        ) {
-          setEndDate(newEndDate);
-          setEndDateError('');
-        } else {
-          setEndDateError(
-            'End date must be greater than or equal to the Start Date.'
-          );
-        }
-      }
-    } else {
-      setStartDateError(
-        'Start date must be greater than or equal to the current date.'
-      );
-    }
   };
 
   const moreFieldsopen = () => {
@@ -791,7 +793,6 @@ export default function AdminProjectListScreen() {
                               <DatePicker
                                 className="marginDate"
                                 label="Start Date"
-                                required
                                 value={startDate}
                                 onChange={(newValue) =>
                                   validateDates(newValue, endDate)
@@ -808,7 +809,6 @@ export default function AdminProjectListScreen() {
                               <DatePicker
                                 className="mb-3"
                                 label="End Date"
-                                required
                                 value={endDate}
                                 onChange={(newValue) =>
                                   validateDates(startDate, newValue)
@@ -817,6 +817,7 @@ export default function AdminProjectListScreen() {
                                   <TextField
                                     {...params}
                                     style={{ color: 'white' }}
+                                    autoComplete="off"
                                   />
                                 )}
                               />
