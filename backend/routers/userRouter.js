@@ -687,4 +687,16 @@ userRouter.get(
     }
   })
 );
+userRouter.get(
+  '/',
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const users = await User.find().sort({ createdAt: -1 });
+      res.json(users);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  })
+);
 export default userRouter;

@@ -127,11 +127,12 @@ export default function AdminProjectListScreen() {
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [projectOwner, setProjectOwner] = useState('');
-  const [startDate, setStartDate] = useState();
-  const [endDate, setEndDate] = useState();
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [startDateError, setStartDateError] = useState('');
   const [endDateError, setEndDateError] = useState('');
   const navigate = useNavigate();
+  const [errorAccured, setErrorAccured] = useState(false);
   const [agents, setAgents] = useState([{ categoryId: '' }]);
   const [categories, setCategories] = useState([]);
   const [projectStatus, setProjectStatus] = useState('active');
@@ -320,8 +321,8 @@ export default function AdminProjectListScreen() {
   console.log('currentDate', currentDate);
 
   const validateDates = (newStartDate, newEndDate) => {
-    setStartDate(currentDate);
-    setEndDate(currentDate);
+    setStartDate(newStartDate);
+    setEndDate(newEndDate);
     const selectedStartDate = dayjs(newStartDate);
     const selectedEndDate = dayjs(newEndDate);
 
@@ -339,13 +340,16 @@ export default function AdminProjectListScreen() {
         ) {
           setEndDate(newEndDate);
           setEndDateError('');
+          setErrorAccured(false);
         } else {
+          setErrorAccured(true);
           setEndDateError(
             'End date must be greater than or equal to the Start Date.'
           );
         }
       }
     } else {
+      setErrorAccured(true);
       setStartDateError(
         'Start date must be greater than or equal to the current date.'
       );
@@ -356,36 +360,46 @@ export default function AdminProjectListScreen() {
     e.preventDefault();
     const filteredAgents = agents.filter((obj) => Object.keys(obj).length > 1);
     setIsSubmiting(true);
-    console.log('startDate', startDate);
-    console.log('endDate', endDate);
+    if (startDate === null || endDate === null) {
+      setErrorAccured(true);
+      if (startDate === null) {
+        setStartDateError('Start date required.');
+      }
+      if (endDate === null) {
+        setEndDateError('End date required.');
+      }
+
+      setIsSubmiting(false);
+      return;
+    }
     try {
-      // const response = await axios.post(
-      //   '/api/project/admin/addproject',
-      //   {
-      //     projectName: projectName,
-      //     projectDescription: projectDescription,
-      //     createdDate: startDate,
-      //     endDate: endDate,
-      //     assignedAgent: agents,
-      //     projectOwner: projectOwner,
-      //     projectStatus: projectStatus,
-      //   },
-      //   {
-      //     headers: { Authorization: `Bearer ${userInfo.token}` },
-      //   }
-      // );
-      // console.log(response.status);
-      // if (response.status === 200) {
-      //   toast.success('Project Created Successfully !');
-      //   setProjectName('');
-      //   setProjectDescription('');
-      //   setAgents([{}]);
-      //   setProjectStatus('');
-      //   setProjectOwner('');
-      //   setIsSubmiting(false);
-      //   setIsModelOpen(false);
-      //   dispatch({ type: 'UPDATE_SUCCESS', payload: true });
-      // }
+      const response = await axios.post(
+        '/api/project/admin/addproject',
+        {
+          projectName: projectName,
+          projectDescription: projectDescription,
+          createdDate: startDate,
+          endDate: endDate,
+          assignedAgent: agents,
+          projectOwner: projectOwner,
+          projectStatus: projectStatus,
+        },
+        {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+      console.log(response.status);
+      if (response.status === 200) {
+        toast.success('Project Created Successfully !');
+        setProjectName('');
+        setProjectDescription('');
+        setAgents([{}]);
+        setProjectStatus('');
+        setProjectOwner('');
+        setIsSubmiting(false);
+        setIsModelOpen(false);
+        dispatch({ type: 'UPDATE_SUCCESS', payload: true });
+      }
     } catch (error) {
       if (error.response.status === 500) {
         setIsModelOpen(false);
@@ -794,6 +808,7 @@ export default function AdminProjectListScreen() {
                                 className="marginDate"
                                 label="Start Date"
                                 value={startDate}
+                                required
                                 onChange={(newValue) =>
                                   validateDates(newValue, endDate)
                                 }
@@ -810,6 +825,7 @@ export default function AdminProjectListScreen() {
                                 className="mb-3"
                                 label="End Date"
                                 value={endDate}
+                                required
                                 onChange={(newValue) =>
                                   validateDates(startDate, newValue)
                                 }
@@ -833,7 +849,7 @@ export default function AdminProjectListScreen() {
                             variant="contained"
                             color="primary"
                             type="submit"
-                            disabled={isSubmiting}
+                            disabled={errorAccured}
                             className="mt-2 formbtn updatingBtn globalbtnColor"
                           >
                             {isSubmiting ? 'SUBMITTING' : 'SUBMIT '}

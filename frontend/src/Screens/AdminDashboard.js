@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Card, Col, Row } from 'react-bootstrap';
 import { MdQueue, MdTask } from 'react-icons/md';
 import { GrCompliance } from 'react-icons/gr';
@@ -6,15 +6,25 @@ import { HiUserGroup } from 'react-icons/hi';
 import data from '../dummyData';
 import Chart from 'react-google-charts';
 import { Store } from '../Store';
+import WidgetsDropdown from '../widgets/widgets/WidgetsDropdown';
+
+import axios from 'axios';
 
 export default function AdminDashboard() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
   const theme = toggleState ? 'dark' : 'light';
+
   return userInfo.role == 'superadmin' ? (
     <>
       <div className="px-4 mt-3">
         <Row className="px-2 gap-3">
+          <Col className=" p-0 ">
+            <WidgetsDropdown />
+          </Col>
+        </Row>
+
+        {/* <Row className="px-2 gap-3">
           <Col className=" p-0 ">
             <Card className={`${theme}CardBody`}>
               <Card.Body>
@@ -76,16 +86,16 @@ export default function AdminDashboard() {
                                     ...data.categories.map((x) => [x._id, x.count]),
                                 ]}
                             >
-                            </Chart> */}
+                            </Chart>
               </>
             )}
           </Col>
-        </Row>
+        </Row> */}
       </div>
     </>
   ) : (
     <>
-      <Row className="p-5">
+      <Row>
         <h2>Well Come {userInfo.first_name}</h2>
       </Row>
     </>

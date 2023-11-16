@@ -194,7 +194,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
               }}
             >
               <MdOutlineGroups2 className="me-3 fs-5" />
-              Admin List
+              Admin
             </li>
           </Link>
         ) : null}
@@ -213,7 +213,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 }}
               >
                 <HiUserGroup className="me-3 fs-5" />
-                Agent List
+                Agent
               </li>
             </Link>
             <Link
@@ -228,7 +228,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 }}
               >
                 <MdGroup className="me-3 fs-5" />
-                Contractor List
+                Contractor
               </li>
             </Link>
             <Link
@@ -243,7 +243,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 }}
               >
                 <FaListUl className="me-3 fs-5" />
-                Categories List
+                Categories
               </li>
             </Link>
             <Link
@@ -260,7 +260,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 }}
               >
                 <AiOutlineProject className="me-3 fs-5" />
-                Project List
+                Project
               </li>
             </Link>
           </>
@@ -280,7 +280,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 }}
               >
                 <AiOutlineProject className="me-3 fs-5" />
-                Project List
+                Project
               </li>
             </Link>
             {/* <Link
@@ -309,7 +309,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
             >
               <li>
                 <AiOutlineProject className="me-3 fs-5" />
-                Project List
+                Project
               </li>
             </Link>
           </>
