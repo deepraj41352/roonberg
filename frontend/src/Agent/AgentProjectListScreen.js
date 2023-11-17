@@ -6,7 +6,7 @@ import { Grid } from '@mui/material';
 import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
-import { Button, Card, Form } from 'react-bootstrap';
+import { Button, Card, Dropdown, Form } from 'react-bootstrap';
 import { BiPlusMedical } from 'react-icons/bi';
 import { Store } from '../Store';
 import axios from 'axios';
@@ -129,7 +129,7 @@ export default function AgentProjectList() {
         const response = await axios.post(`/api/user/`, { role: 'contractor' });
         const datas = response.data;
         dispatch({ type: 'FATCH_CONTRACTOR', payload: datas });
-      } catch (error) {}
+      } catch (error) { }
     };
     FatchContractorData();
   }, []);
@@ -140,7 +140,7 @@ export default function AgentProjectList() {
         const response = await axios.post(`/api/user/`, { role: 'agent' });
         const datas = response.data;
         dispatch({ type: 'FATCH_AGENTS', payload: datas });
-      } catch (error) {}
+      } catch (error) { }
     };
     FatchAgentData();
   }, []);
@@ -195,7 +195,11 @@ export default function AgentProjectList() {
   const projectQuedData = projectData.filter((item) => {
     return item.projectStatus === 'qued';
   });
+  const [selectedTab, setSelectedTab] = useState('All');
 
+  const handleTabSelect = (tab) => {
+    setSelectedTab(tab);
+  };
   return (
     <>
       <div className="px-4 mt-3">
@@ -224,12 +228,79 @@ export default function AgentProjectList() {
         ) : (
           <>
             <div className="tabBorder mt-3">
+
+              <Dropdown className={`mb-0 dropTab1 tab-btn ${theme}Tab`}>
+                <Dropdown.Toggle variant="secondary" id="dropdown-tabs">
+                  {selectedTab}
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu className="dropMenu">
+                  <Dropdown.Item
+                    className="dropMenuCon"
+                    onClick={() => handleTabSelect('All')}
+                  >
+                    <span class="position-relative">
+                      All
+                      <span class=" badgesclass badgeAll top-0 start-112 translate-middle badge rounded-pill">
+                        {projectData.length}
+                      </span>
+                    </span>
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    className="dropMenuCon"
+                    onClick={() => handleTabSelect('Active')}
+                  >
+                    <span class="position-relative">
+                      Active
+                      <span class=" badgesclass badgeAll top-0 start-112 translate-middle badge rounded-pill ">
+                        {projectActiveData.length}
+                      </span>
+                    </span>
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    className="dropMenuCon"
+                    onClick={() => handleTabSelect('Completed')}
+                  >
+                    <span class="position-relative">
+                      Completed
+                      <span class=" badgesclass badgeAll top-0 start-112 translate-middle badge rounded-pill">
+                        {projectCompleteData.length}
+                      </span>
+                    </span>
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    className="dropMenuCon"
+                    onClick={() => handleTabSelect('Qued')}
+                  >
+                    <span className="position-relative">
+                      Qued
+                      <span className="badgesclass badgeAll top-0 start-112 translate-middle badge rounded-pill">
+                        {projectQuedData.length}
+                      </span>
+                    </span>
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    className="dropMenuCon"
+                    onClick={() => handleTabSelect('Assigned')}
+                  >
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
               <Tabs
-                defaultActiveKey="All"
+                activeKey={selectedTab}
+                onSelect={(tab) => handleTabSelect(tab)}
                 id="uncontrolled-tab-example"
-                className={`mb-0  tab-btn ${theme}Tab`}
+                className={`mb-0 dropTab tab-btn ${theme}Tab`}
               >
-                <Tab className="tab-color" eventKey="All" title="All">
+                <Tab eventKey="All"
+                  title={
+                    <span class="position-relative">
+                      All
+                      <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+                        {projectData.length}
+                      </span>
+                    </span>
+                  }>
                   <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
@@ -253,8 +324,8 @@ export default function AgentProjectList() {
                                   <Button
                                     variant="contained"
                                     className="mx-2 tableEditbtn"
-                                    // onClick={() => handleEdit(params.row._id)}
-                                    // startIcon={<MdEdit />}
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
                                   >
                                     Edit
                                   </Button>
@@ -281,7 +352,16 @@ export default function AgentProjectList() {
                     />
                   </Box>
                 </Tab>
-                <Tab className="tab-color" eventKey="Active" title="Active">
+                <Tab className="tab-color"
+                  eventKey="Active"
+                  title={
+                    <span class="position-relative">
+                      Active
+                      <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+                        {projectActiveData.length}
+                      </span>
+                    </span>
+                  }>
                   <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
@@ -305,8 +385,8 @@ export default function AgentProjectList() {
                                   <Button
                                     variant="contained"
                                     className="mx-2 tableEditbtn"
-                                    // onClick={() => handleEdit(params.row._id)}
-                                    // startIcon={<MdEdit />}
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
                                   >
                                     Edit
                                   </Button>
@@ -333,7 +413,14 @@ export default function AgentProjectList() {
                 <Tab
                   className="tab-color"
                   eventKey="Completed"
-                  title="Completed"
+                  title={
+                    <span class="position-relative">
+                      Completed
+                      <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+                        {projectCompleteData.length}
+                      </span>
+                    </span>
+                  }
                 >
                   <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
@@ -358,8 +445,8 @@ export default function AgentProjectList() {
                                   <Button
                                     variant="contained"
                                     className="mx-2 tableEditbtn"
-                                    // onClick={() => handleEdit(params.row._id)}
-                                    // startIcon={<MdEdit />}
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
                                   >
                                     Edit
                                   </Button>
@@ -383,7 +470,16 @@ export default function AgentProjectList() {
                     />
                   </Box>
                 </Tab>
-                <Tab className="tab-color" eventKey="Qued" title="Qued">
+                <Tab className="tab-color"
+                  eventKey="Qued"
+                  title={
+                    <span className="position-relative">
+                      Qued
+                      <span className="badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+                        {projectQuedData.length}
+                      </span>
+                    </span>
+                  }>
                   <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
@@ -407,8 +503,8 @@ export default function AgentProjectList() {
                                   <Button
                                     variant="contained"
                                     className="mx-2 tableEditbtn"
-                                    // onClick={() => handleEdit(params.row._id)}
-                                    // startIcon={<MdEdit />}
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
                                   >
                                     Edit
                                   </Button>

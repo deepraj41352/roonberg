@@ -73,12 +73,9 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
   }, []);
 
   const signoutHandler = () => {
-    const userConfirm = window.confirm('Are you sure you want to logout?');
-    if (userConfirm) {
-      ctxDispatch({ type: 'USER_SIGNOUT' });
-      localStorage.removeItem('userInfo');
-      window.location.href = '/';
-    }
+    ctxDispatch({ type: 'USER_SIGNOUT' });
+    localStorage.removeItem('userInfo');
+    window.location.href = '/';
   };
   useEffect(() => {
     const handleResize = () => {

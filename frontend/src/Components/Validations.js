@@ -21,6 +21,14 @@ export default function Validations({ type, value }) {
         'At least 8 characters,  one uppercase letter, one lowercase letter, one digit , one special character  ';
     }
   }
+
+  if (type === 'text' && value) {
+    const mobileRegex = /^\d{10}$/;
+    if (!mobileRegex.test(value)) {
+      validationMessage = 'Please enter a valid 10-digit mobile number';
+    }
+  }
+
   useEffect(() => {
     if (validationMessage) {
       ctxDispatch({

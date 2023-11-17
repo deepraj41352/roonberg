@@ -518,7 +518,7 @@ function AdminEditProject() {
               <div className="projectScreenCard2 d-flex flex-column gap-4">
                 <Card className={`projectScreenCard2 ${theme}CardBody`}>
                   <Card.Header className={`${theme}CardHeader`}>
-                    Chats
+                    Messages
                   </Card.Header>
                   <Card.Body className="d-flex justify-content-center flex-wrap gap-3 assignCon ">
                     <div

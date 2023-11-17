@@ -59,7 +59,7 @@ function SignUpForm() {
 
       toast.success('Login successful');
       const socket = io('ws://localhost:8900');
-      socket.on('connectionForNotify', (data) => {});
+      socket.on('connectionForNotify', (data) => { });
 
       navigate('/dashboard');
     } catch (err) {

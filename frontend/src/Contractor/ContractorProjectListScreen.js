@@ -4,7 +4,7 @@ import { Grid } from '@mui/material';
 // import { AiFillDelete } from 'react-icons/ai';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
-import { Card, Form } from 'react-bootstrap';
+import { Card, Dropdown, Form } from 'react-bootstrap';
 import { BiPlusMedical } from 'react-icons/bi';
 import { Store } from '../Store';
 import axios from 'axios';
@@ -54,7 +54,7 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: '_id', headerName: 'ID', width: 90 },
+  { field: '_id', headerName: 'ID', width: 220 },
   {
     field: 'projectName',
     headerName: 'Project',
@@ -63,12 +63,12 @@ const columns = [
   {
     field: 'projectDescription',
     headerName: 'Description',
-    width: 150,
+    width: 200,
   },
   {
     field: 'projectCategory',
     headerName: 'Category',
-    width: 90,
+    width: 150,
   },
   {
     field: 'assignedAgent',
@@ -104,13 +104,13 @@ export default function ContractorProject() {
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
   const [selectedOptions, setSelectedOptions] = useState([]);
-
+  const [selectedTab, setSelectedTab] = useState('All');
   const handleCloseRow = () => {
     setIsModelOpen(false);
   };
 
   const handleNew = () => {
-    console.log('sakndk');
+    console.log('handleNew called');
     setIsModelOpen(true);
   };
 
@@ -133,14 +133,14 @@ export default function ContractorProject() {
             projectCategory:
               items.assignedAgent.length > 0
                 ? items.assignedAgent.map((cat) =>
-                    cat.categoryName !== '' ? cat.categoryName : 'N/C'
-                  )
+                  cat.categoryName !== '' ? cat.categoryName : 'N/C'
+                )
                 : 'N/C',
             assignedAgent:
               items.assignedAgent.length > 0
                 ? items.assignedAgent.map((agent) =>
-                    agent.agentName !== '' ? agent.agentName : 'N/A'
-                  )
+                  agent.agentName !== '' ? agent.agentName : 'N/A'
+                )
                 : 'N/A',
           }));
           dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
@@ -172,6 +172,7 @@ export default function ContractorProject() {
   const projectQuedData = projectData.filter((item) => {
     return item.projectStatus === 'qued';
   });
+  console.log("active", projectActiveData.length, "completed", projectCompleteData.length, "qued", projectQuedData.length, projectData.length)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -266,6 +267,10 @@ export default function ContractorProject() {
       );
     }
   };
+  const handleTabSelect = (tab) => {
+    setSelectedTab(tab);
+  };
+
   return (
     <>
       <div className="px-3 mt-3">
@@ -307,184 +312,85 @@ export default function ContractorProject() {
                 Add Project
               </Button>
             </Card>
-            <Modal open={isModelOpen} onClose={handleCloseRow}>
-              <Box
-                className="modelBg  modalRespnsive"
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  width: 400,
-                  bgcolor: 'background.paper',
-                  boxShadow: 24,
-                  p: isSubmiting ? 0 : 4,
-                }}
-              >
-                <div className="overlayLoading">
-                  {isSubmiting && (
-                    <div className="overlayLoadingItem1 y-3">
-                      <ColorRing
-                        visible={true}
-                        height="40"
-                        width="40"
-                        ariaLabel="blocks-loading"
-                        wrapperStyle={{}}
-                        wrapperClass="blocks-wrapper"
-                        colors={[
-                          'rgba(0, 0, 0, 1) 0%',
-                          'rgba(255, 255, 255, 1) 68%',
-                          'rgba(0, 0, 0, 1) 93%',
-                        ]}
-                      />
-                    </div>
-                  )}
 
-                  <Form
-                    onSubmit={handleSubmit}
-                    className={
-                      isSubmiting
-                        ? 'scrollInAdminproject p-4 '
-                        : 'scrollInAdminproject px-3'
-                    }
-                  >
-                    <ImCross
-                      color="black"
-                      className="formcrossbtn"
-                      onClick={handleCloseRow}
-                    />
-                    <h4 className="d-flex justify-content-center">
-                      Add Project
-                    </h4>
-                    <TextField
-                      required
-                      className="mb-3"
-                      value={projectName}
-                      onChange={(e) => setProjectName(e.target.value)}
-                      label="Project Name"
-                      fullWidth
-                    />
-
-                    <TextField
-                      required
-                      className="mb-3"
-                      id="outlined-multiline-static"
-                      onChange={(e) => setProjectDescription(e.target.value)}
-                      label="Project Description"
-                      multiline
-                      rows={4}
-                      fullWidth
-                      variant="outlined"
-                      // value={'text'}
-                      // onChange={handleChange}
-                    />
-                    <FormControl fullWidth className="mb-3">
-                      <InputLabel>Select Categories</InputLabel>
-                      <Select
-                        required
-                        multiple
-                        value={selectedOptions}
-                        onChange={handleChange}
-                        // renderValue={(selected) => (
-                        //   <div>
-                        //     {categoryData && selected
-                        //       ? selected.map((value) => (
-                        //           <span key={value}>
-                        //             {categoryData.find(
-                        //               (option) => option._id === value
-                        //             ).categoryName + ','}
-                        //           </span>
-                        //         ))
-                        //       : ''}
-                        //   </div>
-                        // )}
-                      >
-                        {categoryData &&
-                          categoryData.map((option) => (
-                            <MenuItem key={option._id} value={option._id}>
-                              {option.categoryName}
-                            </MenuItem>
-                          ))}
-                      </Select>
-                    </FormControl>
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                      <DatePicker
-                        className="marginDate"
-                        label="Start Date"
-                        value={startDate}
-                        onChange={(newValue) =>
-                          validateDates(newValue, endDate)
-                        }
-                        renderInput={(params) => <TextField {...params} />}
-                      />
-                      {startDateError && (
-                        <div className="Datevalidation">{startDateError}</div>
-                      )}
-                      <DatePicker
-                        className="mb-3"
-                        label="End Date"
-                        value={endDate}
-                        // onChange={(date) => setEndDate(date)}
-                        onChange={(newValue) =>
-                          validateDates(startDate, newValue)
-                        }
-                        renderInput={(params) => (
-                          <TextField {...params} style={{ color: 'white' }} />
-                        )}
-                      />
-                      {endDateError && (
-                        <div className="Datevalidation">{endDateError}</div>
-                      )}
-                    </LocalizationProvider>
-                    {/* <LocalizationProvider dateAdapter={AdapterDayjs} className="mb-3">
-                          <DateField
-                            required
-                            label="Start Date"
-                            value={startDate}
-                            onChange={(newValue) =>
-                              validateDates(newValue, endDate)
-                            }
-                            format="MM-DD-YYYY"
-                          />
-                          {startDateError && (
-                            <div style={{ color: 'red' }}>{startDateError}</div>
-                          )}
-                          <DateField
-                            required
-                            label="End Date"
-                            value={endDate}
-                            onChange={(newValue) =>
-                              validateDates(startDate, newValue)
-                            }
-                            format="MM-DD-YYYY"
-                          />
-                          {endDateError && (
-                            <div style={{ color: 'red' }}>{endDateError}</div>
-                          )}
-                        </LocalizationProvider> */}
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      type="submit"
-                      disabled={isSubmiting}
-                      className="mt-2 formbtn updatingBtn globalbtnColor"
-                    >
-                      {isSubmiting ? 'SUBMITTING' : 'SUBMIT '}
-                    </Button>
-                  </Form>
-                </div>
-              </Box>
-            </Modal>
           </div>
         ) : (
           <>
             <div className="tabBorder mt-3">
+
+              <Dropdown className={`mb-0 dropTab1 tab-btn ${theme}Tab`}>
+                <Dropdown.Toggle variant="secondary" id="dropdown-tabs">
+                  {selectedTab}
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu className="dropMenu">
+                  <Dropdown.Item
+                    className="dropMenuCon"
+                    onClick={() => handleTabSelect('All')}
+                  >
+                    <span class="position-relative">
+                      All
+                      <span class=" badgesclass badgeAll top-0 start-112 translate-middle badge rounded-pill">
+                        {projectData.length}
+                      </span>
+                    </span>
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    className="dropMenuCon"
+                    onClick={() => handleTabSelect('Active')}
+                  >
+                    <span class="position-relative">
+                      Active
+                      <span class=" badgesclass badgeAll top-0 start-112 translate-middle badge rounded-pill ">
+                        {projectActiveData.length}
+                      </span>
+                    </span>
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    className="dropMenuCon"
+                    onClick={() => handleTabSelect('Completed')}
+                  >
+                    <span class="position-relative">
+                      Completed
+                      <span class=" badgesclass badgeAll top-0 start-112 translate-middle badge rounded-pill">
+                        {projectCompleteData.length}
+                      </span>
+                    </span>
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    className="dropMenuCon"
+                    onClick={() => handleTabSelect('Qued')}
+                  >
+                    <span className="position-relative">
+                      Qued
+                      <span className="badgesclass badgeAll top-0 start-112 translate-middle badge rounded-pill">
+                        {projectQuedData.length}
+                      </span>
+                    </span>
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    className="dropMenuCon"
+                    onClick={() => handleTabSelect('Assigned')}
+                  >
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
               <Tabs
-                defaultActiveKey="All"
+                activeKey={selectedTab}
+                onSelect={(tab) => handleTabSelect(tab)}
                 id="uncontrolled-tab-example"
-                className={`mb-0  tab-btn ${theme}Tab`}
+                className={`mb-0 dropTab tab-btn ${theme}Tab`}
               >
-                <Tab className="tab-color" eventKey="All" title="All">
+                <Tab className="tab-color"
+                  eventKey="All"
+                  title={
+                    <span class="position-relative">
+                      All
+                      <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+                        {projectData.length}
+                      </span>
+                    </span>
+                  }>
                   <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
@@ -508,8 +414,8 @@ export default function ContractorProject() {
                                   <Button
                                     variant="contained"
                                     className="mx-2 tableEditbtn"
-                                    // onClick={() => handleEdit(params.row._id)}
-                                    // startIcon={<MdEdit />}
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
                                   >
                                     Edit
                                   </Button>
@@ -543,8 +449,18 @@ export default function ContractorProject() {
                       }}
                     />
                   </Box>
+
                 </Tab>
-                <Tab className="tab-color" eventKey="Active" title="Active">
+                <Tab className="tab-color"
+                  eventKey="Active"
+                  title={
+                    <span class="position-relative">
+                      Active
+                      <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+                        {projectActiveData.length}
+                      </span>
+                    </span>
+                  }>
                   <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
@@ -568,8 +484,8 @@ export default function ContractorProject() {
                                   <Button
                                     variant="contained"
                                     className="mx-2 tableEditbtn"
-                                    // onClick={() => handleEdit(params.row._id)}
-                                    // startIcon={<MdEdit />}
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
                                   >
                                     Edit
                                   </Button>
@@ -605,7 +521,14 @@ export default function ContractorProject() {
                 <Tab
                   className="tab-color"
                   eventKey="Completed"
-                  title="Completed"
+                  title={
+                    <span class="position-relative">
+                      Completed
+                      <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+                        {projectCompleteData.length}
+                      </span>
+                    </span>
+                  }
                 >
                   <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
@@ -630,8 +553,8 @@ export default function ContractorProject() {
                                   <Button
                                     variant="contained"
                                     className="mx-2 tableEditbtn"
-                                    // onClick={() => handleEdit(params.row._id)}
-                                    // startIcon={<MdEdit />}
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
                                   >
                                     Edit
                                   </Button>
@@ -664,7 +587,16 @@ export default function ContractorProject() {
                     />
                   </Box>
                 </Tab>
-                <Tab className="tab-color" eventKey="Qued" title="Qued">
+                <Tab className="tab-color"
+                  eventKey="Qued"
+                  title={
+                    <span className="position-relative">
+                      Qued
+                      <span className="badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+                        {projectQuedData.length}
+                      </span>
+                    </span>
+                  }>
                   <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
@@ -688,8 +620,8 @@ export default function ContractorProject() {
                                   <Button
                                     variant="contained"
                                     className="mx-2 tableEditbtn"
-                                    // onClick={() => handleEdit(params.row._id)}
-                                    // startIcon={<MdEdit />}
+                                  // onClick={() => handleEdit(params.row._id)}
+                                  // startIcon={<MdEdit />}
                                   >
                                     Edit
                                   </Button>

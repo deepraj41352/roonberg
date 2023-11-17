@@ -28,8 +28,8 @@ code {
 
 .cateEditImgChild {
   position: absolute;
-  right: 119px;
-  top: 21px;
+  right: 123px;
+  top: 18px;
 }
 .tableBg .css-ptkaw2-MuiDataGrid-root .MuiDataGrid-columnHeader:focus,
 .css-ptkaw2-MuiDataGrid-root .MuiDataGrid-cell:focus {
@@ -115,6 +115,11 @@ code {
 }
 .overlayLoading {
   position: relative;
+}
+
+.profileContainer {
+  min-width: 600px;
+  width: 100%;
 }
 .overlayLoadingItem1 {
   justify-content: center;

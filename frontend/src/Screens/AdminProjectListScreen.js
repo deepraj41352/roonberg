@@ -134,9 +134,9 @@ export default function AdminProjectListScreen() {
   const navigate = useNavigate();
   const [agents, setAgents] = useState([{ categoryId: '' }]);
   const [categories, setCategories] = useState([]);
-  const [projectStatus, setProjectStatus] = useState();
+  const [projectStatus, setProjectStatus] = useState('active');
   const [isDeleting, setIsDeleting] = useState(false);
-
+  const [errorAccured, setErrorAccured] = useState(false);
   const assignedAgentByCateHandle = (index) => {
     const category = agents[index].categoryId;
     if (category) {
@@ -312,9 +312,14 @@ export default function AdminProjectListScreen() {
     return (
       Array.isArray(item.assignedAgent) &&
       item.assignedAgent.length > 0 &&
-      item.assignedAgent.every((agent) => !agent?.agentId)
+      item.assignedAgent.every((agent) => !agent?.agentId || !agent?.agentName)
     );
   });
+  console.log("assignedAgent", assignedAgent)
+
+
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -420,12 +425,14 @@ export default function AdminProjectListScreen() {
           setEndDateError(
             'End date must be greater than or equal to the Start Date.'
           );
+          setErrorAccured(true)
         }
       }
     } else {
       setStartDateError(
         'Start date must be greater than or equal to the current date.'
       );
+      setErrorAccured(true)
     }
   };
 
@@ -615,6 +622,7 @@ export default function AdminProjectListScreen() {
                       pageSizeOptions={[5]}
                       checkboxSelection
                       disableRowSelectionOnClick
+                      localeText={{ noRowsLabel: 'Project Data Is Not Avalible' }}
                     />
                   </Box>
                   <Modal
@@ -832,7 +840,8 @@ export default function AdminProjectListScreen() {
                             variant="contained"
                             color="primary"
                             type="submit"
-                            disabled={isSubmiting}
+                            disabled={errorAccured}
+
                             className="mt-2 formbtn updatingBtn globalbtnColor"
                           >
                             {isSubmiting ? 'SUBMITTING' : 'SUBMIT '}

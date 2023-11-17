@@ -356,7 +356,7 @@ projectRouter.post(
           projectCategory: req.body.projectCategory,
           createdDate: req.body.createdDate,
           endDate: req.body.endDate,
-          projectStatus: capitalizeFirstLetter(req.body.projectStatus),
+          projectStatus: (req.body.projectStatus),
           projectOwner: contractorId,
           assignedAgent: assignedAgent,
         });

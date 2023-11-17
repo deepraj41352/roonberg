@@ -111,7 +111,7 @@ function App() {
 
   return (
     <div className={userInfo ? `App ${theme}` : `App`}>
-      <ToastContainer position="bottom-center" autoClose={500} limit={1} />
+      <ToastContainer position="bottom-center" autoClose={700} limit={1} />
 
       <div>
         <Container fluid className="px-0">

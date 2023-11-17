@@ -497,6 +497,11 @@ userRouter.put(
           role,
           profile_picture,
           userStatus,
+          phone_number,
+          gender,
+          dob,
+          address,
+          country
         } = req.body;
         const updatedData = {
           first_name: capitalizeFirstLetter(first_name),
@@ -505,6 +510,11 @@ userRouter.put(
           role,
           profile_picture,
           userStatus,
+          phone_number,
+          gender,
+          dob,
+          address,
+          country
         };
         const updatedUser = await User.findOneAndUpdate(
           { _id: req.user._id },

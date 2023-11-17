@@ -6,8 +6,12 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import Validations from '../Components/Validations';
 import { ColorRing } from 'react-loader-spinner';
-import { TextField } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import { RiImageEditFill } from 'react-icons/ri';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import DatePicker from '@mui/lab/DatePicker';
+import dayjs from 'dayjs';
 
 function ProfileScreen() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -18,8 +22,16 @@ function ProfileScreen() {
   const [firstName, setFirstName] = useState(userInfo.first_name);
   const [lastName, setLastName] = useState(userInfo.last_name);
   const [email, setEmail] = useState(userInfo.email);
+  const [mobileNum, setMobileNum] = useState(userInfo.phone_number || '');
+  const [gender, setGender] = useState(userInfo.gender || '');
+  const [dob, setDob] = useState(userInfo.dob || '');
+  const [address, setAddress] = useState(userInfo.address || '');
+  const [country, setCountry] = useState(userInfo.country || '');
+
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+
+
   // useEffect(() => {
   //   if (isSubmiting == false) {
   //     setFirstName(userInfo.first_name);
@@ -37,7 +49,12 @@ function ProfileScreen() {
     formDatas.append('first_name', firstName);
     formDatas.append('last_name', lastName);
     formDatas.append('email', email);
-    formDatas.append('_id', userInfo._id);
+    formDatas.append('phone_number', mobileNum);
+    formDatas.append('gender', gender);
+    formDatas.append('dob', dob);
+    formDatas.append('address', address);
+    formDatas.append('country', country);
+
 
     try {
       const { data } = await axios.put(`/api/user/profile`, formDatas, {
@@ -73,7 +90,7 @@ function ProfileScreen() {
         </Row>
         <Row>
           <Col>
-            <div className="overlayLoading">
+            <div className="overlayLoading profileContainer">
               <Card className={`${theme}CardBody editCartForm`}>
                 <div className="FormContainerEdit">
                   {isSubmiting && (
@@ -143,22 +160,25 @@ function ProfileScreen() {
                         </Row>
                       </Form.Group>
                     </div>
-                    <TextField
-                      className="my-3"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      label="First Name"
-                      fullWidth
-                      required
-                    />
+                    <div className='d-flex align-items-center gap-2 my-3'>
+                      <TextField
 
-                    <TextField
-                      className="mb-3"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      label="Last Name"
-                      fullWidth
-                    />
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        label="First Name"
+                        fullWidth
+                        required
+                      />
+
+                      <TextField
+
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        label="Last Name"
+                        fullWidth
+                      />
+                    </div>
+
                     <TextField
                       className="mb-3"
                       value={email}
@@ -167,6 +187,66 @@ function ProfileScreen() {
                       type="email"
                       fullWidth
                       disabled
+                    />
+
+                    <TextField
+                      className="mb-3"
+                      value={mobileNum}
+                      onChange={(e) => setMobileNum(e.target.value)}
+                      label="Contact Number"
+                      fullWidth
+                      type='text'
+                    />
+                    <Validations type="text" value={mobileNum} />
+                    <div className='d-flex align-items-center gap-2 mb-3'>
+
+                      <FormControl>
+                        <InputLabel>Gender</InputLabel>
+                        <Select
+                          value={gender}
+                          onChange={(e) => setGender(e.target.value)}
+                        >
+                          <MenuItem value="female">Female</MenuItem>
+                          <MenuItem value="male">Male</MenuItem>
+                          <MenuItem value="others">Others</MenuItem>
+                        </Select>
+                      </FormControl>
+                      <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <div className="d-flex flex-column">
+                          <DatePicker
+                            label="Date Of Birth"
+                            value={dob}
+                            onChange={(e) => setDob(e.target.value)}
+                            renderInput={(params) => (
+                              <TextField {...params} />
+                            )}
+                          />
+                        </div>
+                      </LocalizationProvider>
+                      {/* <TextField
+
+                        value={dob}
+                        onChange={(e) => setDob(e.target.value)}
+                        label="DOB"
+                        fullWidth
+                      /> */}
+                    </div>
+
+
+                    <TextField
+                      className="mb-3"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      label="Address"
+                      fullWidth
+                    />
+
+                    <TextField
+                      className="mb-3"
+                      value={country}
+                      onChange={(e) => setCountry(e.target.value)}
+                      label="Country"
+                      fullWidth
                     />
 
                     <div className="d-flex justify-content-start mt-4">

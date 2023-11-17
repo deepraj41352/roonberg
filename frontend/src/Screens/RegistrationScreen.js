@@ -50,7 +50,7 @@ function RegistrationForm() {
         password: password,
       });
       navigate('/');
-      toast.success(data.message);
+      toast.success(data.message, { autoClose: 2000 });
     } catch (err) {
       toast.error(err.response?.data?.message);
     } finally {

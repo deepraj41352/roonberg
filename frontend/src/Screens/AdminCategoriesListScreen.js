@@ -57,17 +57,6 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: '_id', headerName: 'ID', width: 250 },
-  {
-    field: 'categoryName',
-    headerName: 'category',
-    width: 100,
-  },
-  {
-    field: 'categoryDescription',
-    headerName: 'Description',
-    width: 150,
-  },
   {
     field: 'categoryImage',
     headerName: 'Image',
@@ -96,6 +85,18 @@ const columns = [
       );
     },
   },
+
+  {
+    field: 'categoryName',
+    headerName: 'category',
+    width: 100,
+  },
+  {
+    field: 'categoryDescription',
+    headerName: 'Description',
+    width: 150,
+  },
+  { field: '_id', headerName: 'ID', width: 250 },
 ];
 
 const getRowId = (row) => row._id;
