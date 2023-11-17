@@ -1,26 +1,15 @@
-/* -----------priyanshu-theme-css-start---------- */
 .dark {
   background-color: #ddd;
-  /* background: rgb(3, 1, 43);
-  background: linear-gradient(
-    45deg,
-    rgba(23, 62, 103, 1) 0%,
-    rgb(17, 55, 95) 20%,
-    rgb(14, 36, 82) 48%,
-    rgba(3, 1, 43, 1) 100%
-  ); */
 }
 .light {
   background-color: #ddd;
 }
 
-/* -----------priyanshu-theme-css-end------------- */
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* background-color: rgba(0, 0, 0, 0) !important; */
   background-color: white;
 }
 .ThreeDot {
@@ -32,7 +21,6 @@ code {
     monospace;
 }
 
-/* Gaytri css start  */
 #cateEditImgAvatar {
   width: '65px';
   height: '65px';
@@ -70,8 +58,7 @@ code {
 }
 .assignCon {
   height: 100%;
-
-  max-height: 200px;
+  max-height: 136px;
   overflow-y: auto;
 }
 .cateEdit,
@@ -89,18 +76,13 @@ code {
 
 .inactive-cell {
   background-color: rgb(238, 107, 107);
-  /* background-color: #686767; */
   padding: 3px 8px;
   border-radius: 5px;
   width: 100%;
 }
 .inactive-row {
-  background-color: rgb(
-    190,
-    182,
-    182
-  ) !important; /* Red background for Inactive rows */
-  color: #ffffff; /* White text color for better contrast */
+  background-color: rgb(190, 182, 182) !important;
+  color: #ffffff;
 }
 
 .cateAgentcontainerHide {
@@ -503,7 +485,7 @@ body {
   color: white !important;
   height: 33px !important;
 }
-*/ .main-div {
+.main-div {
   background-color: white !important;
   padding: 21px 21px !important;
   border-bottom: 1px solid #e2e8f0 !important;
@@ -525,35 +507,14 @@ body {
   }
 }
 
-/* karan css end */
 .Fpswd-Clogin {
   text-decoration: none;
   color: #2563eb;
 }
-/* @media (max-width: 450px) {
-/* @media (max-width: 450px) {
-  .formWidth {
-    width: 350px;
-  }
-}
-@media (max-width: 380px) {
-  .formWidth {
-    width: 100%;
-    min-width: 300px;
-  }
-} */
 
-/* -------P-Dashboard----- */
 .admin-navbar {
   height: 66px !important;
-  /* background: rgb(23, 35, 103);
-  background: linear-gradient(
-    9deg,
-    rgba(23, 35, 103, 0.5410539215686274) 0%,
-    rgba(0, 0, 0, 1) 0%,
-    rgba(24, 24, 82, 1) 45%,
-    rgba(0, 0, 0, 1) 93%
-  );*/
+
   border-bottom: 1px solid #22455c;
   background: rgb(0, 0, 0);
   background: linear-gradient(
@@ -677,11 +638,9 @@ body {
   position: relative;
 }
 .projectScreenCard {
-  /* max-width: 500px !important; */
   width: 100%;
 }
 .projectScreenCard2 {
-  /* max-width: 500px !important; */
   width: 100%;
   height: min-content !important;
 }
@@ -708,7 +667,6 @@ body {
     flex-direction: column;
   }
 }
-/* ---------Priyanshu-End------------- */
 
 .dash-list li {
   list-style: none;
@@ -719,11 +677,7 @@ body {
   padding: 0px;
   margin: 0px;
 }
-/* .blank-box {
-  height: 62px;
-  width: 100%;
-  background-color: #21072c57;
-} */
+
 .text-decoration-none {
   text-decoration: none;
   color: white;
@@ -734,23 +688,19 @@ body {
 .text-decoration-none :checked {
   background-color: #0f2855;
 }
-/* ---------Priyanshu-End------------- */
 .css-1jy569b-MuiFormLabel-root-MuiInputLabel-root {
   background-color: #fff !important;
   padding: 3px;
 }
 .darkCardBody {
   color: white !important;
-  /* background-color: #070719 !important; */
   background-color: #0d0d32 !important;
-  /* background-color: #0b0b27 !important; */
 }
 .lightCardBody {
   color: black !important;
 }
 .darkDataGrid {
   color: white !important;
-  /* background-color: #0b0b27 !important; */
   background-color: #0d0d32 !important;
 }
 .lightDataGrid {
@@ -799,7 +749,6 @@ body {
 .chat-receiverMsg {
   display: flex;
   justify-content: end;
-  /* align-items: end; */
   max-width: 60%;
   margin-left: 40%;
   margin-top: 25px;
@@ -819,7 +768,7 @@ body {
   max-width: 431px;
 }
 .chatWindowBody {
-  overflow-y: auto; /* Add scrollbars when content overflows */
+  overflow-y: auto;
 }
 .Roonberg-logo {
   height: 50px !important;
@@ -830,7 +779,6 @@ body {
   margin-bottom: 0px;
 }
 
-/* /dipak/................. */
 .msl-chip {
   color: #060612;
 }
@@ -857,7 +805,6 @@ body {
   display: none;
 }
 
-/* saidbar responsive */
 @media only screen and (max-width: 993px) {
   .sidebar.visible {
     width: 55%;
@@ -884,7 +831,6 @@ body {
 }
 @media (max-width: 600px) {
   .assign-card-input {
-    /* min-width: 100px; */
     max-width: 150px;
   }
 }
@@ -923,9 +869,7 @@ body {
 }
 .profile-icon-inner {
   border-radius: 50%;
-
   object-fit: cover;
-  /* background-position: center; */
 }
 .icon-for-upload {
   display: flex;
@@ -954,9 +898,9 @@ body {
   border: 2px solid white;
 }
 .richEditor {
-  max-width: 600px; /* Set the maximum width of the container */
-  overflow: hidden; /* Hide overflow content */
-  word-wrap: break-word; /* Wrap long words */
+  max-width: 600px;
+  overflow: hidden;
+  word-wrap: break-word;
 }
 .richEditor .DraftEditor-root {
   overflow-y: scroll;
@@ -1036,21 +980,18 @@ body {
   ) !important;
 }
 
-/*  */
 ::-webkit-scrollbar {
   width: 8px;
   margin-left: 10px;
 }
 
-/* Track */
 ::-webkit-scrollbar-track {
-  background: #cec5c5; /* Gray color for the track */
+  background: #cec5c5;
 }
 
-/* Handle */
 ::-webkit-scrollbar-thumb {
   border-radius: 5px;
-  background: RGB(14, 14, 61); /* Blue color for the scrollbar handle */
+  background: RGB(14, 14, 61);
 }
 .nav-link {
   color: white !important;
@@ -1076,7 +1017,6 @@ body {
 }
 
 .custom-list-item {
-  /* background-color: #07162c !important; */
   color: #fff;
   border: 1px solid #ddd;
   border-radius: 5px;
@@ -1185,8 +1125,6 @@ body {
   }
 }
 
-/* dipak chouhan */
-
 .searchbar1 {
   display: none;
 }
@@ -1293,8 +1231,6 @@ body {
 }
 .Chatside {
   position: absolute;
-  /* width: auto; */
-  /* min-height: auto; */
   padding: 15px;
   right: 0;
   top: 42px;
@@ -1304,4 +1240,12 @@ body {
   white-space: nowrap;
   overflow-x: hidden;
   transition: width 0.8s ease-in-out;
+}
+.css-1ald77x {
+  background-color: white !important;
+}
+.startLabel,
+.startLabel .form-check-label {
+  display: flex !important;
+  padding-left: 10px;
 }

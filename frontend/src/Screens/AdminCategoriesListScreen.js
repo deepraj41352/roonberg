@@ -466,7 +466,7 @@ export default function AdminContractorListScreen() {
                     />
                     <FormControl className="mb-3 cateLogoImgContainer">
                       <InputLabel className="cateLogoImgLabel">
-                        {selectedFile ? selectedFile.name : ' Upload Logo'}
+                        {selectedFile ? selectedFile.name : 'Upload Logo'}
                       </InputLabel>
                       <Input
                         type="file"

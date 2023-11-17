@@ -77,7 +77,9 @@ function RegistrationForm() {
             <Card>
               <Form onSubmit={submitHandler} className="p-4 formWidth ">
                 <Form.Group className="mb-3" controlId="formBasicEmail">
-                  <Form.Label className="mb-1 input-box">First Name</Form.Label>
+                  <Form.Label className="mb-1 input-box startLabel">
+                    First Name
+                  </Form.Label>
                   <Form.Control
                     onChange={(e) => setFirstName(e.target.value)}
                     type="text"
@@ -85,7 +87,9 @@ function RegistrationForm() {
                   />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
-                  <Form.Label className="mb-1 input-box">Last Name</Form.Label>
+                  <Form.Label className="mb-1 input-box startLabel">
+                    Last Name
+                  </Form.Label>
                   <Form.Control
                     onChange={(e) => setLastName(e.target.value)}
                     type="text"
@@ -93,7 +97,7 @@ function RegistrationForm() {
                   />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
-                  <Form.Label className="mb-1 input-box">
+                  <Form.Label className="mb-1 input-box startLabel">
                     Email address
                   </Form.Label>
                   <Form.Control
@@ -107,7 +111,7 @@ function RegistrationForm() {
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
-                  <Form.Label className="mb-1">Password</Form.Label>
+                  <Form.Label className="mb-1 startLabel">Password</Form.Label>
                   <div className="Password-input-eye">
                     <div className=" rounded-2">
                       <Form.Control
@@ -128,7 +132,9 @@ function RegistrationForm() {
                   <Validations type="password" value={password} />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicPassword">
-                  <Form.Label className="mb-1">Confirm Password</Form.Label>
+                  <Form.Label className="mb-1 startLabel">
+                    Confirm Password
+                  </Form.Label>
                   <Form.Control
                     type="password"
                     value={confirmPassword}

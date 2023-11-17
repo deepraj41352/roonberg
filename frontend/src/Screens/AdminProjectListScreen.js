@@ -33,7 +33,7 @@ import { ImCross } from 'react-icons/im';
 import DatePicker from '@mui/lab/DatePicker';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FATCH_REQUEST':
@@ -47,8 +47,7 @@ const reducer = (state, action) => {
       return { ...state, successDelete: action.payload };
 
     case 'DELETE_RESET':
-      return { ...state, successDelete: false };
-
+      return { ...state, successDelete: false, loading: false };
     case 'UPDATE_SUCCESS':
       return { ...state, successUpdate: action.payload };
     case 'UPDATE_RESET':
@@ -92,7 +91,6 @@ const columns = [
     headerName: 'Agent',
     width: 90,
   },
-
 ];
 
 export default function AdminProjectListScreen() {
@@ -266,16 +264,20 @@ export default function AdminProjectListScreen() {
             _id: items._id,
             projectName: items.projectName,
             projectDescription:
-              items.projectDescription == ''
-                ? 'N/D'
-                : items.projectDescription,
+              items.projectDescription == '' ? 'N/D' : items.projectDescription,
 
-            projectCategory: items.assignedAgent.length > 0
-              ? items.assignedAgent.map((cat) => (cat.categoryName !== '' ? cat.categoryName : 'N/C'))
-              : 'N/C',
-            assignedAgent: items.assignedAgent.length > 0
-              ? items.assignedAgent.map((agent) => (agent.agentName !== '' ? agent.agentName : 'N/A'))
-              : 'N/A',
+            projectCategory:
+              items.assignedAgent.length > 0
+                ? items.assignedAgent.map((cat) =>
+                  cat.categoryName !== '' ? cat.categoryName : 'N/C'
+                )
+                : 'N/C',
+            assignedAgent:
+              items.assignedAgent.length > 0
+                ? items.assignedAgent.map((agent) =>
+                  agent.agentName !== '' ? agent.agentName : 'N/A'
+                )
+                : 'N/A',
 
             projectOwner: contractor ? contractor.first_name : 'N/C',
           };
@@ -292,8 +294,7 @@ export default function AdminProjectListScreen() {
     } else {
       FatchProjectData();
     }
-  }, [successDelete, successUpdate, dispatch, userInfo.token, contractorData]);
-
+  }, [successDelete, successUpdate, contractorData]);
 
   const projectActiveData = projectData.filter((item) => {
     return item.projectStatus === 'active';
@@ -317,9 +318,9 @@ export default function AdminProjectListScreen() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const filteredAgents = agents.filter(obj => Object.keys(obj).length > 1);
+    const filteredAgents = agents.filter((obj) => Object.keys(obj).length > 1);
     setIsSubmiting(true);
-    console.log("agent", agents)
+    console.log('agent', agents);
     try {
       const response = await axios.post(
         '/api/project/admin/addproject',
@@ -336,26 +337,24 @@ export default function AdminProjectListScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         }
       );
-
+      console.log(response.status);
       if (response.status === 200) {
-        toast.success("Project Created Successfully !");
-        const datas = response.data;
-        setIsModelOpen(false);
-        setIsSubmiting(false);
-        dispatch({ type: 'UPDATE_SUCCESS', payload: true });
+        toast.success('Project Created Successfully !');
         setProjectName('');
         setProjectDescription('');
-        startDate();
-        endDate();
         setAgents([{}]);
         setProjectStatus('');
         setProjectOwner('');
-
+        setIsSubmiting(false);
+        setIsModelOpen(false);
+        dispatch({ type: 'UPDATE_SUCCESS', payload: true });
       }
     } catch (error) {
-      toast.error(error.response);
-      console.log(error);
-      setIsSubmiting(false);
+      if (error.response.status === 500) {
+        setIsModelOpen(false);
+        toast.error('Server Error');
+        setIsSubmiting(false);
+      }
     }
   };
 
@@ -488,7 +487,7 @@ export default function AdminProjectListScreen() {
 
               <Dropdown className={`mb-0 dropTab1 tab-btn ${theme}Tab`}>
                 <Dropdown.Toggle variant="secondary" id="dropdown-tabs">
-                  Select a Tab
+                  {selectedTab}
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu className="dropMenu">
@@ -540,7 +539,12 @@ export default function AdminProjectListScreen() {
                     className="dropMenuCon"
                     onClick={() => handleTabSelect('Assigned')}
                   >
-                    kkkkkkk
+                    <span className="position-relative">
+                      Assigned
+                      <span className="badgesclass badgeAll top-0 start-112 translate-middle badge rounded-pill">
+                        {assignedAgent.length}
+                      </span>
+                    </span>
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
@@ -930,7 +934,6 @@ export default function AdminProjectListScreen() {
                           renderCell: (params) => {
                             return (
                               <Grid item xs={8}>
-
                                 <Button
                                   variant="contained"
                                   className="mx-2 tableEditbtn"
@@ -993,7 +996,6 @@ export default function AdminProjectListScreen() {
                           width: 250,
                           renderCell: (params) => (
                             <Grid item xs={8}>
-
                               <Button
                                 variant="contained"
                                 className="mx-2 tableEditbtn"
@@ -1010,7 +1012,6 @@ export default function AdminProjectListScreen() {
                                 Delete
                               </Button>
                             </Grid>
-
                           ),
                         },
                       ]}
@@ -1028,14 +1029,18 @@ export default function AdminProjectListScreen() {
                     />
                   </Box>
                 </Tab>
-                <Tab className="tab-color" eventKey="Assigned" title={
-                  <span class="position-relative">
-                    Assigned
-                    <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
-                      {assignedAgent.length}
+                <Tab
+                  className="tab-color"
+                  eventKey="Assigned"
+                  title={
+                    <span class="position-relative">
+                      Assigned
+                      <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+                        {assignedAgent.length}
+                      </span>
                     </span>
-                  </span>
-                }>
+                  }
+                >
                   <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
@@ -1082,9 +1087,6 @@ export default function AdminProjectListScreen() {
                   </Box>
                 </Tab>
               </Tabs>
-
-              {/* Tabs */}
-
             </div>
           </>
         )}

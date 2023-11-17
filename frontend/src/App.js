@@ -136,7 +136,7 @@ function App() {
                     <Navbar.Brand href="/dashboard">
                       <Image
                         className="Roonberg-logo me-3 ms-2"
-                        src="./logo2.png"
+                        src="/logo2.png"
                         thumbnail
                       />
                     </Navbar.Brand>

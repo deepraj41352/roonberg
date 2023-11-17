@@ -1,6 +1,5 @@
 import Imap from 'node-imap';
 import nodemailer from 'nodemailer';
-// import EmailParser from 'email-reply-parser';
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import { transporter } from '../util.js';

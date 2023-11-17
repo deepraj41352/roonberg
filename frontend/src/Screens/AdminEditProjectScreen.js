@@ -520,7 +520,7 @@ function AdminEditProject() {
                   <Card.Header className={`${theme}CardHeader`}>
                     Chats
                   </Card.Header>
-                  <Card.Body className="d-flex flex-wrap gap-3 assignCon">
+                  <Card.Body className="d-flex justify-content-center flex-wrap gap-3 assignCon ">
                     <div
                       className="text-center w-100"
                       style={{
@@ -534,7 +534,7 @@ function AdminEditProject() {
                     >
                       No Chat Available
                     </div>
-
+                    {console.log(projectData?.conversions)}
                     {projectData?.conversions?.map((conversion) => {
                       const assignedAgent = projectData.assignedAgent.find(
                         (assignedAgent) =>
@@ -609,7 +609,7 @@ function AdminEditProject() {
                             key={index}
                           >
                             <FormControl className="mb-3 ">
-                              <InputLabel className='px-2'>Category</InputLabel>
+                              <InputLabel className="px-2">Category</InputLabel>
                               <Select
                                 className="cateEdit"
                                 value={agentCatData.categoryId}
@@ -621,24 +621,25 @@ function AdminEditProject() {
                                   )
                                 }
                               >
-                                {categoryData && categoryData.map((category) => (
-                                  <MenuItem
-                                    key={category._id}
-                                    value={category._id}
-                                    disabled={agents.some(
-                                      (a) => a.categoryId === category._id
-                                    )}
-                                    className={
-                                      agents.some(
+                                {categoryData &&
+                                  categoryData.map((category) => (
+                                    <MenuItem
+                                      key={category._id}
+                                      value={category._id}
+                                      disabled={agents.some(
                                         (a) => a.categoryId === category._id
-                                      )
-                                        ? 'disabledMenuItem'
-                                        : ''
-                                    }
-                                  >
-                                    {category.categoryName}
-                                  </MenuItem>
-                                ))}
+                                      )}
+                                      className={
+                                        agents.some(
+                                          (a) => a.categoryId === category._id
+                                        )
+                                          ? 'disabledMenuItem'
+                                          : ''
+                                      }
+                                    >
+                                      {category.categoryName}
+                                    </MenuItem>
+                                  ))}
                               </Select>
                             </FormControl>
                             <FormControl className="mb-3">
