@@ -9,14 +9,12 @@ import { ThreeDots } from 'react-loader-spinner';
 export default function NotificationScreen() {
   const [notificationMessage, setNotificationMessage] = useState([]);
   const [notificationMark, setNotificationMark] = useState('');
-
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { userInfo } = state;
-
+  const { toggleState, userInfo } = state;
+  const theme = toggleState ? 'dark' : 'light';
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 7;
   const maxPageNumbers = 5; // Maximum page numbers to show directly
-
   const reversedNotifications = [...notificationMessage].reverse();
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -115,13 +113,13 @@ export default function NotificationScreen() {
                       key={index}
                       className={`list-group-item custom-list-item ${
                         item.status === 'seen'
-                          ? 'list-group-item-light'
-                          : 'list-group-item-dark'
+                          ? `list-group-item-seen-${theme}`
+                          : `list-group-item-unseen-${theme}`
                       }`}
                     >
                       <div className="NotificationMsg">{item.message}</div>
                       <button
-                        className="MarkAsRead"
+                        className={`MarkAsRead-${theme}`}
                         style={{
                           display: item.status == 'seen' ? 'none' : 'block',
                         }}
@@ -133,7 +131,7 @@ export default function NotificationScreen() {
                     </li>
                   ))}
                 </ul>
-                <nav>
+                {/* <nav>
                   <ul className="pagination justify-content-center">
                     <li
                       className={`page-item ${
@@ -177,7 +175,57 @@ export default function NotificationScreen() {
                       </button>
                     </li>
                   </ul>
-                </nav>
+                </nav> */}
+                {reversedNotifications.length > 7 && (
+                  <nav>
+                    <ul className="pagination justify-content-center">
+                      <li
+                        className={`page-item ${
+                          currentPage === 1 ? 'disabled' : ''
+                        }`}
+                      >
+                        <button
+                          className="page-link"
+                          onClick={() => handlePageChange(currentPage - 1)}
+                        >
+                          Previous
+                        </button>
+                      </li>
+                      {pageNumbers
+                        .slice(
+                          currentPage - 1,
+                          currentPage - 1 + maxPageNumbers
+                        )
+                        .map((number) => (
+                          <li
+                            key={number}
+                            className={`page-item ${
+                              currentPage === number ? 'active' : ''
+                            }`}
+                          >
+                            <button
+                              onClick={() => handlePageChange(number)}
+                              className="page-link"
+                            >
+                              {number}
+                            </button>
+                          </li>
+                        ))}
+                      <li
+                        className={`page-item ${
+                          currentPage === totalPages ? 'disabled' : ''
+                        }`}
+                      >
+                        <button
+                          className="page-link"
+                          onClick={() => handlePageChange(currentPage + 1)}
+                        >
+                          Next
+                        </button>
+                      </li>
+                    </ul>
+                  </nav>
+                )}
               </div>
             </div>
           </div>

@@ -144,9 +144,10 @@ export default function AdminProjectListScreen() {
       const selectedCategory = categoryData.find(
         (categoryItem) => categoryItem._id === category
       );
-      const agentsForCategory = agentData.filter(
-        (agentItem) => agentItem.agentCategory === selectedCategory._id
+      const agentsForCategory = agentData.filter((agentItem) =>
+        agentItem.agentCategory.includes(selectedCategory._id)
       );
+
       const activeAgents = agentsForCategory.filter(
         (agentItem) => agentItem.userStatus === true
       );
@@ -629,7 +630,7 @@ export default function AdminProjectListScreen() {
                         },
                       }}
                       pageSizeOptions={[5]}
-                      checkboxSelection
+                      // checkboxSelection
                       disableRowSelectionOnClick
                     />
                   </Box>
@@ -917,7 +918,7 @@ export default function AdminProjectListScreen() {
                         },
                       }}
                       pageSizeOptions={[5]}
-                      checkboxSelection
+                      // checkboxSelection
                       disableRowSelectionOnClick
                     />
                   </Box>
@@ -980,7 +981,7 @@ export default function AdminProjectListScreen() {
                         },
                       }}
                       pageSizeOptions={[5]}
-                      checkboxSelection
+                      // checkboxSelection
                       disableRowSelectionOnClick
                     />
                   </Box>
@@ -1098,7 +1099,7 @@ export default function AdminProjectListScreen() {
                         },
                       }}
                       pageSizeOptions={[5]}
-                      checkboxSelection
+                      // checkboxSelection
                       disableRowSelectionOnClick
                     />
                   </Box>

@@ -76,10 +76,11 @@ userRouter.put(
 
         const { first_name, last_name, email, agentCategory, userStatus } =
           req.body;
+        const lowerCaseEmail = email.toLowerCase();
         const updatedData = {
           first_name: capitalizeFirstLetter(first_name),
           last_name: capitalizeFirstLetter(last_name),
-          email,
+          email: lowerCaseEmail,
           userStatus,
           agentCategory,
         };
@@ -187,7 +188,9 @@ userRouter.delete(
 userRouter.post(
   '/forget-password',
   expressAsyncHandler(async (req, res) => {
-    const user = await User.findOne({ email: req.body.email });
+    const email = req.body.email;
+    const lowerCaseEmail = email.toLowerCase();
+    const user = await User.findOne({ email: lowerCaseEmail });
 
     if (user) {
       const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
@@ -342,24 +345,35 @@ userRouter.post(
 userRouter.post(
   '/signin',
   expressAsyncHandler(async (req, res) => {
-    const user = await User.findOne({ email: req.body.email });
+    const email = req.body.email;
+    const lowerCaseEmail = email.toLowerCase();
+    const user = await User.findOne({ email: lowerCaseEmail });
 
     if (user) {
       if (bcrypt.compareSync(req.body.password, user.password)) {
-        const updatedUser = await User.findOneAndUpdate(
-          { email: req.body.email },
-          { lastLogin: new Date() },
-          { new: true }
-        );
-        const { password, passresetToken, ...other } = updatedUser._doc;
-        const userData = { ...other, token: generateToken(updatedUser) };
-        res.send(userData);
-        return;
+        if (user.isConfirmed) {
+          const updatedUser = await User.findOneAndUpdate(
+            { email: lowerCaseEmail },
+            { lastLogin: new Date() },
+            { new: true }
+          );
+
+          const { password, passresetToken, ...other } = updatedUser._doc;
+          const userData = { ...other, token: generateToken(updatedUser) };
+          res.send(userData);
+          return;
+        } else {
+          res.status(401).send({
+            message: 'User not confirmed. Please confirm your email.',
+          });
+          return;
+        }
       } else {
         res.status(401).send({ message: 'Incorrect password' });
         return;
       }
     }
+
     res.status(401).send({ message: 'User not found' });
   })
 );
@@ -422,18 +436,23 @@ userRouter.post(
  *               message: Registration failed. Please try again later.
  */
 
+function generateUniqueToken() {
+  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+}
 userRouter.post(
   '/signup',
   expressAsyncHandler(async (req, res) => {
     try {
       const { first_name, last_name, email, role } = req.body;
-      const existingUser = await User.findOne({ email: email });
+      const lowerCaseEmail = email.toLowerCase();
+      const existingUser = await User.findOne({ email: lowerCaseEmail });
 
       if (existingUser) {
         return res
           .status(400)
           .send({ message: 'Email is already registered.' });
       }
+      const confirmationToken = generateUniqueToken();
       const hashedPassword = await bcrypt.hash(req.body.password, 8);
       function capitalizeFirstLetter(data) {
         return data && data.charAt(0).toUpperCase() + data.slice(1);
@@ -441,12 +460,36 @@ userRouter.post(
       const newUser = new User({
         first_name: capitalizeFirstLetter(first_name),
         last_name: capitalizeFirstLetter(last_name),
-        email,
+        email: lowerCaseEmail,
         password: hashedPassword,
         role,
+        confirmationToken,
       });
       const user = await newUser.save();
       const { password, ...other } = user._doc;
+
+      const confirmationLink = `${baseUrl()}/confirm/${confirmationToken}`;
+      const emailSubject = 'Confirm your registration';
+      const UserName = user.first_name;
+      const options = {
+        to: `<${user.email}>`,
+        subject: emailSubject,
+        template: 'CONFIRM-REG',
+        confirmationLink,
+        UserName,
+      };
+
+      // Send the email
+      const checkMail = await sendEmailNotify(options);
+
+      if (checkMail) {
+        res.send({
+          message: `We sent a Confirmation link to your email.`,
+          other,
+        });
+      } else {
+        res.status(404).send({ message: 'Email sending failed' });
+      }
       if (user) {
         const notifyUser = user._id;
         const message = `welcome ${user.first_name}`;
@@ -463,6 +506,56 @@ userRouter.post(
       res
         .status(500)
         .send({ message: 'Registration failed. Please try again later.' });
+    }
+  })
+);
+
+// confirm sigup
+userRouter.post(
+  '/confirm',
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const { token } = req.body;
+      const user = await User.findOne({ confirmationToken: token });
+      if (!user) {
+        return res.status(400).send({ message: 'Invalid confirmation token.' });
+      }
+      if (user.isConfirmed) {
+        return res.status(401).send({ message: 'User is already confirmed.' });
+      }
+      user.isConfirmed = true;
+      await user.save();
+      res.status(200).send({
+        message: 'Email confirmed successfully. You can now log in.',
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        message: 'Confirmation failed. Please try again later.',
+      });
+    }
+  })
+);
+userRouter.post(
+  '/massege',
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const { token } = req.body;
+      const user = await User.findOne({ confirmationToken: token });
+      const isConfirmed = user.isConfirmed;
+      // Check if the user is already confirmed
+      if (isConfirmed) {
+        return res.status(400).send({ message: 'User is already confirmed.' });
+      }
+
+      res.status(200).send({
+        message: 'Are you sure you want to register?',
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        message: 'Confirmation failed. Please try again later.',
+      });
     }
   })
 );
@@ -497,6 +590,11 @@ userRouter.put(
           role,
           profile_picture,
           userStatus,
+          phone_number,
+          gender,
+          dob,
+          address,
+          country
         } = req.body;
         const updatedData = {
           first_name: capitalizeFirstLetter(first_name),
@@ -505,6 +603,11 @@ userRouter.put(
           role,
           profile_picture,
           userStatus,
+          phone_number,
+          gender,
+          dob,
+          address,
+          country
         };
         const updatedUser = await User.findOneAndUpdate(
           { _id: req.user._id },
@@ -517,7 +620,7 @@ userRouter.put(
           userData,
         });
         const notifyUser = updatedUser._id;
-        const message = `Your profile is updated`;
+        const message = Your profile is updated;
         const status = 'unseen';
         const type = 'User';
         const notify = await storeNotification(
@@ -533,9 +636,10 @@ userRouter.put(
       }
     } catch (error) {
       console.log('Error ', error);
-    }
-  })
+    }
+  })
 );
+
 
 export const uploadDoc = async (req, mediaType) => {
   try {
@@ -583,8 +687,10 @@ userRouter.post(
       }
       const { first_name, last_name, email, role, agentCategory, userStatus } =
         req.body;
+      const lowerCaseEmail = email.toLowerCase();
+      console.log(lowerCaseEmail);
 
-      const existingUser = await User.findOne({ email: email });
+      const existingUser = await User.findOne({ email: lowerCaseEmail });
       if (existingUser) {
         return res
           .status(400)
@@ -599,17 +705,18 @@ userRouter.post(
       const data = {
         first_name: capitalizeFirstLetter(first_name),
         last_name: capitalizeFirstLetter(last_name),
-        email,
+        email: lowerCaseEmail,
         password: hashedPassword,
         role: capitalizeFirstLetter(role),
         agentCategory,
         userStatus,
+        isConfirmed: true,
         // Only assign the category field if the role is "agent"
         ...(role === 'agent' ? { agentCategory } : {}),
       };
       const newUser = new User(data);
       const userinfo = await newUser.save();
-      const user = await User.findOne({ email: req.body.email });
+      const user = await User.findOne({ email: lowerCaseEmail });
 
       if (user) {
         const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
@@ -631,13 +738,13 @@ userRouter.post(
         // Send the email
         const checkMail = await sendEmailNotify(options);
 
-        if (checkMail) {
-          res.send({
-            message: `We sent a reset password link to your email.`,
-          });
-        } else {
-          res.status(404).send({ message: 'Email sending failed' });
-        }
+        // if (checkMail) {
+        //   res.send({
+        //     message: `We sent a reset password link to your email.`,
+        //   });
+        // } else {
+        //   res.status(404).send({ message: 'Email sending failed' });
+        // }
       } else {
         res.status(404).send({ message: 'User not found' });
       }

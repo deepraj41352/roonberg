@@ -21,6 +21,7 @@ import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DatePicker from '@mui/lab/DatePicker';
 import dayjs from 'dayjs';
+import { FaArrowLeft } from 'react-icons/fa';
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FATCH_REQUEST':
@@ -198,8 +199,11 @@ function AdminEditProject() {
       const selectedCategory = categoryData.find(
         (categoryItem) => categoryItem._id === category
       );
-      const agentsForCategory = agentData.filter(
-        (agentItem) => agentItem.agentCategory === selectedCategory._id
+      // const agentsForCategory = agentData.filter(
+      //   (agentItem) => agentItem.agentCategory === selectedCategory._id
+      // );
+      const agentsForCategory = agentData.filter((agentItem) =>
+        agentItem.agentCategory.includes(selectedCategory._id)
       );
       const activeAgents = agentsForCategory.filter(
         (agentItem) => agentItem.userStatus === true
@@ -406,7 +410,18 @@ function AdminEditProject() {
 
             <div className="d-flex w-100 my-3 gap-4 justify-content-center align-item-center projectScreenCard-outer ">
               <Card className={`projectScreenCard ${theme}CardBody `}>
-                <Card.Header className={`${theme}CardHeader`}>
+                {/* <Card.Header className={`${theme}CardHeader`}>
+                  <Link to={`/adminProjectList`}>
+                    <FaArrowLeft className="me-3 fs-5 ArrowColor" />
+                  </Link>
+                  Project Details
+                </Card.Header> */}
+                <Card.Header
+                  className={`${theme}CardHeader ArrowForBackInEditProject`}
+                >
+                  <Link to={`/adminProjectList`}>
+                    <FaArrowLeft className={`${theme}Backarrow me-3 fs-5 `} />
+                  </Link>
                   Project Details
                 </Card.Header>
                 <div className="FormContainerEdit pt-4">
@@ -519,7 +534,7 @@ function AdminEditProject() {
               <div className="projectScreenCard2 d-flex flex-column gap-4">
                 <Card className={`projectScreenCard2 ${theme}CardBody`}>
                   <Card.Header className={`${theme}CardHeader`}>
-                    Chats
+                    Messages
                   </Card.Header>
                   <Card.Body className="d-flex justify-content-center flex-wrap gap-3 assignCon ">
                     <div

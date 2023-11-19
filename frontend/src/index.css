@@ -46,6 +46,7 @@ code {
   border: none;
   border-radius: 25px;
   background-color: #052c65;
+  color: #fff;
   width: 28px;
   height: 28px;
   text-align: center;
@@ -386,10 +387,19 @@ code {
   background-color: white !important;
 }
 .lightDataGrid .MuiButtonBase-root {
-  color: rgb(31, 30, 30) !important;
+  background: RGB(14, 14, 61) !important;
+  color: white !important;
+  margin-right: 8px;
 }
 .darkDataGrid .MuiButtonBase-root {
-  color: white !important;
+  background: white !important;
+  color: RGB(14, 14, 61) !important;
+  margin-right: 8px;
+}
+
+.lightDataGrid
+  .MuiTablePagination-displayedRows.css-levciy-MuiTablePagination-displayedRows {
+  color: RGB(14, 14, 61) !important;
 }
 /* ---------Priyanshu-Start------------- */
 .darkTab {
@@ -397,7 +407,7 @@ code {
 }
 .lightTab {
   /* background-color: #8a9097; */
-  background-color: #a3a7ad;
+  background-color: #0d0d32;
 }
 
 .darkTab .nav-link.active {
@@ -726,6 +736,14 @@ body {
 .timeago {
   font-size: 12px;
 }
+.chatAboveDiv {
+  display: flex;
+  justify-content: flex-end;
+}
+.chatAboveDiv1 {
+  display: flex;
+  justify-content: flex-start;
+}
 .timeago2 {
   font-size: 13px;
 }
@@ -737,13 +755,22 @@ body {
   max-width: 60%;
 }
 .chat-senderMsg-inner {
-  background-color: #0e0e3d;
+  background: unset !important;
+  color: #000 !important;
+  letter-spacing: -0.5px;
   border-radius: 10px;
   border-top-left-radius: 0px !important;
   text-align: start;
   margin-bottom: 0;
   max-width: 431px;
-  color: white;
+}
+.lightMsgThemeS {
+  /* background-color: #c2c2e5 !important; */
+  background-color: white !important;
+}
+.darkMsgThemeS {
+  /* background-color: #9c9ca9 !important; */
+  background-color: #cdcdd7 !important;
 }
 .chat-receiverMsg {
   display: flex;
@@ -759,12 +786,25 @@ body {
 }
 
 .chat-receiverMsg-inner {
-  background-color: #afb4b9;
+  background: unset !important;
+
+  color: #000 !important;
+  letter-spacing: -0.5px;
   border-radius: 10px;
   border-top-right-radius: 0px !important;
   text-align: start;
   margin-bottom: 0;
   max-width: 431px;
+}
+.lightMsgThemeR {
+  /* background-color: #dddde9 !important; */
+  background-color: white !important;
+}
+.darkMsgThemeR {
+  /* background-color: #3d3d60 !important; */
+  background-color: #cdcdd7 !important;
+
+  /* color: white !important; */
 }
 .chatWindowBody {
   overflow-y: auto;
@@ -914,12 +954,12 @@ body {
 .row {
   margin: 0 !important;
 }
-.MuiDataGrid-columnHeaderCheckbox {
+/* .MuiDataGrid-columnHeaderCheckbox {
   display: none !important;
-}
-.MuiDataGrid-cellCheckbox {
+} */
+/* .MuiDataGrid-cellCheckbox {
   display: none !important;
-}
+} */
 .dropdown-content {
   display: flex;
   flex-direction: column;
@@ -983,6 +1023,7 @@ body {
 ::-webkit-scrollbar {
   width: 8px;
   margin-left: 10px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -1036,28 +1077,51 @@ body {
 .pagination .page-link.active {
   background-color: #07162c;
 }
+.active > .page-link,
+.page-link.active {
+  background-color: #486795 !important;
+  border: #486795 !important;
+}
 .list-group-item {
   display: flex !important;
   align-items: center;
-  color: white !important;
 }
 .NotificationMsg {
   width: 88%;
   text-align: start;
 }
-.MarkAsRead {
+.MarkAsRead-light {
   border-radius: 11px !important;
+  border: none;
   color: black;
-  background-color: #b9c9da;
+  background-color: #e3e3e3;
+  width: 115px;
+  padding: 0 !important;
+}
+.MarkAsRead-dark {
+  border-radius: 11px !important;
+  border: none;
+  color: black;
+  background-color: #c9cccf;
   width: 115px;
   padding: 0 !important;
 }
 
-.list-group-item-dark {
+.list-group-item-unseen-dark {
   background-color: #07162c !important;
+  color: white !important;
 }
-.list-group-item-light {
+.list-group-item-unseen-light {
+  background-color: #f8f8f8 !important;
+  color: black !important;
+}
+.list-group-item-seen-dark {
   background-color: #afb4b9 !important;
+  color: white !important;
+}
+.list-group-item-seen-light {
+  background-color: #bfbfc7 !important;
+  color: black !important;
 }
 
 .Datevalidation {
@@ -1248,4 +1312,138 @@ body {
 .startLabel .form-check-label {
   display: flex !important;
   padding-left: 10px;
+}
+
+/* karan.......... */
+.NameofOposite {
+  font-size: 20px;
+  font-weight: 600;
+}
+.NameofOposite1 {
+  font-size: 14px;
+}
+.projetStatusChat {
+  margin-top: 18px !important;
+  text-align: left;
+  background: #070719;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+}
+.ArrowColor {
+  color: #070719;
+}
+.ArrowForBackInEditProject {
+  text-align: left;
+  display: flex;
+  gap: 31%;
+}
+.darkBackarrow {
+  color: #fff;
+}
+.lightBackarrow {
+  color: #000;
+}
+.TaskAddButton {
+  background-color: red;
+  color: white;
+  height: 53px;
+  width: 53px;
+  border-radius: 50%;
+  position: fixed;
+  top: 85%;
+  right: 7%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 31px;
+}
+
+/* For Task Screen */
+.nav-link.active {
+  background-color: unset !important;
+}
+.tabBack li {
+  background-color: RGB(14, 14, 61) !important;
+  border: 1px solid #fff !important;
+}
+.tableScreen {
+  background-color: #fff;
+  max-width: 850px;
+  margin: 20px auto;
+  padding: 15px 6px;
+}
+.tableGrid
+  .MuiTablePagination-displayedRows.css-levciy-MuiTablePagination-displayedRows {
+  color: #000 !important;
+}
+.tableGrid.MuiDataGrid-root.MuiDataGrid-root--densityStandard.MuiDataGrid-withBorderColor.css-ptkaw2-MuiDataGrid-root {
+  font-size: 12px !important;
+  border-radius: 0px !important;
+}
+.lastLogin {
+  border: 1px solid #dcd7d7 !important;
+  font-size: 12px !important;
+  text-align: start;
+  padding: 0 10px;
+  font-weight: 500 !important;
+}
+svg.clockIcon {
+  color: #ffc000;
+  margin-bottom: 3px;
+}
+.tableInProgressBtn {
+  color: green !important;
+  background: transparent !important;
+  border: 1px solid green !important;
+}
+main.windowCal {
+  min-height: calc(100% - 194px) !important;
+}
+.actionCenter .MuiDataGrid-columnHeaderTitleContainer {
+  justify-content: space-evenly;
+}
+
+/* Priyanshu ...........*/
+.darkchatHead {
+  background-color: #0e0e3d !important;
+}
+.darkchatBody {
+  background-color: #cdcdd7 !important;
+}
+.darkchatFoot {
+  background-color: #0e0e3d !important;
+  color: white !important;
+}
+.darkchatInfo {
+  background-color: #0e0e3d !important;
+  color: white !important;
+}
+.lightchatInfo {
+  background-color: #f8f8f8 !important;
+}
+.lightbackbtn {
+  color: black;
+}
+.darkbackbtn {
+  color: white;
+}
+.dark-user-profile-field fieldset {
+  border-color: white !important;
+}
+.dark-user-profile-field {
+  color: white !important;
+}
+.dark-user-profile-field div {
+  color: white !important;
+}
+.dark-user-profile-field label {
+  color: white !important;
+  background-color: #0d0d32 !important;
+}
+
+/* gyatri ji ............... */
+.profileContainer {
+  min-width: 600px;
+  width: 100%;
 }

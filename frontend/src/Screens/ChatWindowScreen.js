@@ -14,7 +14,7 @@ import MyStatefulEditor from '../Components/rte_test';
 import { Store } from '../Store';
 import { Socket, io } from 'socket.io-client';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { format } from 'timeago.js';
 import {
@@ -32,11 +32,13 @@ import { Editor } from '@tinymce/tinymce-react';
 import MUIRichTextEditor from 'mui-rte';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { MdCancel } from 'react-icons/md';
+import { FaArrowLeft } from 'react-icons/fa';
 
 function ChatWindowScreen() {
   const { id } = useParams();
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
+  const theme = toggleState ? 'dark' : 'light';
   const [showFontStyle, setShowFontStyle] = useState(false);
   const [conversation, setConversation] = useState([]);
   const [chatMessages, setChatMessages] = useState([]);
@@ -311,7 +313,7 @@ function ChatWindowScreen() {
     const getChatMemberName = async () => {
       try {
         const { data } = await axios.get(`/api/user/${receiverdId}`);
-        SetChatOpositeMember(data.first_name);
+        SetChatOpositeMember(data);
       } catch (err) {
         console.log(err);
       }
@@ -393,27 +395,6 @@ function ChatWindowScreen() {
       (member) => member !== userInfo._id
     );
     if (selectedImage) {
-      if (userInfo.role === 'admin' || userInfo.role === 'superadmin') {
-        const messageData = {
-          senderFirstName: userInfo.first_name,
-          senderLastName: userInfo.last_name,
-          Sender_Profile: userInfo.profile_picture,
-          senderId: userInfo._id,
-          receiverdId: conversationID.members,
-          image: selectedImage,
-        };
-        socket.current.emit('image', messageData);
-      } else {
-        const messageData = {
-          senderFirstName: userInfo.first_name,
-          senderLastName: userInfo.last_name,
-          Sender_Profile: userInfo.profile_picture,
-          senderId: userInfo._id,
-          receiverdId: receiverdId,
-          image: selectedImage,
-        };
-        socket.current.emit('image', messageData);
-      }
       const formDatas = new FormData();
       formDatas.append('media', selectedfile);
       formDatas.append('mediaType', mediaType);
@@ -424,8 +405,33 @@ function ChatWindowScreen() {
       formDatas.append('senderLastName', userInfo.last_name);
       formDatas.append('Sender_Profile', userInfo.profile_picture);
       try {
+        setIsSubmiting(true);
         const { data } = await axios.post('/api/message/', formDatas);
+        if (userInfo.role === 'admin' || userInfo.role === 'superadmin') {
+          const messageData = {
+            senderFirstName: userInfo.first_name,
+            senderLastName: userInfo.last_name,
+            Sender_Profile: userInfo.profile_picture,
+            senderId: userInfo._id,
+            receiverdId: conversationID.members,
+            image: data.image,
+          };
+          socket.current.emit('image', messageData);
+        } else {
+          const messageData = {
+            senderFirstName: userInfo.first_name,
+            senderLastName: userInfo.last_name,
+            Sender_Profile: userInfo.profile_picture,
+            senderId: userInfo._id,
+            receiverdId: receiverdId,
+            image: data.image,
+          };
+          socket.current.emit('image', messageData);
+        }
+        setIsSubmiting(false);
       } catch (err) {
+        setIsSubmiting(false);
+
         console.log(err.response?.data?.message);
       }
       setSelectedImage(null);
@@ -603,9 +609,12 @@ function ChatWindowScreen() {
     <div className=" justify-content-center align-items-center">
       <div className="d-flex justify-content-center gap-3 ">
         <Card className="chatWindow">
-          <CardHeader className="d-flex">
-            <div className="ChatName">{chatOpositeMember}</div>
-
+          <CardHeader className={`d-flex ${theme}chatHead`}>
+            {projectData && (
+              <Link to={`/adminEditProject/${projectData._id}`}>
+                <FaArrowLeft className={`me-3 fs-5 ${theme}backbtn `} />
+              </Link>
+            )}
             <div className="" onClick={toggleSidebar}>
               <BsThreeDotsVertical className="pt-1 threeDot" />
             </div>
@@ -675,7 +684,7 @@ function ChatWindowScreen() {
           ) : (
             ''
           )}
-          <CardBody className="chatWindowBody pb-0">
+          <CardBody className={`chatWindowBody ${theme}chatBody pb-0`}>
             {chatMessages.map((item) => (
               <>
                 {userInfo._id == item.sender ? (
@@ -690,24 +699,19 @@ function ChatWindowScreen() {
                             <div className="text-start d-flex justify-content-end  px-2 timeago2">
                               {item.senderFirstName} {item.senderLastName}
                             </div>
-                            <p
-                              className="chat-receiverMsg-inner p-2 mb-0"
-                              dangerouslySetInnerHTML={{ __html: item.text }}
-                            ></p>
+                            <div className="chatAboveDiv">
+                              {' '}
+                              <p
+                                className={`chat-receiverMsg-inner ${theme}MsgThemeR p-2 px-3 mb-0`}
+                                dangerouslySetInnerHTML={{ __html: item.text }}
+                              ></p>
+                            </div>
                             <div className="timeago text-end mb-3 ">
                               {format(item.createdAt)}
                             </div>
                           </div>
                           <div>
-                            {' '}
-                            <img
-                              className="chat-dp"
-                              src={
-                                item.Sender_Profile
-                                  ? item.Sender_Profile
-                                  : './avatar.png'
-                              }
-                            ></img>
+                            <img className="chat-dp" src={item.image}></img>
                           </div>
                         </div>
                       </div>
@@ -743,11 +747,7 @@ function ChatWindowScreen() {
                                   <>
                                     <img
                                       onClick={handleforsetImage}
-                                      src={
-                                        item.conversationId
-                                          ? item.image
-                                          : `${SocketUrl}/${item.image}`
-                                      }
+                                      src={item.image}
                                       className="chat-receiverMsg-inner w-100 p-2"
                                     />
                                   </>
@@ -795,10 +795,12 @@ function ChatWindowScreen() {
                             <div className="text-start px-2 timeago2">
                               {item.senderFirstName} {item.senderLastName}
                             </div>
-                            <p
-                              className="chat-senderMsg-inner p-2 mb-0"
-                              dangerouslySetInnerHTML={{ __html: item.text }}
-                            ></p>
+                            <div className="chatAboveDiv1">
+                              <p
+                                className={`chat-senderMsg-inner ${theme}MsgThemeS p-2 px-3 mb-0`}
+                                dangerouslySetInnerHTML={{ __html: item.text }}
+                              ></p>
+                            </div>
                             <div className="timeago text-start mb-3 ">
                               {format(item.createdAt)}
                             </div>
@@ -880,7 +882,7 @@ function ChatWindowScreen() {
               />
             </Modal>
           </CardBody>
-          <CardFooter className="d-flex align-items-center">
+          <CardFooter className={`d-flex align-items-center ${theme}chatFoot`}>
             <Form className="w-100">
               <InputGroup>
                 <Form.Control
@@ -993,17 +995,29 @@ function ChatWindowScreen() {
             )}
           </CardFooter>
         </Card>
-        <Card className="chatWindowProjectInfo">
+        <Card className={`chatWindowProjectInfo ${theme}chatInfo`}>
           {projectData ? (
             <Form className="px-3">
               <Form.Group className="mb-3 projetStatusChat">
-                <Form.Label className="fw-bold">Project Name</Form.Label>
+                {/* <Form.Label className="fw-bold">Project Name</Form.Label>
                 <Form.Control
                   type="text"
                   name="projectName"
                   disabled
                   value={projectData && projectData.projectName}
-                />
+                /> */}
+                <div className="NameofOposite">
+                  {' '}
+                  {chatOpositeMember ? chatOpositeMember.first_name : null}
+                </div>
+                <div className="NameofOposite1">
+                  {' '}
+                  {chatOpositeMember ? `(${chatOpositeMember.role})` : null}
+                </div>
+                <div className="NameofOposite1">
+                  {' '}
+                  {chatOpositeMember ? chatOpositeMember.email : null}
+                </div>
               </Form.Group>
               <Form.Group className="mb-3 " controlId="formBasicPassword">
                 <Form.Label className="mb-1 fw-bold">Project Status</Form.Label>

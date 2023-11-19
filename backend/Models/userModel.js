@@ -11,7 +11,11 @@ const userSchema = new mongoose.Schema(
     phone_number: { type: String },
     country: { type: String },
     dob: { type: String },
-    profile_picture: { type: String ,default:'https://res.cloudinary.com/dmhxjhsrl/image/upload/v1698911473/r5jajgkngwnzr6hzj7vn.jpg' },
+    profile_picture: {
+      type: String,
+      default:
+        'https://res.cloudinary.com/dmhxjhsrl/image/upload/v1698911473/r5jajgkngwnzr6hzj7vn.jpg',
+    },
     role: {
       type: String,
       default: 'contractor',
@@ -20,8 +24,15 @@ const userSchema = new mongoose.Schema(
     },
     userStatus: { type: Boolean, default: true },
     passresetToken: { type: String },
-    agentCategory: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
-    lastLogin:{type: Date , default:Date.now}
+    agentCategory: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+      },
+    ],
+    lastLogin: { type: Date, default: Date.now },
+    confirmationToken: { type: String },
+    isConfirmed: { type: Boolean, default: false },
   },
   {
     timestamps: true,

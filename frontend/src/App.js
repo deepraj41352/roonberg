@@ -59,6 +59,10 @@ import NotificationScreen from './Screens/NotificationScreen';
 import AdminListScreen from './Screens/AdminListScreen';
 import SuperadminAdminList from './Screens/SuperadminAdminList';
 import MyComponent from './Components/MyComponent';
+import Footer from './Components/footer';
+import ConfirmRegistration from './Screens/ConfirmRegistration';
+import TasksScreen from './Screens/TasksScreen';
+import TaskAddButton from './Components/TaskAddButton';
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -89,14 +93,9 @@ function App() {
   };
 
   const signoutHandler = () => {
-    console.log(window.confirm);
-
-    const userConfirm = window.confirm('Are you sure you want to logout?');
-    if (userConfirm) {
-      ctxDispatch({ type: 'USER_SIGNOUT' });
-      localStorage.removeItem('userInfo');
-      window.location.href = '/';
-    }
+    ctxDispatch({ type: 'USER_SIGNOUT' });
+    localStorage.removeItem('userInfo');
+    window.location.href = '/';
   };
 
   const handelforNOtification = () => {
@@ -140,7 +139,7 @@ function App() {
                         thumbnail
                       />
                     </Navbar.Brand>
-                    <div className="searchbar">
+                    {/* <div className="searchbar">
                       <Form className="d-flex">
                         <InputGroup className="search-bar-dash">
                           <Form.Control
@@ -158,7 +157,7 @@ function App() {
                           </InputGroup.Text>
                         </InputGroup>
                       </Form>
-                    </div>
+                    </div> */}
 
                     {/* <Navbar.Toggle aria-controls="navbarScroll" /> */}
 
@@ -175,13 +174,13 @@ function App() {
                           <Theme />
                         </div>
 
-                        <Link href="#action1">
+                        {/* {/* <Link href="#action1">
                           <BiShareAlt className="fs-4 admin-btn-logo" />
                         </Link>
 
                         <Link href="#">
                           <FiClock className="fs-4 admin-btn-logo" />
-                        </Link>
+                        </Link> */}
 
                         <Link
                           to="/notificationScreen"
@@ -247,10 +246,10 @@ function App() {
                   </Container>
                 </Navbar>
               ) : (
-                <Navbar expand="lg" className=" main-div">
+                <Navbar expand="lg" className="main-div">
                   <Container className="loginPageNav">
                     <Navbar.Brand href="/">
-                      <Image className="border-0" src="./logo2.png" thumbnail />
+                      <Image className="border-0" src="/logo2.png" thumbnail />
                     </Navbar.Brand>
                     <Navbar.Toggle
                       aria-controls="basic-navbar-nav"
@@ -278,16 +277,20 @@ function App() {
                   </Container>
                 </Navbar>
               )}
-              <main>
+              <main className="windowCal">
                 <div className="mainfordata">
                   <Routes>
                     <Route path="/" element={<SignUpForm />} />
                     <Route path="/test" element={<MyComponent />} />
-
+                    <Route
+                      path="/confirm/:token"
+                      element={<ConfirmRegistration />}
+                    />
                     <Route
                       path="/registration"
                       element={<RegistrationForm />}
                     />
+
                     <Route
                       path="/ForgetPassword"
                       element={<ForgetPassword />}
@@ -322,6 +325,14 @@ function App() {
                         </ProtectedRoute>
                       }
                     />
+                    <Route
+                      path="/tasksScreen"
+                      element={
+                        <ProtectedRoute>
+                          <TasksScreen />
+                        </ProtectedRoute>
+                      }
+                    />
 
                     <Route
                       path="/adminAgentList/"
@@ -331,7 +342,14 @@ function App() {
                         </ProtectedRoute>
                       }
                     />
-                    <Route path="/profile-screen" element={<ProfileScreen />} />
+                    <Route
+                      path="/profile-screen"
+                      element={
+                        <ProtectedRoute>
+                          <ProfileScreen />
+                        </ProtectedRoute>
+                      }
+                    />
                     <Route
                       path="/adminCategoriesList"
                       element={
@@ -364,69 +382,123 @@ function App() {
 
                     <Route
                       path="/projectSingleScreen/:id"
-                      element={<ProjectSingleScreen />}
+                      element={
+                        <ProtectedRoute>
+                          <ProjectSingleScreen />
+                        </ProtectedRoute>
+                      }
                     />
                     <Route
                       path="/adminEditProject/:id"
-                      element={<AdminEditProject />}
+                      element={
+                        <ProtectedRoute>
+                          <AdminEditProject />
+                        </ProtectedRoute>
+                      }
                     />
 
                     <Route
                       path="/chatWindowScreen/:id"
-                      element={<ChatWindowScreen />}
+                      element={
+                        <ProtectedRoute>
+                          <ChatWindowScreen />
+                        </ProtectedRoute>
+                      }
                     />
 
                     <Route
                       path="/adminEditCategory/:id"
-                      element={<AdminEditCategory />}
+                      element={
+                        <ProtectedRoute>
+                          <AdminEditCategory />
+                        </ProtectedRoute>
+                      }
                     />
 
                     <Route
                       path="/adminEditAgent/:id"
-                      element={<AdminEditAgent />}
+                      element={
+                        <ProtectedRoute>
+                          <AdminEditAgent />
+                        </ProtectedRoute>
+                      }
                     />
 
                     <Route
                       path="/adminEditContractor/:id"
-                      element={<AdminEditContractor />}
+                      element={
+                        <ProtectedRoute>
+                          <AdminEditContractor />
+                        </ProtectedRoute>
+                      }
                     />
 
                     <Route
                       path="/superadmineditadmin/:id"
-                      element={<SuperadminEditAdmin />}
+                      element={
+                        <ProtectedRoute>
+                          <SuperadminEditAdmin />
+                        </ProtectedRoute>
+                      }
                     />
 
                     <Route
                       path="/AdminAssignAgent/:id"
-                      element={<AdminAssignAgent />}
+                      element={
+                        <ProtectedRoute>
+                          <AdminAssignAgent />
+                        </ProtectedRoute>
+                      }
                     />
                     {/* Contractor */}
                     <Route
                       path="/project-list-screen"
-                      element={<ContractorProject />}
+                      element={
+                        <ProtectedRoute>
+                          <ContractorProject />
+                        </ProtectedRoute>
+                      }
                     />
 
                     <Route
                       path="/contractorEditProject/:id"
-                      element={<ContractorEditProject />}
+                      element={
+                        <ProtectedRoute>
+                          <ContractorEditProject />
+                        </ProtectedRoute>
+                      }
                     />
                     {/* agent */}
                     <Route
                       path="/agentProjectList"
-                      element={<AgentProjectList />}
+                      element={
+                        <ProtectedRoute>
+                          <AgentProjectList />
+                        </ProtectedRoute>
+                      }
                     />
                     <Route
                       path="/agentEditProject/:id"
-                      element={<AgentEditProject />}
+                      element={
+                        <ProtectedRoute>
+                          <AgentEditProject />
+                        </ProtectedRoute>
+                      }
                     />
 
                     <Route
                       path="/notificationScreen"
-                      element={<NotificationScreen />}
+                      element={
+                        <ProtectedRoute>
+                          <NotificationScreen />
+                        </ProtectedRoute>
+                      }
                     />
                   </Routes>
                 </div>
               </main>
+              {userInfo && <TaskAddButton />}
+              <Footer />
             </div>
           </div>
         </Container>

@@ -51,7 +51,6 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: '_id', headerName: 'ID', width: 250 },
   {
     field: 'first_name',
     headerName: 'constractor',
@@ -62,11 +61,7 @@ const columns = [
     headerName: 'Email',
     width: 200,
   },
-  // {
-  //   field: 'userStatus',
-  //   headerName: 'Status',
-  //   width: 100,
-  // },
+  { field: '_id', headerName: 'ID', width: 250 },
 ];
 
 export default function AdminContractorListScreen() {
@@ -318,7 +313,7 @@ export default function AdminContractorListScreen() {
                     },
                   }}
                   pageSizeOptions={[5]}
-                  checkboxSelection
+                  // checkboxSelection
                   disableRowSelectionOnClick
                   localeText={{
                     noRowsLabel: 'Contractor Data Is Not Avalible',

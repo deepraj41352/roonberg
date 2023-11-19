@@ -113,8 +113,6 @@ const emailTemplate = (options) => {
       return templateHead + templateBody + templateFooter;
       break;
 
-   
-
     case 'CREATE-PROJECT':
       const templateBody1 = ` <!-- First Row --> 
   <p> New Project created with the following details</p>
@@ -155,8 +153,8 @@ const emailTemplate = (options) => {
       return templateHead + templateBody2 + templateFooter;
       break;
 
-      case 'RESET-PASS-ADD':
-        const templateBody3 = ` <!-- First Row --> 
+    case 'RESET-PASS-ADD':
+      const templateBody3 = ` <!-- First Row --> 
   
         <table role="presentation" border="0" cellpadding="0" cellspacing="10px" style="padding: 30px 30px 30px 60px;">
            <tr>
@@ -166,11 +164,21 @@ const emailTemplate = (options) => {
          <a href="${options.resetLink}">Create Password</a></td>
            </tr>
                        </table>`;
-        return templateHead + templateBody3 + templateFooter;
-        break;
-
+      return templateHead + templateBody3 + templateFooter;
+      break;
+    case 'CONFIRM-REG':
+      const templateBody4 = ` <!-- First Row --> 
+  
+        <table role="presentation" border="0" cellpadding="0" cellspacing="10px" style="padding: 30px 30px 30px 60px;">
+           <tr>
+         <td>
+         <p>Hello ${options.UserName}, </p>
+         <p>Click the following link to confirm your registration: ${options.confirmationLink}</a></td>
+           </tr>
+                       </table>`;
+      return templateHead + templateBody4 + templateFooter;
+      break;
   }
-
 };
 
 export default emailTemplate;

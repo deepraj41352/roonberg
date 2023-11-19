@@ -162,9 +162,9 @@ function ContractorEditProject() {
   const options =
     categoryData && Array.isArray(categoryData)
       ? categoryData.map((item) => ({
-        label: item.categoryName,
-        value: item._id,
-      }))
+          label: item.categoryName,
+          value: item._id,
+        }))
       : [];
 
   const handleInputChange = (e) => {
@@ -382,7 +382,7 @@ function ContractorEditProject() {
               </Card>
               <Card className={`projectScreenCard2 ${theme}CardBody`}>
                 <Card.Header className={`${theme}CardHeader`}>
-                  Chats
+                  Messages
                 </Card.Header>
                 <Card.Body className="d-flex flex-wrap gap-3 ">
                   <div
@@ -390,8 +390,8 @@ function ContractorEditProject() {
                     style={{
                       display:
                         projectData &&
-                          projectData.conversions &&
-                          projectData.conversions.length < 1
+                        projectData.conversions &&
+                        projectData.conversions.length < 1
                           ? 'block'
                           : 'none',
                     }}
@@ -419,7 +419,7 @@ function ContractorEditProject() {
                                       <Button
                                         className="chatBtn"
                                         type="button"
-                                      // onClick={conversionHandler(conversion._id)}
+                                        // onClick={conversionHandler(conversion._id)}
                                       >
                                         Chat Now
                                       </Button>
@@ -445,7 +445,7 @@ function ContractorEditProject() {
                                       <Button
                                         className="chatBtn"
                                         type="button"
-                                      // onClick={conversionHandler(conversion._id)}
+                                        // onClick={conversionHandler(conversion._id)}
                                       >
                                         {assignedAgent.agentName}
                                       </Button>

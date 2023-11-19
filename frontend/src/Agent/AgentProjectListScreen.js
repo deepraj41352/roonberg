@@ -6,7 +6,7 @@ import { Grid } from '@mui/material';
 import { MdEdit } from 'react-icons/md';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
-import { Button, Card, Form } from 'react-bootstrap';
+import { Button, Card, Dropdown, Form } from 'react-bootstrap';
 import { BiPlusMedical } from 'react-icons/bi';
 import { Store } from '../Store';
 import axios from 'axios';
@@ -162,13 +162,14 @@ export default function AgentProjectList() {
             _id: items._id,
             projectName: items.projectName,
             projectDescription:
-              items.projectDescription == ''
-                ? 'N/D'
-                : items.projectDescription,
+              items.projectDescription == '' ? 'N/D' : items.projectDescription,
 
-            projectCategory: items.assignedAgent.length > 0
-              ? items.assignedAgent.map((cat) => (cat.categoryName !== '' ? cat.categoryName : 'N/C'))
-              : 'N/C',
+            projectCategory:
+              items.assignedAgent.length > 0
+                ? items.assignedAgent.map((cat) =>
+                    cat.categoryName !== '' ? cat.categoryName : 'N/C'
+                  )
+                : 'N/C',
             projectOwner: contractor ? contractor.first_name : 'N/C',
           };
         });
@@ -176,11 +177,11 @@ export default function AgentProjectList() {
       } catch (error) {
         console.error(error);
         dispatch({ type: 'FATCH_ERROR', payload: error });
-        if (error.response && error.response.status === 404) {
-          toast.error('No projects have been assigned to you yet');
-        } else {
-          toast.error('An error occurred while fetching data');
-        }
+        // if (error.response && error.response.status === 404) {
+        //   console.log('No projects have been assigned to you yet');
+        // } else {
+        //   toast.error('An error occurred while fetching data');
+        // }
       }
     };
     FatchProjectData();
@@ -195,7 +196,11 @@ export default function AgentProjectList() {
   const projectQuedData = projectData.filter((item) => {
     return item.projectStatus === 'qued';
   });
+  const [selectedTab, setSelectedTab] = useState('All');
 
+  const handleTabSelect = (tab) => {
+    setSelectedTab(tab);
+  };
   return (
     <>
       <div className="px-4 mt-3">
@@ -215,21 +220,84 @@ export default function AgentProjectList() {
               />
             </div>
           </>
-        ) : projectData.length < 0 || error ? (
-          <div>
-            <Card>
-              <Card.Text>No projects have been assigned to you yet</Card.Text>
-            </Card>
-          </div>
+        ) : error ? (
+          <div>{error}</div>
         ) : (
           <>
             <div className="tabBorder mt-3">
+              <Dropdown className={`mb-0 dropTab1 tab-btn ${theme}Tab`}>
+                <Dropdown.Toggle variant="secondary" id="dropdown-tabs">
+                  {selectedTab}
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu className="dropMenu">
+                  <Dropdown.Item
+                    className="dropMenuCon"
+                    onClick={() => handleTabSelect('All')}
+                  >
+                    <span class="position-relative">
+                      All
+                      <span class=" badgesclass badgeAll top-0 start-112 translate-middle badge rounded-pill">
+                        {projectData.length}
+                      </span>
+                    </span>
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    className="dropMenuCon"
+                    onClick={() => handleTabSelect('Active')}
+                  >
+                    <span class="position-relative">
+                      Active
+                      <span class=" badgesclass badgeAll top-0 start-112 translate-middle badge rounded-pill ">
+                        {projectActiveData.length}
+                      </span>
+                    </span>
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    className="dropMenuCon"
+                    onClick={() => handleTabSelect('Completed')}
+                  >
+                    <span class="position-relative">
+                      Completed
+                      <span class=" badgesclass badgeAll top-0 start-112 translate-middle badge rounded-pill">
+                        {projectCompleteData.length}
+                      </span>
+                    </span>
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    className="dropMenuCon"
+                    onClick={() => handleTabSelect('Qued')}
+                  >
+                    <span className="position-relative">
+                      Qued
+                      <span className="badgesclass badgeAll top-0 start-112 translate-middle badge rounded-pill">
+                        {projectQuedData.length}
+                      </span>
+                    </span>
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    className="dropMenuCon"
+                    onClick={() => handleTabSelect('Assigned')}
+                  ></Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
               <Tabs
-                defaultActiveKey="All"
+                activeKey={selectedTab}
+                onSelect={(tab) => handleTabSelect(tab)}
                 id="uncontrolled-tab-example"
-                className={`mb-0  tab-btn ${theme}Tab`}
+                className={`mb-0 dropTab tab-btn ${theme}Tab`}
               >
-                <Tab className="tab-color" eventKey="All" title="All">
+                <Tab
+                  eventKey="All"
+                  title={
+                    <span class="position-relative">
+                      All
+                      <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+                        {projectData.length}
+                      </span>
+                    </span>
+                  }
+                >
                   <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
@@ -281,7 +349,18 @@ export default function AgentProjectList() {
                     />
                   </Box>
                 </Tab>
-                <Tab className="tab-color" eventKey="Active" title="Active">
+                <Tab
+                  className="tab-color"
+                  eventKey="Active"
+                  title={
+                    <span class="position-relative">
+                      Active
+                      <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+                        {projectActiveData.length}
+                      </span>
+                    </span>
+                  }
+                >
                   <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
@@ -327,13 +406,23 @@ export default function AgentProjectList() {
                       pageSizeOptions={[5]}
                       checkboxSelection
                       disableRowSelectionOnClick
+                      localeText={{
+                        noRowsLabel: 'Project Data Is Not Avalible',
+                      }}
                     />
                   </Box>
                 </Tab>
                 <Tab
                   className="tab-color"
                   eventKey="Completed"
-                  title="Completed"
+                  title={
+                    <span class="position-relative">
+                      Completed
+                      <span class=" badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+                        {projectCompleteData.length}
+                      </span>
+                    </span>
+                  }
                 >
                   <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
@@ -380,10 +469,24 @@ export default function AgentProjectList() {
                       pageSizeOptions={[5]}
                       checkboxSelection
                       disableRowSelectionOnClick
+                      localeText={{
+                        noRowsLabel: 'Project Data Is Not Avalible',
+                      }}
                     />
                   </Box>
                 </Tab>
-                <Tab className="tab-color" eventKey="Qued" title="Qued">
+                <Tab
+                  className="tab-color"
+                  eventKey="Qued"
+                  title={
+                    <span className="position-relative">
+                      Qued
+                      <span className="badgesclass top-0 start-112 translate-middle badge rounded-pill bg-danger">
+                        {projectQuedData.length}
+                      </span>
+                    </span>
+                  }
+                >
                   <Box sx={{ height: 400, width: '100%' }}>
                     <DataGrid
                       className={
@@ -429,6 +532,9 @@ export default function AgentProjectList() {
                       pageSizeOptions={[5]}
                       checkboxSelection
                       disableRowSelectionOnClick
+                      localeText={{
+                        noRowsLabel: 'Project Data Is Not Avalible',
+                      }}
                     />
                   </Box>
                 </Tab>

@@ -15,6 +15,7 @@ seedRouter.get('/', async (req, res) => {
         email: el.email,
         password: hashedPassword,
         role: el.role,
+        isConfirmed: true,
       };
     })
   );

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import Validations from '../Components/Validations';
@@ -45,6 +45,11 @@ export default function ResetPasswordScreen() {
       setIsSubmiting(false);
     }
   };
+  useEffect(() => {
+    if (userInfo) {
+      navigate('/dashboard');
+    }
+  }, [userInfo, navigate]);
 
   return (
     <>

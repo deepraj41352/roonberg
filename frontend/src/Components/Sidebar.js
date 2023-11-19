@@ -15,6 +15,7 @@ import { Store } from '../Store';
 import { ImCross } from 'react-icons/im';
 import axios from 'axios';
 import { Form, InputGroup } from 'react-bootstrap';
+import { BiTask } from 'react-icons/bi';
 
 function Sidebar({ sidebarVisible, setSidebarVisible }) {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -73,12 +74,9 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
   }, []);
 
   const signoutHandler = () => {
-    const userConfirm = window.confirm('Are you sure you want to logout?');
-    if (userConfirm) {
-      ctxDispatch({ type: 'USER_SIGNOUT' });
-      localStorage.removeItem('userInfo');
-      window.location.href = '/';
-    }
+    ctxDispatch({ type: 'USER_SIGNOUT' });
+    localStorage.removeItem('userInfo');
+    window.location.href = '/';
   };
   useEffect(() => {
     const handleResize = () => {
@@ -147,7 +145,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
         onClick={handleResponsiveSidebarVisable}
       />
       <ul className="dash-list ">
-        <div className="searchbar1">
+        {/* <div className="searchbar1">
           <Form className="d-flex">
             <InputGroup className="search-bar-dash">
               <Form.Control
@@ -165,7 +163,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
               </InputGroup.Text>
             </InputGroup>
           </Form>
-        </div>
+        </div> */}
         <Link
           to="/dashboard"
           className="text-decoration-none"
@@ -229,6 +227,21 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
               >
                 <MdGroup className="me-3 fs-5" />
                 Contractor
+              </li>
+            </Link>
+            <Link
+              to="/adminContractorList"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
+              <li
+                className={selectedItem === 'contractorList' ? 'selected' : ''}
+                onClick={() => {
+                  setSelectedItem('contractorList');
+                }}
+              >
+                <MdGroup className="me-3 fs-5" />
+                Client
               </li>
             </Link>
             <Link
@@ -314,6 +327,16 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
             </Link>
           </>
         ) : null}
+        <Link
+          to="/tasksScreen"
+          className="text-decoration-none"
+          onClick={handlSmallScreeneClick}
+        >
+          <li>
+            <BiTask className="me-3 fs-5" />
+            Task
+          </li>
+        </Link>
         <Link
           to="/notificationScreen"
           className="text-decoration-none"

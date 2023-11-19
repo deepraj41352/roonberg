@@ -49,8 +49,8 @@ function RegistrationForm() {
         email: email,
         password: password,
       });
-      navigate('/');
-      toast.success(data.message);
+      // navigate('/');
+      toast.success(data.message, { autoClose: 2000 });
     } catch (err) {
       toast.error(err.response?.data?.message);
     } finally {
@@ -60,7 +60,7 @@ function RegistrationForm() {
 
   useEffect(() => {
     if (userInfo) {
-      navigate('/adminDashboard');
+      navigate('/dashboard');
     }
   }, [userInfo, navigate]);
 

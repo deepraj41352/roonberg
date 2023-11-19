@@ -238,9 +238,9 @@ projectRouter.get(
         ],
       });
 
-      if (!projects || projects.length === 0) {
+      if (!projects) {
         res.status(404).json({ message: 'No projects found for this user' });
-        return; // Return early to avoid further execution
+        // return; // Return early to avoid further execution
       }
 
       for (const project of projects) {

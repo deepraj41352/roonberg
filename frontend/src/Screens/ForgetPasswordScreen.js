@@ -1,12 +1,17 @@
-import React, { useState } from "react";
-import Form from "react-bootstrap/Form";
-import { Button, Card, Col, Container, Row } from "react-bootstrap";
-import Validations from "../Components/Validations";
-import { toast } from "react-toastify";
-import axios from "axios";
+import React, { useContext, useEffect, useState } from 'react';
+import Form from 'react-bootstrap/Form';
+import { Button, Card, Col, Container, Row } from 'react-bootstrap';
+import Validations from '../Components/Validations';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { Store } from '../Store';
+import { useNavigate } from 'react-router-dom';
 
 export default function ForgetPassword() {
-  const [email, setEmail] = useState("");
+  const navigate = useNavigate();
+  const { state, dispatch: ctxDispatch } = useContext(Store);
+  const { userInfo, validationMsg } = state;
+  const [email, setEmail] = useState('');
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [submited, setSubmited] = useState(false);
 
@@ -14,7 +19,7 @@ export default function ForgetPassword() {
     e.preventDefault();
     setIsSubmiting(true);
     try {
-      const { data } = await axios.post("/api/user/forget-password", { email });
+      const { data } = await axios.post('/api/user/forget-password', { email });
       toast.success(data.message);
       setSubmited(true);
     } catch (err) {
@@ -23,7 +28,11 @@ export default function ForgetPassword() {
       setIsSubmiting(false);
     }
   };
-
+  useEffect(() => {
+    if (userInfo) {
+      navigate('/adminDashboard');
+    }
+  }, [userInfo, navigate]);
   return !submited ? (
     <Container className=" loginPage d-flex flex-column justify-content-center align-items-center forget-container">
       <Row>
@@ -54,7 +63,7 @@ export default function ForgetPassword() {
                 className="globalbtnColor px-5 py-1"
                 disabled={isSubmiting}
               >
-                {isSubmiting ? "Submiting..." : "Submit"}
+                {isSubmiting ? 'Submiting...' : 'Submit'}
               </Button>
             </Form>
           </Card>
@@ -76,7 +85,7 @@ export default function ForgetPassword() {
               className="globalbtnColor btn-resend px-5 py-1"
               disabled={isSubmiting}
             >
-              {isSubmiting ? "Resending..." : "Resend"}
+              {isSubmiting ? 'Resending...' : 'Resend'}
             </Button>
           </Card>
         </Col>
