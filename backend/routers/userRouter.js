@@ -594,7 +594,7 @@ userRouter.put(
           gender,
           dob,
           address,
-          country
+          country,
         } = req.body;
         const updatedData = {
           first_name: capitalizeFirstLetter(first_name),
@@ -607,7 +607,7 @@ userRouter.put(
           gender,
           dob,
           address,
-          country
+          country,
         };
         const updatedUser = await User.findOneAndUpdate(
           { _id: req.user._id },
@@ -620,7 +620,7 @@ userRouter.put(
           userData,
         });
         const notifyUser = updatedUser._id;
-        const message = Your profile is updated;
+        const message = `Your profile is updated`;
         const status = 'unseen';
         const type = 'User';
         const notify = await storeNotification(
@@ -636,10 +636,9 @@ userRouter.put(
       }
     } catch (error) {
       console.log('Error ', error);
-    }
-  })
+    }
+  })
 );
-
 
 export const uploadDoc = async (req, mediaType) => {
   try {
