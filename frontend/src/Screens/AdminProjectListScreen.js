@@ -310,11 +310,20 @@ export default function AdminProjectListScreen() {
   // const assignedAgent = projectData.filter((item) => {
   //   return item.assignedAgent.length === 0;
   // });
+  console.log('projectData', projectData);
+
+  // const assignedAgent = projectData.filter((item) => {
+  //   return (
+  //     Array.isArray(item.assignedAgent) &&
+  //     item.assignedAgent.length > 0 &&
+  //     item.assignedAgent.every((agent) => !agent?.agentId)
+  //   );
+  // });
   const assignedAgent = projectData.filter((item) => {
     return (
       Array.isArray(item.assignedAgent) &&
       item.assignedAgent.length > 0 &&
-      item.assignedAgent.every((agent) => !agent?.agentId)
+      item.assignedAgent.every((agent) => agent === undefined)
     );
   });
 
@@ -632,6 +641,9 @@ export default function AdminProjectListScreen() {
                       pageSizeOptions={[5]}
                       // checkboxSelection
                       disableRowSelectionOnClick
+                      localeText={{
+                        noRowsLabel: 'Project Data Is Not Avalible',
+                      }}
                     />
                   </Box>
                   <Modal
@@ -920,6 +932,9 @@ export default function AdminProjectListScreen() {
                       pageSizeOptions={[5]}
                       // checkboxSelection
                       disableRowSelectionOnClick
+                      localeText={{
+                        noRowsLabel: 'Project Data Is Not Avalible',
+                      }}
                     />
                   </Box>
                 </Tab>
@@ -983,6 +998,9 @@ export default function AdminProjectListScreen() {
                       pageSizeOptions={[5]}
                       // checkboxSelection
                       disableRowSelectionOnClick
+                      localeText={{
+                        noRowsLabel: 'Project Data Is Not Avalible',
+                      }}
                     />
                   </Box>
                 </Tab>
@@ -1044,6 +1062,9 @@ export default function AdminProjectListScreen() {
                       pageSizeOptions={[5]}
                       checkboxSelection
                       disableRowSelectionOnClick
+                      localeText={{
+                        noRowsLabel: 'Project Data Is Not Avalible',
+                      }}
                     />
                   </Box>
                 </Tab>
@@ -1101,6 +1122,9 @@ export default function AdminProjectListScreen() {
                       pageSizeOptions={[5]}
                       // checkboxSelection
                       disableRowSelectionOnClick
+                      localeText={{
+                        noRowsLabel: 'Project Data Is Not Avalible',
+                      }}
                     />
                   </Box>
                 </Tab>

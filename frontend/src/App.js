@@ -227,7 +227,7 @@ function App() {
                             )}
                           </Link>
                           {/* <Link to="/projectNotification">Notification</Link> */}
-                          <Link to="#">Setting</Link>
+                          {/* <Link to="#">Setting</Link> */}
                           <hr />
                           <Link onClick={signoutHandler} to="#">
                             Logout

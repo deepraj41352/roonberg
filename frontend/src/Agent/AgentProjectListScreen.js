@@ -530,7 +530,7 @@ export default function AgentProjectList() {
                         },
                       }}
                       pageSizeOptions={[5]}
-                      checkboxSelection
+                      // checkboxSelection
                       disableRowSelectionOnClick
                       localeText={{
                         noRowsLabel: 'Project Data Is Not Avalible',

@@ -131,6 +131,11 @@ code {
   margin: 20px;
   border-radius: 5px;
 }
+.FormContainerEdit2 {
+  /* background-color: white; */
+  margin: 20px;
+  border-radius: 5px;
+}
 .cateAgentcontainer {
   border: 1px solid rgb(194, 194, 194);
   border-radius: 5px;
@@ -940,6 +945,7 @@ body {
   max-width: 600px;
   overflow: hidden;
   word-wrap: break-word;
+  color: black;
 }
 .richEditor .DraftEditor-root {
   overflow-y: scroll;
@@ -1325,8 +1331,6 @@ body {
 .projetStatusChat {
   margin-top: 18px !important;
   text-align: left;
-  background: #070719;
-  color: #fff;
   padding: 10px;
   border-radius: 5px;
 }
@@ -1405,6 +1409,14 @@ main.windowCal {
 }
 
 /* Priyanshu ...........*/
+.darkchat-info-inner {
+  background-color: #fff !important;
+  color: #0e0e3d !important;
+}
+.lightchat-info-inner {
+  background-color: #0e0e3d !important;
+  color: white !important;
+}
 .darkchatHead {
   background-color: #0e0e3d !important;
 }
@@ -1441,7 +1453,59 @@ main.windowCal {
   color: white !important;
   background-color: #0d0d32 !important;
 }
+.dark-user-profile-field fieldset {
+  border-color: white !important;
+}
+.dark-user-profile-field {
+  color: white !important;
+}
+.dark-user-profile-field div {
+  color: white !important;
+}
+.dark-user-profile-field label {
+  color: white !important;
+  background-color: #0d0d32 !important;
+}
+.light-user-profile-field-dob fieldset {
+  border-color: #c4c4c4 !important;
+}
+.light-user-profile-field-dob {
+  color: #c4c4c4 !important;
+}
 
+.light-user-profile-field-dob div {
+  color: black !important;
+}
+.light-user-profile-field-dob label,
+.light-user-profile-field-dob
+  svg.MuiSvgIcon-root.MuiSvgIcon-fontSizeMedium.css-i4bv87-MuiSvgIcon-root {
+  color: #757575 !important;
+  background-color: white !important;
+}
+.profile-email-input input {
+  -webkit-text-fill-color: #a9a5a5 !important;
+}
+.mbDate .css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root {
+  margin-bottom: 0px !important;
+}
+.dark-user-profile-field
+  svg.MuiSvgIcon-root.MuiSvgIcon-fontSizeMedium.css-i4bv87-MuiSvgIcon-root,
+.dark-user-profile-field
+  svg.MuiSvgIcon-root.MuiSvgIcon-fontSizeMedium.MuiSelect-icon.MuiSelect-iconOutlined.css-hfutr2-MuiSvgIcon-root-MuiSelect-icon {
+  color: #fff !important;
+}
+.light-globalbtnColor {
+  color: #ffffff !important;
+  background-color: RGB(14, 14, 61) !important;
+  font-weight: 700 !important;
+  border: none !important;
+}
+.dark-globalbtnColor {
+  color: RGB(14, 14, 61) !important;
+  background-color: #fff !important;
+  font-weight: 700 !important;
+  border: none !important;
+}
 /* gyatri ji ............... */
 .profileContainer {
   min-width: 600px;

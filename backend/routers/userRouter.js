@@ -749,7 +749,7 @@ userRouter.post(
       }
 
       const { password, ...other } = userinfo._doc;
-      res.status(201).send({ message: 'User created successfully', other });
+      res.status(200).send({ message: 'User created successfully', other });
     } catch (error) {
       console.error(error);
       res

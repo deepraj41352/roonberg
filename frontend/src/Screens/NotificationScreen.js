@@ -9,6 +9,8 @@ import { ThreeDots } from 'react-loader-spinner';
 export default function NotificationScreen() {
   const [notificationMessage, setNotificationMessage] = useState([]);
   const [notificationMark, setNotificationMark] = useState('');
+  const [loading, setloading] = useState(true);
+
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
   const theme = toggleState ? 'dark' : 'light';
@@ -65,6 +67,7 @@ export default function NotificationScreen() {
     const fetchNotificationData = async () => {
       ctxDispatch({ type: 'NOTIFICATION-NULL' });
       try {
+        setloading(true);
         const response = await axios.get(`/api/notification/${userInfo._id}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
@@ -78,6 +81,8 @@ export default function NotificationScreen() {
         });
       } catch (error) {
         console.error('Error fetching notification data:', error);
+      } finally {
+        setloading(false);
       }
     };
 
@@ -85,6 +90,7 @@ export default function NotificationScreen() {
   }, [userInfo._id, notificationMark]);
 
   const handleUpdateStatus = async (e) => {
+    setloading(true);
     try {
       const data = await axios.put(
         `/api/notification/updateStatus/${e.target.value}`,
@@ -96,42 +102,62 @@ export default function NotificationScreen() {
       setNotificationMark(data);
     } catch (err) {
       console.log(err);
+    } finally {
+      setloading(false);
     }
   };
 
   return (
     <>
-      {currentNotifications ? (
+      {loading ? (
         <>
-          <div className="container mt-5">
-            <div className="row">
-              <div className="col">
-                <h2 className="mb-3">Notifications</h2>
-                <ul className="list-group custom-list">
-                  {currentNotifications.map((item, index) => (
-                    <li
-                      key={index}
-                      className={`list-group-item custom-list-item ${
-                        item.status === 'seen'
-                          ? `list-group-item-seen-${theme}`
-                          : `list-group-item-unseen-${theme}`
-                      }`}
-                    >
-                      <div className="NotificationMsg">{item.message}</div>
-                      <button
-                        className={`MarkAsRead-${theme}`}
-                        style={{
-                          display: item.status == 'seen' ? 'none' : 'block',
-                        }}
-                        value={item._id}
-                        onClick={handleUpdateStatus}
-                      >
-                        Mark as read
-                      </button>{' '}
-                    </li>
-                  ))}
-                </ul>
-                {/* <nav>
+          <div className="ThreeDot">
+            <ThreeDots
+              height="80"
+              width="80"
+              radius="9"
+              className="ThreeDot justify-content-center"
+              color="#0e0e3d"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClassName=""
+              visible={true}
+            />
+          </div>
+        </>
+      ) : (
+        <>
+          {currentNotifications ? (
+            <>
+              <div className="container mt-5">
+                <div className="row">
+                  <div className="col">
+                    <h2 className="mb-3">Notifications</h2>
+                    <ul className="list-group custom-list">
+                      {currentNotifications.map((item, index) => (
+                        <li
+                          key={index}
+                          className={`list-group-item custom-list-item ${
+                            item.status === 'seen'
+                              ? `list-group-item-seen-${theme}`
+                              : `list-group-item-unseen-${theme}`
+                          }`}
+                        >
+                          <div className="NotificationMsg">{item.message}</div>
+                          <button
+                            className={`MarkAsRead-${theme}`}
+                            style={{
+                              display: item.status == 'seen' ? 'none' : 'block',
+                            }}
+                            value={item._id}
+                            onClick={handleUpdateStatus}
+                          >
+                            Mark as read
+                          </button>{' '}
+                        </li>
+                      ))}
+                    </ul>
+                    {/* <nav>
                   <ul className="pagination justify-content-center">
                     <li
                       className={`page-item ${
@@ -176,76 +202,78 @@ export default function NotificationScreen() {
                     </li>
                   </ul>
                 </nav> */}
-                {reversedNotifications.length > 7 && (
-                  <nav>
-                    <ul className="pagination justify-content-center">
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? 'disabled' : ''
-                        }`}
-                      >
-                        <button
-                          className="page-link"
-                          onClick={() => handlePageChange(currentPage - 1)}
-                        >
-                          Previous
-                        </button>
-                      </li>
-                      {pageNumbers
-                        .slice(
-                          currentPage - 1,
-                          currentPage - 1 + maxPageNumbers
-                        )
-                        .map((number) => (
+                    {reversedNotifications.length > 7 && (
+                      <nav>
+                        <ul className="pagination justify-content-center">
                           <li
-                            key={number}
                             className={`page-item ${
-                              currentPage === number ? 'active' : ''
+                              currentPage === 1 ? 'disabled' : ''
                             }`}
                           >
                             <button
-                              onClick={() => handlePageChange(number)}
                               className="page-link"
+                              onClick={() => handlePageChange(currentPage - 1)}
                             >
-                              {number}
+                              Previous
                             </button>
                           </li>
-                        ))}
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? 'disabled' : ''
-                        }`}
-                      >
-                        <button
-                          className="page-link"
-                          onClick={() => handlePageChange(currentPage + 1)}
-                        >
-                          Next
-                        </button>
-                      </li>
-                    </ul>
-                  </nav>
-                )}
+                          {pageNumbers
+                            .slice(
+                              currentPage - 1,
+                              currentPage - 1 + maxPageNumbers
+                            )
+                            .map((number) => (
+                              <li
+                                key={number}
+                                className={`page-item ${
+                                  currentPage === number ? 'active' : ''
+                                }`}
+                              >
+                                <button
+                                  onClick={() => handlePageChange(number)}
+                                  className="page-link"
+                                >
+                                  {number}
+                                </button>
+                              </li>
+                            ))}
+                          <li
+                            className={`page-item ${
+                              currentPage === totalPages ? 'disabled' : ''
+                            }`}
+                          >
+                            <button
+                              className="page-link"
+                              onClick={() => handlePageChange(currentPage + 1)}
+                            >
+                              Next
+                            </button>
+                          </li>
+                        </ul>
+                      </nav>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </>
-      ) : (
-        <>
-          {' '}
-          <div className="d-flex mt-3 justify-content-center">
-            <ThreeDots
-              height="50"
-              width="50"
-              radius="9"
-              className="ThreeDot  justify-content-center"
-              color="#0e0e3d"
-              ariaLabel="three-dots-loading"
-              wrapperStyle={{}}
-              wrapperClassName=""
-              visible={true}
-            />
-          </div>
+            </>
+          ) : (
+            <>
+              {' '}
+              <div className="d-flex mt-3 justify-content-center">
+                <ThreeDots
+                  height="50"
+                  width="50"
+                  radius="9"
+                  className="ThreeDot  justify-content-center"
+                  color="#0e0e3d"
+                  ariaLabel="three-dots-loading"
+                  wrapperStyle={{}}
+                  wrapperClassName=""
+                  visible={true}
+                />
+              </div>
+            </>
+          )}
         </>
       )}
     </>

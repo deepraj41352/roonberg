@@ -684,7 +684,7 @@ function ChatWindowScreen() {
           ) : (
             ''
           )}
-          <CardBody className={`chatWindowBody ${theme}chatBody pb-0`}>
+          <CardBody className={`chatWindowBody ${theme}chatBody pb-0`}>
             {chatMessages.map((item) => (
               <>
                 {userInfo._id == item.sender ? (
@@ -957,7 +957,7 @@ function ChatWindowScreen() {
                     <Audio
                       height="25"
                       width="25"
-                      color="#07162c"
+                      color={theme == 'dark' ? 'white' : '#07162c'}
                       ariaLabel="audio-loading"
                       wrapperStyle={{}}
                       wrapperClass="wrapper-class"
@@ -998,7 +998,9 @@ function ChatWindowScreen() {
         <Card className={`chatWindowProjectInfo ${theme}chatInfo`}>
           {projectData ? (
             <Form className="px-3">
-              <Form.Group className="mb-3 projetStatusChat">
+              <Form.Group
+                className={`mb-3 projetStatusChat ${theme}chat-info-inner`}
+              >
                 {/* <Form.Label className="fw-bold">Project Name</Form.Label>
                 <Form.Control
                   type="text"
@@ -1052,7 +1054,7 @@ function ChatWindowScreen() {
                 width="50"
                 radius="9"
                 className="ThreeDot  justify-content-center"
-                color="#0e0e3d"
+                color={theme == 'dark' ? 'white' : '#0e0e3d'}
                 ariaLabel="three-dots-loading"
                 wrapperStyle={{}}
                 wrapperClassName=""

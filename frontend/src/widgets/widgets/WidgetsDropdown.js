@@ -116,83 +116,85 @@ const WidgetsDropdown = React.memo(() => {
       ) : (
         <>
           <CRow>
-            <CCol sm={6} lg={3}>
-              <CWidgetStatsA
-                className="mb-4"
-                color="primary"
-                value={
-                  <>
-                    {admin.length <= 0 ? `0` : admin.length}
-                    {/* <span className="fs-6 fw-normal">
+            {userInfo.role == 'superadmin' && (
+              <CCol sm={6} lg={3}>
+                <CWidgetStatsA
+                  className="mb-4"
+                  color="primary"
+                  value={
+                    <>
+                      {admin.length <= 0 ? `0` : admin.length}
+                      {/* <span className="fs-6 fw-normal">
                (-12.4% <CIcon icon={cilArrowBottom} />)
              </span> */}
-                  </>
-                }
-                title="Total Admin"
-                chart={
-                  <CChartLine
-                    className="mt-3 mx-3"
-                    style={{ height: '70px' }}
-                    data={{
-                      labels: adminDates.map((date) =>
-                        new Date(date).toLocaleDateString()
-                      ),
-                      datasets: [
-                        {
-                          label: 'Registered On',
-                          backgroundColor: 'transparent',
-                          borderColor: 'rgba(255,255,255,.55)',
-                          pointBackgroundColor: getStyle('--cui-primary'),
-                          data: ['18', '59', '84', '84', '51', '55', '40'],
-                        },
-                      ],
-                    }}
-                    options={{
-                      plugins: {
-                        legend: {
-                          display: false,
-                        },
-                      },
-                      maintainAspectRatio: false,
-                      scales: {
-                        x: {
-                          grid: {
-                            display: false,
-                            drawBorder: false,
+                    </>
+                  }
+                  title="Total Admin"
+                  chart={
+                    <CChartLine
+                      className="mt-3 mx-3"
+                      style={{ height: '70px' }}
+                      data={{
+                        labels: adminDates.map((date) =>
+                          new Date(date).toLocaleDateString()
+                        ),
+                        datasets: [
+                          {
+                            label: 'Registered On',
+                            backgroundColor: 'transparent',
+                            borderColor: 'rgba(255,255,255,.55)',
+                            pointBackgroundColor: getStyle('--cui-primary'),
+                            data: ['18', '59', '84', '84', '51', '55', '40'],
                           },
-                          ticks: {
+                        ],
+                      }}
+                      options={{
+                        plugins: {
+                          legend: {
                             display: false,
                           },
                         },
-                        y: {
-                          min: 10,
-                          max: 89,
-                          display: false,
-                          grid: {
-                            display: false,
+                        maintainAspectRatio: false,
+                        scales: {
+                          x: {
+                            grid: {
+                              display: false,
+                              drawBorder: false,
+                            },
+                            ticks: {
+                              display: false,
+                            },
                           },
-                          ticks: {
+                          y: {
+                            min: 10,
+                            max: 89,
                             display: false,
+                            grid: {
+                              display: false,
+                            },
+                            ticks: {
+                              display: false,
+                            },
                           },
                         },
-                      },
-                      elements: {
-                        line: {
-                          borderWidth: 1,
-                          tension: 0.4,
+                        elements: {
+                          line: {
+                            borderWidth: 1,
+                            tension: 0.4,
+                          },
+                          point: {
+                            radius: 4,
+                            hitRadius: 10,
+                            hoverRadius: 4,
+                          },
                         },
-                        point: {
-                          radius: 4,
-                          hitRadius: 10,
-                          hoverRadius: 4,
-                        },
-                      },
-                    }}
-                  />
-                }
-              />
-            </CCol>
-            <CCol sm={6} lg={3}>
+                      }}
+                    />
+                  }
+                />
+              </CCol>
+            )}
+            <CCol sm={6} lg={userInfo.role == 'superadmin' ? 3 : 4}>
               <CWidgetStatsA
                 className="mb-4"
                 color="info"
@@ -266,7 +268,7 @@ const WidgetsDropdown = React.memo(() => {
                 }
               />
             </CCol>
-            <CCol sm={6} lg={3}>
+            <CCol sm={6} lg={userInfo.role == 'superadmin' ? 3 : 4}>
               <CWidgetStatsA
                 className="mb-4"
                 color="warning"
@@ -327,7 +329,7 @@ const WidgetsDropdown = React.memo(() => {
                 }
               />
             </CCol>
-            <CCol sm={6} lg={3}>
+            <CCol sm={6} lg={userInfo.role == 'superadmin' ? 3 : 4}>
               <CWidgetStatsA
                 className="mb-4"
                 color="danger"

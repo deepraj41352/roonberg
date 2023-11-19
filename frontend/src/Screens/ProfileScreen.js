@@ -296,7 +296,7 @@ function ProfileScreen() {
           <Col>
             <div className="overlayLoading profileContainer">
               <Card className={`${theme}CardBody editCartForm`}>
-                <div className="FormContainerEdit">
+                <div className="FormContainerEdit2">
                   {isSubmiting && (
                     <div className="overlayLoadingItem1">
                       <ColorRing
@@ -366,6 +366,7 @@ function ProfileScreen() {
                     </div>
                     <div className="d-flex align-items-center gap-2 my-3">
                       <TextField
+                        className={`${theme}-user-profile-field`}
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         label="First Name"
@@ -374,36 +375,40 @@ function ProfileScreen() {
                       />
 
                       <TextField
+                        className={`${theme}-user-profile-field`}
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                         label="Last Name"
                         fullWidth
                       />
                     </div>
-
-                    <TextField
-                      className="mb-3"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      label="Email"
-                      type="email"
-                      fullWidth
-                      disabled
-                    />
-
-                    <TextField
-                      className="mb-3"
-                      value={mobileNum}
-                      onChange={(e) => setMobileNum(e.target.value)}
-                      label="Contact Number"
-                      fullWidth
-                      type="text"
-                    />
-                    <Validations type="text" value={mobileNum} />
+                    <div className="my-3">
+                      <TextField
+                        className={`${theme}-user-profile-field profile-email-input`}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        label="Email"
+                        type="email"
+                        fullWidth
+                        disabled
+                      />
+                    </div>
+                    <div className="my-3">
+                      <TextField
+                        className={`${theme}-user-profile-field`}
+                        value={mobileNum}
+                        onChange={(e) => setMobileNum(e.target.value)}
+                        label="Contact Number"
+                        fullWidth
+                        type="text"
+                      />
+                      <Validations type="text" value={mobileNum} />
+                    </div>
                     <div className="d-flex align-items-center gap-2 mb-3">
-                      <FormControl>
+                      <FormControl className={`${theme}-user-profile-field`}>
                         <InputLabel>Gender</InputLabel>
                         <Select
+                          className={`m-0 text-start ${theme}-user-profile-field`}
                           value={gender}
                           onChange={(e) => setGender(e.target.value)}
                         >
@@ -421,10 +426,12 @@ function ProfileScreen() {
                         />
                       </LocalizationProvider> */}
                       <LocalizationProvider dateAdapter={AdapterDateFns}>
-                        <div className="d-flex flex-column">
+                        <div
+                          className={`m-0 d-flex flex-column mbDate ${theme}-user-profile-field  ${theme}-user-profile-field-dob`}
+                        >
                           <DatePicker
-                            // className="marginDate"
                             label="Date Of Birth"
+                            className="m-0 "
                             value={dob}
                             required
                             error={false}
@@ -441,32 +448,36 @@ function ProfileScreen() {
                         fullWidth
                       /> */}
                     </div>
-
-                    <TextField
-                      className="mb-3"
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                      label="Address"
-                      fullWidth
-                    />
-                    <FormControl>
-                      <InputLabel>Country</InputLabel>
-                      <Select
-                        className="text-start"
-                        value={country}
-                        onChange={(e) => setCountry(e.target.value)}
+                    <div className="my-3">
+                      <TextField
+                        className={`${theme}-user-profile-field`}
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        label="Address"
+                        fullWidth
+                      />
+                    </div>
+                    <div className="my-3">
+                      <FormControl
+                        className={`text-start ${theme}-user-profile-field`}
                       >
-                        {countrylist.map((countryName) => (
-                          <MenuItem key={countryName} value={countryName}>
-                            {countryName}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-
+                        <InputLabel>Country</InputLabel>
+                        <Select
+                          // className=""
+                          value={country}
+                          onChange={(e) => setCountry(e.target.value)}
+                        >
+                          {countrylist.map((countryName) => (
+                            <MenuItem key={countryName} value={countryName}>
+                              {countryName}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </div>
                     <div className="d-flex justify-content-start mt-4">
                       <Button
-                        className=" py-1  globalbtnColor"
+                        className={`py-1  ${theme}-globalbtnColor`}
                         variant="primary"
                         type="submit"
                         disabled={isSubmiting}

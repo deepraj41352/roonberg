@@ -12,7 +12,7 @@ categoryRouter.get(
   '/',
   expressAsyncHandler(async (req, res) => {
     try {
-      const category = await Category.find();
+      const category = await Category.find().sort({ createdAt: -1 });
       res.json(category);
     } catch (error) {
       console.error(error);

@@ -49,8 +49,13 @@ function RegistrationForm() {
         email: email,
         password: password,
       });
-      // navigate('/');
+      navigate('/');
       toast.success(data.message, { autoClose: 2000 });
+      setFirstName('');
+      setLastName('');
+      setEmail('');
+      setPassword('');
+      setConfirmPassword('');
     } catch (err) {
       toast.error(err.response?.data?.message);
     } finally {
@@ -149,7 +154,7 @@ function RegistrationForm() {
                   type="submit"
                   disabled={isSubmiting}
                 >
-                  {isSubmiting ? 'Submiting...' : 'Submit'}
+                  {isSubmiting ? 'SUBMITING...' : 'SUBMIT'}
                 </Button>
                 <Form.Group className="my-3">
                   <Link to="/" className="forgotPass">
