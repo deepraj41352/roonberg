@@ -117,8 +117,8 @@ function SuperadminEditAdmin() {
           <Row>
             <Col>
               <div className="overlayLoading">
-                <Card className={`${theme}CardBody`}>
-                  <div className="FormContainerEdit">
+                <Card className={`${theme}CardBody editCartForm`}>
+                  <div className="FormContainerEdit2">
                     <>
                       {isSubmiting && (
                         <div className="overlayLoadingItem1">
@@ -142,7 +142,7 @@ function SuperadminEditAdmin() {
                         className="p-4 w-100 editFormWidth "
                       >
                         <TextField
-                          className="mb-3"
+                          className={`${theme}-user-profile-field mb-3`}
                           value={firstName}
                           onChange={(e) => setFirstName(e.target.value)}
                           label="First Name"
@@ -150,14 +150,14 @@ function SuperadminEditAdmin() {
                           required
                         />
                         <TextField
-                          className="mb-3"
+                          className={`${theme}-user-profile-field mb-3`}
                           value={lastName}
                           onChange={(e) => setLastName(e.target.value)}
                           label="Last Name"
                           fullWidth
                         />
                         <TextField
-                          className="mb-3"
+                          className={`${theme}-user-profile-field mb-3 profile-email-input`}
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           label="Email"
@@ -165,9 +165,12 @@ function SuperadminEditAdmin() {
                           fullWidth
                           disabled
                         />
-                        <FormControl className="mb-3 selectStart">
+                        <FormControl
+                          className={`${theme}-user-profile-field mb-3`}
+                        >
                           <InputLabel>Select Status</InputLabel>
                           <Select
+                            className={`m-0 text-start ${theme}-user-profile-field`}
                             value={status}
                             onChange={(e) => setStatus(e.target.value)}
                             required
@@ -179,7 +182,7 @@ function SuperadminEditAdmin() {
 
                         <div className="d-flex justify-content-left mt-4">
                           <Button
-                            className=" py-1 w-25 globalbtnColor editFormBtn"
+                            className={`py-1  ${theme}-globalbtnColor`}
                             variant="primary"
                             type="submit"
                             disabled={isSubmiting}

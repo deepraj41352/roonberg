@@ -156,7 +156,7 @@ function AdminEditCategory() {
             <Col>
               <div className="overlayLoading">
                 <Card className={`${theme}CardBody`}>
-                  <div className="FormContainerEdit">
+                  <div className="FormContainerEdit2">
                     {isSubmiting && (
                       <div className="overlayLoadingItem1">
                         <ColorRing
@@ -219,7 +219,7 @@ function AdminEditCategory() {
                       </Row>
 
                       <TextField
-                        className="my-3"
+                        className={`${theme}-user-profile-field mb-3 mt-4`}
                         value={category}
                         label="Category Name"
                         fullWidth
@@ -230,15 +230,18 @@ function AdminEditCategory() {
                         }}
                       />
                       <TextField
-                        className="mb-3"
+                        className={`${theme}-user-profile-field mb-3`}
                         value={categoryDesc}
                         label="Add Description"
                         fullWidth
                         onChange={(e) => setCatogryDesc(e.target.value)}
                       />
-                      <FormControl className="mb-3 selectStart">
+                      <FormControl
+                        className={`${theme}-user-profile-field mb-3`}
+                      >
                         <InputLabel>Select Status</InputLabel>
                         <Select
+                          className={`m-0 text-start ${theme}-user-profile-field`}
                           value={status}
                           onChange={(e) => setStatus(e.target.value)}
                           required
@@ -249,7 +252,7 @@ function AdminEditCategory() {
                       </FormControl>
                       <div className="d-flex justify-content-start mt-4">
                         <Button
-                          className=" py-1 w-25 globalbtnColor updatingBtn"
+                          className={`py-1  ${theme}-globalbtnColor`}
                           variant="primary"
                           type="submit"
                           disabled={isSubmiting}
