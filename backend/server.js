@@ -19,6 +19,7 @@ import http from 'http';
 import fs from 'fs';
 import { Server } from 'socket.io';
 import { uploadDoc } from './routers/userRouter.js';
+import TaskRouter from './routers/TaskRouter.js';
 
 dotenv.config();
 mongoose
@@ -74,6 +75,7 @@ app.use('/api/category', categoryRouter);
 app.use('/api/conversation', conversationRouter);
 app.use('/api/message', MessageRouter);
 app.use('/api/notification', NotificationRouter);
+app.use('/api/task', TaskRouter);
 
 app.get('/api', (req, res) => {
   res.send('Welcome to Roonberg World');
@@ -160,7 +162,7 @@ const getUser = (userId) => {
 };
 
 io.on('connection', (socket) => {
-  console.log('a user connected.');
+  // console.log('a user connected.');
   socket.on('message', (role) => {
     console.log('OnMessage', role);
 

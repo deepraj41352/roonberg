@@ -1,24 +1,34 @@
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
-import { Grid } from '@mui/material';
+import {
+  Avatar,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from '@mui/material';
+import { ImCross } from 'react-icons/im';
 
 import Modal from '@mui/material/Modal';
-import { Dropdown } from 'react-bootstrap';
+import { Dropdown, Form } from 'react-bootstrap';
 import { BiPlusMedical } from 'react-icons/bi';
 import { Store } from '../Store';
-
 import Tab from 'react-bootstrap/Tab';
 import { ColorRing, ThreeDots } from 'react-loader-spinner';
 import Tabs from 'react-bootstrap/Tabs';
-
+import { MdAddCircleOutline, MdRemoveCircleOutline } from 'react-icons/md';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useContext, useReducer, useState } from 'react';
+import { useContext, useEffect, useReducer, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import datas from '../dummyData';
 import { FaRegClock } from 'react-icons/fa';
-import Avatar from '../Components/Avatar';
+import AvatarImage from '../Components/Avatar';
 import { CiSettings } from 'react-icons/ci';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -65,45 +75,48 @@ const columns = [
         return color;
       }
 
-      const name = params.row.projectName[0].toLowerCase();
+      const name = params.row.taskName[0].toLowerCase();
       const color = generateColorFromAscii(name);
       return (
         <>
           {/* {params.row.categoryImage !== 'null' ? (
             <Avatar src={params.row.categoryImage} />
           ) : ( */}
-          <Avatar name={name} bgColor={color} />
+          <AvatarImage name={name} bgColor={color} />
           {/* )} */}
         </>
       );
     },
   },
   {
-    field: 'projectName',
+    field: 'taskName',
+    headerName: 'Task Name',
     width: 300,
     renderCell: (params) => (
       <div className="text-start">
-        <div>{params.row.projectName}</div>
+        <div>{params.row.taskName}</div>
         <div>Task ID {params.row._id}</div>
       </div>
     ),
   },
   {
-    field: 'agentName',
+    field: 'userName',
+    headerName: 'Contractor Name',
     width: 100,
     renderCell: (params) => (
       <div className="text-start">
-        <div>{params.row.agentName}</div>
+        <div>{params.row.userName}</div>
         <div>Raised By</div>
       </div>
     ),
   },
   {
-    field: 'contractorName',
+    field: 'agentName',
+    headerName: 'Agent Name',
     width: 100,
     renderCell: (params) => (
       <div className="text-start">
-        <div>{params.row.contractorName}</div>
+        <div>{params.row.agentName}</div>
         <div>Assigned By</div>
       </div>
     ),
@@ -120,34 +133,35 @@ export default function TasksScreen() {
   const theme = toggleState ? 'dark' : 'light';
   const [
     {
-      loading,
+      // loading,
       error,
       projectData,
       successDelete,
       successUpdate,
-      categoryData,
+      // categoryData,
       agentData,
       contractorData,
     },
     dispatch,
   ] = useReducer(reducer, {
-    loading: false,
+    // loading: false,
     error: '',
     projectData: [],
     successDelete: false,
     successUpdate: false,
-    categoryData: [],
+    // categoryData: [],
     contractorData: [],
     agentData: [],
   });
 
   const [projectName, setProjectName] = useState('');
-  const [projectDescription, setProjectDescription] = useState('');
-  const [projectOwner, setProjectOwner] = useState('');
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [startDateError, setStartDateError] = useState('');
-  const [endDateError, setEndDateError] = useState('');
+  const [SelectProjectName, setSelectProjectName] = useState('');
+  const [taskName, setTaskName] = useState('');
+  const [taskDesc, setTaskDesc] = useState('');
+  const [category, setCategory] = useState('');
+  const [categoryData, setCategoryData] = useState([]);
+  const [ProjectData, setProjectData] = useState([]);
+
   const navigate = useNavigate();
   const [errorAccured, setErrorAccured] = useState(false);
   const [agents, setAgents] = useState([{ categoryId: '' }]);
@@ -155,15 +169,27 @@ export default function TasksScreen() {
   const [projectStatus, setProjectStatus] = useState('active');
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedTab, setSelectedTab] = useState('Active Task');
-  const [selectedProjects, setSelectedProjects] = useState('Projects');
-  const [data, SetData] = useState(datas.projectList);
-  console.log(data);
+  const [selectedProjects, setSelectedProjects] = useState('All');
+  const [selectedProjectsId, setSelectedProjectsId] = useState();
+  const [dynamicfield, setDynamicfield] = useState(false);
+  const [success, setSuccess] = useState(false);
 
+  const [data, SetData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const handleAddNewProject = () => {
+    setDynamicfield(true);
+  };
+  const removeDymanic = () => {
+    setDynamicfield(false);
+  };
   const handleTabSelect = (tab) => {
     setSelectedTab(tab);
   };
-  const handleProjectsSelect = (Projects) => {
+
+  const handleProjectsSelect = (id, Projects) => {
     setSelectedProjects(Projects);
+    setSelectedProjectsId(id);
   };
   const handleEdit = (userid) => {
     navigate(`/adminEditProject/${userid}`);
@@ -171,16 +197,111 @@ export default function TasksScreen() {
   const handleCloseRow = () => {
     setIsModelOpen(false);
   };
-  const handleRedirectToContractorScreen = () => {
-    navigate('/adminContractorList');
+  const handleNew = () => {
+    setIsModelOpen(true);
   };
+
+  useEffect(() => {
+    setLoading(true);
+    const FatchcategoryData = async () => {
+      try {
+        const { data } = await axios.get(`/api/task/tasks`);
+        SetData(data);
+      } catch (error) {
+        toast.error(error.data?.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    FatchcategoryData();
+  }, [success]);
+
+  useEffect(() => {
+    setLoading(true);
+    const FatchCategory = async () => {
+      try {
+        const response = await axios.get(`/api/category/`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        const datas = response.data;
+        setCategoryData(datas);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    FatchCategory();
+  }, []);
+
+  useEffect(() => {
+    setLoading(true);
+    const FatchProject = async () => {
+      try {
+        const { data } = await axios.get(`/api/task`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        setProjectData(data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    FatchProject();
+  }, [success]);
+
+  const taskData = data.filter((item) => {
+    if (selectedProjects == 'All') {
+      return item;
+    } else {
+      return item.projectId === selectedProjectsId;
+    }
+  });
+  const ActiveData = taskData.filter((item) => {
+    return item.taskStatus === 'active' || item.taskStatus === 'waiting';
+  });
+  const CompleteData = taskData.filter((item) => {
+    return item.taskStatus === 'completed';
+  });
+  const PendingData = taskData.filter((item) => {
+    return item.taskStatus === 'pending';
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log('Done');
+      setIsSubmiting(true);
+      const data = await axios.post(
+        `/api/task`,
+        {
+          selectProjectName: SelectProjectName,
+          projectName: projectName,
+          taskName: taskName,
+          taskDescription: taskDesc,
+          taskCategory: category,
+        },
+        {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+      console.log('data', data.message);
+      if (data.status === 201 || data.status === 200) {
+        setSuccess(true);
+        toast.success(data.message);
+        setIsSubmiting(false);
+        setIsModelOpen(false);
+        setProjectName('');
+        setTaskName('');
+        setTaskDesc('');
+        setCategory('');
+        setSelectProjectName('');
+      }
     } catch (error) {
-      console.log('ERROR');
+      toast.error(error.message);
+      setIsSubmiting(false);
+      setIsModelOpen(false);
     }
   };
   return (
@@ -189,22 +310,33 @@ export default function TasksScreen() {
         <Button
           variant="outlined"
           className="my-2 d-flex globalbtnColor"
-          //   onClick={handleNew}
+          onClick={handleNew}
         >
           <BiPlusMedical className="mx-2" />
           Add Task
         </Button>
         <Dropdown className={`mb-0 tab-btn text-start `}>
-          <Dropdown.Toggle id="dropdown-tabs" className="globalbtnColor">
+          <Dropdown.Toggle
+            id="dropdown-tabs"
+            className="my-2 globalbtnColor selectButton"
+          >
             {selectedProjects}
           </Dropdown.Toggle>
 
           <Dropdown.Menu className="dropMenu ">
-            {data.map((project) => (
+            <Dropdown.Item
+              className="dropMenuCon"
+              onClick={() => handleProjectsSelect('', 'All')}
+            >
+              All
+            </Dropdown.Item>
+            {ProjectData.map((project, key) => (
               <Dropdown.Item
-                key={project.id} // Don't forget to add a unique key for each item
+                key={project._id} // Make sure to use a unique key for each item
                 className="dropMenuCon"
-                onClick={() => handleProjectsSelect(`${project.projectName}`)}
+                onClick={() =>
+                  handleProjectsSelect(project._id, project.projectName)
+                }
               >
                 <span className="position-relative">{project.projectName}</span>
               </Dropdown.Item>
@@ -294,37 +426,36 @@ export default function TasksScreen() {
                     </div>
                     <Box sx={{ height: 400, width: '100%' }}>
                       <DataGrid
-                        // className={
-                        //   theme == 'light'
-                        //     ? `${theme}DataGrid`
-                        //     : `tableBg ${theme}DataGrid`
-                        // }
                         className="tableGrid actionCenter"
-                        rows={data}
+                        rows={ActiveData}
                         columns={[
                           ...columns,
                           {
                             field: 'action',
                             headerName: 'Action',
-                            width: 160,
+                            width: 200,
                             renderCell: (params) => {
                               return (
                                 <Grid item xs={8}>
                                   <Button
                                     variant="contained"
-                                    className="tableInProgressBtn"
-                                    onClick={() => handleEdit(params.row._id)}
+                                    className={
+                                      params.row.taskStatus === 'active'
+                                        ? 'tableInProgressBtn'
+                                        : 'tableInwaitingBtn'
+                                    }
+                                    // onClick={() => handleEdit(params.row._id)}
                                   >
-                                    <CiSettings className="px-2" /> In Progress
+                                    <CiSettings className="clockIcon" />
+                                    {params.row.taskStatus === 'waiting'
+                                      ? 'Waiting On You'
+                                      : params.row.taskStatus === 'active'
+                                      ? 'In Progress'
+                                      : params.row.taskStatus === 'completed'
+                                      ? 'Completed'
+                                      : params.row.taskStatus ===
+                                        'pending'('Ready To Completed')}
                                   </Button>
-
-                                  {/* <Button
-                                  variant="outlined"
-                                  className="mx-2 tableDeletebtn"
-                                  onClick={() => deleteHandle(params.row._id)}
-                                >
-                                  Delete
-                                </Button> */}
                                 </Grid>
                               );
                             },
@@ -341,6 +472,9 @@ export default function TasksScreen() {
                         pageSizeOptions={[5]}
                         checkboxSelection
                         disableRowSelectionOnClick
+                        localeText={{
+                          noRowsLabel: 'Task Is Not Avalible',
+                        }}
                       />
                     </Box>
                     <Modal
@@ -380,191 +514,128 @@ export default function TasksScreen() {
                             </div>
                           )}
 
-                          {/* <Form
-                          className={
-                            isSubmiting
-                              ? 'scrollInAdminproject p-4 '
-                              : 'scrollInAdminproject p-3'
-                          }
-                          onSubmit={handleSubmit}
-                        >
-                          <ImCross
-                            color="black"
-                            className="formcrossbtn"
-                            onClick={handleCloseRow}
-                          />
-                          <h4 className="d-flex justify-content-center">
-                            Add Project
-                          </h4>
-                          <TextField
-                            required
-                            className="mb-3"
-                            value={projectName}
-                            onChange={(e) => setProjectName(e.target.value)}
-                            label="Project Name"
-                            fullWidth
-                          />
-
-                          <TextField
-                            id="outlined-multiline-static"
-                            onChange={(e) =>
-                              setProjectDescription(e.target.value)
+                          <Form
+                            className={
+                              isSubmiting
+                                ? 'scrollInAdminproject p-4 '
+                                : 'scrollInAdminproject p-3'
                             }
-                            label="Project Description"
-                            multiline
-                            rows={4}
-                            fullWidth
-                            variant="outlined"
-                            className="mb-3"
-                          />
-                          <FormControl className="mb-3">
-                            <InputLabel>Select Contractor </InputLabel>
-                            <Select
-                              value={projectOwner}
-                              onChange={(e) => setProjectOwner(e.target.value)}
-                              required
+                            onSubmit={handleSubmit}
+                          >
+                            <ImCross
+                              color="black"
+                              className="formcrossbtn"
+                              onClick={handleCloseRow}
+                            />
+                            <h4 className="d-flex justify-content-center">
+                              Add Project
+                            </h4>
+                            <FormControl
+                              className={dynamicfield ? 'disable mb-3' : 'mb-3'}
                             >
-                              <MenuItem
-                                onClick={() => {
-                                  handleRedirectToContractorScreen();
-                                }}
+                              <InputLabel>Select Project </InputLabel>
+                              <Select
+                                value={SelectProjectName}
+                                onChange={(e) =>
+                                  setSelectProjectName(e.target.value)
+                                }
+                                required
+                                disabled={dynamicfield}
                               >
-                                {' '}
-                                <BiPlusMedical /> add new Contractor
-                              </MenuItem>
-                              {contractorData.map((items) => (
-                                <MenuItem key={items._id} value={items._id}>
-                                  {items.first_name}
+                                <MenuItem
+                                  onClick={() => {
+                                    handleAddNewProject();
+                                  }}
+                                >
+                                  <MdAddCircleOutline /> add new Project
                                 </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                          {agents.map((agent, index) => (
-                            <div
-                              className="moreFieldsDiv d-flex align-items-center gap-2"
-                              key={index}
-                            >
-                              <FormControl>
-                                <InputLabel>Category</InputLabel>
-                                <Select
+                                {ProjectData.map((items) => (
+                                  <MenuItem
+                                    key={items}
+                                    value={items.projectName}
+                                  >
+                                    {items.projectName}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+
+                            {dynamicfield ? (
+                              <div className="d-flex align-items-center gap-1">
+                                <TextField
                                   required
-                                  value={agent.categoryId}
+                                  className="mb-3"
+                                  value={projectName}
                                   onChange={(e) =>
-                                    handleAgentChange(
-                                      index,
-                                      'categoryId',
-                                      e.target.value
-                                    )
+                                    setProjectName(e.target.value)
                                   }
-                                >
-                                  {categoryData.map((category) => (
-                                    <MenuItem
-                                      key={category._id}
-                                      value={category._id}
-                                      disabled={agents.some(
-                                        (a) => a.categoryId === category._id
-                                      )}
-                                    >
-                                      {category.categoryName}
-                                    </MenuItem>
-                                  ))}
-                                </Select>
-                              </FormControl>
-                              <FormControl>
-                                <InputLabel>Agent</InputLabel>
-                                <Select
-                                  value={agent.agentId}
-                                  onChange={(e) =>
-                                    handleAgentChange(
-                                      index,
-                                      'agentId',
-                                      e.target.value
-                                    )
-                                  }
-                                >
-                                  {assignedAgentByCateHandle(index).map(
-                                    (agent) => (
-                                      <MenuItem
-                                        key={agent._id}
-                                        value={agent._id}
-                                        disabled={agents.some(
-                                          (a) => a.agentId === agent._id
-                                        )}
-                                      >
-                                        {agent.first_name}
-                                      </MenuItem>
-                                    )
-                                  )}
-                                </Select>
-                              </FormControl>
-                              <div className="d-flex">
+                                  label="Project Name"
+                                  fullWidth
+                                />
                                 <MdRemoveCircleOutline
                                   color="black"
                                   className="text-bold text-danger fs-5 pointCursor "
-                                  onClick={() => removeAgent(index)}
-                                />
-
-                                <MdAddCircleOutline
-                                  color="black"
-                                  className="text-success text-bold fs-5 pointCursor"
-                                  onClick={addAgent}
+                                  onClick={() => removeDymanic()}
                                 />
                               </div>
-                            </div>
-                          ))}
-                          <div className="my-2">
-                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                              <DatePicker
-                                className="marginDate"
-                                label="Start Date"
-                                value={startDate}
-                                required
-                                onChange={(newValue) =>
-                                  validateDates(newValue, endDate)
-                                }
-                                renderInput={(params) => (
-                                  <TextField {...params} />
-                                )}
-                              />
-                              {startDateError && (
-                                <div className="Datevalidation">
-                                  {startDateError}
-                                </div>
-                              )}
-                              <DatePicker
-                                className="mb-3"
-                                label="End Date"
-                                value={endDate}
-                                required
-                                onChange={(newValue) =>
-                                  validateDates(startDate, newValue)
-                                }
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    style={{ color: 'white' }}
-                                    autoComplete="off"
-                                  />
-                                )}
-                              />
-                              {endDateError && (
-                                <div className="Datevalidation">
-                                  {endDateError}
-                                </div>
-                              )}
-                            </LocalizationProvider>
-                          </div>
+                            ) : null}
+                            <TextField
+                              required
+                              className="mb-3"
+                              value={taskName}
+                              onChange={(e) => setTaskName(e.target.value)}
+                              label="Task Name"
+                              fullWidth
+                            />
 
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                            disabled={errorAccured}
-                            className="mt-2 formbtn updatingBtn globalbtnColor"
-                          >
-                            {isSubmiting ? 'SUBMITTING' : 'SUBMIT '}
-                          </Button>
-                        </Form> */}
+                            <TextField
+                              required
+                              className="mb-3"
+                              value={taskDesc}
+                              onChange={(e) => setTaskDesc(e.target.value)}
+                              label="Description"
+                              fullWidth
+                            />
+                            <div className="d-flex align-items-center flex-wrap justify-content-between cateContainer">
+                              {categoryData.map((category) => (
+                                <div
+                                  key={category._id}
+                                  className="d-flex flex-row cateItems"
+                                >
+                                  <Form.Check
+                                    className="d-flex align-items-center"
+                                    type="radio"
+                                    id={`category-${category._id}`}
+                                    name="category"
+                                    value={category.categoryName}
+                                    label={
+                                      <div className="d-flex align-items-center">
+                                        <Avatar
+                                          src={category.categoryImage}
+                                          alt={category.categoryName}
+                                        />
+                                        <span className="ms-2 spanForCate">
+                                          {category.categoryName}
+                                        </span>
+                                      </div>
+                                    }
+                                    onChange={(e) =>
+                                      setCategory(e.target.value)
+                                    }
+                                  />
+                                </div>
+                              ))}
+                            </div>
+
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              type="submit"
+                              className="mt-2 formbtn updatingBtn globalbtnColor"
+                            >
+                              {isSubmiting ? 'SUBMITTING' : 'SUBMIT '}
+                            </Button>
+                          </Form>
                         </div>
                       </Box>
                     </Modal>
@@ -580,13 +651,8 @@ export default function TasksScreen() {
                     </div>
                     <Box sx={{ height: 400, width: '100%' }}>
                       <DataGrid
-                        // className={
-                        //   theme == 'light'
-                        //     ? `${theme}DataGrid`
-                        //     : `tableBg ${theme}DataGrid`
-                        // }
                         className="tableGrid actionCenter"
-                        rows={data}
+                        rows={CompleteData}
                         columns={[
                           ...columns,
                           {
@@ -598,19 +664,23 @@ export default function TasksScreen() {
                                 <Grid item xs={8}>
                                   <Button
                                     variant="contained"
-                                    className="tableInProgressBtn"
-                                    onClick={() => handleEdit(params.row._id)}
+                                    className={
+                                      params.row.taskStatus === 'active'
+                                        ? 'tableInProgressBtn'
+                                        : 'tableInwaitingBtn'
+                                    }
+                                    // onClick={() => handleEdit(params.row._id)}
                                   >
-                                    <CiSettings className="px-2" /> In Progress
+                                    <CiSettings className="clockIcon" />
+                                    {params.row.taskStatus === 'waiting'
+                                      ? 'Waiting On You'
+                                      : params.row.taskStatus === 'active'
+                                      ? 'In Progress'
+                                      : params.row.taskStatus === 'completed'
+                                      ? 'Completed'
+                                      : params.row.taskStatus ===
+                                        'pending'('Ready To Completed')}
                                   </Button>
-
-                                  {/* <Button
-                                  variant="outlined"
-                                  className="mx-2 tableDeletebtn"
-                                  onClick={() => deleteHandle(params.row._id)}
-                                >
-                                  Delete
-                                </Button> */}
                                 </Grid>
                               );
                             },
@@ -627,6 +697,9 @@ export default function TasksScreen() {
                         pageSizeOptions={[5]}
                         checkboxSelection
                         disableRowSelectionOnClick
+                        localeText={{
+                          noRowsLabel: 'Task Is Not Avalible',
+                        }}
                       />
                     </Box>
                   </Tab>
@@ -643,13 +716,8 @@ export default function TasksScreen() {
                     </div>
                     <Box sx={{ height: 400, width: '100%' }}>
                       <DataGrid
-                        // className={
-                        //   theme == 'light'
-                        //     ? `${theme}DataGrid`
-                        //     : `tableBg ${theme}DataGrid`
-                        // }
                         className="tableGrid actionCenter"
-                        rows={data}
+                        rows={PendingData}
                         columns={[
                           ...columns,
                           {
@@ -661,19 +729,23 @@ export default function TasksScreen() {
                                 <Grid item xs={8}>
                                   <Button
                                     variant="contained"
-                                    className="tableInProgressBtn"
-                                    onClick={() => handleEdit(params.row._id)}
+                                    className={
+                                      params.row.taskStatus === 'active'
+                                        ? 'tableInProgressBtn'
+                                        : 'tableInwaitingBtn'
+                                    }
+                                    // onClick={() => handleEdit(params.row._id)}
                                   >
-                                    <CiSettings className="px-2" /> In Progress
+                                    <CiSettings className="clockIcon" />
+                                    {params.row.taskStatus === 'waiting'
+                                      ? 'Waiting On You'
+                                      : params.row.taskStatus === 'active'
+                                      ? 'In Progress'
+                                      : params.row.taskStatus === 'completed'
+                                      ? 'Completed'
+                                      : params.row.taskStatus ===
+                                        'pending'('Ready To Completed')}
                                   </Button>
-
-                                  {/* <Button
-                                  variant="outlined"
-                                  className="mx-2 tableDeletebtn"
-                                  onClick={() => deleteHandle(params.row._id)}
-                                >
-                                  Delete
-                                </Button> */}
                                 </Grid>
                               );
                             },
@@ -690,6 +762,9 @@ export default function TasksScreen() {
                         pageSizeOptions={[5]}
                         checkboxSelection
                         disableRowSelectionOnClick
+                        localeText={{
+                          noRowsLabel: 'Task Is Not Avalible',
+                        }}
                       />
                     </Box>
                   </Tab>

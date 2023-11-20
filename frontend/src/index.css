@@ -1444,14 +1444,29 @@ body {
   padding: 0 10px;
   font-weight: 500 !important;
 }
-svg.clockIcon {
+.tableInwaitingBtn svg.clockIcon {
   color: #ffc000;
-  margin-bottom: 3px;
+  margin: 0 3px 3px 0;
+  /* padding: 10px 0; */
+}
+.tableInProgressBtn svg.clockIcon {
+  color: green;
+  margin: 0 3px 3px 0;
+  /* padding: 10px 0; */
 }
 .tableInProgressBtn {
   color: green !important;
+  font-weight: 300;
+  text-transform: unset !important;
   background: transparent !important;
   border: 1px solid green !important;
+}
+.tableInwaitingBtn {
+  color: #ffc000 !important;
+  font-weight: 300;
+  background: transparent !important;
+  text-transform: unset !important;
+  border: 1px solid #ffc000 !important;
 }
 main.windowCal {
   min-height: calc(100% - 194px) !important;
@@ -1460,6 +1475,25 @@ main.windowCal {
   justify-content: space-evenly;
 }
 
+.cateContainer {
+  border: 1px solid #8a9097;
+  border-radius: 5px;
+}
+.cateItems {
+  height: 100%;
+  max-height: 100px;
+  width: 100%;
+  max-width: 145px;
+  margin: 5px 1px;
+  padding: 5px;
+  border-radius: 5px;
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+}
+.spanForCate {
+  word-break: break-all;
+}
 /* Priyanshu ...........*/
 .darkchat-info-inner {
   background-color: #fff !important;
@@ -1471,6 +1505,9 @@ main.windowCal {
 }
 .darkchatHead {
   background-color: #0e0e3d !important;
+}
+.selectButton {
+  width: 130px;
 }
 .darkchatBody {
   background-color: #cdcdd7 !important;
