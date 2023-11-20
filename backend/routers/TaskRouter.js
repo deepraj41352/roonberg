@@ -43,6 +43,7 @@ TaskRouter.post(
     try {
       const user = req.user;
       const selectProjectName = req.body.selectProjectName;
+      console.log(selectProjectName);
       const projectName = req.body.projectName;
       const taskName = req.body.taskName;
       const taskCategory = req.body.taskCategory;
@@ -50,22 +51,34 @@ TaskRouter.post(
       let selectProject = await projectTask.findOne({
         projectName: selectProjectName,
       });
+
       let project = await projectTask.findOne({ projectName });
       let task = await Task.findOne({ taskName });
       let category = await Category.findOne({ categoryName: taskCategory });
       let agent = await User.findOne({ agentCategory: category._id });
-      if (project) {
+      if (project && project.projectName === projectName) {
+        console.log('in if');
         res.status(200).json({
           message: 'project with the same name already exists',
         });
-      }
-      if (task) {
+      } else if (task && task.taskName === taskName) {
         res.status(200).json({
           message: 'Task with the same name already exists',
         });
-      }
-
-      if (!project) {
+      } else if (selectProject) {
+        const newTask = await new Task({
+          taskName: taskName,
+          projectName: selectProjectName,
+          taskDescription: req.body.taskDescription,
+          projectId: selectProject._id,
+          taskCategory: category._id,
+          userId: user._id,
+          agentId: agent._id,
+          userName: user.first_name,
+          agentName: agent.first_name,
+        }).save();
+        res.status(201).json({ message: 'Task Created', task: newTask });
+      } else {
         project = await new projectTask({
           projectName,
         }).save();
@@ -75,20 +88,6 @@ TaskRouter.post(
           taskDescription: req.body.taskDescription,
           projectName: projectName,
           projectId: project._id,
-          taskCategory: category._id,
-          userId: user._id,
-          agentId: agent._id,
-          userName: user.first_name,
-          agentName: agent.first_name,
-        }).save();
-
-        res.status(201).json({ message: 'Task Created', task: newTask });
-      } else {
-        const newTask = await new Task({
-          taskName: taskName,
-          projectName: selectProjectName,
-          taskDescription: req.body.taskDescription,
-          projectId: selectProject._id,
           taskCategory: category._id,
           userId: user._id,
           agentId: agent._id,
@@ -113,6 +112,49 @@ TaskRouter.delete(
     await projectTask.deleteMany({});
     await Task.deleteMany({});
     res.send('deleted');
+  })
+);
+
+TaskRouter.delete(
+  '/:taskId',
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    try {
+      await Task.findByIdAndDelete(req.params.taskId);
+      res.status(200).json('Task Deleted Successfully !');
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  })
+);
+TaskRouter.put(
+  '/updateStatus/:taskId',
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const { taskStatus } = req.body;
+      console.log('taskStatus...........', taskStatus);
+      if (!taskStatus) {
+        return res.status(400).json({ message: 'Task status is required.' });
+      }
+      const updateStatus = await Task.findOneAndUpdate(
+        { _id: req.params.taskId },
+        { taskStatus },
+        { new: true }
+      );
+      if (!updateStatus) {
+        return res.status(404).json({ message: 'Task not found.' });
+      }
+      res.status(200).json({
+        message: 'Update status successful',
+        updatedTask: updateStatus,
+      });
+      console.log('response', updateStatus);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal Server Error' });
+      console.log('error', error);
+    }
   })
 );
 export default TaskRouter;

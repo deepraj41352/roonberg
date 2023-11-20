@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 function Avatar({ name, bgColor }) {
-  console.log('bgColor', bgColor);
   const avatarRef = useRef(null);
 
   return (

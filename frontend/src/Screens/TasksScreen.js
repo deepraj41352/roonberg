@@ -59,70 +59,6 @@ const reducer = (state, action) => {
   }
 };
 
-const columns = [
-  {
-    field: 'categoryImage',
-    headerName: 'Image',
-    width: 100,
-    renderCell: (params) => {
-      function generateColorFromAscii(str) {
-        let color = '#';
-        const combination = str
-          .split('')
-          .map((char) => char.charCodeAt(0))
-          .reduce((acc, value) => acc + value, 0);
-        color += (combination * 12345).toString(16).slice(0, 6);
-        return color;
-      }
-
-      const name = params.row.taskName[0].toLowerCase();
-      const color = generateColorFromAscii(name);
-      return (
-        <>
-          {/* {params.row.categoryImage !== 'null' ? (
-            <Avatar src={params.row.categoryImage} />
-          ) : ( */}
-          <AvatarImage name={name} bgColor={color} />
-          {/* )} */}
-        </>
-      );
-    },
-  },
-  {
-    field: 'taskName',
-    headerName: 'Task Name',
-    width: 300,
-    renderCell: (params) => (
-      <div className="text-start">
-        <div>{params.row.taskName}</div>
-        <div>Task ID {params.row._id}</div>
-      </div>
-    ),
-  },
-  {
-    field: 'userName',
-    headerName: 'Contractor Name',
-    width: 100,
-    renderCell: (params) => (
-      <div className="text-start">
-        <div>{params.row.userName}</div>
-        <div>Raised By</div>
-      </div>
-    ),
-  },
-  {
-    field: 'agentName',
-    headerName: 'Agent Name',
-    width: 100,
-    renderCell: (params) => (
-      <div className="text-start">
-        <div>{params.row.agentName}</div>
-        <div>Assigned By</div>
-      </div>
-    ),
-  },
-];
-
 export default function TasksScreen() {
   const [isModelOpen, setIsModelOpen] = useState(false);
   const [morefieldsModel, setMorefieldsModel] = useState(false);
@@ -131,6 +67,86 @@ export default function TasksScreen() {
   const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
   const theme = toggleState ? 'dark' : 'light';
+  const [selectedRowId, setSelectedRowId] = useState(null);
+  const handleCheckboxSelection = (rowId) => {
+    setSelectedRowId(rowId === selectedRowId ? null : rowId);
+  };
+  const columns = [
+    {
+      field: 'categoryImage',
+      headerName: 'Image',
+      width: 100,
+      renderCell: (params) => {
+        function generateColorFromAscii(str) {
+          let color = '#';
+          const combination = str
+            .split('')
+            .map((char) => char.charCodeAt(0))
+            .reduce((acc, value) => acc + value, 0);
+          color += (combination * 12345).toString(16).slice(0, 6);
+          return color;
+        }
+
+        const name = params.row.taskName[0].toLowerCase();
+        const color = generateColorFromAscii(name);
+        return (
+          <>
+            {/* {params.row.categoryImage !== 'null' ? (
+              <Avatar src={params.row.categoryImage} />
+            ) : ( */}
+            <AvatarImage name={name} bgColor={color} />
+            {/* )} */}
+          </>
+        );
+      },
+    },
+    {
+      field: 'checkbox',
+      headerName: 'Select',
+      width: 100,
+      renderCell: (params) => (
+        <input
+          className="Check_box-For-Select"
+          type="checkbox"
+          checked={selectedRowId === params.row._id}
+          onChange={() => handleCheckboxSelection(params.row._id)}
+        />
+      ),
+    },
+    {
+      field: 'taskName',
+      headerName: 'Task Name',
+      width: 300,
+      renderCell: (params) => (
+        <div className="text-start">
+          <div>{params.row.taskName}</div>
+          <div>Task ID {params.row._id}</div>
+        </div>
+      ),
+    },
+    {
+      field: 'userName',
+      headerName: 'Contractor Name',
+      width: 100,
+      renderCell: (params) => (
+        <div className="text-start">
+          <div>{params.row.userName}</div>
+          <div>Raised By</div>
+        </div>
+      ),
+    },
+    {
+      field: 'agentName',
+      headerName: 'Agent Name',
+      width: 100,
+      renderCell: (params) => (
+        <div className="text-start">
+          <div>{params.row.agentName}</div>
+          <div>Assigned By</div>
+        </div>
+      ),
+    },
+  ];
   const [
     {
       // loading,
@@ -153,7 +169,7 @@ export default function TasksScreen() {
     contractorData: [],
     agentData: [],
   });
-
+  console.log('selectedRowId', selectedRowId);
   const [projectName, setProjectName] = useState('');
   const [SelectProjectName, setSelectProjectName] = useState('');
   const [taskName, setTaskName] = useState('');
@@ -173,7 +189,8 @@ export default function TasksScreen() {
   const [selectedProjectsId, setSelectedProjectsId] = useState();
   const [dynamicfield, setDynamicfield] = useState(false);
   const [success, setSuccess] = useState(false);
-
+  const [showModal, setShowModal] = useState(false);
+  const [projectStatuDrop, setProjectStatuDrop] = useState(null);
   const [data, SetData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -196,6 +213,7 @@ export default function TasksScreen() {
   };
   const handleCloseRow = () => {
     setIsModelOpen(false);
+    setShowModal(false);
   };
   const handleNew = () => {
     setIsModelOpen(true);
@@ -217,6 +235,45 @@ export default function TasksScreen() {
     FatchcategoryData();
   }, [success]);
 
+  const ModelOpen = () => {
+    setShowModal(true);
+  };
+  const deleteTask = async () => {
+    setIsSubmiting(true);
+    try {
+      const data = await axios.delete(`/api/task/${selectedRowId}`, {
+        headers: { Authorization: `Bearer ${userInfo.token}` },
+      });
+      if (data.status === 200) {
+        setSuccess(!success);
+        toast.success(data.data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setIsSubmiting(false);
+    }
+  };
+  const handleStatusUpdate = async (e) => {
+    const taskStatus = e.target.value;
+    try {
+      const data = await axios.put(
+        `/api/task/updateStatus/${selectedRowId}`,
+        { taskStatus: taskStatus },
+        {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+      if (data.status === 200) {
+        setSuccess(!success);
+        setShowModal(false);
+        toast.success('Task Status updated Successfully !');
+      }
+      setProjectStatus(data.projectStatus);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   useEffect(() => {
     setLoading(true);
     const FatchCategory = async () => {
@@ -271,8 +328,9 @@ export default function TasksScreen() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmiting(true);
+
     try {
-      setIsSubmiting(true);
       const data = await axios.post(
         `/api/task`,
         {
@@ -286,11 +344,21 @@ export default function TasksScreen() {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         }
       );
-      console.log('data', data.message);
-      if (data.status === 201 || data.status === 200) {
-        setSuccess(true);
-        toast.success(data.message);
+      if (data.status === 201) {
+        setSuccess(!success);
+        toast.success(data.data.message);
+        setDynamicfield(false);
         setIsSubmiting(false);
+        setIsModelOpen(false);
+        setProjectName('');
+        setTaskName('');
+        setTaskDesc('');
+        setCategory('');
+        setSelectProjectName('');
+      }
+      if (data.status === 200) {
+        setDynamicfield(false);
+        toast.error(data.data.message);
         setIsModelOpen(false);
         setProjectName('');
         setTaskName('');
@@ -300,8 +368,10 @@ export default function TasksScreen() {
       }
     } catch (error) {
       toast.error(error.message);
-      setIsSubmiting(false);
       setIsModelOpen(false);
+      setDynamicfield(false);
+    } finally {
+      setIsSubmiting(false);
     }
   };
   return (
@@ -420,6 +490,85 @@ export default function TasksScreen() {
                     eventKey="Active Task"
                     title={<span class="position-relative">Active Task</span>}
                   >
+                    {selectedRowId && (
+                      <div className="btn-for-update">
+                        <Button className=" btn-color" onClick={ModelOpen}>
+                          <span class="position-relative">Update Status</span>
+                        </Button>
+                        <Button
+                          className=" btn-color"
+                          // onClick={}
+                        >
+                          <span class="position-relative">Assigned Agent</span>
+                        </Button>
+                        <Button
+                          active
+                          className=" btn-color"
+                          onClick={deleteTask}
+                        >
+                          <span class="position-relative">Delete</span>
+                        </Button>
+                        <Modal
+                          open={showModal}
+                          onClose={handleCloseRow}
+                          className="overlayLoading modaleWidth p-0"
+                        >
+                          <Box
+                            className="modelBg"
+                            sx={{
+                              position: 'absolute',
+                              top: '50%',
+                              left: '50%',
+                              transform: 'translate(-50%, -50%)',
+                              width: 400,
+                              bgcolor: 'background.paper',
+                              boxShadow: 24,
+                              p: isSubmiting ? 0 : 4,
+                            }}
+                          >
+                            <div className="overlayLoading">
+                              {isSubmiting && (
+                                <div className="overlayLoadingItem1 y-3">
+                                  <ColorRing
+                                    visible={true}
+                                    height="40"
+                                    width="40"
+                                    ariaLabel="blocks-loading"
+                                    wrapperStyle={{}}
+                                    wrapperClass="blocks-wrapper"
+                                    colors={[
+                                      'rgba(0, 0, 0, 1) 0%',
+                                      'rgba(255, 255, 255, 1) 68%',
+                                      'rgba(0, 0, 0, 1) 93%',
+                                    ]}
+                                  />
+                                </div>
+                              )}
+
+                              <Form>
+                                <Form.Group
+                                  className="mb-3 "
+                                  controlId="formBasicPassword"
+                                >
+                                  <Form.Label className="mb-1 fw-bold">
+                                    Project Status
+                                  </Form.Label>
+                                  <Form.Select
+                                    value={projectStatus}
+                                    onChange={handleStatusUpdate}
+                                  >
+                                    <option value="waiting">Waiting</option>
+                                    <option value="active">Running</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="pending">Pending</option>
+                                  </Form.Select>
+                                </Form.Group>
+                              </Form>
+                            </div>
+                          </Box>
+                        </Modal>
+                      </div>
+                    )}
                     <div className="lastLogin">
                       <FaRegClock className="clockIcon" /> Last Login : 4 Hours,
                       55 minutes ago
@@ -453,8 +602,9 @@ export default function TasksScreen() {
                                       ? 'In Progress'
                                       : params.row.taskStatus === 'completed'
                                       ? 'Completed'
-                                      : params.row.taskStatus ===
-                                        'pending'('Ready To Completed')}
+                                      : params.row.taskStatus === 'pending'
+                                      ? 'Ready To Completed'
+                                      : ''}
                                   </Button>
                                 </Grid>
                               );
@@ -470,7 +620,7 @@ export default function TasksScreen() {
                           },
                         }}
                         pageSizeOptions={[5]}
-                        checkboxSelection
+                        // checkboxSelection
                         disableRowSelectionOnClick
                         localeText={{
                           noRowsLabel: 'Task Is Not Avalible',
@@ -645,71 +795,26 @@ export default function TasksScreen() {
                     eventKey="Parked Task"
                     title={<span class="position-relative">Parked Task</span>}
                   >
-                    <div className="lastLogin">
-                      <FaRegClock className="clockIcon" /> Last Login : 4 Hours,
-                      55 minutes ago
-                    </div>
-                    <Box sx={{ height: 400, width: '100%' }}>
-                      <DataGrid
-                        className="tableGrid actionCenter"
-                        rows={CompleteData}
-                        columns={[
-                          ...columns,
-                          {
-                            field: 'action',
-                            headerName: 'Action',
-                            width: 160,
-                            renderCell: (params) => {
-                              return (
-                                <Grid item xs={8}>
-                                  <Button
-                                    variant="contained"
-                                    className={
-                                      params.row.taskStatus === 'active'
-                                        ? 'tableInProgressBtn'
-                                        : 'tableInwaitingBtn'
-                                    }
-                                    // onClick={() => handleEdit(params.row._id)}
-                                  >
-                                    <CiSettings className="clockIcon" />
-                                    {params.row.taskStatus === 'waiting'
-                                      ? 'Waiting On You'
-                                      : params.row.taskStatus === 'active'
-                                      ? 'In Progress'
-                                      : params.row.taskStatus === 'completed'
-                                      ? 'Completed'
-                                      : params.row.taskStatus ===
-                                        'pending'('Ready To Completed')}
-                                  </Button>
-                                </Grid>
-                              );
-                            },
-                          },
-                        ]}
-                        getRowId={(row) => row._id}
-                        initialState={{
-                          pagination: {
-                            paginationModel: {
-                              pageSize: 5,
-                            },
-                          },
-                        }}
-                        pageSizeOptions={[5]}
-                        checkboxSelection
-                        disableRowSelectionOnClick
-                        localeText={{
-                          noRowsLabel: 'Task Is Not Avalible',
-                        }}
-                      />
-                    </Box>
-                  </Tab>
-                  <Tab
-                    className="tab-color"
-                    eventKey="Completed Task"
-                    title={
-                      <span class="position-relative">Completed Task</span>
-                    }
-                  >
+                    {selectedRowId && (
+                      <div className="btn-for-update">
+                        <Button className=" btn-color" onClick={ModelOpen}>
+                          <span class="position-relative">Update Status</span>
+                        </Button>
+                        <Button
+                          className=" btn-color"
+                          // onClick={}
+                        >
+                          <span class="position-relative">Assigned Agent</span>
+                        </Button>
+                        <Button
+                          active
+                          className=" btn-color"
+                          onClick={deleteTask}
+                        >
+                          <span class="position-relative">Delete</span>
+                        </Button>
+                      </div>
+                    )}
                     <div className="lastLogin">
                       <FaRegClock className="clockIcon" /> Last Login : 4 Hours,
                       55 minutes ago
@@ -743,8 +848,9 @@ export default function TasksScreen() {
                                       ? 'In Progress'
                                       : params.row.taskStatus === 'completed'
                                       ? 'Completed'
-                                      : params.row.taskStatus ===
-                                        'pending'('Ready To Completed')}
+                                      : params.row.taskStatus === 'pending'
+                                      ? 'Ready To Completed'
+                                      : ''}
                                   </Button>
                                 </Grid>
                               );
@@ -760,7 +866,93 @@ export default function TasksScreen() {
                           },
                         }}
                         pageSizeOptions={[5]}
-                        checkboxSelection
+                        // checkboxSelection
+                        disableRowSelectionOnClick
+                        localeText={{
+                          noRowsLabel: 'Task Is Not Avalible',
+                        }}
+                      />
+                    </Box>
+                  </Tab>
+                  <Tab
+                    className="tab-color"
+                    eventKey="Completed Task"
+                    title={
+                      <span class="position-relative">Completed Task</span>
+                    }
+                  >
+                    {selectedRowId && (
+                      <div className="btn-for-update">
+                        <Button className=" btn-color" onClick={ModelOpen}>
+                          <span class="position-relative">Update Status</span>
+                        </Button>
+                        <Button
+                          className=" btn-color"
+                          // onClick={}
+                        >
+                          <span class="position-relative">Assigned Agent</span>
+                        </Button>
+                        <Button
+                          active
+                          className=" btn-color"
+                          onClick={deleteTask}
+                        >
+                          <span class="position-relative">Delete</span>
+                        </Button>
+                      </div>
+                    )}
+                    <div className="lastLogin">
+                      <FaRegClock className="clockIcon" /> Last Login : 4 Hours,
+                      55 minutes ago
+                    </div>
+                    <Box sx={{ height: 400, width: '100%' }}>
+                      <DataGrid
+                        className="tableGrid actionCenter"
+                        rows={CompleteData}
+                        columns={[
+                          ...columns,
+                          {
+                            field: 'action',
+                            headerName: 'Action',
+                            width: 160,
+                            renderCell: (params) => {
+                              return (
+                                <Grid item xs={8}>
+                                  <Button
+                                    variant="contained"
+                                    className={
+                                      params.row.taskStatus === 'active'
+                                        ? 'tableInProgressBtn'
+                                        : 'tableInwaitingBtn'
+                                    }
+                                    // onClick={() => handleEdit(params.row._id)}
+                                  >
+                                    <CiSettings className="clockIcon" />
+                                    {params.row.taskStatus === 'waiting'
+                                      ? 'Waiting On You'
+                                      : params.row.taskStatus === 'active'
+                                      ? 'In Progress'
+                                      : params.row.taskStatus === 'completed'
+                                      ? 'Completed'
+                                      : params.row.taskStatus === 'pending'
+                                      ? 'Ready To Completed'
+                                      : ''}
+                                  </Button>
+                                </Grid>
+                              );
+                            },
+                          },
+                        ]}
+                        getRowId={(row) => row._id}
+                        initialState={{
+                          pagination: {
+                            paginationModel: {
+                              pageSize: 5,
+                            },
+                          },
+                        }}
+                        pageSizeOptions={[5]}
+                        // checkboxSelection
                         disableRowSelectionOnClick
                         localeText={{
                           noRowsLabel: 'Task Is Not Avalible',
