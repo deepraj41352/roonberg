@@ -12,6 +12,7 @@ import {
   Select,
   TextField,
 } from '@mui/material';
+import MultiSelect from 'react-multiple-select-dropdown-lite';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -61,7 +62,9 @@ function AdminEditAgent() {
   const [email, setEmail] = useState('');
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [status, setStatus] = useState('');
-  const [category, setCategory] = useState('');
+  // const [category, setCategory] = useState('');
+  const [selectcategories, setSelectCategories] = useState([]);
+  console.log("selectcategories", selectcategories)
 
   useEffect(() => {
     const FatchcategoryData = async () => {
@@ -73,7 +76,13 @@ function AdminEditAgent() {
         setLastName(datas.last_name || 'Last Name');
         setEmail(datas.email);
         setStatus(datas.userStatus);
-        setCategory(datas.agentCategory);
+        setSelectCategories(
+          datas.agentCategory
+        );
+        //setSelectCategories(datas.agentCategory)
+        const data = datas.agentCategory
+        console.log(datas.agentCategory, "data", data)
+
       } catch (error) {
         toast.error(error.response?.data?.message);
       }
@@ -127,6 +136,7 @@ function AdminEditAgent() {
   const submitHandler = async (e) => {
     e.preventDefault();
     setIsSubmiting(true);
+
     try {
       const data = await axios.put(
         `/api/user/update/${id}`,
@@ -135,7 +145,7 @@ function AdminEditAgent() {
           last_name: lastName,
           email: email,
           userStatus: status,
-          agentCategory: category || agentData.agentCategory,
+          agentCategory: selectcategories || agentData.agentCategory,
         },
         {
           headers: {
@@ -152,6 +162,18 @@ function AdminEditAgent() {
       setIsSubmiting(false);
     }
   };
+  const handleCategories = (event) => {
+    setSelectCategories(event.target.value);
+  };
+
+  const options =
+    categoryDatas && Array.isArray(categoryDatas)
+      ? categoryDatas.map((item) => ({
+        label: item.categoryName,
+        value: item,
+      }))
+      : [];
+
   return (
     <>
       <Container className="Sign-up-container-regis d-flex w-100 profileDiv  flex-column justify-content-center align-items-center">
@@ -212,7 +234,7 @@ function AdminEditAgent() {
                         fullWidth
                         disabled
                       />
-                      <FormControl className="mb-3 selectStart">
+                      <FormControl className=" selectStart">
                         <InputLabel>Select Status</InputLabel>
                         <Select
                           value={status}
@@ -223,19 +245,33 @@ function AdminEditAgent() {
                           <MenuItem value={false}>Inactive</MenuItem>
                         </Select>
                       </FormControl>
+                      {/* <Form.Group className=" selectStart">
+                        <Form.Label>
+                          Select Categories
+                        </Form.Label>
+                        {console.log("options", options, selectcategories)}
+                        <MultiSelect
+                          className="categorieslist"
+                          onChange={handleCategories}
+                          options={options}
+                          defaultValue={selectcategories}
+                        />
+                      </Form.Group> */}
 
-                      <FormControl className="mb-3 selectStart">
-                        <InputLabel>Category</InputLabel>
+                      <FormControl fullWidth className="mb-3 selectStart">
+                        <InputLabel>Select Categories</InputLabel>
                         <Select
                           required
-                          value={category}
-                          onChange={(e) => setCategory(e.target.value)}
+                          multiple
+                          value={selectcategories}
+                          onChange={handleCategories}
                         >
-                          {categoryDatas.map((items) => (
-                            <MenuItem key={items._id} value={items._id}>
-                              {items.categoryName}
-                            </MenuItem>
-                          ))}
+                          {categoryDatas &&
+                            categoryDatas.map((option) => (
+                              <MenuItem key={option._id} value={option._id}>
+                                {option.categoryName}
+                              </MenuItem>
+                            ))}
                         </Select>
                       </FormControl>
                       <div className="d-flex justify-content-start mt-4">

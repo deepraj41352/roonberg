@@ -15,6 +15,7 @@ import { Store } from '../Store';
 import { ImCross } from 'react-icons/im';
 import axios from 'axios';
 import { Form, InputGroup } from 'react-bootstrap';
+import { IoChatboxSharp } from "react-icons/io5";
 
 function Sidebar({ sidebarVisible, setSidebarVisible }) {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -77,6 +78,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
     localStorage.removeItem('userInfo');
     window.location.href = '/';
   };
+
   useEffect(() => {
     const handleResize = () => {
       setIsSmallScreen(window.innerWidth < 1179);
@@ -311,6 +313,31 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
             </Link>
           </>
         ) : null}
+
+
+        <Link
+          to="/messagesScreen"
+          className="text-decoration-none"
+          onClick={handlSmallScreeneClick}
+        >
+          <li
+            className={
+              selectedItem === 'messagesScreen'
+                ? 'selected d-flex'
+                : 'd-flex'
+            }
+            onClick={() => {
+              setSelectedItem('messagesScreen');
+            }}
+          >
+            <IoChatboxSharp className="me-3 fs-5 " />
+            <div className="position-relative">
+              Message
+
+            </div>
+          </li>
+        </Link>
+
         <Link
           to="/notificationScreen"
           className="text-decoration-none"

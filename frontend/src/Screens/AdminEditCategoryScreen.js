@@ -189,11 +189,6 @@ function AdminEditCategory() {
                               name={category}
                               bgColor={color}
                             />
-                            <Avatar
-                              src={categoryData.categoryImage}
-                            />
-                          ) : (
-                          <AvatarImage id="cateEditImgAvatar" name={category} bgColor={color} />
                           )}
                         </Col>
                         <Col className="cateEditImgChild">

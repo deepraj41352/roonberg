@@ -641,13 +641,13 @@ userRouter.post(
         // Send the email
         const checkMail = await sendEmailNotify(options);
 
-        if (checkMail) {
-          res.send({
-            message: `We sent a reset password link to your email.`,
-          });
-        } else {
-          res.status(404).send({ message: 'Email sending failed' });
-        }
+        // if (checkMail) {
+        //   res.send({
+        //     message: `We sent a reset password link to your email.`,
+        //   });
+        // } else {
+        //   res.status(404).send({ message: 'Email sending failed' });
+        // }
       } else {
         res.status(404).send({ message: 'User not found' });
       }
@@ -697,6 +697,8 @@ userRouter.get(
     }
   })
 );
+
+
 userRouter.get(
   '/',
   expressAsyncHandler(async (req, res) => {

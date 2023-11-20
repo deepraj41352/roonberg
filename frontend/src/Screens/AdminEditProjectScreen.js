@@ -198,9 +198,10 @@ function AdminEditProject() {
       const selectedCategory = categoryData.find(
         (categoryItem) => categoryItem._id === category
       );
-      const agentsForCategory = agentData.filter(
-        (agentItem) => agentItem.agentCategory === selectedCategory._id
-      );
+      // const agentsForCategory = agentData.filter(
+      //   (agentItem) => agentItem.agentCategory === selectedCategory._id
+      // );
+      const agentsForCategory = agentData.filter((agentItem) => agentItem.agentCategory.includes(selectedCategory._id));
       const activeAgents = agentsForCategory.filter(
         (agentItem) => agentItem.userStatus === true
       );
@@ -622,7 +623,7 @@ function AdminEditProject() {
                                   )
                                 }
                               >
-                                {categoryData &&
+                                {categoryData && categoryData.length > 0 &&
                                   categoryData.map((category) => (
                                     <MenuItem
                                       key={category._id}

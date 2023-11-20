@@ -246,9 +246,9 @@ function AgentEditProject() {
   const options =
     categoryData && Array.isArray(categoryData)
       ? categoryData.map((item) => ({
-          label: item.categoryName,
-          value: item._id,
-        }))
+        label: item.categoryName,
+        value: item._id,
+      }))
       : [];
 
   const handleInputChange = (e) => {
@@ -272,7 +272,7 @@ function AgentEditProject() {
         const response = await axios.post(`/api/user/`, { role: 'contractor' });
         const datas = response.data;
         dispatch({ type: 'FATCH_CONTRACTOR', payload: datas });
-      } catch (error) {}
+      } catch (error) { }
     };
     FatchContractorData();
   }, []);
@@ -283,7 +283,7 @@ function AgentEditProject() {
         const response = await axios.post(`/api/user/`, { role: 'agent' });
         const datas = response.data;
         dispatch({ type: 'FATCH_AGENTS', payload: datas });
-      } catch (error) {}
+      } catch (error) { }
     };
     FatchAgentData();
   }, []);
@@ -410,7 +410,7 @@ function AgentEditProject() {
             <div className="projectScreenCard2 d-flex flex-column gap-4">
               <Card className={`projectScreenCard2 ${theme}CardBody`}>
                 <Card.Header className={`${theme}CardHeader`}>
-                  Chats
+                  Messages
                 </Card.Header>
                 <Card.Body className="d-flex flex-wrap gap-3 ">
                   <div
@@ -418,8 +418,8 @@ function AgentEditProject() {
                     style={{
                       display:
                         projectData &&
-                        projectData.conversions &&
-                        projectData.conversions.length < 1
+                          projectData.conversions &&
+                          projectData.conversions.length < 1
                           ? 'block'
                           : 'none',
                     }}
@@ -447,7 +447,7 @@ function AgentEditProject() {
                                       <Button
                                         className="chatBtn"
                                         type="button"
-                                        // onClick={conversionHandler(conversion._id)}
+                                      // onClick={conversionHandler(conversion._id)}
                                       >
                                         Chat Now
                                       </Button>
@@ -473,7 +473,7 @@ function AgentEditProject() {
                                       <Button
                                         className="chatBtn"
                                         type="button"
-                                        // onClick={conversionHandler(conversion._id)}
+                                      // onClick={conversionHandler(conversion._id)}
                                       >
                                         {assignedAgent.agentName}
                                       </Button>

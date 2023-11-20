@@ -10,22 +10,46 @@ import WidgetsDropdown from '../widgets/widgets/WidgetsDropdown';
 import WidgetsDropdown2 from '../widgets/widgets/WidgetsDropdown2';
 
 import axios from 'axios';
+import { ThreeDots } from 'react-loader-spinner';
 
 export default function AdminDashboard() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { toggleState, userInfo } = state;
+  const { toggleState, userInfo, } = state;
+
   const theme = toggleState ? 'dark' : 'light';
 
-  return userInfo.role == 'superadmin' || userInfo.role == 'admin' ? (
+  return (
     <>
-      <div className="px-4 mt-3">
-        <Row className="px-2 gap-3">
-          <Col className=" p-0 ">
-            <WidgetsDropdown />
-          </Col>
-        </Row>
+      {/* {dashboardLoadingUser || dashboardLoadingProject ? (
 
-        {/* <Row className="px-2 gap-3">
+        <>
+          <div className="ThreeDot">
+            <ThreeDots
+              height="80"
+              width="80"
+              radius="9"
+              className="ThreeDot justi`fy-content-center"
+              color="#0e0e3d"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClassName=""
+              visible={true}
+            />
+          </div>
+        </>
+      ) : ( */}
+
+      <>
+        {userInfo.role === 'superadmin' || userInfo.role === 'admin' ? (
+
+          <div className="px-4 mt-3">
+            <Row className="px-2 gap-3">
+              <Col className=" p-0 ">
+                <WidgetsDropdown />
+              </Col>
+            </Row>
+
+            {/* <Row className="px-2 gap-3">
           <Col className=" p-0 ">
             <Card className={`${theme}CardBody`}>
               <Card.Body>
@@ -92,15 +116,21 @@ export default function AdminDashboard() {
             )}
           </Col>
         </Row> */}
-      </div>
-    </>
-  ) : (
-    <>
-      <Row>
-        <Col className=" p-0 ">
-          <WidgetsDropdown2 />
-        </Col>
-      </Row>
+          </div>
+        ) : (
+          <>
+
+            <Row>
+              <Col className=" p-0 ">
+                <WidgetsDropdown2 />
+              </Col>
+            </Row>
+
+
+          </>
+        )}
+      </>
+
     </>
   );
-}
+};

@@ -147,12 +147,7 @@ export default function ContractorProject() {
         }
       } catch (error) {
         console.error(error);
-        dispatch({ type: 'FATCH_ERROR', payload: error });
-        if (error.response && error.response.status === 404) {
-          toast.error('You Dont Have Any Projects At The Moment.');
-        } else {
-          toast.error('An Error Occurred While Fetching Data');
-        }
+        toast.error('An Error Occurred While Fetching Data');
       }
     };
 
@@ -298,22 +293,8 @@ export default function ContractorProject() {
               />
             </div>
           </>
-        ) : projectData.length < 0 || error ? (
-          <div>
-            <Card>
-              <Card.Text>You don't have any projects at the moment.</Card.Text>
-              <Card.Text>Create new project.</Card.Text>
-              <Button
-                variant="outlined"
-                className=" m-2 d-flex globalbtnColor"
-                onClick={handleNew}
-              >
-                <BiPlusMedical className="mx-2" />
-                Add Project
-              </Button>
-            </Card>
-
-          </div>
+        ) : error ? (
+          <div>{error} </div>
         ) : (
           <>
             <div className="tabBorder mt-3">
@@ -447,6 +428,7 @@ export default function ContractorProject() {
                       localeText={{
                         noRowsLabel: 'Project Data Is Not Avalible',
                       }}
+
                     />
                   </Box>
                   <Modal open={isModelOpen} onClose={handleCloseRow}>
@@ -693,6 +675,9 @@ export default function ContractorProject() {
                       pageSizeOptions={[5]}
                       checkboxSelection
                       disableRowSelectionOnClick
+                      localeText={{
+                        noRowsLabel: 'Project Data Is Not Avalible',
+                      }}
                     />
                   </Box>
                 </Tab>
@@ -762,6 +747,9 @@ export default function ContractorProject() {
                       pageSizeOptions={[5]}
                       checkboxSelection
                       disableRowSelectionOnClick
+                      localeText={{
+                        noRowsLabel: 'Project Data Is Not Avalible',
+                      }}
                     />
                   </Box>
                 </Tab>
@@ -828,6 +816,9 @@ export default function ContractorProject() {
                       pageSizeOptions={[5]}
                       checkboxSelection
                       disableRowSelectionOnClick
+                      localeText={{
+                        noRowsLabel: 'Project Data Is Not Avalible',
+                      }}
                     />
                   </Box>
                 </Tab>

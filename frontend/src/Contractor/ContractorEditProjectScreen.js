@@ -382,7 +382,7 @@ function ContractorEditProject() {
               </Card>
               <Card className={`projectScreenCard2 ${theme}CardBody`}>
                 <Card.Header className={`${theme}CardHeader`}>
-                  Chats
+                  Messages
                 </Card.Header>
                 <Card.Body className="d-flex flex-wrap gap-3 ">
                   <div

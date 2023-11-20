@@ -84,7 +84,8 @@ export default function AdminAgentListScreen() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState();
   const [password, setPassword] = useState('');
-  const [selectcategory, setSelectCategory] = useState();
+  const [selectcategories, setSelectCategories] = useState([]);
+
   const [isDeleting, setIsDeleting] = useState(false);
   const [
     {
@@ -137,6 +138,7 @@ export default function AdminAgentListScreen() {
         const response = await axios.post(`/api/user/`, { role: role });
         const datas = response.data;
         const rowData = datas.map((items) => {
+
           const categoryName = categoryData.find(
             (category) => category._id === items.agentCategory
           );
@@ -146,7 +148,12 @@ export default function AdminAgentListScreen() {
             first_name: items.first_name,
             email: items.email,
             userStatus: items.userStatus ? 'Active' : 'Inactive',
-            agentCategory: categoryName ? categoryName.categoryName : '',
+            agentCategory: items.agentCategory.map((categoryId) => {
+              const category = categoryData.find((cat) => cat._id === categoryId);
+              return category ? category.categoryName : ''; // Use category name or an empty string if not found
+            }),
+            // agentCategory: items.agentCategory.length>0?items.agentCategory.map((categoryId)=>{ })
+            // agentCategory: categoryName ? categoryName.categoryName : '',
           };
         });
         dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
@@ -175,7 +182,7 @@ export default function AdminAgentListScreen() {
           email: email,
           role: role,
           userStatus: status,
-          agentCategory: selectcategory,
+          agentCategory: selectcategories,
         },
         { headers: { Authorization: `Bearer ${userInfo.token}` } }
       );
@@ -186,7 +193,7 @@ export default function AdminAgentListScreen() {
         setLastName('');
         setStatus('');
         setEmail('');
-        setSelectCategory('');
+        setSelectCategories('');
         dispatch({ type: 'UPDATE_SUCCESS', payload: true });
         dispatch({ type: 'FATCH_SUBMITTING', payload: false });
       }
@@ -234,6 +241,10 @@ export default function AdminAgentListScreen() {
 
   const handleEdit = (userid) => {
     navigate(`/adminEditAgent/${userid}`);
+  };
+
+  const handleCategories = (event) => {
+    setSelectCategories(event.target.value);
   };
 
   return (
@@ -444,12 +455,41 @@ export default function AdminAgentListScreen() {
                         <MenuItem value={false}>Inactive</MenuItem>
                       </Select>
                     </FormControl>
-                    <FormControl className="mb-3">
+                    <FormControl fullWidth className="mb-3">
+                      <InputLabel>Select Categories</InputLabel>
+                      <Select
+                        required
+                        multiple
+                        value={selectcategories}
+                        onChange={handleCategories}
+                      // renderValue={(selected) => (
+                      //   <div>
+                      //     {categoryData && selected
+                      //       ? selected.map((value) => (
+                      //           <span key={value}>
+                      //             {categoryData.find(
+                      //               (option) => option._id === value
+                      //             ).categoryName + ','}
+                      //           </span>
+                      //         ))
+                      //       : ''}
+                      //   </div>
+                      // )}
+                      >
+                        {categoryData &&
+                          categoryData.map((option) => (
+                            <MenuItem key={option._id} value={option._id}>
+                              {option.categoryName}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                    </FormControl>
+                    {/* <FormControl className="mb-3">
                       <InputLabel>Select Category</InputLabel>
                       <Select
                         required
-                        value={selectcategory}
-                        onChange={(e) => setSelectCategory(e.target.value)}
+                        value={selectcategories}
+                        onChange={(e) => setSelectCategories(e.target.value)}
                       >
                         {categoryData.map((items) => (
                           <MenuItem key={items._id} value={items._id}>
@@ -457,7 +497,7 @@ export default function AdminAgentListScreen() {
                           </MenuItem>
                         ))}
                       </Select>
-                    </FormControl>
+                    </FormControl> */}
                     <br></br>
                     <Button
                       className="mt-2 formbtn globalbtnColor"

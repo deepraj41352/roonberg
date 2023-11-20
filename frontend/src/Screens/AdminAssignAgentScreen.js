@@ -191,24 +191,24 @@ function AdminEditProject() {
 
   const selectAgentByCateHandle = (index) => {
     const category = agents[index].categoryId;
-    if (Array.isArray(categoryData)) {
-      if (category) {
-        const selectedCategory1 = categoryData.find(
-          (categoryItem) => categoryItem._id === category
-        );
-        if (selectedCategory1) {
-          const agentForCategory = agentData.filter(
-            (agentItem) => agentItem.agentCategory === selectedCategory1._id
-          );
-          if (agentForCategory) {
-            return agentForCategory;
-          }
-        }
+    if (category) {
+      const selectedCategory = categoryData.find(
+        (categoryItem) => categoryItem._id === category
+      );
+      // const agentsForCategory = agentData.filter(
+      //   (agentItem) => agentItem.agentCategory === selectedCategory._id
+      // );
+      const agentsForCategory = agentData.filter((agentItem) => agentItem.agentCategory.includes(selectedCategory._id));
+      const activeAgents = agentsForCategory.filter(
+        (agentItem) => agentItem.userStatus === true
+      );
+
+      if (activeAgents.length > 0) {
+        return activeAgents;
       }
     }
     return [];
   };
-
   const addDynamicFields = () => {
     setAgents([...agents, {}]);
   };
@@ -501,7 +501,7 @@ function AdminEditProject() {
               <div className="projectScreenCard2 d-flex flex-column gap-4">
                 <Card className={`projectScreenCard2 ${theme}CardBody`}>
                   <Card.Header className={`${theme}CardHeader`}>
-                    Chats
+                    Messages
                   </Card.Header>
                   <Card.Body className="d-flex flex-wrap gap-3 ">
                     <div

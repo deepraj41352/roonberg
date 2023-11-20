@@ -63,11 +63,7 @@ const columns = [
     width: 200,
   },
   { field: '_id', headerName: 'ID', width: 250 },
-  // {
-  //   field: 'userStatus',
-  //   headerName: 'Status',
-  //   width: 100,
-  // },
+
 ];
 
 export default function AdminContractorListScreen() {

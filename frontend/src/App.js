@@ -59,6 +59,7 @@ import NotificationScreen from './Screens/NotificationScreen';
 import AdminListScreen from './Screens/AdminListScreen';
 import SuperadminAdminList from './Screens/SuperadminAdminList';
 import MyComponent from './Components/MyComponent';
+import MessagesScreen from './Screens/MessagesScreen';
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -228,7 +229,7 @@ function App() {
                             )}
                           </Link>
                           {/* <Link to="/projectNotification">Notification</Link> */}
-                          <Link to="#">Setting</Link>
+                          {/* <Link to="#">Setting</Link> */}
                           <hr />
                           <Link onClick={signoutHandler} to="#">
                             Logout
@@ -424,6 +425,12 @@ function App() {
                       path="/notificationScreen"
                       element={<NotificationScreen />}
                     />
+
+                    <Route
+                      path="/messagesScreen"
+                      element={<MessagesScreen />}
+                    />
+
                   </Routes>
                 </div>
               </main>

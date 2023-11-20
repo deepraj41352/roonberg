@@ -176,11 +176,11 @@ export default function AgentProjectList() {
       } catch (error) {
         console.error(error);
         dispatch({ type: 'FATCH_ERROR', payload: error });
-        if (error.response && error.response.status === 404) {
-          toast.error('No projects have been assigned to you yet');
-        } else {
-          toast.error('An error occurred while fetching data');
-        }
+        // if (error.response && error.response.status === 404) {
+        //   console.log('No projects have been assigned to you yet');
+        // } else {
+        //   toast.error('An error occurred while fetching data');
+        // }
       }
     };
     FatchProjectData();
@@ -219,12 +219,8 @@ export default function AgentProjectList() {
               />
             </div>
           </>
-        ) : projectData.length < 0 || error ? (
-          <div>
-            <Card>
-              <Card.Text>No projects have been assigned to you yet</Card.Text>
-            </Card>
-          </div>
+        ) : error ? (
+          <div>{error}</div>
         ) : (
           <>
             <div className="tabBorder mt-3">
@@ -407,6 +403,9 @@ export default function AgentProjectList() {
                       pageSizeOptions={[5]}
                       checkboxSelection
                       disableRowSelectionOnClick
+                      localeText={{
+                        noRowsLabel: 'Project Data Is Not Avalible',
+                      }}
                     />
                   </Box>
                 </Tab>
@@ -467,6 +466,9 @@ export default function AgentProjectList() {
                       pageSizeOptions={[5]}
                       checkboxSelection
                       disableRowSelectionOnClick
+                      localeText={{
+                        noRowsLabel: 'Project Data Is Not Avalible',
+                      }}
                     />
                   </Box>
                 </Tab>
@@ -525,6 +527,9 @@ export default function AgentProjectList() {
                       pageSizeOptions={[5]}
                       checkboxSelection
                       disableRowSelectionOnClick
+                      localeText={{
+                        noRowsLabel: 'Project Data Is Not Avalible',
+                      }}
                     />
                   </Box>
                 </Tab>

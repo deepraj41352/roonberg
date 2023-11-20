@@ -144,15 +144,15 @@ export default function AdminProjectListScreen() {
       const selectedCategory = categoryData.find(
         (categoryItem) => categoryItem._id === category
       );
-      const agentsForCategory = agentData.filter(
-        (agentItem) => agentItem.agentCategory === selectedCategory._id
-      );
+      const agentsForCategory = agentData.filter((agentItem) => agentItem.agentCategory.includes(selectedCategory._id));
+
       const activeAgents = agentsForCategory.filter(
         (agentItem) => agentItem.userStatus === true
       );
 
       if (activeAgents.length > 0) {
         return activeAgents;
+
       }
     }
     return [];
@@ -247,6 +247,7 @@ export default function AdminProjectListScreen() {
     FatchAgentData();
   }, []);
 
+
   useEffect(() => {
     const FatchProjectData = async () => {
       try {
@@ -318,7 +319,7 @@ export default function AdminProjectListScreen() {
   });
 
   const currentDate = dayjs();
-  console.log('currentDate', currentDate);
+
 
   const validateDates = (newStartDate, newEndDate) => {
     setStartDate(newStartDate);
@@ -920,6 +921,7 @@ export default function AdminProjectListScreen() {
                       pageSizeOptions={[5]}
                       checkboxSelection
                       disableRowSelectionOnClick
+                      localeText={{ noRowsLabel: 'Project Data Is Not Avalible' }}
                     />
                   </Box>
                 </Tab>
@@ -983,6 +985,7 @@ export default function AdminProjectListScreen() {
                       pageSizeOptions={[5]}
                       checkboxSelection
                       disableRowSelectionOnClick
+                      localeText={{ noRowsLabel: 'Project Data Is Not Avalible' }}
                     />
                   </Box>
                 </Tab>
@@ -1044,6 +1047,7 @@ export default function AdminProjectListScreen() {
                       pageSizeOptions={[5]}
                       checkboxSelection
                       disableRowSelectionOnClick
+                      localeText={{ noRowsLabel: 'Project Data Is Not Avalible' }}
                     />
                   </Box>
                 </Tab>
@@ -1101,6 +1105,7 @@ export default function AdminProjectListScreen() {
                       pageSizeOptions={[5]}
                       checkboxSelection
                       disableRowSelectionOnClick
+                      localeText={{ noRowsLabel: 'Project Data Is Not Avalible' }}
                     />
                   </Box>
                 </Tab>

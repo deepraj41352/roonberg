@@ -73,7 +73,7 @@ function ChatWindowScreen() {
     if (selectedfile && selectedfile.type) {
       const mediaType =
         selectedfile.type.includes('video') ||
-        selectedfile.type.includes('audio')
+          selectedfile.type.includes('audio')
           ? 'video'
           : 'image';
       setMediaType(mediaType);
@@ -243,7 +243,7 @@ function ChatWindowScreen() {
 
   useEffect(() => {
     socket.current.emit('addUser', userInfo._id, userInfo.role);
-    socket.current.on('getUsers', (users) => {});
+    socket.current.on('getUsers', (users) => { });
   }, []);
 
   useEffect(() => {
