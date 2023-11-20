@@ -53,7 +53,8 @@ userRouter.post(
   expressAsyncHandler(async (req, res) => {
     const role = req.body.role;
     try {
-      const users = await User.find({ role }).sort({ createdAt: -1 });
+      const confirmedUsers = await User.find({ role }).sort({ createdAt: -1 });
+      const users = confirmedUsers.filter((user) => user.isConfirmed === true);
       res.json(users);
     } catch (error) {
       console.error(error);

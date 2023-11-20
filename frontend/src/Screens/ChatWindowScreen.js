@@ -32,7 +32,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import MUIRichTextEditor from 'mui-rte';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { MdCancel } from 'react-icons/md';
-import { FaArrowLeft } from 'react-icons/fa';
+import { FaArrowLeft, FaImage } from 'react-icons/fa';
 
 function ChatWindowScreen() {
   const { id } = useParams();
@@ -62,6 +62,7 @@ function ChatWindowScreen() {
   const [showModal, setShowModal] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
   const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [MessageWithImage, setMessageWithImage] = useState('');
 
   const [showImage, setShowImage] = useState(false);
 
@@ -130,6 +131,7 @@ function ChatWindowScreen() {
         Sender_Profile: data.Sender_Profile,
         sender: data.senderId,
         image: data.image,
+        ImagewithMessage: data.ImagewithMessage,
         createdAt: Date.now(),
       });
     });
@@ -329,6 +331,7 @@ function ChatWindowScreen() {
   const [clearEditor, setClearEditor] = useState(false);
   const [newMessage, setNewMessage] = useState('');
   const handleSendMessage = async () => {
+    setMessageWithImage('');
     setClearEditor(true);
     setShowModal(false);
     const messageObject = {
@@ -400,7 +403,7 @@ function ChatWindowScreen() {
       formDatas.append('mediaType', mediaType);
       formDatas.append('conversationId', id);
       formDatas.append('sender', userInfo._id);
-      formDatas.append('text', newMessage);
+      formDatas.append('ImagewithMessage', MessageWithImage);
       formDatas.append('senderFirstName', userInfo.first_name);
       formDatas.append('senderLastName', userInfo.last_name);
       formDatas.append('Sender_Profile', userInfo.profile_picture);
@@ -415,6 +418,7 @@ function ChatWindowScreen() {
             senderId: userInfo._id,
             receiverdId: conversationID.members,
             image: data.image,
+            ImagewithMessage: data.ImagewithMessage,
           };
           socket.current.emit('image', messageData);
         } else {
@@ -425,6 +429,7 @@ function ChatWindowScreen() {
             senderId: userInfo._id,
             receiverdId: receiverdId,
             image: data.image,
+            ImagewithMessage: data.ImagewithMessage,
           };
           socket.current.emit('image', messageData);
         }
@@ -653,6 +658,17 @@ function ChatWindowScreen() {
                       <Modal.Body>
                         Your file has been selected.
                         <h4> {fileForModel?.name}</h4>
+                        <Form.Control
+                          disabled={isSubmiting}
+                          type="text"
+                          style={{ display: showFontStyle ? 'none' : 'block' }}
+                          placeholder="Type your message here..."
+                          aria-label="Search"
+                          aria-describedby="basic-addon2"
+                          onKeyPress={handleKeyPress}
+                          value={MessageWithImage}
+                          onChange={(e) => setMessageWithImage(e.target.value)}
+                        />
                       </Modal.Body>
                       <Modal.Footer>
                         <Button
@@ -711,7 +727,14 @@ function ChatWindowScreen() {
                             </div>
                           </div>
                           <div>
-                            <img className="chat-dp" src={item.image}></img>
+                            <img
+                              className="chat-dp"
+                              src={
+                                item.Sender_Profile
+                                  ? item.Sender_Profile
+                                  : './avatar.png'
+                              }
+                            ></img>
                           </div>
                         </div>
                       </div>
@@ -745,11 +768,19 @@ function ChatWindowScreen() {
                                   </video>
                                 ) : (
                                   <>
-                                    <img
-                                      onClick={handleforsetImage}
-                                      src={item.image}
-                                      className="chat-receiverMsg-inner w-100 p-2"
-                                    />
+                                    <div className="Imagewithmessage-sender p-2">
+                                      <FaImage className="icon-of-image" />
+                                      <div className=" imagefor-icon">
+                                        <img
+                                          onClick={handleforsetImage}
+                                          src={item.image}
+                                          className="chat-receiverMsg-inner w-100 p-2 "
+                                        />{' '}
+                                      </div>
+                                      <p className=" messageimg">
+                                        {item.ImagewithMessage}
+                                      </p>
+                                    </div>
                                   </>
                                 )}
                               </>
@@ -845,15 +876,20 @@ function ChatWindowScreen() {
                                 </video>
                               ) : (
                                 <>
-                                  <img
-                                    onClick={handleforsetImage}
-                                    src={
-                                      item.conversationId
-                                        ? item.image
-                                        : `${SocketUrl}/${item.image}`
-                                    }
-                                    className="chat-senderMsg-inner w-100 p-2"
-                                  />
+                                  <div className="Imagewithmessage-reciver p-2">
+                                    <p className=" messageimg1">
+                                      {item.ImagewithMessage}
+                                    </p>
+
+                                    <FaImage className="icon-of-image" />
+                                    <div className=" imagefor-icon">
+                                      <img
+                                        onClick={handleforsetImage}
+                                        src={item.image}
+                                        className="chat-senderMsg-inner w-100 p-2 "
+                                      />{' '}
+                                    </div>
+                                  </div>
                                 </>
                               )}
                             </>
@@ -982,9 +1018,10 @@ function ChatWindowScreen() {
                 ariaLabel="blocks-loading"
                 wrapperStyle={{}}
                 wrapperClass="blocks-wrapper"
-                colors={[
-                  'rgba(0, 0, 0, 1) 0%, rgba(17, 17, 74, 1) 68%, rgba(0, 0, 0, 1) 93%',
-                ]}
+                // colors={[
+                //   'rgba(0, 0, 0, 1) 0%, rgba(17, 17, 74, 1) 68%, rgba(0, 0, 0, 1) 93%',
+                // ]}
+                className={`${theme}-ringhcolor`}
               />
             ) : (
               <IoSendSharp
@@ -1039,6 +1076,17 @@ function ChatWindowScreen() {
                 <Modal.Body>
                   Your file has been selected.
                   <h4> {fileForModel?.name}</h4>
+                  <Form.Control
+                    disabled={isSubmiting}
+                    type="text"
+                    style={{ display: showFontStyle ? 'none' : 'block' }}
+                    placeholder="Type your message here..."
+                    aria-label="Search"
+                    aria-describedby="basic-addon2"
+                    onKeyPress={handleKeyPress}
+                    value={MessageWithImage}
+                    onChange={(e) => setMessageWithImage(e.target.value)}
+                  />
                 </Modal.Body>
                 <Modal.Footer>
                   <Button className="btn-send" onClick={handleSendMessage}>

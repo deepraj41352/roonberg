@@ -431,7 +431,7 @@ export default function ContractorProject() {
                         },
                       }}
                       pageSizeOptions={[5]}
-                      checkboxSelection
+                      // checkboxSelection
                       disableRowSelectionOnClick
                       localeText={{
                         noRowsLabel: 'Project Data Is Not Avalible',
@@ -682,7 +682,7 @@ export default function ContractorProject() {
                         },
                       }}
                       pageSizeOptions={[5]}
-                      checkboxSelection
+                      // checkboxSelection
                       disableRowSelectionOnClick
                       localeText={{
                         noRowsLabel: 'Project Data Is Not Avalible',
@@ -825,7 +825,7 @@ export default function ContractorProject() {
                         },
                       }}
                       pageSizeOptions={[5]}
-                      checkboxSelection
+                      // checkboxSelection
                       disableRowSelectionOnClick
                       localeText={{
                         noRowsLabel: 'Project Data Is Not Avalible',

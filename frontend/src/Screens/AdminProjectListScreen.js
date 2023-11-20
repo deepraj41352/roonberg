@@ -1060,7 +1060,7 @@ export default function AdminProjectListScreen() {
                         },
                       }}
                       pageSizeOptions={[5]}
-                      checkboxSelection
+                      // checkboxSelection
                       disableRowSelectionOnClick
                       localeText={{
                         noRowsLabel: 'Project Data Is Not Avalible',

@@ -1321,6 +1321,58 @@ body {
 }
 
 /* karan.......... */
+.dark-ringhcolor {
+  color: #fff !important;
+}
+.Imagewithmessage-sender {
+  display: flex;
+  /* flex-direction: column; */
+  justify-items: flex-end;
+  align-items: center;
+  padding: 0;
+  /* border: 2px solid; */
+  /* box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); */
+}
+.Imagewithmessage-reciver {
+  display: flex;
+  /* flex-direction: column; */
+  justify-items: flex-start;
+  align-items: center;
+  padding: 0;
+  /* border: 2px solid; */
+  /* box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); */
+}
+.messageimg {
+  max-width: 300px;
+  padding-right: 8px;
+  margin: 0;
+}
+.messageimg1 {
+  max-width: 300px;
+  padding-right: 16px;
+  padding-left: 8px;
+  margin: 0;
+}
+
+.imagefor-icon {
+  /* margin-bottom: 12px; */
+}
+
+.imagefor-icon img {
+  position: relative;
+  top: 2%;
+  right: 100%;
+  width: 12px;
+  height: 12px;
+
+  /* height: 12px;
+    position: relative;
+    right: 100%; */
+}
+.icon-of-image {
+  /* margin-bottom: 12px; */
+  color: gray;
+}
 .NameofOposite {
   font-size: 20px;
   font-weight: 600;

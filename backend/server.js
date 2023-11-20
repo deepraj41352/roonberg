@@ -405,6 +405,7 @@ io.on('connection', (socket) => {
       Sender_Profile: data.Sender_Profile,
       senderId: data.senderId,
       image: data.image,
+      ImagewithMessage: data.ImagewithMessage,
     });
     // fs.writeFile(filePath, imageBuffer, (err) => {
     //   if (err) {
@@ -432,6 +433,7 @@ io.on('connection', (socket) => {
           Sender_Profile: data.Sender_Profile,
           senderId: data.senderId,
           image: data.image,
+          ImagewithMessage: data.ImagewithMessage,
         });
       }
       if (contractor) {
@@ -441,6 +443,7 @@ io.on('connection', (socket) => {
           Sender_Profile: data.Sender_Profile,
           senderId: data.senderId,
           image: data.image,
+          ImagewithMessage: data.ImagewithMessage,
         });
       }
     } else {
@@ -455,6 +458,7 @@ io.on('connection', (socket) => {
           Sender_Profile: data.Sender_Profile,
           senderId: data.senderId,
           image: data.image,
+          ImagewithMessage: data.ImagewithMessage,
         });
       });
       if (user) {
@@ -465,6 +469,7 @@ io.on('connection', (socket) => {
           Sender_Profile: data.Sender_Profile,
           senderId: data.senderId,
           image: data.image,
+          ImagewithMessage: data.ImagewithMessage,
         });
       }
     }

@@ -51,7 +51,6 @@ const reducer = (state, action) => {
 };
 
 const columns = [
-  { field: '_id', headerName: 'ID', width: 200 },
   {
     field: 'first_name',
     headerName: 'Admin Name',
@@ -67,6 +66,7 @@ const columns = [
   //     headerName: 'Status',
   //     width: 100,
   // },
+  { field: '_id', headerName: 'ID', width: 200 },
 ];
 
 export default function SuperadminAdminList() {
@@ -338,7 +338,7 @@ export default function SuperadminAdminList() {
                   },
                 }}
                 pageSizeOptions={[5]}
-                checkboxSelection
+                // checkboxSelection
                 disableRowSelectionOnClick
                 localeText={{ noRowsLabel: 'Admin Data Is Not Avalible' }}
               />
