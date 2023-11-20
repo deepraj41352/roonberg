@@ -25,7 +25,7 @@ import {
 } from 'react-icons/bs';
 import { FiUpload } from 'react-icons/fi';
 import Modal from 'react-bootstrap/Modal';
-import { ColorRing, ThreeDots } from 'react-loader-spinner';
+import { Audio, ColorRing, ThreeDots } from 'react-loader-spinner';
 import Button from 'react-bootstrap/Button';
 import { Editor } from '@tinymce/tinymce-react';
 // import { EditorValue } from "react-rte";
@@ -947,7 +947,23 @@ function ChatWindowScreen() {
                     disabled={!isRecording}
                     style={{ display: !isRecording ? 'none' : 'block' }}
                   />
+                  <div
+                    onClick={stopRecording}
+                    disabled={!isRecording}
+                    style={{ display: !isRecording ? 'none' : 'block' }}
+                  >
+                    <Audio
+                      height="25"
+                      width="25"
+                      color="#07162c"
+                      ariaLabel="audio-loading"
+                      wrapperStyle={{}}
+                      wrapperClass="wrapper-class"
+                      visible={true}
+                    />
+                  </div>
                 </div>
+
                 <div className="d-flex justify-content-center align-items-center ps-2 ">
                   <RxFontStyle
                     className="w-100 rxfontstryle"

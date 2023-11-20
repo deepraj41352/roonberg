@@ -127,16 +127,17 @@ export default function AdminProjectListScreen() {
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [projectOwner, setProjectOwner] = useState('');
-  const [startDate, setStartDate] = useState();
-  const [endDate, setEndDate] = useState();
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [startDateError, setStartDateError] = useState('');
   const [endDateError, setEndDateError] = useState('');
   const navigate = useNavigate();
+  const [errorAccured, setErrorAccured] = useState(false);
   const [agents, setAgents] = useState([{ categoryId: '' }]);
   const [categories, setCategories] = useState([]);
   const [projectStatus, setProjectStatus] = useState('active');
   const [isDeleting, setIsDeleting] = useState(false);
-  const [errorAccured, setErrorAccured] = useState(false);
+  // const [errorAccured, setErrorAccured] = useState(false);
   const assignedAgentByCateHandle = (index) => {
     const category = agents[index].categoryId;
     if (category) {
@@ -315,17 +316,62 @@ export default function AdminProjectListScreen() {
       item.assignedAgent.every((agent) => !agent?.agentId || !agent?.agentName)
     );
   });
-  console.log("assignedAgent", assignedAgent)
 
+  const currentDate = dayjs();
+  console.log('currentDate', currentDate);
 
+  const validateDates = (newStartDate, newEndDate) => {
+    setStartDate(newStartDate);
+    setEndDate(newEndDate);
+    const selectedStartDate = dayjs(newStartDate);
+    const selectedEndDate = dayjs(newEndDate);
 
+    if (
+      selectedStartDate.isAfter(currentDate, 'day') ||
+      selectedStartDate.isSame(currentDate, 'day')
+    ) {
+      setStartDate(newStartDate);
+      setStartDateError('');
 
+      if (newEndDate) {
+        if (
+          selectedEndDate.isAfter(selectedStartDate, 'day') ||
+          selectedEndDate.isSame(selectedStartDate, 'day')
+        ) {
+          setEndDate(newEndDate);
+          setEndDateError('');
+          setErrorAccured(false);
+        } else {
+          setErrorAccured(true);
+          setEndDateError(
+            'End date must be greater than or equal to the Start Date.'
+          );
+        }
+      }
+    } else {
+      setErrorAccured(true);
+      setStartDateError(
+        'Start date must be greater than or equal to the current date.'
+      );
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const filteredAgents = agents.filter((obj) => Object.keys(obj).length > 1);
     setIsSubmiting(true);
-    console.log('agent', agents);
+    if (startDate === null || endDate === null) {
+      setErrorAccured(true);
+      if (startDate === null) {
+        setStartDateError('Start date required.');
+      }
+      if (endDate === null) {
+        setEndDateError('End date required.');
+      }
+
+      setIsSubmiting(false);
+      return;
+    }
     try {
       const response = await axios.post(
         '/api/project/admin/addproject',
@@ -397,43 +443,6 @@ export default function AdminProjectListScreen() {
 
   const handleAssigndment = (userid) => {
     navigate(`/AdminAssignAgent/${userid}`);
-  };
-
-  const currentDate = dayjs();
-
-  const validateDates = (newStartDate, newEndDate) => {
-    setStartDate(newStartDate);
-    setEndDate(newEndDate);
-    const selectedStartDate = dayjs(newStartDate);
-    const selectedEndDate = dayjs(newEndDate);
-
-    if (
-      selectedStartDate.isAfter(currentDate, 'day') ||
-      selectedStartDate.isSame(currentDate, 'day')
-    ) {
-      setStartDate(newStartDate);
-      setStartDateError('');
-
-      if (newEndDate) {
-        if (
-          selectedEndDate.isAfter(selectedStartDate, 'day') ||
-          selectedEndDate.isSame(selectedStartDate, 'day')
-        ) {
-          setEndDate(newEndDate);
-          setEndDateError('');
-        } else {
-          setEndDateError(
-            'End date must be greater than or equal to the Start Date.'
-          );
-          setErrorAccured(true)
-        }
-      }
-    } else {
-      setStartDateError(
-        'Start date must be greater than or equal to the current date.'
-      );
-      setErrorAccured(true)
-    }
   };
 
   const moreFieldsopen = () => {
@@ -799,8 +808,8 @@ export default function AdminProjectListScreen() {
                               <DatePicker
                                 className="marginDate"
                                 label="Start Date"
-                                required
                                 value={startDate}
+                                required
                                 onChange={(newValue) =>
                                   validateDates(newValue, endDate)
                                 }
@@ -816,8 +825,8 @@ export default function AdminProjectListScreen() {
                               <DatePicker
                                 className="mb-3"
                                 label="End Date"
-                                required
                                 value={endDate}
+                                required
                                 onChange={(newValue) =>
                                   validateDates(startDate, newValue)
                                 }
@@ -825,6 +834,7 @@ export default function AdminProjectListScreen() {
                                   <TextField
                                     {...params}
                                     style={{ color: 'white' }}
+                                    autoComplete="off"
                                   />
                                 )}
                               />
@@ -841,7 +851,6 @@ export default function AdminProjectListScreen() {
                             color="primary"
                             type="submit"
                             disabled={errorAccured}
-
                             className="mt-2 formbtn updatingBtn globalbtnColor"
                           >
                             {isSubmiting ? 'SUBMITTING' : 'SUBMIT '}

@@ -974,6 +974,7 @@ body {
 }
 .badgesclass {
   font-size: 10px !important;
+  margin-left: 10px;
   left: 112% !important;
 }
 .btn-send {

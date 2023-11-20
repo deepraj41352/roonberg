@@ -449,7 +449,185 @@ export default function ContractorProject() {
                       }}
                     />
                   </Box>
+                  <Modal open={isModelOpen} onClose={handleCloseRow}>
+                    <Box
+                      className="modelBg  modalRespnsive"
+                      sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: 400,
+                        bgcolor: 'background.paper',
+                        boxShadow: 24,
+                        p: isSubmiting ? 0 : 4,
+                      }}
+                    >
+                      <div className="overlayLoading">
+                        {isSubmiting && (
+                          <div className="overlayLoadingItem1 y-3">
+                            <ColorRing
+                              visible={true}
+                              height="40"
+                              width="40"
+                              ariaLabel="blocks-loading"
+                              wrapperStyle={{}}
+                              wrapperClass="blocks-wrapper"
+                              colors={[
+                                'rgba(0, 0, 0, 1) 0%',
+                                'rgba(255, 255, 255, 1) 68%',
+                                'rgba(0, 0, 0, 1) 93%',
+                              ]}
+                            />
+                          </div>
+                        )}
 
+                        <Form
+                          onSubmit={handleSubmit}
+                          className={
+                            isSubmiting
+                              ? 'scrollInAdminproject p-4 '
+                              : 'scrollInAdminproject px-3'
+                          }
+                        >
+                          <ImCross
+                            color="black"
+                            className="formcrossbtn"
+                            onClick={handleCloseRow}
+                          />
+                          <h4 className="d-flex justify-content-center">
+                            Add Project
+                          </h4>
+                          <TextField
+                            required
+                            className="mb-3"
+                            value={projectName}
+                            onChange={(e) => setProjectName(e.target.value)}
+                            label="Project Name"
+                            fullWidth
+                          />
+
+                          <TextField
+                            required
+                            className="mb-3"
+                            id="outlined-multiline-static"
+                            onChange={(e) =>
+                              setProjectDescription(e.target.value)
+                            }
+                            label="Project Description"
+                            multiline
+                            rows={4}
+                            fullWidth
+                            variant="outlined"
+                          // value={'text'}
+                          // onChange={handleChange}
+                          />
+                          <FormControl fullWidth className="mb-3">
+                            <InputLabel>Select Categories</InputLabel>
+                            <Select
+                              required
+                              multiple
+                              value={selectedOptions}
+                              onChange={handleChange}
+                            // renderValue={(selected) => (
+                            //   <div>
+                            //     {categoryData && selected
+                            //       ? selected.map((value) => (
+                            //           <span key={value}>
+                            //             {categoryData.find(
+                            //               (option) => option._id === value
+                            //             ).categoryName + ','}
+                            //           </span>
+                            //         ))
+                            //       : ''}
+                            //   </div>
+                            // )}
+                            >
+                              {categoryData &&
+                                categoryData.map((option) => (
+                                  <MenuItem key={option._id} value={option._id}>
+                                    {option.categoryName}
+                                  </MenuItem>
+                                ))}
+                            </Select>
+                          </FormControl>
+                          <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <DatePicker
+                              className="marginDate"
+                              label="Start Date"
+                              value={startDate}
+                              onChange={(newValue) =>
+                                validateDates(newValue, endDate)
+                              }
+                              renderInput={(params) => (
+                                <TextField {...params} />
+                              )}
+                            />
+                            {startDateError && (
+                              <div className="Datevalidation">
+                                {startDateError}
+                              </div>
+                            )}
+                            <DatePicker
+                              className="mb-3"
+                              label="End Date"
+                              value={endDate}
+                              // onChange={(date) => setEndDate(date)}
+                              onChange={(newValue) =>
+                                validateDates(startDate, newValue)
+                              }
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  style={{ color: 'white' }}
+                                />
+                              )}
+                            />
+                            {endDateError && (
+                              <div className="Datevalidation">
+                                {endDateError}
+                              </div>
+                            )}
+                          </LocalizationProvider>
+                          {/* <LocalizationProvider dateAdapter={AdapterDayjs} className="mb-3">
+                          <DateField
+                            required
+                            label="Start Date"
+                            value={startDate}
+                            onChange={(newValue) =>
+                              validateDates(newValue, endDate)
+                            }
+                            format="MM-DD-YYYY"
+                          />
+                          {startDateError && (
+                            <div style={{ color: 'red' }}>{startDateError}</div>
+                          )}
+                          <DateField
+                            required
+                            label="End Date"
+                            value={endDate}
+                            onChange={(newValue) =>
+                              validateDates(startDate, newValue)
+                            }
+                            format="MM-DD-YYYY"
+                          />
+                          {endDateError && (
+                            <div style={{ color: 'red' }}>{endDateError}</div>
+                          )}
+                        </LocalizationProvider> */}
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            disabled={isSubmiting}
+                            className="mt-2 formbtn updatingBtn globalbtnColor"
+                          >
+                            {isSubmiting ? 'SUBMITTING' : 'SUBMIT '}
+                          </Button>
+                        </Form>
+                      </div>
+                    </Box>
+                  </Modal>
                 </Tab>
                 <Tab className="tab-color"
                   eventKey="Active"

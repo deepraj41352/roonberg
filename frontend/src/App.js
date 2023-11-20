@@ -216,7 +216,18 @@ function App() {
                           onClick={closeDropdown}
                         >
                           <Link to="/profile-screen">Profile</Link>
-                          <Link to="/projectNotification">Notification</Link>
+                          <Link
+                            to="/notificationScreen"
+                            className="position-relative"
+                          >
+                            Notification
+                            {NotificationData.length > 0 && (
+                              <span className="position-absolute notification-badgeApp top-0 start-110 translate-middle badge rounded-pill bg-danger">
+                                {NotificationData.length}
+                              </span>
+                            )}
+                          </Link>
+                          {/* <Link to="/projectNotification">Notification</Link> */}
                           <Link to="#">Setting</Link>
                           <hr />
                           <Link onClick={signoutHandler} to="#">

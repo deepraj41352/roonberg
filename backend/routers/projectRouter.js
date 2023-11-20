@@ -71,6 +71,22 @@ projectRouter.get(
     }
   })
 );
+projectRouter.get(
+  '/',
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const userRole = req.user.role;
+      if (userRole === 'superadmin') {
+        const projects = await Project.find();
+        res.json(projects);
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  })
+);
 
 // user create project
 projectRouter.post(
@@ -356,7 +372,7 @@ projectRouter.post(
           projectCategory: req.body.projectCategory,
           createdDate: req.body.createdDate,
           endDate: req.body.endDate,
-          projectStatus: (req.body.projectStatus),
+          projectStatus: req.body.projectStatus,
           projectOwner: contractorId,
           assignedAgent: assignedAgent,
         });

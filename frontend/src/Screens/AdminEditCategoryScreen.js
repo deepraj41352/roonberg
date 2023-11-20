@@ -180,13 +180,20 @@ function AdminEditCategory() {
                       className="p-4 w-100 editFormWidth "
                     >
                       <Row className="editImgParent">
-                        <Col className="">
+                        <Col>
                           {categoryData.categoryImage !== 'null' ? (
+                            <Avatar src={categoryData.categoryImage} />
+                          ) : (
+                            <AvatarImage
+                              id="cateEditImgAvatar"
+                              name={category}
+                              bgColor={color}
+                            />
                             <Avatar
                               src={categoryData.categoryImage}
                             />
                           ) : (
-                            <AvatarImage id="cateEditImgAvatar" name={category} bgColor={color} />
+                          <AvatarImage id="cateEditImgAvatar" name={category} bgColor={color} />
                           )}
                         </Col>
                         <Col className="cateEditImgChild">
@@ -214,7 +221,6 @@ function AdminEditCategory() {
                             />
                           </Form.Group>  */}
                         </Col>
-
                       </Row>
 
                       <TextField
@@ -261,9 +267,9 @@ function AdminEditCategory() {
                 </Card>
               </div>
             </Col>
-          </Row >
-        </div >
-      </Container >
+          </Row>
+        </div>
+      </Container>
     </>
   );
 }
