@@ -1,10 +1,11 @@
 import express from 'express';
-import { isAuth } from '../util.js';
+import { isAuth, sendEmailNotify } from '../util.js';
 import expressAsyncHandler from 'express-async-handler';
 import projectTask from '../Models/projectTaskModel.js';
 import Task from '../Models/taskModel.js';
 import Category from '../Models/categoryModel.js';
 import User from '../Models/userModel.js';
+import Conversation from '../Models/conversationModel.js';
 
 const TaskRouter = express.Router();
 
@@ -13,7 +14,7 @@ TaskRouter.get(
   isAuth,
   expressAsyncHandler(async (req, res) => {
     try {
-      const projects = await projectTask.find();
+      const projects = await projectTask.find().sort({ createdAt: -1 });
       res.json(projects);
     } catch (error) {
       console.error(error);
@@ -26,7 +27,7 @@ TaskRouter.get(
   '/tasks',
   expressAsyncHandler(async (req, res) => {
     try {
-      const tasks = await Task.find();
+      const tasks = await Task.find().sort({ createdAt: -1 });
       res.json(tasks);
     } catch (error) {
       console.error(error);
@@ -35,16 +36,23 @@ TaskRouter.get(
   })
 );
 
+// Addmin & superAdmin add project
+
 TaskRouter.post(
   '/admin',
   isAuth,
   expressAsyncHandler(async (req, res) => {
     try {
-      const contractorName = req.body.contractorName;
-      const selectProjectName = req.body.selectProjectName;
-      const projectName = req.body.projectName;
-      const taskName = req.body.taskName;
-      const taskCategory = req.body.taskCategory;
+      function capitalizeFirstLetter(data) {
+        return data && data.charAt(0).toUpperCase() + data.slice(1);
+      }
+      const contractorName = capitalizeFirstLetter(req.body.contractorName);
+      const selectProjectName = capitalizeFirstLetter(
+        req.body.selectProjectName
+      );
+      const projectName = capitalizeFirstLetter(req.body.projectName);
+      const taskName = capitalizeFirstLetter(req.body.taskName);
+      const taskCategory = capitalizeFirstLetter(req.body.taskCategory);
       const userRole = req.user.role;
 
       if (userRole === 'admin' || userRole === 'superadmin') {
@@ -79,10 +87,41 @@ TaskRouter.post(
             userName: user.first_name,
             agentName: agent.first_name,
           }).save();
+          const options = {
+            to: [user.email, agent.email],
+            subject: 'New Task Create✔ ',
+            template: 'ADDTASK-CONTRACTOR',
+            projectName: selectProjectName,
+            taskName: taskName,
+            taskDescription: req.body.taskDescription,
+            user,
+          };
+          await sendEmailNotify(options);
+
+          const existingConversation = await Conversation.findOne({
+            members: [{ agentId: agent._id }, { contractorId: user._id }],
+            projectId: selectProject._id,
+            taskId: newTask._id,
+          });
+          console.log('existingConversation', existingConversation);
+          if (!existingConversation) {
+            const newConversation = new Conversation({
+              members: [{ agentId: agent._id }, { contractorId: user._id }],
+              projectId: selectProject._id,
+              taskId: newTask._id,
+            });
+
+            await newConversation.save();
+            // Use savedConversation as needed
+          } else {
+            res.status(500).json({ message: 'Conversation already exists' });
+          }
           res.status(201).json({ message: 'Task Created', task: newTask });
         } else {
           project = await new projectTask({
             projectName,
+            userId: user._id,
+            agentId: agent._id,
           }).save();
 
           const newTask = await new Task({
@@ -96,6 +135,36 @@ TaskRouter.post(
             userName: user.first_name,
             agentName: agent.first_name,
           }).save();
+          console.log(user.email, agent.email);
+
+          const options = {
+            to: [user.email, agent.email],
+            subject: 'New Task Create✔ ',
+            template: 'ADDTASK-CONTRACTOR',
+            projectName: projectName,
+            taskName: taskName,
+            taskDescription: req.body.taskDescription,
+            user,
+          };
+          await sendEmailNotify(options);
+
+          const existingConversation = await Conversation.findOne({
+            members: [{ agentId: agent._id }, { contractorId: user._id }],
+            projectId: project._id,
+            taskId: newTask._id,
+          });
+          console.log('existingConversation', existingConversation);
+          if (!existingConversation) {
+            const newConversation = new Conversation({
+              members: [{ agentId: agent._id }, { contractorId: user._id }],
+              projectId: project._id,
+              taskId: newTask._id,
+            });
+
+            await newConversation.save();
+          } else {
+            res.status(500).json({ message: 'Conversation already exists' });
+          }
 
           res.status(201).json({ message: 'Task Created', task: newTask });
         }
@@ -111,27 +180,38 @@ TaskRouter.post(
   })
 );
 
+// Contractor add project
+
 TaskRouter.post(
   '/contractor',
   isAuth,
   expressAsyncHandler(async (req, res) => {
     try {
       const user = req.user;
-      const selectProjectName = req.body.selectProjectName;
-      const projectName = req.body.projectName;
-      const taskName = req.body.taskName;
-      const taskCategory = req.body.taskCategory;
+      const selectProjectName = capitalizeFirstLetter(
+        req.body.selectProjectName
+      );
+      const projectName = capitalizeFirstLetter(req.body.projectName);
+      const taskName = capitalizeFirstLetter(req.body.taskName);
+      const taskCategory = capitalizeFirstLetter(req.body.taskCategory);
       if (user.role === 'contractor') {
         let selectProject = await projectTask.findOne({
           projectName: selectProjectName,
         });
-
+        const adminEmails = await User.find({ role: 'admin' }, 'email');
+        const superAdminEmails = await User.find(
+          { role: 'superadmin' },
+          'email'
+        );
+        const adminEmailAddresses = adminEmails.map((user) => user.email);
+        const superAdminEmailAddresses = superAdminEmails.map(
+          (user) => user.email
+        );
         let project = await projectTask.findOne({ projectName });
         let task = await Task.findOne({ taskName });
         let category = await Category.findOne({ categoryName: taskCategory });
         let agent = await User.findOne({ agentCategory: category._id });
         if (project && project.projectName === projectName) {
-          console.log('in if');
           res.status(200).json({
             message: 'project with the same name already exists',
           });
@@ -151,19 +231,47 @@ TaskRouter.post(
             userName: user.first_name,
             agentName: agent.first_name,
           }).save();
-          // const options = {
-          //   to: user.email,
-          //   subject: 'New Project Create✔ ',
-          //   template: 'ADDTASK-CONTRACTOR',
-          //   projectName: req.body.projectName,
-          //   projectDescription: req.body.projectDescription,
-          //   user,
-          // };
-          // const emailSendCheck = await sendEmailNotify(options);
+
+          const allEmails = [
+            ...adminEmailAddresses,
+            ...superAdminEmailAddresses,
+            agent.email,
+          ];
+          const options = {
+            to: allEmails,
+            subject: 'New Task Create✔ ',
+            template: 'ADDTASK-CONTRACTOR',
+            projectName: selectProjectName,
+            taskName: taskName,
+            taskDescription: req.body.taskDescription,
+            user,
+          };
+          await sendEmailNotify(options);
+
+          const existingConversation = await Conversation.findOne({
+            members: [{ agentId: agent._id }, { contractorId: user._id }],
+            projectId: selectProject._id,
+            taskId: newTask._id,
+          });
+          console.log('existingConversation', existingConversation);
+          if (!existingConversation) {
+            const newConversation = new Conversation({
+              members: [{ agentId: agent._id }, { contractorId: user._id }],
+              projectId: selectProject._id,
+              taskId: newTask._id,
+            });
+
+            await newConversation.save();
+            // Use savedConversation as needed
+          } else {
+            res.status(500).json({ message: 'Conversation already exists' });
+          }
           res.status(201).json({ message: 'Task Created', task: newTask });
         } else {
           project = await new projectTask({
             projectName,
+            userId: user._id,
+            agentId: agent._id,
           }).save();
 
           const newTask = await new Task({
@@ -177,6 +285,39 @@ TaskRouter.post(
             userName: user.first_name,
             agentName: agent.first_name,
           }).save();
+          const allEmails = [
+            ...adminEmailAddresses,
+            ...superAdminEmailAddresses,
+            agent.email,
+          ];
+          const options = {
+            to: allEmails,
+            subject: 'New Task Create✔ ',
+            template: 'ADDTASK-CONTRACTOR',
+            projectName: projectName,
+            taskName: taskName,
+            taskDescription: req.body.taskDescription,
+            user,
+          };
+          await sendEmailNotify(options);
+
+          const existingConversation = await Conversation.findOne({
+            members: [{ agentId: agent._id }, { contractorId: user._id }],
+            projectId: project._id,
+            taskId: newTask._id,
+          });
+          console.log('existingConversation', existingConversation);
+          if (!existingConversation) {
+            const newConversation = new Conversation({
+              members: [{ agentId: agent._id }, { contractorId: user._id }],
+              projectId: selectProject._id,
+              taskId: newTask._id,
+            });
+
+            await newConversation.save();
+          } else {
+            res.status(500).json({ message: 'Conversation already exists' });
+          }
 
           res.status(201).json({ message: 'Task Created', task: newTask });
         }
@@ -193,6 +334,7 @@ TaskRouter.post(
 );
 
 // delete all project and task
+
 TaskRouter.delete(
   '/',
   expressAsyncHandler(async (req, res) => {
@@ -201,7 +343,9 @@ TaskRouter.delete(
     res.send('deleted');
   })
 );
+
 // delete task
+
 TaskRouter.delete(
   '/:taskId',
   isAuth,
@@ -214,7 +358,9 @@ TaskRouter.delete(
     }
   })
 );
+
 // update task
+
 TaskRouter.put(
   '/updateStatus/:taskId',
   isAuth,
@@ -242,6 +388,28 @@ TaskRouter.put(
       console.error(error);
       res.status(500).json({ message: 'Internal Server Error' });
       console.log('error', error);
+    }
+  })
+);
+
+// get single project
+TaskRouter.get(
+  '/:id',
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const task = await Task.findById(req.params.id);
+      if (!task) {
+        res.status(400).json({ message: 'Project not found' });
+      }
+      const conversions = await Conversation.find({ taskId: req.params.id });
+      const { ...other } = task._doc;
+      res.json({
+        ...other,
+        conversions: conversions,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
     }
   })
 );

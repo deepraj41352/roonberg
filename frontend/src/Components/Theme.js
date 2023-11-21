@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Store } from "../Store";
-import "../index.css";
+import React, { useState, useEffect, useContext } from 'react';
+import { Store } from '../Store';
+import '../index.css';
 
 function Theme() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState } = state;
-  const theme = toggleState ? "dark" : "light";
+  const theme = toggleState ? 'dark' : 'light';
   const [isToggled, setIsToggled] = useState(toggleState);
 
   const handleToggle = () => {
@@ -17,13 +17,13 @@ function Theme() {
     }
   };
   useEffect(() => {
-    ctxDispatch({ type: "TOGGLE_BTN", payload: isToggled });
-    localStorage.setItem("toggleState", JSON.stringify(isToggled));
+    ctxDispatch({ type: 'TOGGLE_BTN', payload: isToggled });
+    localStorage.setItem('toggleState', JSON.stringify(isToggled));
   }, [isToggled]);
 
   return (
     <>
-      <div className="form-check form-switch">
+      <div className="form-check form-switch" title="Theme Dark/Light">
         <input
           className="form-check-input"
           type="checkbox"

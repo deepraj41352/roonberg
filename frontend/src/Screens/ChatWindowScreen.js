@@ -325,6 +325,7 @@ function ChatWindowScreen() {
 
   const showFontStyleBox = () => {
     setShowFontStyle(!showFontStyle);
+    setNewMessage('');
   };
 
   // const [messages, setMessages] = useState([]);

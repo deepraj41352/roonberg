@@ -178,6 +178,38 @@ const emailTemplate = (options) => {
                        </table>`;
       return templateHead + templateBody4 + templateFooter;
       break;
+    case 'ADDTASK-CONTRACTOR':
+      const templateBody5 = ` <!-- First Row --> 
+        <p> New Task created with the following details</p>
+        <table role="presentation" border="0" cellpadding="0" cellspacing="10px" style="padding: 30px 30px 30px 60px;">
+        <tr>
+       <th>Project Name</th>
+       <td>:</td>
+       <td>${options.projectName}</td>
+        </tr>
+        <tr>
+       <th>Task Name</th>
+       <td>:</td>
+       <td>${options.taskName}</td>
+        </tr>
+       <tr>
+       <th>Task Description</th>
+       <td>:</td>
+       <td>${options.taskDescription}</td>
+        </tr>
+        <tr>
+        <th>Contractor Name</th>
+        <td>:</td>
+        <td> ${options.user.first_name}</td>
+         </tr>
+         <tr>
+        <th>Contractor Email</th>
+        <td>:</td>
+        <td> ${options.user.email}</td>
+         </tr>
+           </table>`;
+      return templateHead + templateBody5 + templateFooter;
+      break;
   }
 };
 

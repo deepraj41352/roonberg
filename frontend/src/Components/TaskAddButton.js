@@ -32,6 +32,7 @@ import { ImCross } from 'react-icons/im';
 import DatePicker from '@mui/lab/DatePicker';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import { FiPlus } from 'react-icons/fi';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -287,7 +288,7 @@ function TaskAddButton() {
     <div>
       {/* Add your button or content here */}
       <div onClick={handleNew} className="TaskAddButton">
-        <BiPlusMedical className="" />{' '}
+        <FiPlus />
       </div>
       <Modal
         open={isModelOpen}

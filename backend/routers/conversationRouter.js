@@ -5,10 +5,10 @@ const conversationRouter = express.Router();
 
 //get conv of a user
 
-conversationRouter.get('/:projectId', async (req, res) => {
+conversationRouter.get('/:taskId', async (req, res) => {
   try {
     const conversation = await Conversation.find({
-      projectId: req.params.projectId,
+      taskId: req.params.taskId,
     });
     res.status(200).json(conversation);
   } catch (err) {

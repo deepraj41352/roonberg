@@ -186,7 +186,10 @@ function App() {
                           to="/notificationScreen"
                           className="position-relative"
                         >
-                          <MdOutlineNotifications className="fs-4 admin-btn-logo" />
+                          <MdOutlineNotifications
+                            className="fs-4 admin-btn-logo"
+                            title="Notifications"
+                          />
                           {NotificationData.length > 0 && (
                             <span className="position-absolute notification-badgeApp top-0 start-110 translate-middle badge rounded-pill bg-danger">
                               {NotificationData.length}
