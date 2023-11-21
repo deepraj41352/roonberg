@@ -1621,3 +1621,7 @@ main.windowCal {
   min-width: 600px;
   width: 100%;
 }
+.addCont {
+  color: #000 !important;
+  text-decoration: none !important;
+}
