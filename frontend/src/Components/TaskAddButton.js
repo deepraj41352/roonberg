@@ -1,295 +1,236 @@
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
-import { Grid } from '@mui/material';
-import { AiFillDelete } from 'react-icons/ai';
-import { MdEdit } from 'react-icons/md';
-import { MdAddCircleOutline, MdPlaylistRemove } from 'react-icons/md';
+import {
+  Avatar,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from '@mui/material';
+import { ImCross } from 'react-icons/im';
+
 import Modal from '@mui/material/Modal';
-import TextField from '@mui/material/TextField';
-import { Badge, Dropdown, Form } from 'react-bootstrap';
+import { Dropdown, Form } from 'react-bootstrap';
 import { BiPlusMedical } from 'react-icons/bi';
 import { Store } from '../Store';
-import axios from 'axios';
-import { toast } from 'react-toastify';
 import Tab from 'react-bootstrap/Tab';
 import { ColorRing, ThreeDots } from 'react-loader-spinner';
 import Tabs from 'react-bootstrap/Tabs';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateField } from '@mui/x-date-pickers/DateField';
-import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Button,
-} from '@mui/material';
+import { MdAddCircleOutline, MdRemoveCircleOutline } from 'react-icons/md';
+import { Button } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { useContext, useEffect, useReducer, useState } from 'react';
-import { GrAddCircle } from 'react-icons/gr';
-import { MdRemoveCircleOutline } from 'react-icons/md';
-import dayjs from 'dayjs';
-import { ImCross } from 'react-icons/im';
-import DatePicker from '@mui/lab/DatePicker';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import { FiPlus } from 'react-icons/fi';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import datas from '../dummyData';
+import { FaRegClock } from 'react-icons/fa';
+import AvatarImage from '../Components/Avatar';
+import { CiSettings } from 'react-icons/ci';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
-const reducer = (state, action) => {
-  switch (action.type) {
-    case 'FATCH_REQUEST':
-      return { ...state, loading: true };
-    case 'FATCH_SUCCESS':
-      return { ...state, projectData: action.payload, loading: false };
-    case 'FATCH_ERROR':
-      return { ...state, error: action.payload, loading: false };
-
-    case 'DELETE_SUCCESS':
-      return { ...state, successDelete: action.payload, loading: false };
-
-    case 'DELETE_RESET':
-      return { ...state, successDelete: false, loading: false };
-    case 'UPDATE_SUCCESS':
-      return { ...state, successUpdate: action.payload };
-    case 'UPDATE_RESET':
-      return { ...state, successUpdate: false };
-    case 'FATCH_CATEGORY':
-      return { ...state, categoryData: action.payload };
-    case 'FATCH_AGENTS':
-      return { ...state, agentData: action.payload };
-    case 'FATCH_CONTRACTOR':
-      return { ...state, contractorData: action.payload };
-    default:
-      return state;
-  }
-};
-
-function TaskAddButton() {
+export default function TaskAddButton() {
   const { state } = useContext(Store);
   const { toggleState, userInfo } = state;
+  const [loading, setLoading] = useState(true);
   const [isModelOpen, setIsModelOpen] = useState(false);
   const [isSubmiting, setIsSubmiting] = useState(false);
+  const [dynamicfield, setDynamicfield] = useState(false);
+  const [categoryData, setCategoryData] = useState([]);
+  const [ProjectData, setProjectData] = useState([]);
   const [projectName, setProjectName] = useState('');
-  const [projectDescription, setProjectDescription] = useState('');
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [agents, setAgents] = useState([{ categoryId: '' }]);
-  const [projectStatus, setProjectStatus] = useState('active');
-  const [projectOwner, setProjectOwner] = useState('');
-  const [startDateError, setStartDateError] = useState('');
-  const [errorAccured, setErrorAccured] = useState(false);
-  const [endDateError, setEndDateError] = useState('');
-
+  const [SelectProjectName, setSelectProjectName] = useState('');
+  const [taskName, setTaskName] = useState('');
+  const [taskDesc, setTaskDesc] = useState('');
+  const [category, setCategory] = useState('');
+  const [contractorName, setContractorName] = useState('');
+  const [contractorData, setContractorData] = useState([]);
+  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
-
-  const [
-    {
-      loading,
-      error,
-      projectData,
-      successDelete,
-      successUpdate,
-      categoryData,
-      agentData,
-      contractorData,
-    },
-    dispatch,
-  ] = useReducer(reducer, {
-    loading: true,
-    error: '',
-    projectData: [],
-    successDelete: false,
-    successUpdate: false,
-    categoryData: [],
-    contractorData: [],
-    agentData: [],
-  });
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const filteredAgents = agents.filter((obj) => Object.keys(obj).length > 1);
-    setIsSubmiting(true);
-    if (startDate === null || endDate === null) {
-      setErrorAccured(true);
-      if (startDate === null) {
-        setStartDateError('Start date required.');
-      }
-      if (endDate === null) {
-        setEndDateError('End date required.');
-      }
-      setIsSubmiting(false);
-      return;
-    }
-    try {
-      const response = await axios.post(
-        '/api/project/admin/addproject',
-        {
-          projectName: projectName,
-          projectDescription: projectDescription,
-          createdDate: startDate,
-          endDate: endDate,
-          assignedAgent: agents,
-          projectOwner: projectOwner,
-          projectStatus: projectStatus,
-        },
-        {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        }
-      );
-      console.log(response.status);
-      if (response.status === 200) {
-        toast.success('Project Created Successfully !');
-        setProjectName('');
-        setProjectDescription('');
-        setAgents([{}]);
-        setProjectStatus('');
-        setProjectOwner('');
-        setIsSubmiting(false);
-        setIsModelOpen(false);
-        dispatch({ type: 'UPDATE_SUCCESS', payload: true });
-      }
-    } catch (error) {
-      if (error.response.status === 500) {
-        setIsModelOpen(false);
-        toast.error('Server Error');
-        setIsSubmiting(false);
-      }
-    }
-  };
-
-  const handleRedirectToContractorScreen = () => {
-    navigate('/adminContractorList');
-  };
-
-  const handleCloseRow = () => {
-    setIsModelOpen(false);
-  };
-  const handleNew = () => {
-    setIsModelOpen(true);
-  };
-  const validateDates = (newStartDate, newEndDate) => {
-    setStartDate(newStartDate);
-    setEndDate(newEndDate);
-    const selectedStartDate = dayjs(newStartDate);
-    const selectedEndDate = dayjs(newEndDate);
-
-    if (
-      selectedStartDate.isAfter(currentDate, 'day') ||
-      selectedStartDate.isSame(currentDate, 'day')
-    ) {
-      setStartDate(newStartDate);
-      setStartDateError('');
-
-      if (newEndDate) {
-        if (
-          selectedEndDate.isAfter(selectedStartDate, 'day') ||
-          selectedEndDate.isSame(selectedStartDate, 'day')
-        ) {
-          setEndDate(newEndDate);
-          setEndDateError('');
-          setErrorAccured(false);
-        } else {
-          setErrorAccured(true);
-          setEndDateError(
-            'End date must be greater than or equal to the Start Date.'
-          );
-        }
-      }
-    } else {
-      setErrorAccured(true);
-      setStartDateError(
-        'Start date must be greater than or equal to the current date.'
-      );
-    }
-  };
-  const addAgent = () => {
-    setAgents([...agents, { categoryId: '' }]);
-  };
-  const removeAgent = (index) => {
-    if (index > 0) {
-      const updatedAgents = [...agents];
-      updatedAgents.splice(index, 1);
-      setAgents(updatedAgents);
-    }
-  };
   useEffect(() => {
+    setLoading(true);
     const FatchCategory = async () => {
       try {
         const response = await axios.get(`/api/category/`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const datas = response.data;
-        dispatch({ type: 'FATCH_CATEGORY', payload: datas });
+        setCategoryData(datas);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
     FatchCategory();
   }, []);
+
+  // {Get Project .........
+  useEffect(() => {
+    setLoading(true);
+    const FatchProject = async () => {
+      try {
+        const { data } = await axios.get(`/api/task/project`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+
+        if (userInfo.role == 'contractor') {
+          const ContractorProject = data.filter((item) => {
+            return item.userId === userInfo._id;
+          });
+          setProjectData(ContractorProject);
+        } else {
+          setProjectData(data);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    FatchProject();
+  }, []);
+
+  // {Get  Contractor User.........
   useEffect(() => {
     const FatchContractorData = async () => {
       try {
-        const response = await axios.post(`/api/user/`, { role: 'contractor' });
-        const datas = response.data;
-        dispatch({ type: 'FATCH_CONTRACTOR', payload: datas });
+        const { data } = await axios.post(`/api/user/`, { role: 'contractor' });
+        setContractorData(data);
       } catch (error) {}
     };
     FatchContractorData();
   }, []);
-
-  const assignedAgentByCateHandle = (index) => {
-    const category = agents[index].categoryId;
-    if (category) {
-      const selectedCategory = categoryData.find(
-        (categoryItem) => categoryItem._id === category
+  const handleAdminSubmit = async () => {
+    setIsSubmiting(true);
+    try {
+      const data = await axios.post(
+        `/api/task/admin`,
+        {
+          selectProjectName: SelectProjectName,
+          projectName: projectName,
+          contractorName: contractorName,
+          taskName: taskName,
+          taskDescription: taskDesc,
+          taskCategory: category,
+        },
+        {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        }
       );
-      const agentsForCategory = agentData.filter(
-        (agentItem) => agentItem.agentCategory === selectedCategory._id
-      );
-      const activeAgents = agentsForCategory.filter(
-        (agentItem) => agentItem.userStatus === true
-      );
-
-      if (activeAgents.length > 0) {
-        return activeAgents;
+      if (data.status === 201) {
+        setSuccess(!success);
+        toast.success(data.data.message);
+        setDynamicfield(false);
+        setIsSubmiting(false);
+        setIsModelOpen(false);
+        setProjectName('');
+        setTaskName('');
+        setTaskDesc('');
+        setCategory('');
+        setContractorName('');
+        setSelectProjectName('');
+        navigate('/tasksScreen');
       }
+      if (data.status === 200) {
+        setDynamicfield(false);
+        toast.error(data.data.message);
+        setIsModelOpen(false);
+        setProjectName('');
+        setTaskName('');
+        setTaskDesc('');
+        setCategory('');
+        setContractorName('');
+        setSelectProjectName('');
+      }
+    } catch (error) {
+      toast.error(error.message);
+      setIsModelOpen(false);
+      setDynamicfield(false);
+    } finally {
+      setIsSubmiting(false);
     }
-    return [];
   };
-  const currentDate = dayjs();
 
-  const handleAgentChange = (index, key, value) => {
-    const updatedAgents = [...agents];
-    updatedAgents[index] = {
-      ...updatedAgents[index],
-      [key]: value,
-    };
-
-    if (key === 'categoryId' && value !== '') {
-      const selectedCategory = categoryData.find(
-        (categoryItem) => categoryItem._id === value
+  const handleContractorSubmit = async () => {
+    setIsSubmiting(true);
+    try {
+      const data = await axios.post(
+        `/api/task/contractor`,
+        {
+          selectProjectName: SelectProjectName,
+          projectName: projectName,
+          taskName: taskName,
+          taskDescription: taskDesc,
+          taskCategory: category,
+        },
+        {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        }
       );
-
-      // if (selectedCategory) {
-      //   const categoryObject = {
-      //     categoryId: selectedCategory._id,
-      //   };
-      //   setCategories((prevCategories) => {
-      //     const updatedCategories = [...prevCategories];
-      //     updatedCategories[index] = categoryObject;
-      //     return updatedCategories;
-      //   });
-      // }
+      if (data.status === 201) {
+        setSuccess(!success);
+        toast.success(data.data.message);
+        setDynamicfield(false);
+        setIsSubmiting(false);
+        setIsModelOpen(false);
+        setProjectName('');
+        setTaskName('');
+        setTaskDesc('');
+        setCategory('');
+        setSelectProjectName('');
+        navigate('/tasksScreen');
+      }
+      if (data.status === 200) {
+        setDynamicfield(false);
+        toast.error(data.data.message);
+        setIsModelOpen(false);
+        setProjectName('');
+        setTaskName('');
+        setTaskDesc('');
+        setCategory('');
+        setSelectProjectName('');
+      }
+    } catch (error) {
+      toast.error(error.message);
+      setIsModelOpen(false);
+      setDynamicfield(false);
+    } finally {
+      setIsSubmiting(false);
     }
+  };
 
-    setAgents(updatedAgents);
+  const handleNew = () => {
+    setIsModelOpen(true);
+  };
+
+  const handleCloseRow = () => {
+    setIsModelOpen(false);
+  };
+
+  const handleAddNewProject = () => {
+    setDynamicfield(true);
+  };
+  const removeDymanic = () => {
+    setDynamicfield(false);
+  };
+
+  const handelBothSubmit = (e) => {
+    e.preventDefault();
+    if (userInfo.role === 'admin' || userInfo.role === 'superadmin') {
+      handleAdminSubmit();
+    } else if (userInfo.role === 'contractor') {
+      handleContractorSubmit();
+    }
   };
 
   return (
     <div>
-      {/* Add your button or content here */}
       <div onClick={handleNew} className="TaskAddButton">
-        <FiPlus />
+        <BiPlusMedical className="" />{' '}
       </div>
+
       <Modal
         open={isModelOpen}
         onClose={handleCloseRow}
@@ -333,154 +274,126 @@ function TaskAddButton() {
                   ? 'scrollInAdminproject p-4 '
                   : 'scrollInAdminproject p-3'
               }
-              onSubmit={handleSubmit}
+              onSubmit={(e) => handelBothSubmit(e)}
             >
               <ImCross
                 color="black"
                 className="formcrossbtn"
                 onClick={handleCloseRow}
               />
-              <h4 className="d-flex justify-content-center">Add Project</h4>
-              <TextField
-                required
-                className="mb-3"
-                value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
-                label="Project Name"
-                fullWidth
-              />
-
-              <TextField
-                id="outlined-multiline-static"
-                onChange={(e) => setProjectDescription(e.target.value)}
-                label="Project Description"
-                multiline
-                rows={4}
-                fullWidth
-                variant="outlined"
-                className="mb-3"
-              />
-              <FormControl className="mb-3">
-                <InputLabel>Select Contractor </InputLabel>
+              <h4 className="d-flex justify-content-center">Add Task</h4>
+              <FormControl className={dynamicfield ? 'disable mb-3' : 'mb-3'}>
+                <InputLabel>Select Project </InputLabel>
                 <Select
-                  value={projectOwner}
-                  onChange={(e) => setProjectOwner(e.target.value)}
+                  value={SelectProjectName}
+                  onChange={(e) => setSelectProjectName(e.target.value)}
                   required
+                  disabled={dynamicfield}
                 >
                   <MenuItem
                     onClick={() => {
-                      handleRedirectToContractorScreen();
+                      handleAddNewProject();
                     }}
                   >
-                    {' '}
-                    <BiPlusMedical /> add new Contractor
+                    <MdAddCircleOutline /> Add New Project
                   </MenuItem>
-                  {contractorData.map((items) => (
-                    <MenuItem key={items._id} value={items._id}>
-                      {items.first_name}
+                  {ProjectData.map((items) => (
+                    <MenuItem key={items} value={items.projectName}>
+                      {items.projectName}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
-              {agents.map((agent, index) => (
-                <div
-                  className="moreFieldsDiv d-flex align-items-center gap-2"
-                  key={index}
-                >
-                  <FormControl>
-                    <InputLabel>Category</InputLabel>
-                    <Select
-                      required
-                      value={agent.categoryId}
-                      onChange={(e) =>
-                        handleAgentChange(index, 'categoryId', e.target.value)
-                      }
-                    >
-                      {categoryData.map((category) => (
-                        <MenuItem
-                          key={category._id}
-                          value={category._id}
-                          disabled={agents.some(
-                            (a) => a.categoryId === category._id
-                          )}
-                        >
-                          {category.categoryName}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                  <FormControl>
-                    <InputLabel>Agent</InputLabel>
-                    <Select
-                      value={agent.agentId}
-                      onChange={(e) =>
-                        handleAgentChange(index, 'agentId', e.target.value)
-                      }
-                    >
-                      {assignedAgentByCateHandle(index).map((agent) => (
-                        <MenuItem
-                          key={agent._id}
-                          value={agent._id}
-                          disabled={agents.some((a) => a.agentId === agent._id)}
-                        >
-                          {agent.first_name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                  <div className="d-flex">
-                    <MdRemoveCircleOutline
-                      color="black"
-                      className="text-bold text-danger fs-5 pointCursor "
-                      onClick={() => removeAgent(index)}
-                    />
 
-                    <MdAddCircleOutline
-                      color="black"
-                      className="text-success text-bold fs-5 pointCursor"
-                      onClick={addAgent}
+              {dynamicfield ? (
+                <div className="d-flex align-items-center gap-1">
+                  <TextField
+                    required
+                    className="mb-3"
+                    value={projectName}
+                    onChange={(e) => setProjectName(e.target.value)}
+                    label="Project Name"
+                    fullWidth
+                  />
+                  <MdRemoveCircleOutline
+                    color="black"
+                    className="text-bold text-danger fs-5 pointCursor "
+                    onClick={() => removeDymanic()}
+                  />
+                </div>
+              ) : null}
+
+              <TextField
+                required
+                className="mb-3"
+                value={taskName}
+                onChange={(e) => setTaskName(e.target.value)}
+                label="Task Name"
+                fullWidth
+              />
+
+              <TextField
+                required
+                className="mb-3"
+                value={taskDesc}
+                onChange={(e) => setTaskDesc(e.target.value)}
+                label="Description"
+                fullWidth
+              />
+
+              {userInfo.role == 'admin' ||
+                (userInfo.role == 'superadmin' && (
+                  <FormControl className={'mb-3'}>
+                    <InputLabel>Select Contractor </InputLabel>
+                    <Select
+                      value={contractorName}
+                      onChange={(e) => setContractorName(e.target.value)}
+                      required
+                    >
+                      <MenuItem>
+                        <Link to={`/adminContractorList`} className="addCont">
+                          <MdAddCircleOutline /> Add New Contractor
+                        </Link>
+                      </MenuItem>
+                      {contractorData.map((items) => (
+                        <MenuItem key={items} value={items.first_name}>
+                          {items.first_name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                ))}
+
+              <div className="d-flex align-items-center flex-wrap justify-content-between cateContainer">
+                {categoryData.map((category) => (
+                  <div key={category._id} className="d-flex flex-row cateItems">
+                    <Form.Check
+                      className="d-flex align-items-center"
+                      type="radio"
+                      id={`category-${category._id}`}
+                      name="category"
+                      value={category.categoryName}
+                      label={
+                        <div className="d-flex align-items-center">
+                          <Avatar
+                            src={category.categoryImage}
+                            alt={category.categoryName}
+                          />
+                          <span className="ms-2 spanForCate">
+                            {category.categoryName}
+                          </span>
+                        </div>
+                      }
+                      onChange={(e) => setCategory(e.target.value)}
                     />
                   </div>
-                </div>
-              ))}
-              <div className="my-2">
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    className="marginDate"
-                    label="Start Date"
-                    value={startDate}
-                    required
-                    onChange={(newValue) => validateDates(newValue, endDate)}
-                    renderInput={(params) => <TextField {...params} />}
-                  />
-                  {startDateError && (
-                    <div className="Datevalidation">{startDateError}</div>
-                  )}
-                  <DatePicker
-                    className="mb-3"
-                    label="End Date"
-                    value={endDate}
-                    required
-                    onChange={(newValue) => validateDates(startDate, newValue)}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        style={{ color: 'white' }}
-                        autoComplete="off"
-                      />
-                    )}
-                  />
-                  {endDateError && (
-                    <div className="Datevalidation">{endDateError}</div>
-                  )}
-                </LocalizationProvider>
+                ))}
               </div>
 
               <Button
                 variant="contained"
                 color="primary"
                 type="submit"
-                disabled={errorAccured}
                 className="mt-2 formbtn updatingBtn globalbtnColor"
               >
                 {isSubmiting ? 'SUBMITTING' : 'SUBMIT '}
@@ -492,5 +405,3 @@ function TaskAddButton() {
     </div>
   );
 }
-
-export default TaskAddButton;

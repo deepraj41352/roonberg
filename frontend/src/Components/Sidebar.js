@@ -276,6 +276,16 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 Project
               </li>
             </Link>
+            <Link
+              to="/tasksScreen"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
+              <li>
+                <BiTask className="me-3 fs-5" />
+                Task
+              </li>
+            </Link>
           </>
         ) : null}
 
@@ -311,6 +321,16 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 Add Project
               </li>
             </Link> */}
+            <Link
+              to="/contractor-tasksScreen"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
+              <li>
+                <BiTask className="me-3 fs-5" />
+                Task
+              </li>
+            </Link>
           </>
         ) : null}
         {userInfo.role == 'agent' ? (
@@ -327,16 +347,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
             </Link>
           </>
         ) : null}
-        <Link
-          to="/tasksScreen"
-          className="text-decoration-none"
-          onClick={handlSmallScreeneClick}
-        >
-          <li>
-            <BiTask className="me-3 fs-5" />
-            Task
-          </li>
-        </Link>
+
         <Link
           to="/notificationScreen"
           className="text-decoration-none"

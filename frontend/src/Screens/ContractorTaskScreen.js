@@ -338,6 +338,16 @@ export default function ContractorTaskScreen() {
   const PendingData = taskData.filter((item) => {
     return item.taskStatus === 'pending';
   });
+  const uniqueProjectNames = new Set();
+
+  // Filter the projects to get unique project names
+  const uniqueProjects = ContractorTask.filter((project) => {
+    if (!uniqueProjectNames.has(project.projectName)) {
+      uniqueProjectNames.add(project.projectName);
+      return true;
+    }
+    return false;
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -433,7 +443,7 @@ export default function ContractorTaskScreen() {
                 >
                   All Project
                 </Dropdown.Item>
-                {ProjectData.map((project, key) => (
+                {uniqueProjects.map((project, key) => (
                   <Dropdown.Item
                     key={project._id} // Make sure to use a unique key for each item
                     className="dropMenuCon"

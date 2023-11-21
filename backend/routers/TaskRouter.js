@@ -69,11 +69,11 @@ TaskRouter.post(
         if (project && project.projectName === projectName) {
           console.log('in if');
           res.status(200).json({
-            message: 'project with the same name already exists',
+            message: ' A Project With The Same Name Already Exists.',
           });
         } else if (task && task.taskName === taskName) {
           res.status(200).json({
-            message: 'Task with the same name already exists',
+            message: 'A Task With The Same Name Already Exists.',
           });
         } else if (selectProject) {
           const newTask = await new Task({
@@ -114,9 +114,11 @@ TaskRouter.post(
             await newConversation.save();
             // Use savedConversation as needed
           } else {
-            res.status(500).json({ message: 'Conversation already exists' });
+            res.status(500).json({ message: 'Conversation Already Exists' });
           }
-          res.status(201).json({ message: 'Task Created', task: newTask });
+          res
+            .status(201)
+            .json({ message: 'Task Created Successfully!!', task: newTask });
         } else {
           project = await new projectTask({
             projectName,
@@ -163,10 +165,12 @@ TaskRouter.post(
 
             await newConversation.save();
           } else {
-            res.status(500).json({ message: 'Conversation already exists' });
+            res.status(500).json({ message: 'Conversation Already Exists' });
           }
 
-          res.status(201).json({ message: 'Task Created', task: newTask });
+          res
+            .status(201)
+            .json({ message: 'Task Created Successfully!', task: newTask });
         }
       } else {
         res.status(200).json({ message: 'Unauthorized' });
@@ -187,6 +191,9 @@ TaskRouter.post(
   isAuth,
   expressAsyncHandler(async (req, res) => {
     try {
+      function capitalizeFirstLetter(data) {
+        return data && data.charAt(0).toUpperCase() + data.slice(1);
+      }
       const user = req.user;
       const selectProjectName = capitalizeFirstLetter(
         req.body.selectProjectName
@@ -213,11 +220,11 @@ TaskRouter.post(
         let agent = await User.findOne({ agentCategory: category._id });
         if (project && project.projectName === projectName) {
           res.status(200).json({
-            message: 'project with the same name already exists',
+            message: ' A Project With The Same Name Already Exists.',
           });
         } else if (task && task.taskName === taskName) {
           res.status(200).json({
-            message: 'Task with the same name already exists',
+            message: 'A Task With The Same Name Already Exists.',
           });
         } else if (selectProject) {
           const newTask = await new Task({
@@ -264,9 +271,11 @@ TaskRouter.post(
             await newConversation.save();
             // Use savedConversation as needed
           } else {
-            res.status(500).json({ message: 'Conversation already exists' });
+            res.status(500).json({ message: 'Conversation Already Exists' });
           }
-          res.status(201).json({ message: 'Task Created', task: newTask });
+          res
+            .status(201)
+            .json({ message: 'Task Created Successfully!!', task: newTask });
         } else {
           project = await new projectTask({
             projectName,
@@ -310,16 +319,18 @@ TaskRouter.post(
           if (!existingConversation) {
             const newConversation = new Conversation({
               members: [{ agentId: agent._id }, { contractorId: user._id }],
-              projectId: selectProject._id,
+              projectId: project._id,
               taskId: newTask._id,
             });
 
             await newConversation.save();
           } else {
-            res.status(500).json({ message: 'Conversation already exists' });
+            res.status(500).json({ message: 'Conversation Already Exists' });
           }
 
-          res.status(201).json({ message: 'Task Created', task: newTask });
+          res
+            .status(201)
+            .json({ message: 'Task Created Successfully!', task: newTask });
         }
       } else {
         res.status(200).json({ message: 'Unauthorized' });

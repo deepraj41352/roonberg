@@ -63,6 +63,7 @@ import Footer from './Components/footer';
 import ConfirmRegistration from './Screens/ConfirmRegistration';
 import TasksScreen from './Screens/TasksScreen';
 import TaskAddButton from './Components/TaskAddButton';
+import ContractorTaskScreen from './Screens/ContractorTaskScreen';
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -333,6 +334,14 @@ function App() {
                       element={
                         <ProtectedRoute>
                           <TasksScreen />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/contractor-tasksScreen"
+                      element={
+                        <ProtectedRoute>
+                          <ContractorTaskScreen />
                         </ProtectedRoute>
                       }
                     />
