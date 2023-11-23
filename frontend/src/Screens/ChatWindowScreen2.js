@@ -216,8 +216,7 @@ function ChatWindowScreen() {
           const formDatas = new FormData();
           formDatas.append('media', audioBlob);
           formDatas.append('mediaType', 'video');
-          formDatas.append('conversationId', conversationID._id);
-          // formDatas.append('conversationId', id);
+          formDatas.append('conversationId', id);
           formDatas.append('sender', userInfo._id);
           formDatas.append('senderFirstName', userInfo.first_name);
           formDatas.append('senderLastName', userInfo.last_name);
@@ -264,20 +263,6 @@ function ChatWindowScreen() {
     getMessages();
   }, [conversation]);
 
-  // for task
-  useEffect(() => {
-    const getMessages = async () => {
-      try {
-        const { data } = await axios.get(`/api/message/${conversationID._id}`);
-        setChatMessages(data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    getMessages();
-  }, [conversationID]);
-
   useEffect(() => {
     const getConversation = async () => {
       try {
@@ -289,27 +274,13 @@ function ChatWindowScreen() {
     };
     getConversation();
   }, []);
-
-  console.log('conversationID', conversationID);
-
-  // This is for Task
-  useEffect(() => {
-    const getConversation = async () => {
-      try {
-        const { data } = await axios.get(`/api/conversation/${id}`);
-        setConversationID(data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    getConversation();
-  }, []);
-
   useEffect(() => {
     const GetProject = async () => {
       try {
-        const { data } = await axios.get(`/api/task/${id}`);
-        setProjectStatus(data.taskStatus);
+        const { data } = await axios.get(
+          `/api/project/${conversationID.projectId}`
+        );
+        setProjectStatus(data.projectStatus);
         SetProjectData(data);
       } catch (err) {
         console.log(err);
@@ -322,14 +293,14 @@ function ChatWindowScreen() {
     setProjectStatus(e.target.value);
     try {
       const data = await axios.put(
-        `/api/task/updateStatus/${projectData._id}`,
-        { taskStatus: e.target.value },
+        `/api/project/update/${projectData._id}`,
+        { projectStatus: e.target.value },
         {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         }
       );
       if (data.status === 200) {
-        toast.success('Task Status updated Successfully !');
+        toast.success('Project Status updated Successfully !');
       }
       setProjectStatus(data.projectStatus);
     } catch (err) {
@@ -431,9 +402,7 @@ function ChatWindowScreen() {
       const formDatas = new FormData();
       formDatas.append('media', selectedfile);
       formDatas.append('mediaType', mediaType);
-      // formDatas.append('conversationId', id);
-      formDatas.append('conversationId', conversationID._id);
-
+      formDatas.append('conversationId', id);
       formDatas.append('sender', userInfo._id);
       formDatas.append('ImagewithMessage', MessageWithImage);
       formDatas.append('senderFirstName', userInfo.first_name);
@@ -497,8 +466,7 @@ function ChatWindowScreen() {
       const formDatas = new FormData();
       formDatas.append('media', selectedFileAudio);
       formDatas.append('mediaType', 'video');
-      // formDatas.append('conversationId', id);
-      formDatas.append('conversationId', conversationID._id);
+      formDatas.append('conversationId', id);
       formDatas.append('sender', userInfo._id);
       formDatas.append('text', newMessage);
       formDatas.append('senderFirstName', userInfo.first_name);
@@ -514,8 +482,7 @@ function ChatWindowScreen() {
       const formDatas = new FormData();
       formDatas.append('media', selectedFileVideo);
       formDatas.append('mediaType', 'video');
-      // formDatas.append('conversationId', id);
-      formDatas.append('conversationId', conversationID._id);
+      formDatas.append('conversationId', id);
       formDatas.append('sender', userInfo._id);
       formDatas.append('text', newMessage);
       formDatas.append('senderFirstName', userInfo.first_name);
@@ -579,8 +546,7 @@ function ChatWindowScreen() {
           senderFirstName: userInfo.first_name,
           senderLastName: userInfo.last_name,
           Sender_Profile: userInfo.profile_picture,
-          // conversationId: id,
-          conversationId: conversationID._id,
+          conversationId: id,
           sender: userInfo._id,
           text: newMessage,
         });
@@ -645,22 +611,13 @@ function ChatWindowScreen() {
     setSidebarVisible(!sidebarVisible);
   };
 
-  console.log('fileForModel', fileForModel);
   return (
     <div className=" justify-content-center align-items-center">
       <div className="d-flex justify-content-center gap-3 ">
         <Card className="chatWindow">
           <CardHeader className={`d-flex ${theme}chatHead`}>
-            {userInfo.role === 'admin' || userInfo.role === 'superadmin' ? (
-              <Link to={`/tasksScreen`}>
-                <FaArrowLeft className={`me-3 fs-5 ${theme}backbtn `} />
-              </Link>
-            ) : userInfo.role === 'contractor' ? (
-              <Link to={`/Contractor-tasksScreen`}>
-                <FaArrowLeft className={`me-3 fs-5 ${theme}backbtn `} />
-              </Link>
-            ) : (
-              <Link to={`/taskScreen-agent`}>
+            {projectData && (
+              <Link to={`/adminEditProject/${projectData._id}`}>
                 <FaArrowLeft className={`me-3 fs-5 ${theme}backbtn `} />
               </Link>
             )}
@@ -702,7 +659,6 @@ function ChatWindowScreen() {
                       <Modal.Body>
                         Your file has been selected.
                         <h4> {fileForModel?.name}</h4>
-                        {}
                         <Form.Control
                           disabled={isSubmiting}
                           type="text"
@@ -1109,11 +1065,36 @@ function ChatWindowScreen() {
                   value={projectStatus}
                   onChange={handleStatusUpdate}
                 >
-                  <option value="active">Running</option>
-                  <option value="completed">Completed</option>
-                  <option value="pending">Pending</option>
+                  <option value="active">Active</option>
+                  <option value="completed">Completed </option>
+                  <option value="qued">Qued </option>
                 </Form.Select>
               </Form.Group>
+              <Modal show={showModal} onHide={handleClose}>
+                <Modal.Header closeButton>
+                  <Modal.Title>File Selected</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  Your file has been selected.
+                  <h4> {fileForModel?.name}</h4>
+                  <Form.Control
+                    disabled={isSubmiting}
+                    type="text"
+                    style={{ display: showFontStyle ? 'none' : 'block' }}
+                    placeholder="Type your message here..."
+                    aria-label="Search"
+                    aria-describedby="basic-addon2"
+                    onKeyPress={handleKeyPress}
+                    value={MessageWithImage}
+                    onChange={(e) => setMessageWithImage(e.target.value)}
+                  />
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button className="btn-send" onClick={handleSendMessage}>
+                    send
+                  </Button>
+                </Modal.Footer>
+              </Modal>
             </Form>
           ) : (
             <div className="d-flex mt-3 justify-content-center">
@@ -1132,33 +1113,6 @@ function ChatWindowScreen() {
           )}
         </Card>
       </div>
-      <Modal show={showModal} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>File Selected</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Your file has been selected.
-          <h4> {fileForModel?.name}</h4>
-          {fileForModel?.type.includes('image') && (
-            <Form.Control
-              disabled={isSubmiting}
-              type="text"
-              style={{ display: showFontStyle ? 'none' : 'block' }}
-              placeholder="Type your message here..."
-              aria-label="Search"
-              aria-describedby="basic-addon2"
-              onKeyPress={handleKeyPress}
-              value={MessageWithImage}
-              onChange={(e) => setMessageWithImage(e.target.value)}
-            />
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button className="btn-send" onClick={handleSendMessage}>
-            send
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </div>
   );
 }

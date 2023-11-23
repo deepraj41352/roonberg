@@ -12,7 +12,7 @@ import {
 import { ImCross } from 'react-icons/im';
 
 import Modal from '@mui/material/Modal';
-import { Dropdown, Form } from 'react-bootstrap';
+import { Alert, Dropdown, Form } from 'react-bootstrap';
 import { BiPlusMedical } from 'react-icons/bi';
 import { Store } from '../Store';
 import Tab from 'react-bootstrap/Tab';
@@ -91,11 +91,16 @@ export default function TasksScreen() {
         const color = generateColorFromAscii(name);
         return (
           <>
-            {/* {params.row.categoryImage !== 'null' ? (
+            <Link
+              className="Link-For-ChatWindow"
+              to={`/chatWindowScreen/${params.row._id}`}
+            >
+              {/* {params.row.categoryImage !== 'null' ? (
               <Avatar src={params.row.categoryImage} />
             ) : ( */}
-            <AvatarImage name={name} bgColor={color} />
-            {/* )} */}
+              <AvatarImage name={name} bgColor={color} />
+              {/* )} */}
+            </Link>
           </>
         );
       },
@@ -118,10 +123,15 @@ export default function TasksScreen() {
       headerName: 'Task Name',
       width: 300,
       renderCell: (params) => (
-        <div className="text-start">
-          <div>{params.row.taskName}</div>
-          <div>Task ID {params.row._id}</div>
-        </div>
+        <Link
+          className="Link-For-ChatWindow"
+          to={`/chatWindowScreen/${params.row._id}`}
+        >
+          <div className="text-start">
+            <div>{params.row.taskName}</div>
+            <div>Task ID {params.row._id}</div>
+          </div>
+        </Link>
       ),
     },
     {
@@ -129,10 +139,15 @@ export default function TasksScreen() {
       headerName: 'Contractor Name',
       width: 100,
       renderCell: (params) => (
-        <div className="text-start">
-          <div>{params.row.userName}</div>
-          <div>Raised By</div>
-        </div>
+        <Link
+          className="Link-For-ChatWindow"
+          to={`/chatWindowScreen/${params.row._id}`}
+        >
+          <div className="text-start">
+            <div>{params.row.userName}</div>
+            <div>Raised By</div>
+          </div>
+        </Link>
       ),
     },
     {
@@ -140,10 +155,15 @@ export default function TasksScreen() {
       headerName: 'Agent Name',
       width: 100,
       renderCell: (params) => (
-        <div className="text-start">
-          <div>{params.row.agentName}</div>
-          <div>Assigned By</div>
-        </div>
+        <Link
+          className="Link-For-ChatWindow"
+          to={`/chatWindowScreen/${params.row._id}`}
+        >
+          <div className="text-start">
+            <div>{params.row.agentName}</div>
+            <div>Assigned By</div>
+          </div>
+        </Link>
       ),
     },
   ];
@@ -179,6 +199,7 @@ export default function TasksScreen() {
   const [categoryData, setCategoryData] = useState([]);
   const [ProjectData, setProjectData] = useState([]);
   const [contractorData, setContractorData] = useState([]);
+  const [ShowErrorMessage, setShowErrorMessage] = useState(false);
 
   const navigate = useNavigate();
   const [projectStatus, setProjectStatus] = useState('active');
@@ -250,9 +271,22 @@ export default function TasksScreen() {
     const FatchContractorData = async () => {
       try {
         const { data } = await axios.post(`/api/user/`, { role: 'contractor' });
-        setContractorData(data);
+
+        const selectedProject = projectData.find(
+          (project) => project.projectName === SelectProjectName
+        );
+
+        if (selectedProject && selectedProject.userId) {
+          const filteredContractor = data.filter(
+            (contractor) => contractor._id === selectedProject.userId
+          );
+          setContractorData(filteredContractor);
+        } else {
+          setContractorData(data);
+        }
       } catch (error) {}
     };
+
     FatchContractorData();
   }, []);
   // ......}
@@ -409,7 +443,16 @@ export default function TasksScreen() {
     }
   };
   // ......}
-
+  const validation = (e) => {
+    const inputValue = e.target.value;
+    setTaskName(inputValue);
+    const firstLetterRegex = /^[a-zA-Z]/;
+    if (!firstLetterRegex.test(inputValue.charAt(0))) {
+      setShowErrorMessage(true);
+    } else {
+      setShowErrorMessage(false);
+    }
+  };
   return (
     <>
       <div className="px-3 mt-3">
@@ -421,34 +464,6 @@ export default function TasksScreen() {
           <BiPlusMedical className="mx-2" />
           Add Task
         </Button>
-        <Dropdown className={`mb-0 tab-btn text-start `}>
-          <Dropdown.Toggle
-            id="dropdown-tabs"
-            className="my-2 globalbtnColor selectButton"
-          >
-            {selectedProjects}
-          </Dropdown.Toggle>
-
-          <Dropdown.Menu className="dropMenu ">
-            <Dropdown.Item
-              className="dropMenuCon"
-              onClick={() => handleProjectsSelect('', 'All Project')}
-            >
-              All Project
-            </Dropdown.Item>
-            {ProjectData.map((project, key) => (
-              <Dropdown.Item
-                key={project._id} // Make sure to use a unique key for each item
-                className="dropMenuCon"
-                onClick={() =>
-                  handleProjectsSelect(project._id, project.projectName)
-                }
-              >
-                <span className="position-relative">{project.projectName}</span>
-              </Dropdown.Item>
-            ))}
-          </Dropdown.Menu>
-        </Dropdown>
 
         {loading ? (
           <>
@@ -470,6 +485,36 @@ export default function TasksScreen() {
           <div>{error}</div>
         ) : (
           <>
+            <Dropdown className={`mb-0 tab-btn text-start `}>
+              <Dropdown.Toggle
+                id="dropdown-tabs"
+                className="my-2 globalbtnColor selectButton"
+              >
+                {selectedProjects}
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu className="dropMenu ">
+                <Dropdown.Item
+                  className="dropMenuCon"
+                  onClick={() => handleProjectsSelect('', 'All Project')}
+                >
+                  All Project
+                </Dropdown.Item>
+                {ProjectData.map((project, key) => (
+                  <Dropdown.Item
+                    key={project._id} // Make sure to use a unique key for each item
+                    className="dropMenuCon"
+                    onClick={() =>
+                      handleProjectsSelect(project._id, project.projectName)
+                    }
+                  >
+                    <span className="position-relative">
+                      {project.projectName}
+                    </span>
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
             <div className="tableScreen">
               <div className="overlayLoading">
                 {isDeleting && (
@@ -770,10 +815,20 @@ export default function TasksScreen() {
                               required
                               className="mb-3"
                               value={taskName}
-                              onChange={(e) => setTaskName(e.target.value)}
+                              onChange={validation}
                               label="Task Name"
                               fullWidth
+                              type="text"
                             />
+                            {ShowErrorMessage && (
+                              <Alert
+                                variant="danger"
+                                className="error nameValidationErrorBox"
+                              >
+                                The first letter of the task should be an
+                                alphabet
+                              </Alert>
+                            )}
 
                             <TextField
                               required
@@ -785,31 +840,46 @@ export default function TasksScreen() {
                             />
 
                             <FormControl className={'mb-3'}>
-                              <InputLabel>Select Contractor </InputLabel>
-                              <Select
-                                value={contractorName}
-                                onChange={(e) =>
-                                  setContractorName(e.target.value)
-                                }
-                                required
-                              >
-                                <MenuItem>
-                                  <Link
-                                    to={`/adminContractorList`}
-                                    className="addCont"
-                                  >
-                                    <MdAddCircleOutline /> Add New Contractor
-                                  </Link>
-                                </MenuItem>
-                                {contractorData.map((items) => (
+                              <InputLabel>Select Contractor</InputLabel>
+                              {SelectProjectName &&
+                              contractorData.length > 0 ? (
+                                <Select
+                                  value={contractorData[0].first_name}
+                                  disabled={true}
+                                >
                                   <MenuItem
-                                    key={items}
-                                    value={items.first_name}
+                                    key={contractorData[0]._id}
+                                    value={contractorData[0].first_name}
                                   >
-                                    {items.first_name}
+                                    {contractorData[0].first_name}
                                   </MenuItem>
-                                ))}
-                              </Select>
+                                </Select>
+                              ) : (
+                                <Select
+                                  value={contractorName}
+                                  onChange={(e) =>
+                                    setContractorName(e.target.value)
+                                  }
+                                  required
+                                >
+                                  <MenuItem>
+                                    <Link
+                                      to={`/adminContractorList`}
+                                      className="addCont"
+                                    >
+                                      <MdAddCircleOutline /> Add New Contractor
+                                    </Link>
+                                  </MenuItem>
+                                  {contractorData.map((items) => (
+                                    <MenuItem
+                                      key={items._id}
+                                      value={items.first_name}
+                                    >
+                                      {items.first_name}
+                                    </MenuItem>
+                                  ))}
+                                </Select>
+                              )}
                             </FormControl>
 
                             <div className="d-flex align-items-center flex-wrap justify-content-between cateContainer">
@@ -848,6 +918,7 @@ export default function TasksScreen() {
                               color="primary"
                               type="submit"
                               className="mt-2 formbtn updatingBtn globalbtnColor"
+                              disabled={ShowErrorMessage}
                             >
                               {isSubmiting ? 'SUBMITTING' : 'SUBMIT '}
                             </Button>

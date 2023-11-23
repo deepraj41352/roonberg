@@ -7,7 +7,7 @@ const conversationRouter = express.Router();
 
 conversationRouter.get('/:taskId', async (req, res) => {
   try {
-    const conversation = await Conversation.find({
+    const conversation = await Conversation.findOne({
       taskId: req.params.taskId,
     });
     res.status(200).json(conversation);

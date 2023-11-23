@@ -1417,6 +1417,13 @@ body {
   align-items: center;
   font-size: 33px;
 }
+.nameValidationErrorBox {
+  width: 100% !important;
+  min-width: 200px !important;
+  background: #eb6161 !important ;
+  margin-bottom: 16px !important;
+  color: #fff !important;
+}
 
 /* For Task Screen */
 .nav-link.active {
@@ -1629,4 +1636,12 @@ main.windowCal {
 .addCont {
   color: #000 !important;
   text-decoration: none !important;
+}
+.addCont {
+  color: #000 !important;
+  text-decoration: none !important;
+}
+.Link-For-ChatWindow {
+  text-decoration: none !important;
+  color: #000 !important;
 }

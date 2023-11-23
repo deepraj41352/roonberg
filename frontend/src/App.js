@@ -64,6 +64,7 @@ import ConfirmRegistration from './Screens/ConfirmRegistration';
 import TasksScreen from './Screens/TasksScreen';
 import TaskAddButton from './Components/TaskAddButton';
 import ContractorTaskScreen from './Screens/ContractorTaskScreen';
+import AgentTaskScreen from './Agent/AgentTaskScreen';
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -367,6 +368,14 @@ function App() {
                       element={
                         <ProtectedRoute>
                           <AdminCategoriesListScreen />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/taskScreen-agent"
+                      element={
+                        <ProtectedRoute>
+                          <AgentTaskScreen />
                         </ProtectedRoute>
                       }
                     />

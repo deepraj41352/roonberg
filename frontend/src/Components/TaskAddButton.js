@@ -12,7 +12,7 @@ import {
 import { ImCross } from 'react-icons/im';
 
 import Modal from '@mui/material/Modal';
-import { Dropdown, Form } from 'react-bootstrap';
+import { Alert, Dropdown, Form } from 'react-bootstrap';
 import { BiPlusMedical } from 'react-icons/bi';
 import { Store } from '../Store';
 import Tab from 'react-bootstrap/Tab';
@@ -47,6 +47,7 @@ export default function TaskAddButton() {
   const [contractorName, setContractorName] = useState('');
   const [contractorData, setContractorData] = useState([]);
   const [success, setSuccess] = useState(false);
+  const [ShowErrorMessage, setShowErrorMessage] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
     setLoading(true);
@@ -225,11 +226,23 @@ export default function TaskAddButton() {
     }
   };
 
+  const validation = (e) => {
+    const inputValue = e.target.value;
+    setTaskName(inputValue);
+    const firstLetterRegex = /^[a-zA-Z]/;
+    if (!firstLetterRegex.test(inputValue.charAt(0))) {
+      setShowErrorMessage(true);
+    } else {
+      setShowErrorMessage(false);
+    }
+  };
   return (
     <div>
-      <div onClick={handleNew} className="TaskAddButton">
-        <BiPlusMedical className="" />{' '}
-      </div>
+      {userInfo.role === 'agent' ? null : (
+        <div onClick={handleNew} className="TaskAddButton">
+          <BiPlusMedical className="" />
+        </div>
+      )}
 
       <Modal
         open={isModelOpen}
@@ -327,10 +340,19 @@ export default function TaskAddButton() {
                 required
                 className="mb-3"
                 value={taskName}
-                onChange={(e) => setTaskName(e.target.value)}
+                onChange={validation}
                 label="Task Name"
                 fullWidth
+                type="text"
               />
+              {ShowErrorMessage && (
+                <Alert
+                  variant="danger"
+                  className="error nameValidationErrorBox"
+                >
+                  The first letter of the task should be an alphabet
+                </Alert>
+              )}
 
               <TextField
                 required
@@ -394,6 +416,7 @@ export default function TaskAddButton() {
                 variant="contained"
                 color="primary"
                 type="submit"
+                disabled={ShowErrorMessage}
                 className="mt-2 formbtn updatingBtn globalbtnColor"
               >
                 {isSubmiting ? 'SUBMITTING' : 'SUBMIT '}

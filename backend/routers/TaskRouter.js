@@ -59,9 +59,11 @@ TaskRouter.post(
         let user = await User.findOne({
           first_name: contractorName,
         });
+
         let selectProject = await projectTask.findOne({
           projectName: selectProjectName,
         });
+
         let project = await projectTask.findOne({ projectName });
         let task = await Task.findOne({ taskName });
         let category = await Category.findOne({ categoryName: taskCategory });
@@ -76,37 +78,41 @@ TaskRouter.post(
             message: 'A Task With The Same Name Already Exists.',
           });
         } else if (selectProject) {
+          let userSelect = await User.findOne({
+            _id: selectProject.userId,
+          });
           const newTask = await new Task({
             taskName: taskName,
             projectName: selectProjectName,
             taskDescription: req.body.taskDescription,
             projectId: selectProject._id,
             taskCategory: category._id,
-            userId: user._id,
+            userId: userSelect._id,
             agentId: agent._id,
-            userName: user.first_name,
+            userName: userSelect.first_name,
             agentName: agent.first_name,
           }).save();
+          console.log(newTask);
           const options = {
-            to: [user.email, agent.email],
+            to: [userSelect.email, agent.email],
             subject: 'New Task Create✔ ',
             template: 'ADDTASK-CONTRACTOR',
             projectName: selectProjectName,
             taskName: taskName,
             taskDescription: req.body.taskDescription,
-            user,
+            user: userSelect,
           };
           await sendEmailNotify(options);
 
           const existingConversation = await Conversation.findOne({
-            members: [{ agentId: agent._id }, { contractorId: user._id }],
+            members: [agent._id, userSelect._id],
             projectId: selectProject._id,
             taskId: newTask._id,
           });
           console.log('existingConversation', existingConversation);
           if (!existingConversation) {
             const newConversation = new Conversation({
-              members: [{ agentId: agent._id }, { contractorId: user._id }],
+              members: [agent._id, userSelect._id],
               projectId: selectProject._id,
               taskId: newTask._id,
             });
@@ -151,14 +157,14 @@ TaskRouter.post(
           await sendEmailNotify(options);
 
           const existingConversation = await Conversation.findOne({
-            members: [{ agentId: agent._id }, { contractorId: user._id }],
+            members: [agent._id, user._id],
             projectId: project._id,
             taskId: newTask._id,
           });
           console.log('existingConversation', existingConversation);
           if (!existingConversation) {
             const newConversation = new Conversation({
-              members: [{ agentId: agent._id }, { contractorId: user._id }],
+              members: [agent._id, user._id],
               projectId: project._id,
               taskId: newTask._id,
             });
@@ -256,14 +262,14 @@ TaskRouter.post(
           await sendEmailNotify(options);
 
           const existingConversation = await Conversation.findOne({
-            members: [{ agentId: agent._id }, { contractorId: user._id }],
+            members: [agent._id, user._id],
             projectId: selectProject._id,
             taskId: newTask._id,
           });
           console.log('existingConversation', existingConversation);
           if (!existingConversation) {
             const newConversation = new Conversation({
-              members: [{ agentId: agent._id }, { contractorId: user._id }],
+              members: [agent._id, user._id],
               projectId: selectProject._id,
               taskId: newTask._id,
             });
@@ -311,14 +317,14 @@ TaskRouter.post(
           await sendEmailNotify(options);
 
           const existingConversation = await Conversation.findOne({
-            members: [{ agentId: agent._id }, { contractorId: user._id }],
+            members: [agent._id, user._id],
             projectId: project._id,
             taskId: newTask._id,
           });
           console.log('existingConversation', existingConversation);
           if (!existingConversation) {
             const newConversation = new Conversation({
-              members: [{ agentId: agent._id }, { contractorId: user._id }],
+              members: [agent._id, user._id],
               projectId: project._id,
               taskId: newTask._id,
             });

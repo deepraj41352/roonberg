@@ -145,25 +145,6 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
         onClick={handleResponsiveSidebarVisable}
       />
       <ul className="dash-list ">
-        {/* <div className="searchbar1">
-          <Form className="d-flex">
-            <InputGroup className="search-bar-dash">
-              <Form.Control
-                type="search"
-                value={searchValue}
-                onChange={handleInputChange}
-                onClick={handleSearchScreen}
-                className="search-bar-dash-inner"
-                placeholder="Search..."
-                aria-label="Search"
-                aria-describedby="basic-addon2"
-              />
-              <InputGroup.Text id="basic-addon2">
-                <BsSearch className="fs-4" />
-              </InputGroup.Text>
-            </InputGroup>
-          </Form>
-        </div> */}
         <Link
           to="/dashboard"
           className="text-decoration-none"
@@ -179,6 +160,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
             Dashboard
           </li>
         </Link>
+
         {userInfo.role == 'superadmin' ? (
           <Link
             to="/adminList-screen"
@@ -333,6 +315,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
             </Link>
           </>
         ) : null}
+
         {userInfo.role == 'agent' ? (
           <>
             <Link
@@ -343,6 +326,16 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
               <li>
                 <AiOutlineProject className="me-3 fs-5" />
                 Project
+              </li>
+            </Link>
+            <Link
+              to="/taskScreen-agent"
+              className="text-decoration-none"
+              onClick={handlSmallScreeneClick}
+            >
+              <li>
+                <BiTask className="me-3 fs-5" />
+                Task
               </li>
             </Link>
           </>
@@ -397,30 +390,6 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
             Profile
           </li>
         </Link>
-        {/* <div className="profile-icon" onClick={toggleDropdown}>
-          <img
-            className="w-100 h-100 profile-icon-inner fs-5 img-fornavs"
-            src={
-              userInfo.profile_picture
-                ? userInfo.profile_picture
-                : './avatar.png'
-            }
-            alt="userimg"
-          />
-          {isDropdownOpen && (
-            <div className="dropdown-content" onClick={closeDropdown}>
-              <Link to="/profile-screen">Profile</Link>
-              <Link to="/projectNotification">Notification</Link>
-              <Link to="#">Setting</Link>
-              <hr />
-              <Link onClick={signoutHandler} to="#">
-                Logout
-              </Link>
-              {/* Add more options as needed *
-            </div>
-          )}
-        </div> */}
-
         <Link
           to="#Logout"
           onClick={signoutHandler}

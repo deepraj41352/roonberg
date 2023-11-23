@@ -12,7 +12,7 @@ import {
 import { ImCross } from 'react-icons/im';
 
 import Modal from '@mui/material/Modal';
-import { Alert, Dropdown, Form } from 'react-bootstrap';
+import { Dropdown, Form } from 'react-bootstrap';
 import { BiPlusMedical } from 'react-icons/bi';
 import { Store } from '../Store';
 import Tab from 'react-bootstrap/Tab';
@@ -59,7 +59,7 @@ const reducer = (state, action) => {
   }
 };
 
-export default function ContractorTaskScreen() {
+export default function AgentTaskScreen() {
   const [isModelOpen, setIsModelOpen] = useState(false);
   const [morefieldsModel, setMorefieldsModel] = useState(false);
   const [isNewProject, setIsNewProject] = useState(false);
@@ -105,19 +105,19 @@ export default function ContractorTaskScreen() {
         );
       },
     },
-    {
-      field: 'checkbox',
-      headerName: 'Select',
-      width: 100,
-      renderCell: (params) => (
-        <input
-          className="Check_box-For-Select"
-          type="checkbox"
-          checked={selectedRowId === params.row._id}
-          onChange={() => handleCheckboxSelection(params.row._id)}
-        />
-      ),
-    },
+    // {
+    //     field: 'checkbox',
+    //     headerName: 'Select',
+    //     width: 100,
+    //     renderCell: (params) => (
+    //         <input
+    //             className="Check_box-For-Select"
+    //             type="checkbox"
+    //             checked={selectedRowId === params.row._id}
+    //             onChange={() => handleCheckboxSelection(params.row._id)}
+    //         />
+    //     ),
+    // },
     {
       field: 'taskName',
       headerName: 'Task Name',
@@ -137,7 +137,7 @@ export default function ContractorTaskScreen() {
     {
       field: 'userName',
       headerName: 'Contractor Name',
-      width: 100,
+      width: 180,
       renderCell: (params) => (
         <Link
           className="Link-For-ChatWindow"
@@ -176,7 +176,7 @@ export default function ContractorTaskScreen() {
       successUpdate,
       // categoryData,
       agentData,
-      contractorData,
+      // contractorData,
     },
     dispatch,
   ] = useReducer(reducer, {
@@ -186,7 +186,7 @@ export default function ContractorTaskScreen() {
     successDelete: false,
     successUpdate: false,
     // categoryData: [],
-    contractorData: [],
+    // contractorData: [],
     agentData: [],
   });
   console.log('selectedRowId', selectedRowId);
@@ -195,43 +195,47 @@ export default function ContractorTaskScreen() {
   const [taskName, setTaskName] = useState('');
   const [taskDesc, setTaskDesc] = useState('');
   const [category, setCategory] = useState('');
+  const [contractorName, setContractorName] = useState('');
   const [categoryData, setCategoryData] = useState([]);
   const [ProjectData, setProjectData] = useState([]);
+  const [contractorData, setContractorData] = useState([]);
 
   const navigate = useNavigate();
-  const [errorAccured, setErrorAccured] = useState(false);
-  const [agents, setAgents] = useState([{ categoryId: '' }]);
-  const [categories, setCategories] = useState([]);
   const [projectStatus, setProjectStatus] = useState('active');
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedTab, setSelectedTab] = useState('Active Task');
-  const [selectedProjects, setSelectedProjects] = useState('All Project');
+  const [selectedProjects, setSelectedProjects] = useState('All');
   const [selectedProjectsId, setSelectedProjectsId] = useState();
   const [dynamicfield, setDynamicfield] = useState(false);
   const [success, setSuccess] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [projectStatuDrop, setProjectStatuDrop] = useState(null);
   const [data, SetData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [ShowErrorMessage, setShowErrorMessage] = useState(false);
 
+  // {Add project button.......
   const handleAddNewProject = () => {
     setDynamicfield(true);
   };
   const removeDymanic = () => {
     setDynamicfield(false);
   };
+  // ......}
+
+  // {Open Tap.........
   const handleTabSelect = (tab) => {
     setSelectedTab(tab);
   };
+  // ......}
 
+  // {Select Button .........
   const handleProjectsSelect = (id, Projects) => {
     setSelectedProjects(Projects);
     setSelectedProjectsId(id);
   };
-  const handleEdit = (userid) => {
-    navigate(`/adminEditProject/${userid}`);
-  };
+  // ......}
+
+  // {Model Open & Close.........
+
   const handleCloseRow = () => {
     setIsModelOpen(false);
     setShowModal(false);
@@ -239,13 +243,21 @@ export default function ContractorTaskScreen() {
   const handleNew = () => {
     setIsModelOpen(true);
   };
+  const ModelOpen = () => {
+    setShowModal(true);
+  };
+  // ......}
 
+  // {Get tasks.........
   useEffect(() => {
     setLoading(true);
     const FatchcategoryData = async () => {
       try {
         const { data } = await axios.get(`/api/task/tasks`);
-        SetData(data);
+        const filterTasktData = data.filter(
+          (agent) => agent.agentId === userInfo._id
+        );
+        SetData(filterTasktData);
       } catch (error) {
         toast.error(error.data?.message);
       } finally {
@@ -255,11 +267,138 @@ export default function ContractorTaskScreen() {
 
     FatchcategoryData();
   }, [success]);
-  console.log('data', data);
+  // ......}
 
-  const ModelOpen = () => {
-    setShowModal(true);
+  // {Get  Contractor User.........
+  useEffect(() => {
+    const FatchContractorData = async () => {
+      try {
+        const { data } = await axios.post(`/api/user/`, { role: 'contractor' });
+        setContractorData(data);
+      } catch (error) {}
+    };
+
+    FatchContractorData();
+  }, [SelectProjectName, ProjectData]);
+  // ......}
+
+  // {Get Category.........
+  useEffect(() => {
+    setLoading(true);
+    const FatchCategory = async () => {
+      try {
+        const response = await axios.get(`/api/category/`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        const datas = response.data;
+        setCategoryData(datas);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    FatchCategory();
+  }, []);
+  // ......}
+
+  // {Get Project .........
+  useEffect(() => {
+    setLoading(true);
+    const FatchProject = async () => {
+      try {
+        const { data } = await axios.get(`/api/task/project`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        const filterProjectData = data.filter(
+          (agent) => agent.agentId === userInfo._id
+        );
+        if (filterProjectData) {
+          setProjectData(filterProjectData);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    FatchProject();
+  }, []);
+  // ......}
+
+  // {Filter All Data by status .........
+  const taskData = data.filter((item) => {
+    if (selectedProjects == 'All') {
+      return item;
+    } else {
+      return item.projectId === selectedProjectsId;
+    }
+  });
+  const ActiveData = taskData.filter((item) => {
+    return item.taskStatus === 'active' || item.taskStatus === 'waiting';
+  });
+  const CompleteData = taskData.filter((item) => {
+    return item.taskStatus === 'completed';
+  });
+  const PendingData = taskData.filter((item) => {
+    return item.taskStatus === 'pending';
+  });
+  // ......}
+
+  // {Submit Form Data  .........
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmiting(true);
+    try {
+      const data = await axios.post(
+        `/api/task/admin`,
+        {
+          selectProjectName: SelectProjectName,
+          projectName: projectName,
+          contractorName: contractorName,
+          taskName: taskName,
+          taskDescription: taskDesc,
+          taskCategory: category,
+        },
+        {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+      if (data.status === 201) {
+        setSuccess(!success);
+        toast.success(data.data.message);
+        setDynamicfield(false);
+        setIsSubmiting(false);
+        setIsModelOpen(false);
+        setProjectName('');
+        setTaskName('');
+        setTaskDesc('');
+        setCategory('');
+        setContractorName('');
+        setSelectProjectName('');
+      }
+      if (data.status === 200) {
+        setDynamicfield(false);
+        toast.error(data.data.message);
+        setIsModelOpen(false);
+        setProjectName('');
+        setTaskName('');
+        setTaskDesc('');
+        setCategory('');
+        setContractorName('');
+        setSelectProjectName('');
+      }
+    } catch (error) {
+      toast.error(error.message);
+      setIsModelOpen(false);
+      setDynamicfield(false);
+    } finally {
+      setIsSubmiting(false);
+    }
   };
+  // ......}
+
+  // {Delete Task Data  .........
   const deleteTask = async () => {
     setIsSubmiting(true);
     try {
@@ -276,6 +415,9 @@ export default function ContractorTaskScreen() {
       setIsSubmiting(false);
     }
   };
+  // ......}
+
+  // {Update Task Data  .........
   const handleStatusUpdate = async (e) => {
     const taskStatus = e.target.value;
     try {
@@ -296,142 +438,51 @@ export default function ContractorTaskScreen() {
       console.log(err);
     }
   };
-  useEffect(() => {
-    setLoading(true);
-    const FatchCategory = async () => {
-      try {
-        const response = await axios.get(`/api/category/`, {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        });
-        const datas = response.data;
-        setCategoryData(datas);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    FatchCategory();
-  }, []);
+  // ......}
 
-  useEffect(() => {
-    setLoading(true);
-    const FatchProject = async () => {
-      try {
-        const { data } = await axios.get(`/api/task/project`, {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        });
-        console.log('dataofCOntractor', data);
-        const ContractorProject = data.filter((item) => {
-          return item.userId === userInfo._id;
-        });
-
-        setProjectData(ContractorProject);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    FatchProject();
-  }, [success]);
-  console.log('ProjectData', ProjectData);
-
-  const ContractorTask = data.filter((item) => {
-    return item.userId === userInfo._id;
-  });
-
-  console.log('ContractorTask', ContractorTask);
-
-  const taskData = ContractorTask.filter((item) => {
-    if (selectedProjects == 'All Project') {
-      return item;
-    } else {
-      return item.projectId === selectedProjectsId;
-    }
-  });
-  const ActiveData = taskData.filter((item) => {
-    return item.taskStatus === 'active' || item.taskStatus === 'waiting';
-  });
-  const CompleteData = taskData.filter((item) => {
-    return item.taskStatus === 'completed';
-  });
-  const PendingData = taskData.filter((item) => {
-    return item.taskStatus === 'pending';
-  });
-  const uniqueProjectNames = new Set();
-
-  // Filter the projects to get unique project names
-  const uniqueProjects = ContractorTask.filter((project) => {
-    if (!uniqueProjectNames.has(project.projectName)) {
-      uniqueProjectNames.add(project.projectName);
-      return true;
-    }
-    return false;
-  });
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmiting(true);
-
-    try {
-      const data = await axios.post(
-        `/api/task/contractor`,
-        {
-          selectProjectName: SelectProjectName,
-          projectName: projectName,
-          taskName: taskName,
-          taskDescription: taskDesc,
-          taskCategory: category,
-        },
-        {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        }
-      );
-      if (data.status === 201) {
-        setSuccess(!success);
-        toast.success(data.data.message);
-        setDynamicfield(false);
-        setIsSubmiting(false);
-        setIsModelOpen(false);
-        setProjectName('');
-        setTaskName('');
-        setTaskDesc('');
-        setCategory('');
-        setSelectProjectName('');
-      }
-      if (data.status === 200) {
-        setDynamicfield(false);
-        toast.error(data.data.message);
-        setIsModelOpen(false);
-        setProjectName('');
-        setTaskName('');
-        setTaskDesc('');
-        setCategory('');
-        setSelectProjectName('');
-      }
-    } catch (error) {
-      toast.error(error.message);
-      setIsModelOpen(false);
-      setDynamicfield(false);
-    } finally {
-      setIsSubmiting(false);
-    }
-  };
-
-  const validation = (e) => {
-    const inputValue = e.target.value;
-    setTaskName(inputValue);
-    const firstLetterRegex = /^[a-zA-Z]/;
-    if (!firstLetterRegex.test(inputValue.charAt(0))) {
-      setShowErrorMessage(true);
-    } else {
-      setShowErrorMessage(false);
-    }
-  };
   return (
     <>
       <div className="px-3 mt-3">
+        {/* <Button
+                    variant="outlined"
+                    className="my-2 d-flex globalbtnColor"
+                    onClick={handleNew}
+                >
+                    <BiPlusMedical className="mx-2" />
+                    Add Task
+                </Button> */}
+        <Dropdown className={`mb-0 tab-btn text-start `}>
+          <Dropdown.Toggle
+            id="dropdown-tabs"
+            className="my-2 globalbtnColor selectButton"
+          >
+            {selectedProjects}
+          </Dropdown.Toggle>
+
+          <Dropdown.Menu className="dropMenu ">
+            <Dropdown.Item
+              className="dropMenuCon"
+              onClick={() => handleProjectsSelect('', 'All')}
+            >
+              All
+            </Dropdown.Item>
+            {ProjectData &&
+              ProjectData.map((project, key) => (
+                <Dropdown.Item
+                  key={project._id} // Make sure to use a unique key for each item
+                  className="dropMenuCon"
+                  onClick={() =>
+                    handleProjectsSelect(project._id, project.projectName)
+                  }
+                >
+                  <span className="position-relative">
+                    {project.projectName}
+                  </span>
+                </Dropdown.Item>
+              ))}
+          </Dropdown.Menu>
+        </Dropdown>
+
         {loading ? (
           <>
             <div className="ThreeDot">
@@ -452,45 +503,6 @@ export default function ContractorTaskScreen() {
           <div>{error}</div>
         ) : (
           <>
-            <Button
-              variant="outlined"
-              className="my-2 d-flex globalbtnColor"
-              onClick={handleNew}
-            >
-              <BiPlusMedical className="mx-2" />
-              Add Task
-            </Button>
-            <Dropdown className={`mb-0 tab-btn text-start `}>
-              <Dropdown.Toggle
-                id="dropdown-tabs"
-                className="my-2 globalbtnColor selectButton"
-              >
-                {selectedProjects}
-              </Dropdown.Toggle>
-
-              <Dropdown.Menu className="dropMenu ">
-                <Dropdown.Item
-                  className="dropMenuCon"
-                  onClick={() => handleProjectsSelect('', 'All Project')}
-                >
-                  All Project
-                </Dropdown.Item>
-                {uniqueProjects.map((project, key) => (
-                  <Dropdown.Item
-                    key={project._id} // Make sure to use a unique key for each item
-                    className="dropMenuCon"
-                    onClick={() =>
-                      handleProjectsSelect(project._id, project.projectName)
-                    }
-                  >
-                    <span className="position-relative">
-                      {project.projectName}
-                    </span>
-                  </Dropdown.Item>
-                ))}
-              </Dropdown.Menu>
-            </Dropdown>
-
             <div className="tableScreen">
               <div className="overlayLoading">
                 {isDeleting && (
@@ -550,7 +562,7 @@ export default function ContractorTaskScreen() {
                     {selectedRowId && (
                       <div className="btn-for-update">
                         <Button className=" btn-color" onClick={ModelOpen}>
-                          <span class="position-relative ">Update Status</span>
+                          <span class="position-relative">Update Status</span>
                         </Button>
                         <Button
                           className=" btn-color"
@@ -735,7 +747,7 @@ export default function ContractorTaskScreen() {
                               onClick={handleCloseRow}
                             />
                             <h4 className="d-flex justify-content-center">
-                              Add Project
+                              Add Task
                             </h4>
                             <FormControl
                               className={dynamicfield ? 'disable mb-3' : 'mb-3'}
@@ -754,16 +766,17 @@ export default function ContractorTaskScreen() {
                                     handleAddNewProject();
                                   }}
                                 >
-                                  <MdAddCircleOutline /> add new Project
+                                  <MdAddCircleOutline /> Add New Project
                                 </MenuItem>
-                                {ProjectData.map((items) => (
-                                  <MenuItem
-                                    key={items}
-                                    value={items.projectName}
-                                  >
-                                    {items.projectName}
-                                  </MenuItem>
-                                ))}
+                                {ProjectData &&
+                                  ProjectData.map((items) => (
+                                    <MenuItem
+                                      key={items._id}
+                                      value={items.projectName}
+                                    >
+                                      {items.projectName}
+                                    </MenuItem>
+                                  ))}
                               </Select>
                             </FormControl>
 
@@ -786,24 +799,16 @@ export default function ContractorTaskScreen() {
                                 />
                               </div>
                             ) : null}
+
                             <TextField
                               required
                               className="mb-3"
                               value={taskName}
-                              onChange={validation}
+                              onChange={(e) => setTaskName(e.target.value)}
                               label="Task Name"
                               fullWidth
-                              type="text"
                             />
-                            {ShowErrorMessage && (
-                              <Alert
-                                variant="danger"
-                                className="error nameValidationErrorBox"
-                              >
-                                The first letter of the task should be an
-                                alphabet
-                              </Alert>
-                            )}
+
                             <TextField
                               required
                               className="mb-3"
@@ -812,6 +817,35 @@ export default function ContractorTaskScreen() {
                               label="Description"
                               fullWidth
                             />
+
+                            <FormControl className={'mb-3'}>
+                              <InputLabel>Select Contractor </InputLabel>
+
+                              <Select
+                                value={contractorName}
+                                onChange={(e) =>
+                                  setContractorName(e.target.value)
+                                }
+                                required
+                              >
+                                <MenuItem>
+                                  <Link
+                                    to={`/adminContractorList`}
+                                    className="addCont"
+                                  >
+                                    <MdAddCircleOutline /> Add New Contractor
+                                  </Link>
+                                </MenuItem>
+                                {contractorData.map((items) => (
+                                  <MenuItem
+                                    key={items}
+                                    value={items.first_name}
+                                  >
+                                    {items.first_name}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
                             <div className="d-flex align-items-center flex-wrap justify-content-between cateContainer">
                               {categoryData.map((category) => (
                                 <div
@@ -847,7 +881,6 @@ export default function ContractorTaskScreen() {
                               variant="contained"
                               color="primary"
                               type="submit"
-                              disabled={ShowErrorMessage}
                               className="mt-2 formbtn updatingBtn globalbtnColor"
                             >
                               {isSubmiting ? 'SUBMITTING' : 'SUBMIT '}
