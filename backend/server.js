@@ -63,6 +63,12 @@ const options = {
 
 const swaggerSpec = swaggerJSDoc(options);
 
+const _dirname = path.resolve();
+app.use(express.static(path.join(_dirname, 'frontend/build')));
+app.get('*', (req, res) =>
+  res.sendFile(path.join(_dirname, 'frontend/build/index.html'))
+);
+
 app.use('/api/doc', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(express.json());
@@ -119,12 +125,6 @@ export async function storeNotification(message, notifyUser, status, type) {
   return notify;
   console.log('notifyme-------', notify);
 }
-
-const _dirname = path.resolve();
-app.use(express.static(path.join(_dirname, 'frontend/build')));
-app.get('*', (req, res) =>
-  res.sendFile(path.join(_dirname, 'frontend/build/index.html'))
-);
 
 app.use((err, req, res, next) => {
   console.error(err.message);
