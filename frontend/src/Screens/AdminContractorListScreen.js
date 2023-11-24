@@ -53,7 +53,7 @@ const reducer = (state, action) => {
 const columns = [
   {
     field: 'first_name',
-    headerName: 'constractor',
+    headerName: 'Constractor',
     width: 150,
   },
   {

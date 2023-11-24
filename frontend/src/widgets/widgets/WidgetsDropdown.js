@@ -425,7 +425,7 @@ const WidgetsDropdown = React.memo(() => {
             </CCol>
             <CCol sm={8} lg={8}>
               <CCard className="mh-100 mb-4">
-                <CCardHeader>Task</CCardHeader>
+                <CCardHeader>Tasks</CCardHeader>
                 <CCardBody>
                   <ProjectDataWidget projectData={projectData} />
                 </CCardBody>

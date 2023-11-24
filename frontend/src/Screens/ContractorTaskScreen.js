@@ -609,7 +609,7 @@ export default function ContractorTaskScreen() {
                                   controlId="formBasicPassword"
                                 >
                                   <Form.Label className="mb-1 fw-bold">
-                                    Project Status
+                                    Task Status
                                   </Form.Label>
                                   <Form.Select
                                     value={projectStatus}

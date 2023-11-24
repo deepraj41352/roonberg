@@ -145,7 +145,7 @@ TaskRouter.post(
             const type = 'project';
             for (const adminemailid of notifyUser) {
               storeNotification(message, adminemailid, status, type);
-              socket.emit('notifyProjectBackend', notifyUser, message);
+              socket.emit('notifyProjectBackend', adminemailid, message);
             }
           } else {
             console.log('email not send');
@@ -208,7 +208,7 @@ TaskRouter.post(
             const type = 'project';
             for (const adminemailid of notifyUser) {
               storeNotification(message, adminemailid, status, type);
-              socket.emit('notifyProjectBackend', notifyUser, message);
+              socket.emit('notifyProjectBackend', adminemailid, message);
             }
           } else {
             console.log('email not send');
@@ -516,7 +516,7 @@ TaskRouter.put(
         const type = 'project';
         for (const adminemailid of notifyUser) {
           storeNotification(message, adminemailid, status, type);
-          socket.emit('notifyProjectBackend', notifyUser, message);
+          socket.emit('notifyProjectBackend', adminemailid, message);
         }
       } else {
         console.log('email not send');

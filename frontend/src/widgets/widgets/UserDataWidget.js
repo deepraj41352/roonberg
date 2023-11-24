@@ -12,15 +12,60 @@ import { useContext, useEffect, useState } from 'react';
 const columns = [
   {
     field: 'first_name',
-    headerName: 'Name',
-    width: 100,
+    headerName: 'First Name',
+    width: 120,
+  },
+  {
+    field: 'last_name',
+    headerName: 'Last Name',
+    width: 120,
   },
   {
     field: 'email',
     headerName: 'Email',
-    width: 100,
+    width: 130,
   },
   { field: 'role', headerName: 'Role', width: 150 },
+  {
+    field: 'createdAt',
+    headerName: 'Registration',
+    width: 200, // Adjust the width as needed
+    renderCell: (params) => {
+      const combinedDateTime = new Date(params.row.createdAt);
+      const date = combinedDateTime.toISOString().split('T')[0];
+      const time = combinedDateTime.toTimeString().split(' ')[0];
+
+      return (
+        <div className="text-start">
+          <div>
+            <span>Date: {date}</span>
+            <br />
+            <span>Time: {time}</span>
+          </div>
+        </div>
+      );
+    },
+  },
+  {
+    field: 'lastLogin',
+    headerName: 'Last Login',
+    width: 200, // Adjust the width as needed
+    renderCell: (params) => {
+      const combinedDateTime = new Date(params.row.lastLogin);
+      const date = combinedDateTime.toISOString().split('T')[0];
+      const time = combinedDateTime.toTimeString().split(' ')[0];
+
+      return (
+        <div className="text-start">
+          <div>
+            <span>Date: {date}</span>
+            <br />
+            <span>Time: {time}</span>
+          </div>
+        </div>
+      );
+    },
+  },
 ];
 
 export default function UserDataWidget(props) {
@@ -33,7 +78,7 @@ export default function UserDataWidget(props) {
     <>
       <Box sx={{ height: 400, width: '100%' }}>
         <DataGrid
-          className={`tableBg mx-2 ${theme}DataGrid`}
+          className={`tableGrid actionCenter`}
           rows={props.userData}
           columns={[...columns]}
           getRowId={(row) => row._id}

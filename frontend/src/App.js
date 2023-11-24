@@ -116,7 +116,7 @@ function App() {
 
       <div>
         <Container fluid className="px-0">
-          <div className="d-flex ">
+          <div>
             {userInfo ? (
               <Sidebar
                 sidebarVisible={sidebarVisible}
@@ -124,7 +124,11 @@ function App() {
               />
             ) : null}
 
-            <div className="px-0 w-100">
+            <div
+              className={`px-0 ${
+                !userInfo || sidebarVisible ? 'mainConNav2' : 'mainConNav'
+              }`}
+            >
               {userInfo ? (
                 <Navbar expand="lg" className="admin-navbar">
                   <Container fluid>
@@ -283,7 +287,7 @@ function App() {
                 </Navbar>
               )}
               <main className="windowCal">
-                <div className="mainfordata">
+                <div className="my-5 mx-3">
                   <Routes>
                     <Route path="/" element={<SignUpForm />} />
                     <Route path="/test" element={<MyComponent />} />

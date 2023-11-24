@@ -669,7 +669,7 @@ export default function TasksScreen() {
                                   controlId="formBasicPassword"
                                 >
                                   <Form.Label className="mb-1 fw-bold">
-                                    Project Status
+                                    Task Status
                                   </Form.Label>
                                   <Form.Select
                                     value={projectStatus}
@@ -699,7 +699,7 @@ export default function TasksScreen() {
                           {
                             field: 'action',
                             headerName: 'Action',
-                            width: 200,
+                            width: 250,
                             renderCell: (params) => {
                               return (
                                 <Grid item xs={8}>

@@ -528,7 +528,9 @@ body {
 
 .admin-navbar {
   height: 66px !important;
-
+  position: sticky !important;
+  top: 0;
+  z-index: 3;
   border-bottom: 1px solid #22455c;
   background: rgb(0, 0, 0);
   background: linear-gradient(
@@ -551,14 +553,22 @@ body {
 .sidebar.visible {
   width: 0px;
 }
+.mainConNav {
+  width: 79%;
+  float: right;
+}
+.mainConNav2 {
+  width: 100%;
+}
 .sidebar {
+  position: fixed;
   width: 21%;
   min-height: 100vh;
   background-color: #070719;
   color: #fff;
   white-space: nowrap;
   overflow-x: hidden;
-  transition: width 0.3s ease-in-out;
+  transition: width 0.4s ease-in-out;
 }
 .admin-btn-logo2 {
   display: none;
@@ -568,6 +578,9 @@ body {
 }
 
 @media (max-width: 992px) {
+  .mainConNav {
+    width: 100%;
+  }
   .disNonePro {
     display: block !important;
   }
@@ -630,6 +643,7 @@ body {
   padding: 0px;
   margin: 0px;
 }
+
 .blank-box {
   height: 62px;
   width: 100%;
@@ -954,9 +968,7 @@ body {
 .forWidth {
   width: 92% !important;
 }
-.mainfordata {
-  margin-top: 3% !important;
-}
+
 .row {
   margin: 0 !important;
 }
@@ -1435,7 +1447,7 @@ body {
 }
 .tableScreen {
   background-color: #fff;
-  max-width: 850px;
+  max-width: 900px;
   margin: 20px auto;
   padding: 15px 6px;
 }
@@ -1479,7 +1491,7 @@ body {
   border: 1px solid #ffc000 !important;
 }
 main.windowCal {
-  min-height: calc(100% - 150px) !important;
+  min-height: calc(100vh - 150px) !important;
 }
 .actionCenter .MuiDataGrid-columnHeaderTitleContainer {
   justify-content: space-evenly;
@@ -1664,16 +1676,24 @@ main.windowCal {
   font-size: 16px !important;
 }
 
-.footer {
-  margin-top: auto;
-  background-color: #f8f8f8; /* Adjust the background color as needed */
-  text-align: center;
-  padding: 10px;
-  font-size: 14px; /* Adjust the font size as needed */
-}
 body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  margin: 0;
+}
+
+.footer {
+  margin-top: auto;
+  background: linear-gradient(
+    1deg,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(17, 17, 74, 1) 68%,
+    rgba(0, 0, 0, 1) 93%
+  );
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+  color: #fff; /* Adjust the font size as needed */
 }

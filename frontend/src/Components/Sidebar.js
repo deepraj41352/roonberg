@@ -144,7 +144,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
         className="sidebarCrossBtn"
         onClick={handleResponsiveSidebarVisable}
       />
-      <ul className="dash-list ">
+      <ul className="dash-list">
         <Link
           to="/dashboard"
           className="text-decoration-none"
