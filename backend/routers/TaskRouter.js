@@ -6,6 +6,17 @@ import Task from '../Models/taskModel.js';
 import Category from '../Models/categoryModel.js';
 import User from '../Models/userModel.js';
 import Conversation from '../Models/conversationModel.js';
+import { storeNotification } from '../server.js';
+import { Socket, io } from 'socket.io-client';
+const SocketUrl = process.env.SOCKETURL || 'ws://localhost:8900';
+const socket = io(SocketUrl);
+
+// const io = require('../socket/index.js');
+// import io from '../../socket/index.js'
+
+socket.emit('connectionForNotify', () => {
+  console.log('connectionForNotif user connnercted');
+});
 
 const TaskRouter = express.Router();
 
@@ -46,7 +57,7 @@ TaskRouter.post(
       function capitalizeFirstLetter(data) {
         return data && data.charAt(0).toUpperCase() + data.slice(1);
       }
-      const contractorName = capitalizeFirstLetter(req.body.contractorName);
+      const contractorId = req.body.contractorId;
       const selectProjectName = capitalizeFirstLetter(
         req.body.selectProjectName
       );
@@ -57,19 +68,38 @@ TaskRouter.post(
 
       if (userRole === 'admin' || userRole === 'superadmin') {
         let user = await User.findOne({
-          first_name: contractorName,
+          _id: contractorId,
         });
+        if (user === null) {
+          res.status(200).json({
+            message: 'Contractor Not Exists',
+          });
+        }
 
         let selectProject = await projectTask.findOne({
           projectName: selectProjectName,
         });
+        if (selectProject === null) {
+          res.status(200).json({
+            message: 'Project Not Exists',
+          });
+        }
 
         let project = await projectTask.findOne({ projectName });
         let task = await Task.findOne({ taskName });
         let category = await Category.findOne({ categoryName: taskCategory });
+        if (category === null) {
+          res.status(200).json({
+            message: 'Category Not Exists',
+          });
+        }
         let agent = await User.findOne({ agentCategory: category._id });
+        if (agent === null) {
+          res.status(200).json({
+            message: 'Category Not Assign Any Agent',
+          });
+        }
         if (project && project.projectName === projectName) {
-          console.log('in if');
           res.status(200).json({
             message: ' A Project With The Same Name Already Exists.',
           });
@@ -81,6 +111,11 @@ TaskRouter.post(
           let userSelect = await User.findOne({
             _id: selectProject.userId,
           });
+          if (agent === null) {
+            res.status(200).json({
+              message: 'Contractor Not Exists Any Project',
+            });
+          }
           const newTask = await new Task({
             taskName: taskName,
             projectName: selectProjectName,
@@ -92,7 +127,6 @@ TaskRouter.post(
             userName: userSelect.first_name,
             agentName: agent.first_name,
           }).save();
-          console.log(newTask);
           const options = {
             to: [userSelect.email, agent.email],
             subject: 'New Task Create✔ ',
@@ -102,14 +136,26 @@ TaskRouter.post(
             taskDescription: req.body.taskDescription,
             user: userSelect,
           };
-          await sendEmailNotify(options);
+          const checkMail = await sendEmailNotify(options);
+          if (checkMail) {
+            const notifyUser = [userSelect._id, agent._id];
+            const message = `New Task Created Project Name - ${options.projectName}, Task Name - ${options.taskName},Description - ${options.taskDescription}`;
+            // for (const adminemailid of options.to) {
+            const status = 'unseen';
+            const type = 'project';
+            for (const adminemailid of notifyUser) {
+              storeNotification(message, adminemailid, status, type);
+              socket.emit('notifyProjectBackend', notifyUser, message);
+            }
+          } else {
+            console.log('email not send');
+          }
 
           const existingConversation = await Conversation.findOne({
             members: [agent._id, userSelect._id],
             projectId: selectProject._id,
             taskId: newTask._id,
           });
-          console.log('existingConversation', existingConversation);
           if (!existingConversation) {
             const newConversation = new Conversation({
               members: [agent._id, userSelect._id],
@@ -143,8 +189,6 @@ TaskRouter.post(
             userName: user.first_name,
             agentName: agent.first_name,
           }).save();
-          console.log(user.email, agent.email);
-
           const options = {
             to: [user.email, agent.email],
             subject: 'New Task Create✔ ',
@@ -154,14 +198,27 @@ TaskRouter.post(
             taskDescription: req.body.taskDescription,
             user,
           };
-          await sendEmailNotify(options);
+          const checkMail = await sendEmailNotify(options);
+          if (checkMail) {
+            // for (const adminemailid of options.to) {
+
+            const notifyUser = [user._id, agent._id];
+            const message = `New Task Created Project Name - ${options.projectName}, Task Name - ${options.taskName},Description - ${options.taskDescription}`;
+            const status = 'unseen';
+            const type = 'project';
+            for (const adminemailid of notifyUser) {
+              storeNotification(message, adminemailid, status, type);
+              socket.emit('notifyProjectBackend', notifyUser, message);
+            }
+          } else {
+            console.log('email not send');
+          }
 
           const existingConversation = await Conversation.findOne({
             members: [agent._id, user._id],
             projectId: project._id,
             taskId: newTask._id,
           });
-          console.log('existingConversation', existingConversation);
           if (!existingConversation) {
             const newConversation = new Conversation({
               members: [agent._id, user._id],
@@ -211,19 +268,33 @@ TaskRouter.post(
         let selectProject = await projectTask.findOne({
           projectName: selectProjectName,
         });
-        const adminEmails = await User.find({ role: 'admin' }, 'email');
-        const superAdminEmails = await User.find(
-          { role: 'superadmin' },
-          'email'
+        const adminEmails = await User.find({ role: 'admin' }).select(
+          'email _id'
         );
+        const superAdminEmails = await User.find({ role: 'superadmin' }).select(
+          'email _id'
+        );
+
         const adminEmailAddresses = adminEmails.map((user) => user.email);
         const superAdminEmailAddresses = superAdminEmails.map(
           (user) => user.email
         );
+        const adminIds = adminEmails.map((user) => user._id);
+        const superAdminIds = superAdminEmails.map((user) => user._id);
         let project = await projectTask.findOne({ projectName });
         let task = await Task.findOne({ taskName });
         let category = await Category.findOne({ categoryName: taskCategory });
+        if (category === null) {
+          res.status(200).json({
+            message: 'Category Not Exists',
+          });
+        }
         let agent = await User.findOne({ agentCategory: category._id });
+        if (agent === null) {
+          res.status(200).json({
+            message: 'Category Not Assign Any Agent',
+          });
+        }
         if (project && project.projectName === projectName) {
           res.status(200).json({
             message: ' A Project With The Same Name Already Exists.',
@@ -250,6 +321,7 @@ TaskRouter.post(
             ...superAdminEmailAddresses,
             agent.email,
           ];
+          const allIds = [...adminIds, ...superAdminIds, agent._id];
           const options = {
             to: allEmails,
             subject: 'New Task Create✔ ',
@@ -259,14 +331,25 @@ TaskRouter.post(
             taskDescription: req.body.taskDescription,
             user,
           };
-          await sendEmailNotify(options);
+          const checkMail = await sendEmailNotify(options);
+          if (checkMail) {
+            for (const adminemailid of allIds) {
+              const notifyUser = adminemailid;
+              const message = `New Task Created Project Name - ${options.projectName}, Task Name - ${options.taskName},Description - ${options.taskDescription}`;
+              const status = 'unseen';
+              const type = 'project';
+              storeNotification(message, notifyUser, status, type);
+              socket.emit('notifyProjectBackend', notifyUser, message);
+            }
+          } else {
+            console.log('email not send');
+          }
 
           const existingConversation = await Conversation.findOne({
             members: [agent._id, user._id],
             projectId: selectProject._id,
             taskId: newTask._id,
           });
-          console.log('existingConversation', existingConversation);
           if (!existingConversation) {
             const newConversation = new Conversation({
               members: [agent._id, user._id],
@@ -305,6 +388,7 @@ TaskRouter.post(
             ...superAdminEmailAddresses,
             agent.email,
           ];
+          const allIds = [...adminIds, ...superAdminIds, agent._id];
           const options = {
             to: allEmails,
             subject: 'New Task Create✔ ',
@@ -314,14 +398,26 @@ TaskRouter.post(
             taskDescription: req.body.taskDescription,
             user,
           };
-          await sendEmailNotify(options);
+          const checkMail = await sendEmailNotify(options);
+
+          if (checkMail) {
+            for (const adminemailid of allIds) {
+              const notifyUser = adminemailid;
+              const message = `New Task Created Project Name -${options.projectName}, Task Name - ${options.taskName},Description - ${options.taskDescription}`;
+              const status = 'unseen';
+              const type = 'project';
+              storeNotification(message, notifyUser, status, type);
+              socket.emit('notifyProjectBackend', notifyUser, message);
+            }
+          } else {
+            console.log('email not send');
+          }
 
           const existingConversation = await Conversation.findOne({
             members: [agent._id, user._id],
             projectId: project._id,
             taskId: newTask._id,
           });
-          console.log('existingConversation', existingConversation);
           if (!existingConversation) {
             const newConversation = new Conversation({
               members: [agent._id, user._id],
@@ -384,7 +480,6 @@ TaskRouter.put(
   expressAsyncHandler(async (req, res) => {
     try {
       const { taskStatus } = req.body;
-      console.log('taskStatus...........', taskStatus);
       if (!taskStatus) {
         return res.status(400).json({ message: 'Task status is required.' });
       }
@@ -400,7 +495,32 @@ TaskRouter.put(
         message: 'Update status successful',
         updatedTask: updateStatus,
       });
-      console.log('response', updateStatus);
+      const adminEmails = await User.find({ role: 'admin' }).select(
+        'email _id'
+      );
+      const superAdminEmails = await User.find({ role: 'superadmin' }).select(
+        'email _id'
+      );
+      const adminIds = adminEmails.map((user) => user._id);
+      const superAdminIds = superAdminEmails.map((user) => user._id);
+      if (updateStatus) {
+        // for (const adminemailid of options.to) {
+        const notifyUser = [
+          updateStatus.userId,
+          updateStatus.agentId,
+          ...adminIds,
+          ...superAdminIds,
+        ];
+        const message = `Task Status Update Task Status- ${updateStatus.taskStatus}, Project Name - ${updateStatus.projectName},  Task Name - ${updateStatus.taskName},Description - ${updateStatus.taskDescription}`;
+        const status = 'unseen';
+        const type = 'project';
+        for (const adminemailid of notifyUser) {
+          storeNotification(message, adminemailid, status, type);
+          socket.emit('notifyProjectBackend', notifyUser, message);
+        }
+      } else {
+        console.log('email not send');
+      }
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Internal Server Error' });
@@ -430,4 +550,53 @@ TaskRouter.get(
     }
   })
 );
+
+// TaskRouter.get(
+//   '/getproject/:userId',
+//   expressAsyncHandler(async (req, res) => {
+//     try {
+//       const userId = req.params.userId;
+//       const projects = await Task.find({
+//         $or: [
+//           { projectOwner: userId },
+//           {
+//             'assignedAgent.agentId': userId,
+//           },
+//         ],
+//       });
+
+//       if (!projects) {
+//         res.status(404).json({ message: 'No projects found for this user' });
+//         // return; // Return early to avoid further execution
+//       }
+
+//       for (const project of projects) {
+//         if (Array.isArray(project.assignedAgent)) {
+//           for (const assignee of project.assignedAgent) {
+//             const agentId = assignee.agentId;
+//             const categoryId = assignee.categoryId;
+//             const agent = await User.findById(agentId, 'first_name');
+//             const category = await Category.findById(
+//               categoryId,
+//               'categoryName'
+//             );
+
+//             assignee.agentName = agent?.first_name;
+//             assignee.categoryName = category?.categoryName;
+//           }
+//         }
+//       }
+
+//       const projectIds = projects.map((project) => project._id);
+//       const conversations = await Conversation.find({
+//         projectId: { $in: projectIds },
+//       });
+
+//       res.json({ projects, conversations });
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ message: 'Server error' });
+//     }
+//   })
+// );
 export default TaskRouter;

@@ -8,6 +8,7 @@ import {
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from '@mui/material';
 import { ImCross } from 'react-icons/im';
 
@@ -71,6 +72,8 @@ export default function TasksScreen() {
   const handleCheckboxSelection = (rowId) => {
     setSelectedRowId(rowId === selectedRowId ? null : rowId);
   };
+  const [selectedContractor, setSelectedContractor] = useState('');
+
   const columns = [
     {
       field: 'categoryImage',
@@ -217,8 +220,10 @@ export default function TasksScreen() {
   const handleAddNewProject = () => {
     setDynamicfield(true);
   };
+
   const removeDymanic = () => {
     setDynamicfield(false);
+    setProjectName('');
   };
   // ......}
 
@@ -235,11 +240,24 @@ export default function TasksScreen() {
   };
   // ......}
 
+  useEffect(() => {
+    const GetProject = async () => {
+      try {
+        const { data } = await axios.get(`/api/task/${selectedRowId}`);
+        setProjectStatus(data.taskStatus);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    GetProject();
+  }, [selectedRowId]);
+
   // {Model Open & Close.........
   const handleCloseRow = () => {
     setIsModelOpen(false);
     setShowModal(false);
   };
+
   const handleNew = () => {
     setIsModelOpen(true);
   };
@@ -359,7 +377,7 @@ export default function TasksScreen() {
         {
           selectProjectName: SelectProjectName,
           projectName: projectName,
-          contractorName: contractorName,
+          contractorId: contractorName || selectedContractor,
           taskName: taskName,
           taskDescription: taskDesc,
           taskCategory: category,
@@ -437,7 +455,6 @@ export default function TasksScreen() {
         setShowModal(false);
         toast.success('Task Status updated Successfully !');
       }
-      setProjectStatus(data.projectStatus);
     } catch (err) {
       console.log(err);
     }
@@ -453,6 +470,26 @@ export default function TasksScreen() {
       setShowErrorMessage(false);
     }
   };
+
+  const selectedProjectContractor = (e) => {
+    const selectedProject = e.target.value;
+    setSelectProjectName(selectedProject);
+    const findProject = ProjectData.find(
+      (project) => project.projectName === selectedProject
+    );
+    if (findProject) {
+      const contractor = contractorData.filter(
+        (contractor) => contractor._id === findProject.userId
+      );
+      if (contractor) {
+        const contractorName = contractor ? contractor[0]._id : 'not avaliable';
+        setSelectedContractor(contractor);
+      } else {
+        console.log('Contractor not found for the selected project');
+      }
+    }
+  };
+  console.log(selectedContractor);
   return (
     <>
       <div className="px-3 mt-3">
@@ -573,18 +610,18 @@ export default function TasksScreen() {
                   >
                     {selectedRowId && (
                       <div className="btn-for-update">
-                        <Button className=" btn-color" onClick={ModelOpen}>
+                        <Button className=" btn-color1" onClick={ModelOpen}>
                           <span class="position-relative">Update Status</span>
                         </Button>
-                        <Button
+                        {/* <Button
                           className=" btn-color"
                           // onClick={}
                         >
                           <span class="position-relative">Assigned Agent</span>
-                        </Button>
+                        </Button> */}
                         <Button
                           active
-                          className=" btn-color"
+                          className=" btn-color2"
                           onClick={deleteTask}
                         >
                           <span class="position-relative">Delete</span>
@@ -638,7 +675,6 @@ export default function TasksScreen() {
                                     value={projectStatus}
                                     onChange={handleStatusUpdate}
                                   >
-                                    <option value="waiting">Waiting</option>
                                     <option value="active">Running</option>
                                     <option value="completed">Completed</option>
                                     <option value="pending">Pending</option>
@@ -767,27 +803,27 @@ export default function TasksScreen() {
                               <InputLabel>Select Project </InputLabel>
                               <Select
                                 value={SelectProjectName}
-                                onChange={(e) =>
-                                  setSelectProjectName(e.target.value)
-                                }
-                                required
-                                disabled={dynamicfield}
+                                onChange={(e) => selectedProjectContractor(e)}
+                                // required
                               >
                                 <MenuItem
+                                  disabled={dynamicfield}
                                   onClick={() => {
                                     handleAddNewProject();
                                   }}
                                 >
                                   <MdAddCircleOutline /> Add New Project
                                 </MenuItem>
-                                {ProjectData.map((items) => (
-                                  <MenuItem
-                                    key={items}
-                                    value={items.projectName}
-                                  >
-                                    {items.projectName}
-                                  </MenuItem>
-                                ))}
+                                {ProjectData &&
+                                  ProjectData.map((items) => (
+                                    <MenuItem
+                                      key={items._id}
+                                      value={items.projectName}
+                                      onClick={() => removeDymanic()}
+                                    >
+                                      {items.projectName}
+                                    </MenuItem>
+                                  ))}
                               </Select>
                             </FormControl>
 
@@ -802,11 +838,6 @@ export default function TasksScreen() {
                                   }
                                   label="Project Name"
                                   fullWidth
-                                />
-                                <MdRemoveCircleOutline
-                                  color="black"
-                                  className="text-bold text-danger fs-5 pointCursor "
-                                  onClick={() => removeDymanic()}
                                 />
                               </div>
                             ) : null}
@@ -841,17 +872,16 @@ export default function TasksScreen() {
 
                             <FormControl className={'mb-3'}>
                               <InputLabel>Select Contractor</InputLabel>
-                              {SelectProjectName &&
-                              contractorData.length > 0 ? (
+                              {SelectProjectName && selectedContractor ? (
                                 <Select
-                                  value={contractorData[0].first_name}
-                                  disabled={true}
+                                  value={selectedContractor[0]._id}
+                                  onChange={(e) =>
+                                    setContractorName(e.target.value)
+                                  }
+                                  disabled
                                 >
-                                  <MenuItem
-                                    key={contractorData[0]._id}
-                                    value={contractorData[0].first_name}
-                                  >
-                                    {contractorData[0].first_name}
+                                  <MenuItem value={selectedContractor[0]._id}>
+                                    {selectedContractor[0].first_name}
                                   </MenuItem>
                                 </Select>
                               ) : (
@@ -862,7 +892,10 @@ export default function TasksScreen() {
                                   }
                                   required
                                 >
-                                  <MenuItem>
+                                  <MenuItem value="" disabled>
+                                    Select Contractor
+                                  </MenuItem>
+                                  <MenuItem value="addNew">
                                     <Link
                                       to={`/adminContractorList`}
                                       className="addCont"
@@ -870,12 +903,9 @@ export default function TasksScreen() {
                                       <MdAddCircleOutline /> Add New Contractor
                                     </Link>
                                   </MenuItem>
-                                  {contractorData.map((items) => (
-                                    <MenuItem
-                                      key={items._id}
-                                      value={items.first_name}
-                                    >
-                                      {items.first_name}
+                                  {contractorData.map((item) => (
+                                    <MenuItem key={item._id} value={item._id}>
+                                      {item.first_name}
                                     </MenuItem>
                                   ))}
                                 </Select>
@@ -934,18 +964,18 @@ export default function TasksScreen() {
                   >
                     {selectedRowId && (
                       <div className="btn-for-update">
-                        <Button className=" btn-color" onClick={ModelOpen}>
+                        <Button className=" btn-color1" onClick={ModelOpen}>
                           <span class="position-relative">Update Status</span>
                         </Button>
-                        <Button
+                        {/* <Button
                           className=" btn-color"
                           // onClick={}
                         >
                           <span class="position-relative">Assigned Agent</span>
-                        </Button>
+                        </Button> */}
                         <Button
                           active
-                          className=" btn-color"
+                          className=" btn-color2"
                           onClick={deleteTask}
                         >
                           <span class="position-relative">Delete</span>
@@ -1020,18 +1050,18 @@ export default function TasksScreen() {
                   >
                     {selectedRowId && (
                       <div className="btn-for-update">
-                        <Button className=" btn-color" onClick={ModelOpen}>
+                        <Button className=" btn-color1" onClick={ModelOpen}>
                           <span class="position-relative">Update Status</span>
                         </Button>
-                        <Button
+                        {/* <Button
                           className=" btn-color"
                           // onClick={}
                         >
                           <span class="position-relative">Assigned Agent</span>
-                        </Button>
+                        </Button> */}
                         <Button
                           active
-                          className=" btn-color"
+                          className=" btn-color2"
                           onClick={deleteTask}
                         >
                           <span class="position-relative">Delete</span>

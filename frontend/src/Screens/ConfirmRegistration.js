@@ -73,7 +73,7 @@ export default function ConfirmRegistration() {
 
   return (
     <>
-      <div className="d-flex flex-column align-items-center justify-content-center vh-100">
+      <div className="d-flex flex-column align-items-center justify-content-center confirmRHeight">
         {isLoading ? ( // Show loader if still loading
           <Spinner animation="border" role="status">
             <span className="visually-hidden">Loading...</span>

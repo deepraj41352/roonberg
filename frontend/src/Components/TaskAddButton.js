@@ -29,6 +29,7 @@ import AvatarImage from '../Components/Avatar';
 import { CiSettings } from 'react-icons/ci';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { FiPlus } from 'react-icons/fi';
 
 export default function TaskAddButton() {
   const { state } = useContext(Store);
@@ -49,6 +50,7 @@ export default function TaskAddButton() {
   const [success, setSuccess] = useState(false);
   const [ShowErrorMessage, setShowErrorMessage] = useState(false);
   const navigate = useNavigate();
+  const [selectedContractor, setSelectedContractor] = useState('');
   useEffect(() => {
     setLoading(true);
     const FatchCategory = async () => {
@@ -111,7 +113,7 @@ export default function TaskAddButton() {
         {
           selectProjectName: SelectProjectName,
           projectName: projectName,
-          contractorName: contractorName,
+          contractorId: contractorName || selectedContractor,
           taskName: taskName,
           taskDescription: taskDesc,
           taskCategory: category,
@@ -215,6 +217,7 @@ export default function TaskAddButton() {
   };
   const removeDymanic = () => {
     setDynamicfield(false);
+    setProjectName('');
   };
 
   const handelBothSubmit = (e) => {
@@ -236,11 +239,30 @@ export default function TaskAddButton() {
       setShowErrorMessage(false);
     }
   };
+
+  const selectedProjectContractor = (e) => {
+    const selectedProject = e.target.value;
+    setSelectProjectName(selectedProject);
+    const findProject = ProjectData.find(
+      (project) => project.projectName === selectedProject
+    );
+    if (findProject) {
+      const contractor = contractorData.filter(
+        (contractor) => contractor._id === findProject.userId
+      );
+      if (contractor) {
+        const contractorName = contractor ? contractor[0]._id : 'not avaliable';
+        setSelectedContractor(contractor);
+      } else {
+        console.log('Contractor not found for the selected project');
+      }
+    }
+  };
   return (
     <div>
       {userInfo.role === 'agent' ? null : (
         <div onClick={handleNew} className="TaskAddButton">
-          <BiPlusMedical className="" />
+          <FiPlus />
         </div>
       )}
 
@@ -299,25 +321,29 @@ export default function TaskAddButton() {
                 <InputLabel>Select Project </InputLabel>
                 <Select
                   value={SelectProjectName}
-                  onChange={(e) => setSelectProjectName(e.target.value)}
+                  onChange={(e) => selectedProjectContractor(e)}
                   required
-                  disabled={dynamicfield}
                 >
                   <MenuItem
+                    disabled={dynamicfield}
                     onClick={() => {
                       handleAddNewProject();
                     }}
                   >
                     <MdAddCircleOutline /> Add New Project
                   </MenuItem>
-                  {ProjectData.map((items) => (
-                    <MenuItem key={items} value={items.projectName}>
-                      {items.projectName}
-                    </MenuItem>
-                  ))}
+                  {ProjectData &&
+                    ProjectData.map((items) => (
+                      <MenuItem
+                        key={items._id}
+                        value={items.projectName}
+                        onClick={() => removeDymanic()}
+                      >
+                        {items.projectName}
+                      </MenuItem>
+                    ))}
                 </Select>
               </FormControl>
-
               {dynamicfield ? (
                 <div className="d-flex align-items-center gap-1">
                   <TextField
@@ -327,11 +353,6 @@ export default function TaskAddButton() {
                     onChange={(e) => setProjectName(e.target.value)}
                     label="Project Name"
                     fullWidth
-                  />
-                  <MdRemoveCircleOutline
-                    color="black"
-                    className="text-bold text-danger fs-5 pointCursor "
-                    onClick={() => removeDymanic()}
                   />
                 </div>
               ) : null}
@@ -363,28 +384,43 @@ export default function TaskAddButton() {
                 fullWidth
               />
 
-              {userInfo.role == 'admin' ||
-                (userInfo.role == 'superadmin' && (
-                  <FormControl className={'mb-3'}>
-                    <InputLabel>Select Contractor </InputLabel>
+              {(userInfo.role === 'superadmin' ||
+                userInfo.role === 'admin') && (
+                <FormControl className={'mb-3'}>
+                  <InputLabel>Select Contractor</InputLabel>
+                  {SelectProjectName && selectedContractor ? (
+                    <Select
+                      value={selectedContractor[0]._id}
+                      onChange={(e) => setContractorName(e.target.value)}
+                      disabled
+                    >
+                      <MenuItem value={selectedContractor[0]._id}>
+                        {selectedContractor[0].first_name}
+                      </MenuItem>
+                    </Select>
+                  ) : (
                     <Select
                       value={contractorName}
                       onChange={(e) => setContractorName(e.target.value)}
                       required
                     >
-                      <MenuItem>
+                      <MenuItem value="" disabled>
+                        Select Contractor
+                      </MenuItem>
+                      <MenuItem value="addNew">
                         <Link to={`/adminContractorList`} className="addCont">
                           <MdAddCircleOutline /> Add New Contractor
                         </Link>
                       </MenuItem>
-                      {contractorData.map((items) => (
-                        <MenuItem key={items} value={items.first_name}>
-                          {items.first_name}
+                      {contractorData.map((item) => (
+                        <MenuItem key={item._id} value={item._id}>
+                          {item.first_name}
                         </MenuItem>
                       ))}
                     </Select>
-                  </FormControl>
-                ))}
+                  )}
+                </FormControl>
+              )}
 
               <div className="d-flex align-items-center flex-wrap justify-content-between cateContainer">
                 {categoryData.map((category) => (

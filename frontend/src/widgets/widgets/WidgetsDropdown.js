@@ -52,24 +52,32 @@ const WidgetsDropdown = React.memo(() => {
         setAdmin(adminData);
         setContractor(contractorData);
         setAgent(agentData);
-        const { data: projectData } = await axios.get('/api/project', {
+        const { data: taskDatas } = await axios.get('/api/task/tasks', {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
-        console.log(projectData);
+
+        let projectData;
+
+        if (userInfo.role === 'superadmin' || userInfo.role === 'admin') {
+          projectData = taskDatas;
+        } else {
+          projectData = taskDatas.filter((item) => {
+            return item.userId === userInfo._id;
+          });
+        }
         const activeProject = projectData.filter(
-          (el) => el.projectStatus == 'active'
+          (el) => el.taskStatus == 'waiting' || el.taskStatus == 'active'
         );
         const quedProject = projectData.filter(
-          (el) => el.projectStatus == 'qued'
+          (el) => el.taskStatus == 'pending'
         );
         const completedProject = projectData.filter(
-          (el) => el.projectStatus == 'completed'
+          (el) => el.taskStatus == 'completed'
         );
         setActiveProject(activeProject);
         setQuedProject(quedProject);
         setCompletedProject(completedProject);
         setProjectData(projectData);
-
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -81,7 +89,7 @@ const WidgetsDropdown = React.memo(() => {
   }, []);
 
   const dataChartDoughnut = {
-    labels: ['Active', 'Qued', 'Completed'],
+    labels: ['Active', 'Parked', 'Completed'],
     datasets: [
       {
         data: [
@@ -411,7 +419,7 @@ const WidgetsDropdown = React.memo(() => {
           <CRow>
             <CCol sm={4} lg={4}>
               <CCard className="mh-100 mb-4">
-                <CCardHeader>Projects</CCardHeader>
+                <CCardHeader>Tasks</CCardHeader>
                 <CChartDoughnut data={dataChartDoughnut} />
               </CCard>
             </CCol>

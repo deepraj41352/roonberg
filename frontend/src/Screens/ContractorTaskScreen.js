@@ -220,6 +220,7 @@ export default function ContractorTaskScreen() {
   };
   const removeDymanic = () => {
     setDynamicfield(false);
+    setProjectName('');
   };
   const handleTabSelect = (tab) => {
     setSelectedTab(tab);
@@ -549,18 +550,18 @@ export default function ContractorTaskScreen() {
                   >
                     {selectedRowId && (
                       <div className="btn-for-update">
-                        <Button className=" btn-color" onClick={ModelOpen}>
+                        <Button className=" btn-color1" onClick={ModelOpen}>
                           <span class="position-relative ">Update Status</span>
                         </Button>
-                        <Button
+                        {/* <Button
                           className=" btn-color"
                           // onClick={}
                         >
                           <span class="position-relative">Assigned Agent</span>
-                        </Button>
+                        </Button> */}
                         <Button
                           active
-                          className=" btn-color"
+                          className=" btn-color2"
                           onClick={deleteTask}
                         >
                           <span class="position-relative">Delete</span>
@@ -747,9 +748,9 @@ export default function ContractorTaskScreen() {
                                   setSelectProjectName(e.target.value)
                                 }
                                 required
-                                disabled={dynamicfield}
                               >
                                 <MenuItem
+                                  disabled={dynamicfield}
                                   onClick={() => {
                                     handleAddNewProject();
                                   }}
@@ -759,6 +760,7 @@ export default function ContractorTaskScreen() {
                                 {ProjectData.map((items) => (
                                   <MenuItem
                                     key={items}
+                                    onClick={() => removeDymanic()}
                                     value={items.projectName}
                                   >
                                     {items.projectName}
@@ -778,11 +780,6 @@ export default function ContractorTaskScreen() {
                                   }
                                   label="Project Name"
                                   fullWidth
-                                />
-                                <MdRemoveCircleOutline
-                                  color="black"
-                                  className="text-bold text-danger fs-5 pointCursor "
-                                  onClick={() => removeDymanic()}
                                 />
                               </div>
                             ) : null}
@@ -864,18 +861,18 @@ export default function ContractorTaskScreen() {
                   >
                     {selectedRowId && (
                       <div className="btn-for-update">
-                        <Button className=" btn-color" onClick={ModelOpen}>
+                        <Button className="btn-color1" onClick={ModelOpen}>
                           <span class="position-relative">Update Status</span>
                         </Button>
-                        <Button
+                        {/* <Button
                           className=" btn-color"
                           // onClick={}
                         >
                           <span class="position-relative">Assigned Agent</span>
-                        </Button>
+                        </Button> */}
                         <Button
                           active
-                          className=" btn-color"
+                          className=" btn-color2"
                           onClick={deleteTask}
                         >
                           <span class="position-relative">Delete</span>
@@ -950,18 +947,18 @@ export default function ContractorTaskScreen() {
                   >
                     {selectedRowId && (
                       <div className="btn-for-update">
-                        <Button className=" btn-color" onClick={ModelOpen}>
+                        <Button className=" btn-color1" onClick={ModelOpen}>
                           <span class="position-relative">Update Status</span>
                         </Button>
-                        <Button
+                        {/* <Button
                           className=" btn-color"
                           // onClick={}
                         >
                           <span class="position-relative">Assigned Agent</span>
-                        </Button>
+                        </Button> */}
                         <Button
                           active
-                          className=" btn-color"
+                          className=" btn-color2"
                           onClick={deleteTask}
                         >
                           <span class="position-relative">Delete</span>

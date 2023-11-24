@@ -42,24 +42,29 @@ const WidgetsDropdown = React.memo(() => {
     const fatchUserData = async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get(
-          `/api/project/getproject/${userInfo._id}`
+        const { data: taskDatas } = await axios.get('/api/task/tasks', {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        let taskData;
+
+        if (userInfo.role === 'superadmin' || userInfo.role === 'admin') {
+          taskData = taskDatas;
+        } else {
+          taskData = taskDatas.filter((item) => {
+            return item.userId === userInfo._id;
+          });
+        }
+        const activeProject = taskData.filter(
+          (el) => el.taskStatus == 'waiting' || el.taskStatus == 'active'
         );
-        const projectData = data.projects;
-        console.log('projectData', projectData);
-        const activeProject = projectData.filter(
-          (el) => el.projectStatus == 'active'
-        );
-        const quedProject = projectData.filter(
-          (el) => el.projectStatus == 'qued'
-        );
-        const completedProject = projectData.filter(
-          (el) => el.projectStatus == 'completed'
+        const quedProject = taskData.filter((el) => el.taskStatus == 'pending');
+        const completedProject = taskData.filter(
+          (el) => el.taskStatus == 'completed'
         );
         setActiveProject(activeProject);
         setQuedProject(quedProject);
         setCompletedProject(completedProject);
-        setProjectData(projectData);
+        setProjectData(taskData);
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -323,7 +328,7 @@ const WidgetsDropdown = React.memo(() => {
                 value={
                   <>{projectData.length <= 0 ? `0` : projectData.length}</>
                 }
-                title="Total Projects"
+                title="Total Tasks"
                 chart={
                   <CChartBar
                     className="mt-3 mx-3"
@@ -398,7 +403,7 @@ const WidgetsDropdown = React.memo(() => {
           <CRow>
             <CCol sm={4} lg={4}>
               <CCard className="mh-100 mb-4">
-                <CCardHeader>Projects</CCardHeader>
+                <CCardHeader>Tasks</CCardHeader>
                 <CChartDoughnut data={dataChartDoughnut} />
               </CCard>
             </CCol>

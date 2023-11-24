@@ -542,9 +542,7 @@ io.on('connection', (socket) => {
     }
   );
 
-  socket.on('connectionForNotify', () => {
-    console.log('User connected for notifications');
-  });
+  socket.on('connectionForNotify', () => {});
 
   socket.on('notifyProjectBackend', (notifyUser, message) => {
     console.log('notify and mesage', notifyUser, message);
@@ -557,7 +555,6 @@ io.on('connection', (socket) => {
 
   // when disconnect
   socket.on('disconnect', () => {
-    console.log('a user disconnected');
     removeUser(socket.id);
     io.emit('getUsers', users);
   });

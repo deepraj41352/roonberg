@@ -1496,11 +1496,19 @@ main.windowCal {
 .MuiDataGrid-columnHeaderTitleContainer {
   justify-content: flex-start !important;
 }
-.btn-color {
-  background-color: rgb(14, 14, 61) !important;
+.btn-color1 {
+  background-color: rgb(0 157 10) !important;
   color: #fff !important;
   text-transform: inherit !important;
-  border-radius: 0 !important;
+  border-radius: 5px 0 !important;
+  padding: 17px !important;
+}
+.btn-color2 {
+  background-color: rgb(157, 0, 0) !important;
+  color: #fff !important;
+  text-transform: inherit !important;
+  border-radius: 5px 0 !important;
+  padding: 17px !important;
 }
 .btn-for-update {
   display: flex;
@@ -1644,4 +1652,13 @@ main.windowCal {
 .Link-For-ChatWindow {
   text-decoration: none !important;
   color: #000 !important;
+}
+.confirmRHeight {
+  height: 100%;
+  min-height: 310px;
+}
+.TasknameNav {
+  width: 96%;
+  text-align: end;
+  font-size: 16px !important;
 }

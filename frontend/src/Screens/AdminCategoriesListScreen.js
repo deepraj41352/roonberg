@@ -111,6 +111,7 @@ export default function AdminContractorListScreen() {
   const [status, setStatus] = useState('');
   const [categoryDesc, setCatogryDesc] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const [updateData, setUpdateData] = useState(true);
   const [
     {
       loading,
@@ -190,7 +191,7 @@ export default function AdminContractorListScreen() {
     } else {
       FatchcategoryData();
     }
-  }, [successDelete, successUpdate]);
+  }, [successDelete, successUpdate, updateData]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -212,6 +213,7 @@ export default function AdminContractorListScreen() {
         },
       });
       toast.success('Category Created Successfully !');
+      setUpdateData(!updateData);
       dispatch({ type: 'UPDATE_SUCCESS' });
       dispatch({ type: 'FATCH_SUBMITTING', payload: false });
       setCatogry('');
@@ -241,6 +243,7 @@ export default function AdminContractorListScreen() {
 
         if (response.status === 200) {
           toast.success('Category Deleted Successfully!');
+          setUpdateData(!updateData);
           setIsDeleting(false);
           dispatch({
             type: 'DELETE_SUCCESS',

@@ -84,6 +84,8 @@ function ChatWindowScreen() {
   }, [selectedfile]);
 
   const socket = useRef(io(SocketUrl));
+  // const socket = useRef(null);
+
   const scrollRef = useRef();
 
   useEffect(() => {
@@ -553,7 +555,7 @@ function ChatWindowScreen() {
       }
 
       setSelectedVideo(null);
-    } else {
+    } else if (newMessage !== '') {
       if (userInfo.role === 'admin' || userInfo.role === 'superadmin') {
         socket.current.emit('sendMessage', {
           senderFirstName: userInfo.first_name,
@@ -645,7 +647,7 @@ function ChatWindowScreen() {
     setSidebarVisible(!sidebarVisible);
   };
 
-  console.log('fileForModel', fileForModel);
+  console.log('projectData', projectData);
   return (
     <div className=" justify-content-center align-items-center">
       <div className="d-flex justify-content-center gap-3 ">
@@ -660,9 +662,14 @@ function ChatWindowScreen() {
                 <FaArrowLeft className={`me-3 fs-5 ${theme}backbtn `} />
               </Link>
             ) : (
-              <Link to={`/taskScreen-agent`}>
+              <Link to={`/Contractor-tasksScreen`}>
                 <FaArrowLeft className={`me-3 fs-5 ${theme}backbtn `} />
               </Link>
+            )}
+            {projectData && (
+              <div className={`TasknameNav me-3  ${theme}backbtn`}>
+                Task Name - {projectData.taskName}{' '}
+              </div>
             )}
             <div className="" onClick={toggleSidebar}>
               <BsThreeDotsVertical className="pt-1 threeDot" />
@@ -684,7 +691,7 @@ function ChatWindowScreen() {
                     </Form.Group>
                     <Form.Group className="mb-3 " controlId="formBasicPassword">
                       <Form.Label className="mb-1 fw-bold">
-                        Project Status
+                        Task Status
                       </Form.Label>
                       <Form.Select
                         value={projectStatus}
@@ -1063,9 +1070,9 @@ function ChatWindowScreen() {
                 ariaLabel="blocks-loading"
                 wrapperStyle={{}}
                 wrapperClass="blocks-wrapper"
-                // colors={[
-                //   'rgba(0, 0, 0, 1) 0%, rgba(17, 17, 74, 1) 68%, rgba(0, 0, 0, 1) 93%',
-                // ]}
+                colors={[
+                  'rgba(0, 0, 0, 1) 0%, rgba(17, 17, 74, 1) 68%, rgba(0, 0, 0, 1) 93%',
+                ]}
                 className={`${theme}-ringhcolor`}
               />
             ) : (
@@ -1103,8 +1110,14 @@ function ChatWindowScreen() {
                   {chatOpositeMember ? chatOpositeMember.email : null}
                 </div>
               </Form.Group>
+              <Form.Group
+                className={`mb-3 projetStatusChat ${theme}chat-info-inner`}
+              >
+                {/* <Form.Label className="fw-bold">Project Name</Form.Label> */}
+                <div>Project Name - {projectData?.projectName} </div>
+              </Form.Group>
               <Form.Group className="mb-3 " controlId="formBasicPassword">
-                <Form.Label className="mb-1 fw-bold">Project Status</Form.Label>
+                <Form.Label className="mb-1 fw-bold">Task Status</Form.Label>
                 <Form.Select
                   value={projectStatus}
                   onChange={handleStatusUpdate}

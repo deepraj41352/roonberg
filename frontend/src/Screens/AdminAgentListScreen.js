@@ -84,7 +84,8 @@ export default function AdminAgentListScreen() {
   const [status, setStatus] = useState();
   const [password, setPassword] = useState('');
   const [selectcategories, setSelectCategories] = useState([]);
-
+  const [pureAgentData, setPureAgentData] = useState([]);
+  const [filteredCategories, setFilteredCategories] = useState([]);
   const [isDeleting, setIsDeleting] = useState(false);
   const [
     {
@@ -136,6 +137,7 @@ export default function AdminAgentListScreen() {
         dispatch('FATCH_REQUEST');
         const response = await axios.post(`/api/user/`, { role: role });
         const datas = response.data;
+        setPureAgentData(datas);
         const rowData = datas.map((items) => {
           const categoryName = categoryData.find(
             (category) => category._id === items.agentCategory
@@ -169,7 +171,22 @@ export default function AdminAgentListScreen() {
       FatchAgentData();
     }
   }, [successDelete, successUpdate, categoryData]);
-
+  // filtered Categories data
+  useEffect(() => {
+    const filteredCategory = () => {
+      const assignedCategories = pureAgentData.flatMap(
+        (agent) => agent.agentCategory
+      );
+      const unassignedCategories = categoryData.filter(
+        (category) => !assignedCategories.includes(category._id)
+      );
+      if (unassignedCategories) {
+        setFilteredCategories(unassignedCategories);
+        return unassignedCategories;
+      }
+    };
+    filteredCategory();
+  }, [categoryData, pureAgentData]);
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch({ type: 'FATCH_SUBMITTING', payload: true });
@@ -462,27 +479,15 @@ export default function AdminAgentListScreen() {
                         multiple
                         value={selectcategories}
                         onChange={handleCategories}
-                        // renderValue={(selected) => (
-                        //   <div>
-                        //     {categoryData && selected
-                        //       ? selected.map((value) => (
-                        //           <span key={value}>
-                        //             {categoryData.find(
-                        //               (option) => option._id === value
-                        //             ).categoryName + ','}
-                        //           </span>
-                        //         ))
-                        //       : ''}
-                        //   </div>
-                        // )}
                       >
-                        {categoryData &&
-                          categoryData.map((option) => (
+                        {filteredCategories &&
+                          filteredCategories.map((option) => (
                             <MenuItem key={option._id} value={option._id}>
                               {option.categoryName}
                             </MenuItem>
                           ))}
                       </Select>
+                        
                     </FormControl>
                     {/* <FormControl className="mb-3">
                       <InputLabel>Select Category</InputLabel>
