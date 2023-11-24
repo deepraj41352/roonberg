@@ -70,20 +70,15 @@ TaskRouter.post(
         let user = await User.findOne({
           _id: contractorId,
         });
-        if (user === null) {
-          res.status(200).json({
-            message: 'Contractor Not Exists',
-          });
-        }
+        // if (user === null) {
+        //   res.status(200).json({
+        //     message: 'Contractor Not Exists',
+        //   });
+        // }
 
         let selectProject = await projectTask.findOne({
           projectName: selectProjectName,
         });
-        if (selectProject === null) {
-          res.status(200).json({
-            message: 'Project Not Exists',
-          });
-        }
 
         let project = await projectTask.findOne({ projectName });
         let task = await Task.findOne({ taskName });
@@ -108,6 +103,11 @@ TaskRouter.post(
             message: 'A Task With The Same Name Already Exists.',
           });
         } else if (selectProject) {
+          if (selectProject === null) {
+            res.status(200).json({
+              message: 'Project Not Exists',
+            });
+          }
           let userSelect = await User.findOne({
             _id: selectProject.userId,
           });

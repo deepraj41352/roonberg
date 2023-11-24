@@ -1479,7 +1479,7 @@ body {
   border: 1px solid #ffc000 !important;
 }
 main.windowCal {
-  min-height: calc(100% - 194px) !important;
+  min-height: calc(100% - 150px) !important;
 }
 .actionCenter .MuiDataGrid-columnHeaderTitleContainer {
   justify-content: space-evenly;
@@ -1547,7 +1547,8 @@ main.windowCal {
   background-color: #0e0e3d !important;
 }
 .selectButton {
-  width: 130px;
+  min-width: 130px;
+  width: auto;
 }
 .darkchatBody {
   background-color: #cdcdd7 !important;
@@ -1661,4 +1662,18 @@ main.windowCal {
   width: 96%;
   text-align: end;
   font-size: 16px !important;
+}
+
+.footer {
+  margin-top: auto;
+  background-color: #f8f8f8; /* Adjust the background color as needed */
+  text-align: center;
+  padding: 10px;
+  font-size: 14px; /* Adjust the font size as needed */
+}
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
 }
