@@ -74,7 +74,7 @@ export default function TaskAddButton() {
       }
     };
     FatchCategory();
-  }, [categoriesDatatrue]);
+  }, [isModelOpen]);
 
   // {Get Project .........
   useEffect(() => {
@@ -100,7 +100,7 @@ export default function TaskAddButton() {
       }
     };
     FatchProject();
-  }, [projectDatatrue]);
+  }, [isModelOpen]);
 
   // {Get  Contractor User.........
   useEffect(() => {
@@ -111,7 +111,7 @@ export default function TaskAddButton() {
       } catch (error) {}
     };
     FatchContractorData();
-  }, [contractorDatatrue]);
+  }, [isModelOpen]);
 
   const handleAdminSubmit = async () => {
     setIsSubmiting(true);

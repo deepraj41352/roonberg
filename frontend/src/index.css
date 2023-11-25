@@ -1743,6 +1743,9 @@ body {
 .profilebtnColor {
   background: transparent !important;
   border: none !important;
+  min-width: auto;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .dropButton {

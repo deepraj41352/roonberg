@@ -37,7 +37,7 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider';
 
 export default function AdminProjectListScreen() {
   const { state } = useContext(Store);
-  const { toggleState, userInfo } = state;
+  const { toggleState, userInfo, projectDatatrue } = state;
   const theme = toggleState ? 'dark' : 'light';
 
   const [ProjectData, setProjectData] = useState([]);
@@ -170,7 +170,7 @@ export default function AdminProjectListScreen() {
     };
 
     FatchcategoryData();
-  }, []);
+  }, [projectDatatrue]);
   // ......}
   useEffect(() => {
     setLoading(true);
@@ -190,7 +190,7 @@ export default function AdminProjectListScreen() {
       }
     };
     FatchProject();
-  }, []);
+  }, [projectDatatrue]);
 
   return (
     <>
