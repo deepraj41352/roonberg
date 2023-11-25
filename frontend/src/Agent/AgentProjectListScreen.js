@@ -57,7 +57,7 @@ export default function AdminProjectListScreen() {
       width: 150,
       renderCell: (params) => {
         const tasks = data.filter((item) => {
-          return item.projectId === params.row._id;
+          return item.projectName === params.row.projectName;
         });
         const numberOfTasks = tasks.length;
 
@@ -129,7 +129,10 @@ export default function AdminProjectListScreen() {
     const FatchcategoryData = async () => {
       try {
         const { data } = await axios.get(`/api/task/tasks`);
-        SetData(data);
+        const taskData = data.filter((item) => {
+          return item.agentId === userInfo._id;
+        });
+        SetData(taskData);
       } catch (error) {
         toast.error(error.data?.message);
       } finally {
@@ -159,6 +162,14 @@ export default function AdminProjectListScreen() {
     };
     FatchProject();
   }, []);
+  const uniqueProjectNames = new Set();
+  const uniqueProjects = data.filter((project) => {
+    if (!uniqueProjectNames.has(project.projectName)) {
+      uniqueProjectNames.add(project.projectName);
+      return true;
+    }
+    return false;
+  });
 
   return (
     <>
@@ -184,7 +195,7 @@ export default function AdminProjectListScreen() {
             <Box sx={{ height: 400, width: '100%' }}>
               <DataGrid
                 className="tableGrid actionCenter"
-                rows={ProjectData}
+                rows={uniqueProjects}
                 columns={columns}
                 getRowId={(row) => row._id}
                 initialState={{

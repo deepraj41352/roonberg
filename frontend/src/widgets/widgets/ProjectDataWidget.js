@@ -101,19 +101,19 @@ export default function ProjectDataWidget() {
         );
       },
     },
-    {
-      field: 'checkbox',
-      headerName: 'Select',
-      width: 100,
-      renderCell: (params) => (
-        <input
-          className="Check_box-For-Select"
-          type="checkbox"
-          checked={selectedRowId === params.row._id}
-          onChange={() => handleCheckboxSelection(params.row._id)}
-        />
-      ),
-    },
+    // {
+    //   field: 'checkbox',
+    //   headerName: 'Select',
+    //   width: 100,
+    //   renderCell: (params) => (
+    //     <input
+    //       className="Check_box-For-Select"
+    //       type="checkbox"
+    //       checked={selectedRowId === params.row._id}
+    //       onChange={() => handleCheckboxSelection(params.row._id)}
+    //     />
+    //   ),
+    // },
     {
       field: 'taskName',
       headerName: 'Task Name',
@@ -123,7 +123,7 @@ export default function ProjectDataWidget() {
           className="Link-For-ChatWindow"
           to={`/chatWindowScreen/${params.row._id}`}
         >
-          <div className="text-start">
+          <div className="alignLeft">
             <div>{params.row.taskName}</div>
             <div>Task ID {params.row._id}</div>
           </div>
@@ -139,7 +139,7 @@ export default function ProjectDataWidget() {
           className="Link-For-ChatWindow"
           to={`/chatWindowScreen/${params.row._id}`}
         >
-          <div className="text-start">
+          <div className="alignLeft">
             <div>{params.row.userName}</div>
             <div>Raised By</div>
           </div>
@@ -155,7 +155,7 @@ export default function ProjectDataWidget() {
           className="Link-For-ChatWindow"
           to={`/chatWindowScreen/${params.row._id}`}
         >
-          <div className="text-start">
+          <div className="alignLeft">
             <div>{params.row.agentName}</div>
             <div>Assigned By</div>
           </div>
@@ -188,14 +188,9 @@ export default function ProjectDataWidget() {
   console.log('selectedRowId', selectedRowId);
   const [projectName, setProjectName] = useState('');
   const [SelectProjectName, setSelectProjectName] = useState('');
-  const [taskName, setTaskName] = useState('');
-  const [taskDesc, setTaskDesc] = useState('');
-  const [category, setCategory] = useState('');
-  const [contractorName, setContractorName] = useState('');
   const [categoryData, setCategoryData] = useState([]);
   const [ProjectData, setProjectData] = useState([]);
   const [contractorData, setContractorData] = useState([]);
-  const [ShowErrorMessage, setShowErrorMessage] = useState(false);
 
   const navigate = useNavigate();
   const [projectStatus, setProjectStatus] = useState('active');
@@ -262,8 +257,23 @@ export default function ProjectDataWidget() {
     setLoading(true);
     const FatchcategoryData = async () => {
       try {
-        const { data } = await axios.get(`/api/task/tasks`);
-        SetData(data);
+        const { data: taskDatas } = await axios.get('/api/task/tasks', {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        let taskData;
+
+        if (userInfo.role === 'superadmin' || userInfo.role === 'admin') {
+          taskData = taskDatas;
+        } else if (userInfo.role === 'contractor') {
+          taskData = taskDatas.filter((item) => {
+            return item.userId === userInfo._id;
+          });
+        } else if (userInfo.role === 'agent') {
+          taskData = taskDatas.filter((item) => {
+            return item.agentId === userInfo._id;
+          });
+        }
+        SetData(taskData);
       } catch (error) {
         toast.error(error.data?.message);
       } finally {
@@ -369,68 +379,15 @@ export default function ProjectDataWidget() {
     }
   });
 
-  const ActiveData = taskData.filter((item) => {
+  const ActiveData = data.filter((item) => {
     return item.taskStatus === 'active' || item.taskStatus === 'waiting';
   });
-  const CompleteData = taskData.filter((item) => {
+  const CompleteData = data.filter((item) => {
     return item.taskStatus === 'completed';
   });
-  const PendingData = taskData.filter((item) => {
+  const PendingData = data.filter((item) => {
     return item.taskStatus === 'pending';
   });
-  // ......}
-
-  // {Submit Form Data  .........
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmiting(true);
-    try {
-      const data = await axios.post(
-        `/api/task/admin`,
-        {
-          selectProjectName: SelectProjectName,
-          projectName: projectName,
-          contractorName: contractorName,
-          taskName: taskName,
-          taskDescription: taskDesc,
-          taskCategory: category,
-        },
-        {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        }
-      );
-      if (data.status === 201) {
-        setSuccess(!success);
-        toast.success(data.data.message);
-        setDynamicfield(false);
-        setIsSubmiting(false);
-        setIsModelOpen(false);
-        setProjectName('');
-        setTaskName('');
-        setTaskDesc('');
-        setCategory('');
-        setContractorName('');
-        setSelectProjectName('');
-      }
-      if (data.status === 200) {
-        setDynamicfield(false);
-        toast.error(data.data.message);
-        setIsModelOpen(false);
-        setProjectName('');
-        setTaskName('');
-        setTaskDesc('');
-        setCategory('');
-        setContractorName('');
-        setSelectProjectName('');
-      }
-    } catch (error) {
-      toast.error(error.message);
-      setIsModelOpen(false);
-      setDynamicfield(false);
-    } finally {
-      setIsSubmiting(false);
-    }
-  };
   // ......}
 
   // {Delete Task Data  .........
@@ -473,16 +430,7 @@ export default function ProjectDataWidget() {
     }
   };
   // ......}
-  const validation = (e) => {
-    const inputValue = e.target.value;
-    setTaskName(inputValue);
-    const firstLetterRegex = /^[a-zA-Z]/;
-    if (!firstLetterRegex.test(inputValue.charAt(0))) {
-      setShowErrorMessage(true);
-    } else {
-      setShowErrorMessage(false);
-    }
-  };
+
   return (
     <>
       <div className="px-3">
@@ -506,36 +454,6 @@ export default function ProjectDataWidget() {
           <div>{error}</div>
         ) : (
           <>
-            <Dropdown className={`mb-0 tab-btn text-start `}>
-              <Dropdown.Toggle
-                id="dropdown-tabs"
-                className="my-2 globalbtnColor selectButton"
-              >
-                {selectedProjects}
-              </Dropdown.Toggle>
-
-              <Dropdown.Menu className="dropMenu ">
-                <Dropdown.Item
-                  className="dropMenuCon"
-                  onClick={() => handleProjectsSelect('', 'All Project')}
-                >
-                  All Project
-                </Dropdown.Item>
-                {ProjectData.map((project, key) => (
-                  <Dropdown.Item
-                    key={project._id} // Make sure to use a unique key for each item
-                    className="dropMenuCon"
-                    onClick={() =>
-                      handleProjectsSelect(project._id, project.projectName)
-                    }
-                  >
-                    <span className="position-relative">
-                      {project.projectName}
-                    </span>
-                  </Dropdown.Item>
-                ))}
-              </Dropdown.Menu>
-            </Dropdown>
             <div className="tableScreen m-0 p-0">
               <div className="overlayLoading">
                 {isDeleting && (
@@ -670,10 +588,7 @@ export default function ProjectDataWidget() {
                         </Modal>
                       </div>
                     )}
-                    <div className="lastLogin">
-                      <FaRegClock className="clockIcon" /> Last Login : 4 Hours,
-                      55 minutes ago
-                    </div>
+
                     <Box sx={{ height: 400, width: '100%' }}>
                       <DataGrid
                         className="tableGrid actionCenter"
@@ -754,10 +669,7 @@ export default function ProjectDataWidget() {
                         </Button>
                       </div>
                     )}
-                    <div className="lastLogin">
-                      <FaRegClock className="clockIcon" /> Last Login : 4 Hours,
-                      55 minutes ago
-                    </div>
+
                     <Box sx={{ height: 400, width: '100%' }}>
                       <DataGrid
                         className="tableGrid actionCenter"
@@ -840,10 +752,7 @@ export default function ProjectDataWidget() {
                         </Button>
                       </div>
                     )}
-                    <div className="lastLogin">
-                      <FaRegClock className="clockIcon" /> Last Login : 4 Hours,
-                      55 minutes ago
-                    </div>
+
                     <Box sx={{ height: 400, width: '100%' }}>
                       <DataGrid
                         className="tableGrid actionCenter"

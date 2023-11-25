@@ -23,6 +23,18 @@ const emailTemplate = (options) => {
       <title></title>
   
       <style type="text/css">
+      table.hello{text-align:left;}
+	  table.hello tr td:nth-child(2) {
+    width: 100px;
+}
+table.hello th {
+    min-width: 128px;
+	
+}
+table.hello tr {
+    margin-bottom:15px;
+	display:block;
+}
         @media only screen and (min-width: 620px) {
           .u-row {
             width: 600px !important;
@@ -2137,356 +2149,294 @@ const emailTemplate = (options) => {
       return templateHead + templateBody4 + templateFooter;
 
     case 'ADDTASK-CONTRACTOR':
-      const templateBody5 = `
+      const templateBody5 = ` <div
+      class="u-row-container"
+      style="padding: 0px; background-color: transparent"
+    >
       <div
-        class="u-row-container"
-        style="padding: 0px; background-color: transparent"
+        class="u-row"
+        style="
+          margin: 0 auto;
+          min-width: 320px;
+          max-width: 600px;
+          overflow-wrap: break-word;
+          word-wrap: break-word;
+          word-break: break-word;
+          background-color: #161a39;
+        "
       >
         <div
-          class="u-row"
           style="
-            margin: 0 auto;
-            min-width: 320px;
-            max-width: 600px;
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-            word-break: break-word;
-            background-color: #161a39;
+            border-collapse: collapse;
+            display: table;
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
           "
         >
+          <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding: 0px;background-color: transparent;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:600px;"><tr style="background-color: #161a39;"><![endif]-->
+
+          <!--[if (mso)|(IE)]><td align="center" width="600" style="width: 600px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;" valign="top"><![endif]-->
           <div
+            class="u-col u-col-100"
             style="
-              border-collapse: collapse;
-              display: table;
-              width: 100%;
-              height: 100%;
-              background-color: transparent;
+              max-width: 320px;
+              min-width: 600px;
+              display: table-cell;
+              vertical-align: top;
             "
           >
-            <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding: 0px;background-color: transparent;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:600px;"><tr style="background-color: #161a39;"><![endif]-->
-
-            <!--[if (mso)|(IE)]><td align="center" width="600" style="width: 600px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;" valign="top"><![endif]-->
-            <div
-              class="u-col u-col-100"
-              style="
-                max-width: 320px;
-                min-width: 600px;
-                display: table-cell;
-                vertical-align: top;
-              "
-            >
-              <div style="height: 100%; width: 100% !important">
-                <!--[if (!mso)&(!IE)]><!--><div
-                  style="
-                    box-sizing: border-box;
-                    height: 100%;
-                    padding: 0px;
-                    border-top: 0px solid transparent;
-                    border-left: 0px solid transparent;
-                    border-right: 0px solid transparent;
-                    border-bottom: 0px solid transparent;
-                  "
-                ><!--<![endif]-->
-                  <table
-                    style="font-family: 'Lato', sans-serif"
-                    role="presentation"
-                    cellpadding="0"
-                    cellspacing="0"
-                    width="100%"
-                    border="0"
-                  >
-                    <tbody>
-                      <tr>
-                        <td
-                          style="
-                            overflow-wrap: break-word;
-                            word-break: break-word;
-                            padding: 35px 10px 10px;
-                            font-family: 'Lato', sans-serif;
-                          "
-                          align="left"
+            <div style="height: 100%; width: 100% !important">
+              <!--[if (!mso)&(!IE)]><!--><div
+                style="
+                  box-sizing: border-box;
+                  height: 100%;
+                  padding: 0px;
+                  border-top: 0px solid transparent;
+                  border-left: 0px solid transparent;
+                  border-right: 0px solid transparent;
+                  border-bottom: 0px solid transparent;
+                "
+              ><!--<![endif]-->
+                <table
+                  style="font-family: 'Lato', sans-serif"
+                  role="presentation"
+                  cellpadding="0"
+                  cellspacing="0"
+                  width="100%"
+                  border="0"
+                >
+                  <tbody>
+                    <tr>
+                      <td
+                        style="
+                          overflow-wrap: break-word;
+                          word-break: break-word;
+                          padding: 35px 10px 10px;
+                          font-family: 'Lato', sans-serif;
+                        "
+                        align="left"
+                      >
+                        <table
+                          width="100%"
+                          cellpadding="0"
+                          cellspacing="0"
+                          border="0"
                         >
-                          <table
-                            width="100%"
-                            cellpadding="0"
-                            cellspacing="0"
-                            border="0"
-                          >
-                            <tr>
-                              <td
-                                style="
-                                  padding-right: 0px;
-                                  padding-left: 0px;
-                                "
+                          <tr>
+                            <td
+                              style="
+                                padding-right: 0px;
+                                padding-left: 0px;
+                              "
+                              align="center"
+                            >
+                              <img
                                 align="center"
-                              >
-                                <img
-                                  align="center"
-                                  border="0"
-                                  src="https://cdn-icons-png.flaticon.com/512/10086/10086538.png"
-                                  alt="Image"
-                                  title="Image"
-                                  style="
-                                    outline: none;
-                                    text-decoration: none;
-                                    -ms-interpolation-mode: bicubic;
-                                    clear: both;
-                                    display: inline-block !important;
-                                    border: none;
-                                    height: auto;
-                                    float: none;
-                                    width: 10%;
-                                    max-width: 58px;
-                                  "
-                                  width="58"
-                                />
-                              </td>
-                            </tr>
-                          </table>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                                border="0"
+                                src="https://res.cloudinary.com/dmhxjhsrl/image/upload/v1700848396/equj7nween5rykvmjvoi.png"
+                                alt="Image"
+                                title="Image"
+                                style="
+                                  outline: none;
+                                  text-decoration: none;
+                                  -ms-interpolation-mode: bicubic;
+                                  clear: both;
+                                  display: inline-block !important;
+                                  border: none;
+                                  height: auto;
+                                  float: none;
+                                  width: 10%;
+                                  max-width: 58px;
+                                "
+                                width="58"
+                              />
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
 
-                  <table
-                    style="font-family: 'Lato', sans-serif"
-                    role="presentation"
-                    cellpadding="0"
-                    cellspacing="0"
-                    width="100%"
-                    border="0"
-                  >
-                    <tbody>
-                      <tr>
-                        <td
+                <table
+                  style="font-family: 'Lato', sans-serif"
+                  role="presentation"
+                  cellpadding="0"
+                  cellspacing="0"
+                  width="100%"
+                  border="0"
+                >
+                  <tbody>
+                    <tr>
+                      <td
+                        style="
+                          overflow-wrap: break-word;
+                          word-break: break-word;
+                          padding: 0px 10px 30px;
+                          font-family: 'Lato', sans-serif;
+                        "
+                        align="left"
+                      >
+                        <div
                           style="
-                            overflow-wrap: break-word;
-                            word-break: break-word;
-                            padding: 0px 10px 30px;
-                            font-family: 'Lato', sans-serif;
+                            font-size: 14px;
+                            line-height: 140%;
+                            text-align: left;
+                            word-wrap: break-word;
                           "
-                          align="left"
                         >
-                          <div
+                          <p
                             style="
                               font-size: 14px;
                               line-height: 140%;
-                              text-align: left;
-                              word-wrap: break-word;
+                              text-align: center;
                             "
                           >
-                            <p
+                            <span
                               style="
-                                font-size: 14px;
-                                line-height: 140%;
-                                text-align: center;
+                                font-size: 28px;
+                                line-height: 39.2px;
+                                color: #ffffff;
+                                font-family: Lato, sans-serif;
                               "
-                            >
-                              <span
-                                style="
-                                  font-size: 28px;
-                                  line-height: 39.2px;
-                                  color: #ffffff;
-                                  font-family: Lato, sans-serif;
-                                "
-                                >Please reset your password
-                              </span>
-                            </p>
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                              >WelCome !
+                            </span>
+                          </p>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
 
-                  <!--[if (!mso)&(!IE)]><!-->
+                <!--[if (!mso)&(!IE)]><!-->
+              </div>
+              <!--<![endif]-->
+            </div>
+          </div>
+          <!--[if (mso)|(IE)]></td><![endif]-->
+          <!--[if (mso)|(IE)]></tr></table></td></tr></table><![endif]-->
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="u-row-container"
+      style="padding: 0px; background-color: transparent"
+    >
+      <div
+        class="u-row"
+        style="
+          margin: 0 auto;
+          max-width: 600px;
+          overflow-wrap: break-word;
+          word-wrap: break-word;
+          word-break: break-word;
+          background-color: #fff;
+        "
+      >
+        <div
+          style="
+            border-collapse: collapse;
+            display: table;
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+          "
+        >
+          <div
+            class="u-col u-col-100"
+            style="
+              min-width: 600px;
+              display: table-cell;
+              vertical-align: top;
+            "
+          >
+            <div style="height: 100%; width: 100% !important">
+              <!--[if (!mso)&(!IE)]><!-->
+              <div
+                style="
+                  box-sizing: border-box;
+                  height: 100%;
+                  padding: 0px;
+                  border-top: 0px solid transparent;
+                  border-left: 0px solid transparent;
+                  border-right: 0px solid transparent;
+                  border-bottom: 0px solid transparent;
+                  margin: 30px;
+                "
+              >
+             
+                <div style="margin: 20px 0">
+                <p
+                style="
+                  font-size: 14px;
+                "
+              >
+                <span
+                  style="
+                    font-size: 14px;
+                    color: #0c0c0c;
+                    font-family: Lato, sans-serif;
+                  "
+                  >Hello,
+                </span>
+              </p>
+              <p
+                style="
+                  font-size: 14px;
+                "
+              >
+                <span
+                  style="
+                    font-size: 14px;
+                    color: #0c0c0c;
+                    font-family: Lato, sans-serif;
+                  "
+                  >New Task created with the following details:
+                </span>
+              </p>
                 </div>
-                <!--<![endif]-->
+
+                <table
+                  role="presentation"
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  class="hello"
+                >
+                  <tr>
+                    <th>Project Name</th>
+                    <td>&nbsp; : &nbsp;</td>
+                    <td>${options.projectName}</td>
+                  </tr>
+                  <tr>
+                    <th>Task Name</th>
+                    <td>&nbsp; : &nbsp;</td>
+                    <td>${options.taskName}</td>
+                  </tr>
+                  <tr>
+                    <th>Task Description</th>
+                    <td>&nbsp; : &nbsp;</td>
+                    <td>${options.taskDescription}</td>
+                  </tr>
+                  <tr>
+                    <th>Contractor Name</th>
+                    <td>&nbsp; : &nbsp;</td>
+                    <td>${options.user.first_name}</td>
+                  </tr>
+                  <tr>
+                    <th>Contractor Email</th>
+                    <td>&nbsp; : &nbsp;</td>
+                    <td>${options.user.email}</td>
+                  </tr>
+                </table>
               </div>
             </div>
-            <!--[if (mso)|(IE)]></td><![endif]-->
-            <!--[if (mso)|(IE)]></tr></table></td></tr></table><![endif]-->
           </div>
         </div>
       </div>
-
-      <div
-        class="u-row-container"
-        style="padding: 0px; background-color: transparent"
-      >
-        <div
-          class="u-row"
-          style="
-            margin: 0 auto;
-            min-width: 320px;
-            max-width: 600px;
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-            word-break: break-word;
-            background-color: #ffffff;
-          "
-        >
-          <div
-            style="
-              border-collapse: collapse;
-              display: table;
-              width: 100%;
-              height: 100%;
-              background-color: transparent;
-            "
-          >
-            <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding: 0px;background-color: transparent;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:600px;"><tr style="background-color: #ffffff;"><![endif]-->
-
-            <!--[if (mso)|(IE)]><td align="center" width="600" style="width: 600px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;" valign="top"><![endif]-->
-            <div
-              class="u-col u-col-100"
-              style="
-                max-width: 320px;
-                min-width: 600px;
-                display: table-cell;
-                vertical-align: top;
-              "
-            >
-              <div style="height: 100%; width: 100% !important">
-                <!--[if (!mso)&(!IE)]><!--><div
-                  style="
-                    box-sizing: border-box;
-                    height: 100%;
-                    padding: 0px;
-                    border-top: 0px solid transparent;
-                    border-left: 0px solid transparent;
-                    border-right: 0px solid transparent;
-                    border-bottom: 0px solid transparent;
-                  "
-                ><!--<![endif]-->
-                  <table
-                    style="font-family: 'Lato', sans-serif"
-                    role="presentation"
-                    cellpadding="0"
-                    cellspacing="0"
-                    width="100%"
-                    border="0"
-                  >
-                    <tbody>
-                      <tr>
-                        <td
-                          style="
-                            overflow-wrap: break-word;
-                            word-break: break-word;
-                            padding: 40px 40px 30px;
-                            font-family: 'Lato', sans-serif;
-                          "
-                          align="left"
-                        >
-                          <div
-                            style="
-                              font-size: 14px;
-                              line-height: 140%;
-                              text-align: left;
-                              word-wrap: break-word;
-                            "
-                          >
-                            <p style="font-size: 14px; line-height: 140%">
-                              <span
-                                style="
-                                  font-size: 18px;
-                                  line-height: 25.2px;
-                                  color: #666666;
-                                "
-                                >Hello,</span
-                              >
-                            </p>
-                            <p style="font-size: 14px; line-height: 140%">
-                              &nbsp;
-                            </p>
-                            <p style="font-size: 14px; line-height: 140%">
-                              <span
-                                style="
-                                  font-size: 18px;
-                                  line-height: 25.2px;
-                                  color: #666666;
-                                "
-                                >New task created with the folloeing
-                                details :</span
-                              >
-                            </p>
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-
-                  <table
-                    border="0"
-                    style="
-                      max-width: 350px;
-                      margin: 0 auto;
-                      border-collapse: collapse;
-                      padding: 20px;
-                    "
-                  >
-                    <tbody>
-                      <tr
-                        style="
-                          font-size: 16px;
-                          line-height: 25.2px;
-                          color: #4d4b4b;
-                        "
-                      >
-                        <td>Project Name &nbsp;</td>
-                        <td>: &nbsp; &nbsp; Your Project</td>
-                      </tr>
-                      <tr
-                        style="
-                          font-size: 16px;
-                          line-height: 25.2px;
-                          color: #4d4b4b;
-                        "
-                      >
-                        <td>Task Name &nbsp;</td>
-                        <td>: &nbsp; &nbsp; Your Task</td>
-                      </tr>
-                      <tr
-                        style="
-                          font-size: 16px;
-                          line-height: 25.2px;
-                          color: #4d4b4b;
-                        "
-                      >
-                        <td>Task Description &nbsp;</td>
-                        <td>: &nbsp; &nbsp; Task Description</td>
-                      </tr>
-                      <tr
-                        style="
-                          font-size: 16px;
-                          line-height: 25.2px;
-                          color: #4d4b4b;
-                        "
-                      >
-                        <td>Contractor Name &nbsp;</td>
-                        <td>: &nbsp; &nbsp; John</td>
-                      </tr>
-                      <tr
-                        style="
-                          font-size: 16px;
-                          line-height: 25.2px;
-                          color: #4d4b4b;
-                        "
-                      >
-                        <td>Contractor Email &nbsp;</td>
-                        <td>: &nbsp; &nbsp; john@example.com</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <!--[if (!mso)&(!IE)]><!-->
-                </div>
-                <!--<![endif]-->
-              </div>
-            </div>
-            <!--[if (mso)|(IE)]></td><![endif]-->
-            <!--[if (mso)|(IE)]></tr></table></td></tr></table><![endif]-->
-          </div>
-        </div>
-      </div>`;
+    </div>`;
       return templateHead + templateBody5 + templateFooter;
 
     default:

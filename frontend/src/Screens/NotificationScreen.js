@@ -5,6 +5,7 @@ import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 import { toast } from 'react-toastify';
 import { ThreeDots } from 'react-loader-spinner';
+import Accordion from 'react-bootstrap/Accordion';
 
 export default function NotificationScreen() {
   const [notificationMessage, setNotificationMessage] = useState([]);
@@ -135,26 +136,50 @@ export default function NotificationScreen() {
                     <h2 className="mb-3">Notifications</h2>
                     <ul className="list-group custom-list">
                       {currentNotifications.map((item, index) => (
-                        <li
-                          key={index}
-                          className={`list-group-item custom-list-item ${
+                        <Accordion
+                          className={` ${
                             item.status === 'seen'
-                              ? `list-group-item-seen-${theme}`
-                              : `list-group-item-unseen-${theme}`
+                              ? `acco1-seen-${theme}`
+                              : `acco1-unseen-${theme}`
                           }`}
                         >
-                          <div className="NotificationMsg">{item.message}</div>
-                          <button
-                            className={`MarkAsRead-${theme}`}
-                            style={{
-                              display: item.status == 'seen' ? 'none' : 'block',
-                            }}
-                            value={item._id}
-                            onClick={handleUpdateStatus}
+                          <Accordion.Item
+                            eventKey="0"
+                            className={`acco2${theme}`}
                           >
-                            Mark as read
-                          </button>{' '}
-                        </li>
+                            <Accordion.Header className={`aaac-${theme}`}>
+                              {item.message.split(' ').slice(0, 3).join(' ')}
+                            </Accordion.Header>
+                            <Accordion.Body
+                              className={`list-group-item custom-list-item ${
+                                item.status === 'seen'
+                                  ? `list-group-item-seen-${theme}`
+                                  : `list-group-item-unseen-${theme}`
+                              }`}
+                            >
+                              <div className="Messgae-Notification">
+                                {/* {item.message}{' '} */}
+                                <div
+                                  dangerouslySetInnerHTML={{
+                                    __html: item.message,
+                                  }}
+                                />
+                              </div>
+                              {console.log('item.message', item.message)}{' '}
+                              <button
+                                className={`MarkAsRead-${theme}`}
+                                style={{
+                                  display:
+                                    item.status == 'seen' ? 'none' : 'block',
+                                }}
+                                value={item._id}
+                                onClick={handleUpdateStatus}
+                              >
+                                Mark as read
+                              </button>{' '}
+                            </Accordion.Body>
+                          </Accordion.Item>
+                        </Accordion>
                       ))}
                     </ul>
                     {/* <nav>

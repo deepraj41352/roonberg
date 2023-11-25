@@ -58,8 +58,6 @@ const reducer = (state, action) => {
 
 const columns = [
   {
-    field: 'categoryImage',
-    headerName: 'Image',
     width: 100,
     renderCell: (params) => {
       function generateColorFromAscii(str) {
@@ -88,7 +86,7 @@ const columns = [
 
   {
     field: 'categoryName',
-    headerName: 'category',
+    headerName: 'Category',
     width: 100,
   },
   {

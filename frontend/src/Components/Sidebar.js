@@ -196,7 +196,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 Agent
               </li>
             </Link>
-            <Link
+            {/* <Link
               to="/adminContractorList"
               className="text-decoration-none"
               onClick={handlSmallScreeneClick}
@@ -210,7 +210,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
                 <MdGroup className="me-3 fs-5" />
                 Contractor
               </li>
-            </Link>
+            </Link> */}
             <Link
               to="/adminContractorList"
               className="text-decoration-none"

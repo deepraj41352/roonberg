@@ -73,8 +73,6 @@ export default function AgentTaskScreen() {
   };
   const columns = [
     {
-      field: 'categoryImage',
-      headerName: 'Image',
       width: 100,
       renderCell: (params) => {
         function generateColorFromAscii(str) {

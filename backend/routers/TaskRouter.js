@@ -403,7 +403,7 @@ TaskRouter.post(
           if (checkMail) {
             for (const adminemailid of allIds) {
               const notifyUser = adminemailid;
-              const message = `New Task Created Project Name -${options.projectName}, Task Name - ${options.taskName},Description - ${options.taskDescription}`;
+              const message = `<div><div><b>New Task Created</b></div> <div><b>Project Name</b> - ${options.projectName}</div>  <div><b>Task Name</b> - ${options.taskName}</div>  <div><b>Task Description</b> - ${options.taskDescription}</div></div>`;
               const status = 'unseen';
               const type = 'project';
               storeNotification(message, notifyUser, status, type);

@@ -72,10 +72,12 @@ code {
   padding: 3px 8px;
   border-radius: 5px;
   width: 100%;
+  color: #fff;
 }
 
 .inactive-cell {
   background-color: rgb(238, 107, 107);
+  color: #fff;
   padding: 3px 8px;
   border-radius: 5px;
   width: 100%;
@@ -455,7 +457,13 @@ body {
   color: #ffffff !important;
   background-color: RGB(14, 14, 61) !important;
   font-weight: 700 !important;
-  border: none !important;
+  border: 1px solid RGB(14, 14, 61) !important;
+  border-radius: 5px !important;
+  height: 40px;
+}
+.globalbtnColor:hover {
+  color: RGB(14, 14, 61) !important;
+  background-color: transparent !important;
 }
 
 .pointCursor {
@@ -550,16 +558,6 @@ body {
 .search-bar-dash-inner {
   background-color: #f8f9fa !important;
 }
-.sidebar.visible {
-  width: 0px;
-}
-.mainConNav {
-  width: 79%;
-  float: right;
-}
-.mainConNav2 {
-  width: 100%;
-}
 .sidebar {
   position: fixed;
   width: 21%;
@@ -568,7 +566,20 @@ body {
   color: #fff;
   white-space: nowrap;
   overflow-x: hidden;
-  transition: width 0.4s ease-in-out;
+  transition: width 0.3s ease-in-out;
+}
+
+.sidebar.visible {
+  width: 0;
+}
+
+.mainConNav {
+  width: 79%;
+  float: right;
+}
+
+.mainConNav.hidden {
+  width: 100%;
 }
 .admin-btn-logo2 {
   display: none;
@@ -578,6 +589,9 @@ body {
 }
 
 @media (max-width: 992px) {
+  .smallDeviceProfile {
+    display: none;
+  }
   .mainConNav {
     width: 100%;
   }
@@ -1108,22 +1122,6 @@ body {
   width: 88%;
   text-align: start;
 }
-.MarkAsRead-light {
-  border-radius: 11px !important;
-  border: none;
-  color: black;
-  background-color: #e3e3e3;
-  width: 115px;
-  padding: 0 !important;
-}
-.MarkAsRead-dark {
-  border-radius: 11px !important;
-  border: none;
-  color: black;
-  background-color: #c9cccf;
-  width: 115px;
-  padding: 0 !important;
-}
 
 .list-group-item-unseen-dark {
   background-color: #07162c !important;
@@ -1492,12 +1490,15 @@ body {
 }
 main.windowCal {
   min-height: calc(100vh - 150px) !important;
+  height: calc(100vh - 108px) !important;
+  overflow-y: scroll;
 }
 .actionCenter .MuiDataGrid-columnHeaderTitleContainer {
   justify-content: space-evenly;
 }
 
 .cateContainer {
+  position: relative;
   border: 1px solid #8a9097;
   border-radius: 5px;
 }
@@ -1531,18 +1532,7 @@ main.windowCal {
   margin: 13px 0;
   margin-left: 2px;
 }
-.cateItems {
-  height: 100%;
-  max-height: 100px;
-  width: 100%;
-  max-width: 145px;
-  margin: 5px 1px;
-  padding: 5px;
-  border-radius: 5px;
-  border-width: 1px;
-  border-color: black;
-  border-style: solid;
-}
+
 .spanForCate {
   word-break: break-all;
 }
@@ -1696,4 +1686,126 @@ body {
   padding: 10px;
   font-size: 14px;
   color: #fff; /* Adjust the font size as needed */
+}
+.buttonsTop {
+  display: flex;
+  justify-content: space-between;
+}
+.alignLeft {
+  text-align: start;
+}
+.modelContainer {
+  width: 100% !important;
+  max-width: 700px !important;
+}
+
+.cateItems {
+  height: 60px;
+  width: 100%;
+  max-width: 180px;
+  margin: 5px 1px;
+  padding: 5px;
+  border-radius: 5px;
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+}
+.cateborder {
+  margin: 10px;
+  gap: 0 14px;
+}
+.cateItem {
+  background-color: #fff;
+  position: absolute;
+  top: -14px;
+  left: 7px;
+  padding: 0px 5px;
+  color: #8a9097;
+}
+.profileToggleBtn {
+  width: 64px;
+  margin-left: 10px;
+}
+
+.profileToggleBtn::after {
+  display: none !important;
+}
+.Nav-image {
+  width: 50px !important;
+  height: 50px !important;
+}
+.dropMenuProfile {
+  position: absolute;
+  top: 82% !important;
+  left: -87px !important;
+  margin-top: var(--bs-dropdown-spacer);
+}
+.profilebtnColor {
+  background: transparent !important;
+  border: none !important;
+}
+
+.dropButton {
+  max-height: 200px;
+  overflow-y: scroll;
+}
+.cateItems input {
+  border: 1px solid #000000 !important;
+}
+.accordion-body {
+  margin-bottom: 0 !important;
+}
+.accordion {
+  padding: 10px !important;
+}
+.Messgae-Notification {
+  width: 90% !important;
+  text-align: left;
+}
+/* .aaac-dark button {
+  background-color: red;
+}
+.aaac-light button {
+  background-color: green;
+} */
+.accordion-button {
+  box-shadow: unset !important;
+}
+.acco1-seen-dark .accordion-button:not(.collapsed),
+.acco1-seen-dark .accordion-item:last-of-type .accordion-button.collapsed {
+  background-color: #afb4b9 !important;
+  color: #fff !important;
+}
+.acco1-seen-light .accordion-button:not(.collapsed),
+.acco1-seen-light .accordion-item:last-of-type .accordion-button.collapsed {
+  background-color: #bfbfc7 !important;
+  color: #000 !important;
+}
+.acco1-unseen-dark .accordion-button:not(.collapsed),
+.acco1-unseen-dark .accordion-item:last-of-type .accordion-button.collapsed {
+  background-color: #07162c !important;
+  color: #fff !important;
+}
+.acco1-unseen-light .accordion-button:not(.collapsed),
+.acco1-unseen-light .accordion-item:last-of-type .accordion-button.collapsed {
+  background-color: #fff !important;
+  color: #07162c !important;
+}
+.MarkAsRead-light {
+  border-radius: 3px !important;
+  border: none;
+  font-weight: 500;
+  color: #fff;
+  background-color: #07162c;
+  width: 115px;
+  padding: 6px !important;
+}
+.MarkAsRead-dark {
+  border-radius: 3px !important;
+  border: none;
+  font-weight: 500;
+  color: #07162c;
+  background-color: #fff;
+  width: 115px;
+  padding: 6px !important;
 }

@@ -11,6 +11,9 @@ const initialValue = {
   userInfo: localStorage.getItem('userInfo')
     ? JSON.parse(localStorage.getItem('userInfo'))
     : null,
+  categoriesDatatrue: false,
+  projectDatatrue: false,
+  contractorDatatrue: false,
 };
 
 const reducer = (state, action) => {
@@ -42,7 +45,14 @@ const reducer = (state, action) => {
         ...state,
         NotificationData: [],
       };
-
+    case 'CATEGORIESDATA':
+      return { ...state, categoriesDatatrue: action.payload };
+    case 'PROJECTDATA':
+      return { ...state, projectDatatrue: action.payload };
+    case 'CONTRACTORDATA':
+      return { ...state, contractorDatatrue: action.payload };
+    case 'SIDEBAR':
+      return { ...state, sidebar: action.payload };
     default:
       return state;
   }

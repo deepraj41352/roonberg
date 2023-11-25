@@ -65,18 +65,18 @@ export default function AdminProjectListScreen() {
         return <div>{numberOfTasks}</div>;
       },
     },
-    {
-      field: 'userId',
-      headerName: 'Contractor',
-      width: 150,
-      renderCell: (params) => {
-        const contractor = contractorData.find(
-          (item) => item._id === params.row.userId
-        );
+    // {
+    //   field: 'userId',
+    //   headerName: 'Contractor',
+    //   width: 150,
+    //   renderCell: (params) => {
+    //     const contractor = contractorData.find(
+    //       (item) => item._id === params.row.userId
+    //     );
 
-        return <div>{contractor ? contractor.first_name : ''}</div>;
-      },
-    },
+    //     return <div>{contractor ? contractor.first_name : ''}</div>;
+    //   },
+    // },
     {
       field: 'agentId',
       headerName: 'Agent',

@@ -32,8 +32,14 @@ import { toast } from 'react-toastify';
 import { FiPlus } from 'react-icons/fi';
 
 export default function TaskAddButton() {
-  const { state } = useContext(Store);
-  const { toggleState, userInfo } = state;
+  const { state, dispatch: ctxDispatch } = useContext(Store);
+  const {
+    toggleState,
+    userInfo,
+    categoriesDatatrue,
+    projectDatatrue,
+    contractorDatatrue,
+  } = state;
   const [loading, setLoading] = useState(true);
   const [isModelOpen, setIsModelOpen] = useState(false);
   const [isSubmiting, setIsSubmiting] = useState(false);
@@ -51,6 +57,7 @@ export default function TaskAddButton() {
   const [ShowErrorMessage, setShowErrorMessage] = useState(false);
   const navigate = useNavigate();
   const [selectedContractor, setSelectedContractor] = useState('');
+
   useEffect(() => {
     setLoading(true);
     const FatchCategory = async () => {
@@ -67,7 +74,7 @@ export default function TaskAddButton() {
       }
     };
     FatchCategory();
-  }, []);
+  }, [categoriesDatatrue]);
 
   // {Get Project .........
   useEffect(() => {
@@ -93,7 +100,7 @@ export default function TaskAddButton() {
       }
     };
     FatchProject();
-  }, []);
+  }, [projectDatatrue]);
 
   // {Get  Contractor User.........
   useEffect(() => {
@@ -104,7 +111,8 @@ export default function TaskAddButton() {
       } catch (error) {}
     };
     FatchContractorData();
-  }, []);
+  }, [contractorDatatrue]);
+
   const handleAdminSubmit = async () => {
     setIsSubmiting(true);
     try {
@@ -124,6 +132,7 @@ export default function TaskAddButton() {
       );
       if (data.status === 201) {
         setSuccess(!success);
+        ctxDispatch({ type: 'PROJECTDATA', payload: success });
         toast.success(data.data.message);
         setDynamicfield(false);
         setIsSubmiting(false);
@@ -134,7 +143,6 @@ export default function TaskAddButton() {
         setCategory('');
         setContractorName('');
         setSelectProjectName('');
-        navigate('/tasksScreen');
       }
       if (data.status === 200) {
         setDynamicfield(false);
@@ -174,6 +182,7 @@ export default function TaskAddButton() {
       );
       if (data.status === 201) {
         setSuccess(!success);
+        ctxDispatch({ type: 'PROJECTDATA', payload: success });
         toast.success(data.data.message);
         setDynamicfield(false);
         setIsSubmiting(false);
@@ -183,7 +192,6 @@ export default function TaskAddButton() {
         setTaskDesc('');
         setCategory('');
         setSelectProjectName('');
-        navigate('/tasksScreen');
       }
       if (data.status === 200) {
         setDynamicfield(false);
@@ -215,6 +223,7 @@ export default function TaskAddButton() {
   const handleAddNewProject = () => {
     setDynamicfield(true);
   };
+
   const removeDymanic = () => {
     setDynamicfield(false);
     setProjectName('');
@@ -258,6 +267,17 @@ export default function TaskAddButton() {
       }
     }
   };
+
+  function generateColorFromAscii(str) {
+    let color = '#';
+    const combination = str
+      .split('')
+      .map((char) => char.charCodeAt(0))
+      .reduce((acc, value) => acc + value, 0);
+    color += (combination * 12345).toString(16).slice(0, 6);
+    return color;
+  }
+
   return (
     <div>
       {userInfo.role === 'agent' ? null : (
@@ -272,7 +292,7 @@ export default function TaskAddButton() {
         className="overlayLoading modaleWidth p-0"
       >
         <Box
-          className="modelBg"
+          className="modelBg modelContainer"
           sx={{
             position: 'absolute',
             top: '50%',
@@ -309,7 +329,7 @@ export default function TaskAddButton() {
                   ? 'scrollInAdminproject p-4 '
                   : 'scrollInAdminproject p-3'
               }
-              onSubmit={(e) => handelBothSubmit(e)}
+              onSubmit={handelBothSubmit}
             >
               <ImCross
                 color="black"
@@ -317,12 +337,52 @@ export default function TaskAddButton() {
                 onClick={handleCloseRow}
               />
               <h4 className="d-flex justify-content-center">Add Task</h4>
+
+              <div className="cateContainer mb-3">
+                <p className="cateItem">Categories</p>
+                <div className="d-flex flex-wrap cateborder ">
+                  {categoryData.map((category) => (
+                    <div key={category._id} className="cateItems">
+                      <Form.Check
+                        className="d-flex align-items-center gap-2"
+                        type="radio"
+                        id={`category-${category._id}`}
+                        name="category"
+                        value={category.categoryName}
+                        label={
+                          <div className="d-flex align-items-center">
+                            <div className="">
+                              {category.categoryImage !== 'null' ? (
+                                <Avatar src={category.categoryImage} />
+                              ) : (
+                                <AvatarImage
+                                  name={category.categoryName}
+                                  bgColor={generateColorFromAscii(
+                                    category.categoryName[0].toLowerCase()
+                                  )}
+                                />
+                              )}
+                            </div>
+                            <div className="d-flex">
+                              <span className="ms-2 spanForCate">
+                                {category.categoryName}
+                              </span>
+                            </div>
+                          </div>
+                        }
+                        onChange={(e) => setCategory(e.target.value)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <FormControl className={dynamicfield ? 'disable mb-3' : 'mb-3'}>
                 <InputLabel>Select Project </InputLabel>
                 <Select
                   value={SelectProjectName}
                   onChange={(e) => selectedProjectContractor(e)}
-                  required
+                  // required
                 >
                   <MenuItem
                     disabled={dynamicfield}
@@ -344,6 +404,7 @@ export default function TaskAddButton() {
                     ))}
                 </Select>
               </FormControl>
+
               {dynamicfield ? (
                 <div className="d-flex align-items-center gap-1">
                   <TextField
@@ -384,8 +445,7 @@ export default function TaskAddButton() {
                 fullWidth
               />
 
-              {(userInfo.role === 'superadmin' ||
-                userInfo.role === 'admin') && (
+              {(userInfo.role == 'superadmin' || userInfo.role == 'admin') && (
                 <FormControl className={'mb-3'}>
                   <InputLabel>Select Contractor</InputLabel>
                   {SelectProjectName && selectedContractor ? (
@@ -422,38 +482,12 @@ export default function TaskAddButton() {
                 </FormControl>
               )}
 
-              <div className="d-flex align-items-center flex-wrap justify-content-between cateContainer">
-                {categoryData.map((category) => (
-                  <div key={category._id} className="d-flex flex-row cateItems">
-                    <Form.Check
-                      className="d-flex align-items-center"
-                      type="radio"
-                      id={`category-${category._id}`}
-                      name="category"
-                      value={category.categoryName}
-                      label={
-                        <div className="d-flex align-items-center">
-                          <Avatar
-                            src={category.categoryImage}
-                            alt={category.categoryName}
-                          />
-                          <span className="ms-2 spanForCate">
-                            {category.categoryName}
-                          </span>
-                        </div>
-                      }
-                      onChange={(e) => setCategory(e.target.value)}
-                    />
-                  </div>
-                ))}
-              </div>
-
               <Button
                 variant="contained"
                 color="primary"
                 type="submit"
-                disabled={ShowErrorMessage}
                 className="mt-2 formbtn updatingBtn globalbtnColor"
+                disabled={ShowErrorMessage}
               >
                 {isSubmiting ? 'SUBMITTING' : 'SUBMIT '}
               </Button>

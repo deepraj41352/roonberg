@@ -344,7 +344,7 @@ const WidgetsDropdown = React.memo(() => {
                 value={
                   <>{projectData.length <= 0 ? `0` : projectData.length}</>
                 }
-                title="Total Projects"
+                title="Total Tasks"
                 chart={
                   <CChartBar
                     className="mt-3 mx-3"
@@ -419,13 +419,17 @@ const WidgetsDropdown = React.memo(() => {
           <CRow>
             <CCol sm={4} lg={4}>
               <CCard className="mh-100 mb-4">
-                <CCardHeader>Tasks</CCardHeader>
+                <CCardHeader className="alignLeft">
+                  <b>Tasks</b>
+                </CCardHeader>
                 <CChartDoughnut data={dataChartDoughnut} />
               </CCard>
             </CCol>
             <CCol sm={8} lg={8}>
               <CCard className="mh-100 mb-4">
-                <CCardHeader>Tasks</CCardHeader>
+                <CCardHeader className="alignLeft">
+                  <b>Tasks</b>
+                </CCardHeader>
                 <CCardBody>
                   <ProjectDataWidget projectData={projectData} />
                 </CCardBody>
@@ -435,7 +439,9 @@ const WidgetsDropdown = React.memo(() => {
           <CRow>
             <CCol sm={12} lg={12}>
               <CCard className="mh-100">
-                <CCardHeader>Users</CCardHeader>
+                <CCardHeader className="alignLeft">
+                  <b>Users</b>
+                </CCardHeader>
                 <CCardBody>
                   <UserDataWidget userData={userData} />
                 </CCardBody>

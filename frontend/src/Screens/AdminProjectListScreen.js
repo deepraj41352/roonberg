@@ -40,15 +40,16 @@ export default function AdminProjectListScreen() {
   const [morefieldsModel, setMorefieldsModel] = useState(false);
   const [isNewProject, setIsNewProject] = useState(false);
   const [isSubmiting, setIsSubmiting] = useState(false);
-  const { state } = useContext(Store);
-  const { toggleState, userInfo } = state;
+  const { state, dispatch: ctxDispatch } = useContext(Store);
+
+  const { toggleState, userInfo, projectDatatrue } = state;
   const theme = toggleState ? 'dark' : 'light';
 
   const [ProjectData, setProjectData] = useState([]);
   const [data, SetData] = useState([]);
   const [contractorData, setContractorData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [agentData, setAgentData] = useState(true);
+  const [agentData, setAgentData] = useState([]);
 
   console.log(ProjectData);
   const columns = [
@@ -136,7 +137,7 @@ export default function AdminProjectListScreen() {
     };
 
     fetchContractorData();
-  }, []);
+  }, [projectDatatrue]);
   // {Get Agent  User.........
   useEffect(() => {
     setLoading(true);
@@ -153,7 +154,7 @@ export default function AdminProjectListScreen() {
     };
 
     fetchContractorData();
-  }, []);
+  }, [projectDatatrue]);
 
   // ......}
   // {Get tasks.........
@@ -171,7 +172,7 @@ export default function AdminProjectListScreen() {
     };
 
     FatchcategoryData();
-  }, []);
+  }, [projectDatatrue]);
   // ......}
   useEffect(() => {
     setLoading(true);
@@ -188,7 +189,7 @@ export default function AdminProjectListScreen() {
       }
     };
     FatchProject();
-  }, []);
+  }, [projectDatatrue]);
 
   return (
     <>

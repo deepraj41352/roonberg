@@ -27,6 +27,7 @@ import {
   Image,
   InputGroup,
   Nav,
+  Dropdown,
   Navbar,
 } from 'react-bootstrap';
 import Sidebar from './Components/Sidebar';
@@ -126,7 +127,7 @@ function App() {
 
             <div
               className={`px-0 ${
-                !userInfo || sidebarVisible ? 'mainConNav2' : 'mainConNav'
+                userInfo && !sidebarVisible ? 'mainConNav' : 'w-100'
               }`}
             >
               {userInfo ? (
@@ -202,10 +203,55 @@ function App() {
                             </span>
                           )}
                         </Link>
+                        <Dropdown className="mb-0 tab-btn text-start smallDeviceProfile">
+                          <Dropdown.Toggle
+                            id="dropdown-tabs"
+                            className="my-2 profilebtnColor profileToggleBtn selectButton"
+                          >
+                            <img
+                              className="profile-icon-inner Nav-image img-fornavs"
+                              src={
+                                userInfo.profile_picture
+                                  ? userInfo.profile_picture
+                                  : './avatar.png'
+                              }
+                              alt="userimg"
+                            />
+                          </Dropdown.Toggle>
+                          <Dropdown.Menu className="dropMenu dropMenuProfile">
+                            <Dropdown.Item>
+                              <Link
+                                to="/profile-screen"
+                                className="profileLinkItems"
+                              >
+                                Profile
+                              </Link>
+                            </Dropdown.Item>
+                            <Dropdown.Item>
+                              <Link
+                                className="profileLinkItems"
+                                to="/notificationScreen"
+                              >
+                                {' '}
+                                Notification{' '}
+                              </Link>
+                            </Dropdown.Item>
+                            <Dropdown.Item>
+                              <Link
+                                className="profileLinkItems"
+                                onClick={signoutHandler}
+                                to="#"
+                              >
+                                {' '}
+                                Logout{' '}
+                              </Link>
+                            </Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
                       </Nav>
                     </Navbar.Collapse>
 
-                    <div
+                    {/* <div
                       className="profile-icon me-1 ms-3"
                       onClick={toggleDropdown}
                     >
@@ -235,16 +281,14 @@ function App() {
                               </span>
                             )}
                           </Link>
-                          {/* <Link to="/projectNotification">Notification</Link> */}
-                          {/* <Link to="#">Setting</Link> */}
+          
                           <hr />
                           <Link onClick={signoutHandler} to="#">
                             Logout
                           </Link>
-                          {/* Add more options as needed */}
                         </div>
                       )}
-                    </div>
+                    </div> */}
 
                     <div
                       className="p-2 me-3 fs-5 admin-btn-logo2"

@@ -65,7 +65,7 @@ const columns = [
 ];
 
 export default function AdminContractorListScreen() {
-  const { state } = useContext(Store);
+  const { state, dispatch: ctxDispatch } = useContext(Store);
   const { toggleState, userInfo } = state;
   const navigate = useNavigate();
   const role = 'contractor';
@@ -78,6 +78,7 @@ export default function AdminContractorListScreen() {
   const [status, setStatus] = useState('');
   const [password, setPassword] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const [success, setsuccess] = useState(false);
 
   const [
     {
@@ -150,6 +151,8 @@ export default function AdminContractorListScreen() {
       );
       if (response.status === 200) {
         toast.success('Contractor Created Successfully !');
+        setsuccess(!success);
+        ctxDispatch({ type: 'CONTRACTORDATA', payload: success });
         setIsModelOpen(false);
         dispatch({ type: 'UPDATE_SUCCESS', payload: true });
         dispatch({ type: 'FATCH_SUBMITTING', payload: false });
@@ -174,6 +177,8 @@ export default function AdminContractorListScreen() {
 
         if (response.status === 200) {
           toast.success('Constractor Deleted Successfully!');
+          setsuccess(!success);
+          ctxDispatch({ type: 'CONTRACTORDATA', payload: success });
           dispatch({
             type: 'DELETE_SUCCESS',
             payload: true,

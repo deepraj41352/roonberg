@@ -66,6 +66,21 @@ const columns = [
       );
     },
   },
+  {
+    field: 'userStatus',
+    headerName: 'Status',
+    width: 100,
+    renderCell: (params) => {
+      const isInactive = params.row.userStatus === false;
+      const cellClassName = isInactive ? 'inactive-cell' : 'active-cell';
+
+      return (
+        <div className={`status-cell ${cellClassName}`}>
+          {params.row.userStatus ? 'Active' : 'Inactive'}
+        </div>
+      );
+    },
+  },
 ];
 
 export default function UserDataWidget(props) {

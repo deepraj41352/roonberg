@@ -76,8 +76,6 @@ export default function TasksScreen() {
 
   const columns = [
     {
-      field: 'categoryImage',
-      headerName: 'Image',
       width: 100,
       renderCell: (params) => {
         function generateColorFromAscii(str) {
@@ -460,6 +458,7 @@ export default function TasksScreen() {
     }
   };
   // ......}
+
   const validation = (e) => {
     const inputValue = e.target.value;
     setTaskName(inputValue);
@@ -489,19 +488,20 @@ export default function TasksScreen() {
       }
     }
   };
-  console.log(selectedContractor);
+
+  function generateColorFromAscii(str) {
+    let color = '#';
+    const combination = str
+      .split('')
+      .map((char) => char.charCodeAt(0))
+      .reduce((acc, value) => acc + value, 0);
+    color += (combination * 12345).toString(16).slice(0, 6);
+    return color;
+  }
+
   return (
     <>
       <div className="px-3 mt-3">
-        <Button
-          variant="outlined"
-          className="my-2 d-flex globalbtnColor"
-          onClick={handleNew}
-        >
-          <BiPlusMedical className="mx-2" />
-          Add Task
-        </Button>
-
         {loading ? (
           <>
             <div className="ThreeDot">
@@ -522,36 +522,47 @@ export default function TasksScreen() {
           <div>{error}</div>
         ) : (
           <>
-            <Dropdown className={`mb-0 tab-btn text-start `}>
-              <Dropdown.Toggle
-                id="dropdown-tabs"
-                className="my-2 globalbtnColor selectButton"
-              >
-                {selectedProjects}
-              </Dropdown.Toggle>
-
-              <Dropdown.Menu className="dropMenu ">
-                <Dropdown.Item
-                  className="dropMenuCon"
-                  onClick={() => handleProjectsSelect('', 'All Project')}
+            <div className="buttonsTop">
+              <Dropdown className={`mb-0 tab-btn text-start `}>
+                <Dropdown.Toggle
+                  id="dropdown-tabs"
+                  className="my-2 globalbtnColor selectButton"
                 >
-                  All Project
-                </Dropdown.Item>
-                {ProjectData.map((project, key) => (
+                  {selectedProjects}
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu className="dropMenu dropButton">
                   <Dropdown.Item
-                    key={project._id} // Make sure to use a unique key for each item
                     className="dropMenuCon"
-                    onClick={() =>
-                      handleProjectsSelect(project._id, project.projectName)
-                    }
+                    onClick={() => handleProjectsSelect('', 'All Project')}
                   >
-                    <span className="position-relative">
-                      {project.projectName}
-                    </span>
+                    All Project
                   </Dropdown.Item>
-                ))}
-              </Dropdown.Menu>
-            </Dropdown>
+                  {ProjectData.map((project, key) => (
+                    <Dropdown.Item
+                      key={project._id} // Make sure to use a unique key for each item
+                      className="dropMenuCon"
+                      onClick={() =>
+                        handleProjectsSelect(project._id, project.projectName)
+                      }
+                    >
+                      <span className="position-relative">
+                        {project.projectName}
+                      </span>
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
+              <Button
+                variant="outlined"
+                className="my-2 d-flex globalbtnColor"
+                onClick={handleNew}
+              >
+                <BiPlusMedical className="mx-2" />
+                Add Task
+              </Button>
+            </div>
+
             <div className="tableScreen">
               <div className="overlayLoading">
                 {isDeleting && (
@@ -750,7 +761,7 @@ export default function TasksScreen() {
                       className="overlayLoading modaleWidth p-0"
                     >
                       <Box
-                        className="modelBg"
+                        className="modelBg modelContainer"
                         sx={{
                           position: 'absolute',
                           top: '50%',
@@ -797,6 +808,51 @@ export default function TasksScreen() {
                             <h4 className="d-flex justify-content-center">
                               Add Task
                             </h4>
+
+                            <div className="cateContainer mb-3">
+                              <p className="cateItem">Categories</p>
+                              <div className="d-flex flex-wrap cateborder ">
+                                {categoryData.map((category) => (
+                                  <div key={category._id} className="cateItems">
+                                    <Form.Check
+                                      className="d-flex align-items-center gap-2"
+                                      type="radio"
+                                      id={`category-${category._id}`}
+                                      name="category"
+                                      value={category.categoryName}
+                                      label={
+                                        <div className="d-flex align-items-center">
+                                          <div className="">
+                                            {category.categoryImage !==
+                                            'null' ? (
+                                              <Avatar
+                                                src={category.categoryImage}
+                                              />
+                                            ) : (
+                                              <AvatarImage
+                                                name={category.categoryName}
+                                                bgColor={generateColorFromAscii(
+                                                  category.categoryName[0].toLowerCase()
+                                                )}
+                                              />
+                                            )}
+                                          </div>
+                                          <div className="d-flex">
+                                            <span className="ms-2 spanForCate">
+                                              {category.categoryName}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      }
+                                      onChange={(e) =>
+                                        setCategory(e.target.value)
+                                      }
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
                             <FormControl
                               className={dynamicfield ? 'disable mb-3' : 'mb-3'}
                             >
@@ -911,37 +967,6 @@ export default function TasksScreen() {
                                 </Select>
                               )}
                             </FormControl>
-
-                            <div className="d-flex align-items-center flex-wrap justify-content-between cateContainer">
-                              {categoryData.map((category) => (
-                                <div
-                                  key={category._id}
-                                  className="d-flex flex-row cateItems"
-                                >
-                                  <Form.Check
-                                    className="d-flex align-items-center"
-                                    type="radio"
-                                    id={`category-${category._id}`}
-                                    name="category"
-                                    value={category.categoryName}
-                                    label={
-                                      <div className="d-flex align-items-center">
-                                        <Avatar
-                                          src={category.categoryImage}
-                                          alt={category.categoryName}
-                                        />
-                                        <span className="ms-2 spanForCate">
-                                          {category.categoryName}
-                                        </span>
-                                      </div>
-                                    }
-                                    onChange={(e) =>
-                                      setCategory(e.target.value)
-                                    }
-                                  />
-                                </div>
-                              ))}
-                            </div>
 
                             <Button
                               variant="contained"

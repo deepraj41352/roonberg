@@ -49,9 +49,13 @@ const WidgetsDropdown = React.memo(() => {
 
         if (userInfo.role === 'superadmin' || userInfo.role === 'admin') {
           taskData = taskDatas;
-        } else {
+        } else if (userInfo.role === 'contractor') {
           taskData = taskDatas.filter((item) => {
             return item.userId === userInfo._id;
+          });
+        } else if (userInfo.role === 'agent') {
+          taskData = taskDatas.filter((item) => {
+            return item.agentId === userInfo._id;
           });
         }
         const activeProject = taskData.filter(
@@ -403,13 +407,17 @@ const WidgetsDropdown = React.memo(() => {
           <CRow>
             <CCol sm={4} lg={4}>
               <CCard className="mh-100 mb-4">
-                <CCardHeader>Tasks</CCardHeader>
+                <CCardHeader className="alignLeft">
+                  <b>Tasks</b>
+                </CCardHeader>
                 <CChartDoughnut data={dataChartDoughnut} />
               </CCard>
             </CCol>
             <CCol sm={8} lg={8}>
               <CCard className="mh-100 mb-4">
-                <CCardHeader>Users</CCardHeader>
+                <CCardHeader className="alignLeft">
+                  <b>Tasks</b>
+                </CCardHeader>
                 <CCardBody>
                   <ProjectDataWidget projectData={projectData} />
                 </CCardBody>
