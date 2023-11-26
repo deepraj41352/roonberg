@@ -461,6 +461,7 @@ body {
   border: 1px solid RGB(14, 14, 61) !important;
   border-radius: 5px !important;
   height: 40px;
+  text-transform: unset !important;
 }
 .globalbtnColor:hover {
   color: RGB(14, 14, 61) !important;
@@ -1649,12 +1650,14 @@ body {
   background-color: RGB(14, 14, 61) !important;
   font-weight: 700 !important;
   border: none !important;
+  text-transform: unset !important;
 }
 .dark-globalbtnColor {
   color: RGB(14, 14, 61) !important;
   background-color: #fff !important;
   font-weight: 700 !important;
   border: none !important;
+  text-transform: unset !important;
 }
 /* gyatri ji ............... */
 .profileContainer {

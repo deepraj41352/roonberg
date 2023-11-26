@@ -245,6 +245,8 @@ export default function TasksScreen() {
   const [dynamicfield, setDynamicfield] = useState(false);
   const [success, setSuccess] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showModalDel, setShowModalDel] = useState(false);
+
   const [data, SetData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -288,6 +290,7 @@ export default function TasksScreen() {
   const handleCloseRow = () => {
     setIsModelOpen(false);
     setShowModal(false);
+    setShowModalDel(false);
   };
 
   const handleNew = () => {
@@ -295,6 +298,9 @@ export default function TasksScreen() {
   };
   const ModelOpen = () => {
     setShowModal(true);
+  };
+  const ModelOpenDel = () => {
+    setShowModalDel(true);
   };
   // ......}
 
@@ -674,10 +680,52 @@ export default function TasksScreen() {
                         <Button
                           active
                           className=" btn-color2"
-                          onClick={deleteTask}
+                          onClick={ModelOpenDel}
                         >
                           <span class="position-relative">Delete</span>
                         </Button>
+                        <Modal
+                          open={showModalDel}
+                          onClose={handleCloseRow}
+                          className="overlayLoading modaleWidth p-0"
+                        >
+                          <Box
+                            className="modelBg"
+                            sx={{
+                              position: 'absolute',
+                              top: '50%',
+                              left: '50%',
+                              transform: 'translate(-50%, -50%)',
+                              width: 400,
+                              bgcolor: 'background.paper',
+                              boxShadow: 24,
+                              p: isSubmiting ? 0 : 4,
+                            }}
+                          >
+                            <div className="overlayLoading">
+                              <div className="pb-4">
+                                Make sure you want to delete this task.
+                              </div>
+                              <Button
+                                variant="outlined"
+                                onClick={deleteTask}
+                                className="globalbtnColor"
+                              >
+                                Confirm
+                              </Button>
+
+                              {/* Cancel button */}
+                              <Button
+                                variant="outlined"
+                                onClick={handleCloseRow}
+                                className="ms-2 globalbtnColor"
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </Box>
+                        </Modal>
+
                         <Modal
                           open={showModal}
                           onClose={handleCloseRow}
@@ -1012,7 +1060,7 @@ export default function TasksScreen() {
                         <Button
                           active
                           className=" btn-color2"
-                          onClick={deleteTask}
+                          onClick={ModelOpenDel}
                         >
                           <span class="position-relative">Delete</span>
                         </Button>
