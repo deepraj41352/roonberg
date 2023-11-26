@@ -66,6 +66,9 @@ export default function TasksScreen() {
   const [isNewProject, setIsNewProject] = useState(false);
   const [isSubmiting, setIsSubmiting] = useState(false);
   const { state } = useContext(Store);
+  const [formData, setFormData] = useState({
+    projectStatus: 'active',
+  });
   const { toggleState, userInfo } = state;
   const theme = toggleState ? 'dark' : 'light';
   const [selectedRowId, setSelectedRowId] = useState(null);
@@ -166,6 +169,37 @@ export default function TasksScreen() {
           </div>
         </Link>
       ),
+    },
+    {
+      field: 'taskStatus',
+      headerName: 'Status',
+      width: 200,
+      renderCell: (params) => {
+        return (
+          <Grid item xs={8}>
+            <Button
+              variant="contained"
+              className={
+                params.row.taskStatus === 'active'
+                  ? 'tableInProgressBtn'
+                  : 'tableInwaitingBtn'
+              }
+              // onClick={() => handleEdit(params.row._id)}
+            >
+              <CiSettings className="clockIcon" />
+              {params.row.taskStatus === 'waiting'
+                ? 'Waiting On You'
+                : params.row.taskStatus === 'active'
+                ? 'In Progress'
+                : params.row.taskStatus === 'completed'
+                ? 'Completed'
+                : params.row.taskStatus === 'pending'
+                ? 'Ready To Completed'
+                : ''}
+            </Button>
+          </Grid>
+        );
+      },
     },
   ];
   const [
@@ -438,16 +472,23 @@ export default function TasksScreen() {
   // ......}
 
   // {Update Task Data  .........
-  const handleStatusUpdate = async (e) => {
-    const taskStatus = e.target.value;
+  const handleStatusUpdate = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleFormSubmit = async () => {
     try {
       const data = await axios.put(
         `/api/task/updateStatus/${selectedRowId}`,
-        { taskStatus: taskStatus },
+        { taskStatus: formData.projectStatus },
         {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         }
       );
+
       if (data.status === 200) {
         setSuccess(!success);
         setShowModal(false);
@@ -656,34 +697,19 @@ export default function TasksScreen() {
                             }}
                           >
                             <div className="overlayLoading">
-                              {isSubmiting && (
-                                <div className="overlayLoadingItem1 y-3">
-                                  <ColorRing
-                                    visible={true}
-                                    height="40"
-                                    width="40"
-                                    ariaLabel="blocks-loading"
-                                    wrapperStyle={{}}
-                                    wrapperClass="blocks-wrapper"
-                                    colors={[
-                                      'rgba(0, 0, 0, 1) 0%',
-                                      'rgba(255, 255, 255, 1) 68%',
-                                      'rgba(0, 0, 0, 1) 93%',
-                                    ]}
-                                  />
-                                </div>
-                              )}
+                              {/* ... Your loading animation code ... */}
 
                               <Form>
                                 <Form.Group
-                                  className="mb-3 "
+                                  className="mb-3"
                                   controlId="formBasicPassword"
                                 >
                                   <Form.Label className="mb-1 fw-bold">
                                     Task Status
                                   </Form.Label>
                                   <Form.Select
-                                    value={projectStatus}
+                                    name="projectStatus"
+                                    value={formData.projectStatus}
                                     onChange={handleStatusUpdate}
                                   >
                                     <option value="active">Running</option>
@@ -691,6 +717,24 @@ export default function TasksScreen() {
                                     <option value="pending">Pending</option>
                                   </Form.Select>
                                 </Form.Group>
+
+                                {/* Submit button */}
+                                <Button
+                                  variant="outlined"
+                                  onClick={handleFormSubmit}
+                                  className="globalbtnColor"
+                                >
+                                  Confirm
+                                </Button>
+
+                                {/* Cancel button */}
+                                <Button
+                                  variant="outlined"
+                                  onClick={handleCloseRow}
+                                  className="ms-2 globalbtnColor"
+                                >
+                                  Cancel
+                                </Button>
                               </Form>
                             </div>
                           </Box>
@@ -705,40 +749,7 @@ export default function TasksScreen() {
                       <DataGrid
                         className="tableGrid actionCenter"
                         rows={ActiveData}
-                        columns={[
-                          ...columns,
-                          {
-                            field: 'action',
-                            headerName: 'Action',
-                            width: 250,
-                            renderCell: (params) => {
-                              return (
-                                <Grid item xs={8}>
-                                  <Button
-                                    variant="contained"
-                                    className={
-                                      params.row.taskStatus === 'active'
-                                        ? 'tableInProgressBtn'
-                                        : 'tableInwaitingBtn'
-                                    }
-                                    // onClick={() => handleEdit(params.row._id)}
-                                  >
-                                    <CiSettings className="clockIcon" />
-                                    {params.row.taskStatus === 'waiting'
-                                      ? 'Waiting On You'
-                                      : params.row.taskStatus === 'active'
-                                      ? 'In Progress'
-                                      : params.row.taskStatus === 'completed'
-                                      ? 'Completed'
-                                      : params.row.taskStatus === 'pending'
-                                      ? 'Ready To Completed'
-                                      : ''}
-                                  </Button>
-                                </Grid>
-                              );
-                            },
-                          },
-                        ]}
+                        columns={columns}
                         getRowId={(row) => row._id}
                         initialState={{
                           pagination: {
@@ -1015,40 +1026,7 @@ export default function TasksScreen() {
                       <DataGrid
                         className="tableGrid actionCenter"
                         rows={PendingData}
-                        columns={[
-                          ...columns,
-                          {
-                            field: 'action',
-                            headerName: 'Action',
-                            width: 160,
-                            renderCell: (params) => {
-                              return (
-                                <Grid item xs={8}>
-                                  <Button
-                                    variant="contained"
-                                    className={
-                                      params.row.taskStatus === 'active'
-                                        ? 'tableInProgressBtn'
-                                        : 'tableInwaitingBtn'
-                                    }
-                                    // onClick={() => handleEdit(params.row._id)}
-                                  >
-                                    <CiSettings className="clockIcon" />
-                                    {params.row.taskStatus === 'waiting'
-                                      ? 'Waiting On You'
-                                      : params.row.taskStatus === 'active'
-                                      ? 'In Progress'
-                                      : params.row.taskStatus === 'completed'
-                                      ? 'Completed'
-                                      : params.row.taskStatus === 'pending'
-                                      ? 'Ready To Completed'
-                                      : ''}
-                                  </Button>
-                                </Grid>
-                              );
-                            },
-                          },
-                        ]}
+                        columns={columns}
                         getRowId={(row) => row._id}
                         initialState={{
                           pagination: {
@@ -1101,40 +1079,7 @@ export default function TasksScreen() {
                       <DataGrid
                         className="tableGrid actionCenter"
                         rows={CompleteData}
-                        columns={[
-                          ...columns,
-                          {
-                            field: 'action',
-                            headerName: 'Action',
-                            width: 160,
-                            renderCell: (params) => {
-                              return (
-                                <Grid item xs={8}>
-                                  <Button
-                                    variant="contained"
-                                    className={
-                                      params.row.taskStatus === 'active'
-                                        ? 'tableInProgressBtn'
-                                        : 'tableInwaitingBtn'
-                                    }
-                                    // onClick={() => handleEdit(params.row._id)}
-                                  >
-                                    <CiSettings className="clockIcon" />
-                                    {params.row.taskStatus === 'waiting'
-                                      ? 'Waiting On You'
-                                      : params.row.taskStatus === 'active'
-                                      ? 'In Progress'
-                                      : params.row.taskStatus === 'completed'
-                                      ? 'Completed'
-                                      : params.row.taskStatus === 'pending'
-                                      ? 'Ready To Completed'
-                                      : ''}
-                                  </Button>
-                                </Grid>
-                              );
-                            },
-                          },
-                        ]}
+                        columns={columns}
                         getRowId={(row) => row._id}
                         initialState={{
                           pagination: {

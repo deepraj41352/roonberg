@@ -61,10 +61,35 @@ function AdminEditAgent() {
   const [email, setEmail] = useState('');
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [status, setStatus] = useState('');
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState([]);
+  const [pureAgentData, setPureAgentData] = useState([]);
+  const [filteredCategories, setFilteredCategories] = useState([]);
+  const [currentUserCategories, setCurrentUsercategories] = useState([]);
+  const role = 'agent';
+
+  // fatch agent data for filter category
+  useEffect(() => {
+    const FatchAgentData = async () => {
+      try {
+        dispatch('FATCH_REQUEST');
+        const response = await axios.post(`/api/user/`, { role: role });
+        const datas = response.data;
+        setPureAgentData(datas);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    if (successDelete) {
+      dispatch({ type: 'DELETE_RESET' });
+    } else if (successUpdate) {
+      dispatch({ type: 'UPDATE_RESET' });
+    } else {
+      FatchAgentData();
+    }
+  }, [successDelete, successUpdate, categoryDatas]);
 
   useEffect(() => {
-    const FatchcategoryData = async () => {
+    const FatchSingleUserData = async () => {
       try {
         dispatch('FATCH_REQUEST');
         const response = await axios.get(`/api/user/${id}`);
@@ -79,10 +104,10 @@ function AdminEditAgent() {
       }
     };
 
-    FatchcategoryData();
+    FatchSingleUserData();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const FatchCategory = async () => {
       try {
         dispatch('FATCH_REQUEST');
@@ -98,31 +123,6 @@ function AdminEditAgent() {
     };
     FatchCategory();
   }, []);
-
-  // const submitHandler = async (e) => {
-  //   e.preventDefault();
-  //   setIsSubmiting(true);
-  //   const formDatas = new FormData();
-  //   formDatas.append('first_name', firstName);
-  //   formDatas.append('last_name', lastName);
-  //   formDatas.append('email', email);
-  //   formDatas.append('status', status);
-
-  //   try {
-  //     const data = await axios.put(`/api/user/profile/${id}`, formDatas, {
-  //       headers: {
-  //         authorization: `Bearer ${userInfo.token}`,
-  //       },
-  //     });
-  //     console.log('data', data);
-  //     dispatch({ type: 'UPDATE_SUCCESS' });
-  //     toast.success(data.data);
-  //     // navigate('/adminAgentList')
-  //   } catch (err) {
-  //     console.error('Error:', err);
-  //     toast.error(err.response?.data?.message);
-  //   }
-  // };
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -152,6 +152,32 @@ function AdminEditAgent() {
       setIsSubmiting(false);
     }
   };
+
+  // filtered category
+
+  useEffect(() => {
+    const filteredCategory = () => {
+      const assignedCategories = pureAgentData.flatMap(
+        (agent) => agent.agentCategory
+      );
+
+      const apiCategory = categoryDatas
+        .filter((categoryData) => category.includes(categoryData._id))
+        .map((assignedCategory) => assignedCategory);
+      setCurrentUsercategories(apiCategory);
+      const unassignedCategories = categoryDatas.filter(
+        (category) => !assignedCategories.includes(category._id)
+      );
+      if (unassignedCategories.length > 0) {
+        setFilteredCategories(unassignedCategories);
+        return unassignedCategories;
+      }
+    };
+
+    filteredCategory();
+  }, [categoryDatas, pureAgentData]);
+
+  const newMergedCategory = [...filteredCategories, ...currentUserCategories];
   return (
     <>
       <Container className="Sign-up-container-regis d-flex w-100 profileDiv  flex-column justify-content-center align-items-center">
@@ -226,22 +252,24 @@ function AdminEditAgent() {
                           <MenuItem value={false}>Inactive</MenuItem>
                         </Select>
                       </FormControl>
-
                       <FormControl
+                        fullWidth
                         className={`${theme}-user-profile-field mb-3`}
                       >
-                        <InputLabel>Category</InputLabel>
+                        <InputLabel>Select Categories</InputLabel>
                         <Select
-                          className={`m-0 text-start ${theme}-user-profile-field`}
                           required
+                          className={`m-0 text-start ${theme}-user-profile-field`}
+                          multiple
                           value={category}
                           onChange={(e) => setCategory(e.target.value)}
                         >
-                          {categoryDatas.map((items) => (
-                            <MenuItem key={items._id} value={items._id}>
-                              {items.categoryName}
-                            </MenuItem>
-                          ))}
+                          {newMergedCategory &&
+                            newMergedCategory.map((option) => (
+                              <MenuItem key={option._id} value={option._id}>
+                                {option.categoryName}
+                              </MenuItem>
+                            ))}
                         </Select>
                       </FormControl>
                       <div className="d-flex justify-content-start mt-4">

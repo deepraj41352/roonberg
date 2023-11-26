@@ -138,7 +138,7 @@ function Sidebar({ sidebarVisible, setSidebarVisible }) {
   };
 
   return (
-    <div className={`sidebar ${sidebarVisible ? 'visible' : ''} `}>
+    <div className={`sidebar ${!sidebarVisible ? '' : 'visible'} `}>
       <div className="blank-box"></div>
       <ImCross
         className="sidebarCrossBtn"

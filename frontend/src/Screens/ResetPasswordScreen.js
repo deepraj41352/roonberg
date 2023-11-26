@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Store } from '../Store';
+import { FaEye, FaRegEyeSlash } from 'react-icons/fa';
 
 export default function ResetPasswordScreen() {
   const navigate = useNavigate();
@@ -16,6 +17,11 @@ export default function ResetPasswordScreen() {
   const [isSubmiting, setIsSubmiting] = useState(false);
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo, validationMsg } = state;
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -53,20 +59,21 @@ export default function ResetPasswordScreen() {
 
   return (
     <>
-      <Container className="fullContainer d-flex flex-column justify-content-center align-items-center">
-        <Row>
-          <Col>
-            <h4 className="mb-3 heading4">Reset Password</h4>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <Card className="p-4 formColor">
-              <Form
-                onSubmit={submitHandler}
-                className="resetFormWidth d-flex flex-column"
-              >
-                {/* <Form.Label className="textLeft text-left">
+      <Container className="loginPage d-flex  flex-column justify-content-center align-items-center windowCal1">
+        <div className="Sign-up-container-inner py-3">
+          <Row>
+            <Col>
+              <h4 className="mb-3 heading4">Reset Password</h4>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Card className="p-4 formColor">
+                <Form
+                  onSubmit={submitHandler}
+                  className="resetFormWidth d-flex flex-column"
+                >
+                  {/* <Form.Label className="textLeft text-left">
                   Email Address
                 </Form.Label>
                 <Form.Control
@@ -77,38 +84,66 @@ export default function ResetPasswordScreen() {
                   required
                 />
                 <Validations type="email" value={email} /> */}
-
-                <Form.Label className="textLeft text-left">Password</Form.Label>
-                <Form.Control
-                  className="px-2  py-1 mb-3"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                <Validations type="password" value={password} />
-
-                <Form.Label className="textLeft text-left">
-                  Confirm Password
-                </Form.Label>
-                <Form.Control
-                  className="px-2  py-1 mb-3"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                />
-                <Button
-                  type="submit"
-                  className="globalbtnColor px-2 py-1"
-                  disabled={isSubmiting}
-                >
-                  {isSubmiting ? 'SUBMITING' : 'SUBMIT'}
-                </Button>
-              </Form>
-            </Card>
-          </Col>
-        </Row>
+                  <div className="mb-2">
+                    <Form.Label className="textLeft text-left startLabel">
+                      Password
+                    </Form.Label>
+                    <div className="Password-input-eye mb-2">
+                      <div className=" rounded-2">
+                        <Form.Control
+                          id="password"
+                          value={password}
+                          className="pswd-input"
+                          type={showPassword ? 'text' : 'password'}
+                          onChange={(e) => {
+                            setPassword(e.target.value);
+                          }}
+                        />
+                      </div>
+                      <div
+                        className="eye-bttn "
+                        onClick={togglePasswordVisibility}
+                      >
+                        {showPassword ? <FaEye /> : <FaRegEyeSlash />}
+                      </div>
+                    </div>
+                    <Validations type="password" value={password} />
+                  </div>
+                  <div className="mb-2">
+                    <Form.Label className="textLeft text-left">
+                      Confirm Password
+                    </Form.Label>
+                    <div className="Password-input-eye mb-2">
+                      <div className=" rounded-2">
+                        <Form.Control
+                          id="password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          className="pswd-input"
+                          type={showPassword ? 'text' : 'password'}
+                          required
+                        />
+                      </div>
+                      <div
+                        className="eye-bttn "
+                        onClick={togglePasswordVisibility}
+                      >
+                        {showPassword ? <FaEye /> : <FaRegEyeSlash />}
+                      </div>
+                    </div>
+                  </div>
+                  <Button
+                    type="submit"
+                    className="globalbtnColor px-2 py-1"
+                    disabled={isSubmiting}
+                  >
+                    {isSubmiting ? 'SUBMITING' : 'SUBMIT'}
+                  </Button>
+                </Form>
+              </Card>
+            </Col>
+          </Row>
+        </div>
       </Container>
     </>
   );

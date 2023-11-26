@@ -12,6 +12,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: white;
 }
+
 .ThreeDot {
   display: flex;
   justify-content: center !important;
@@ -633,6 +634,20 @@ body {
     width: 30%;
   }
 }
+@media (max-width: 850px) {
+  .Chatside {
+    display: block !important;
+  }
+  .threeDot {
+    display: block !important;
+  }
+  .chatWindowProjectInfo {
+    display: none !important;
+  }
+  .chatWindow {
+    width: 95% !important;
+  }
+}
 @media (max-width: 700px) {
   .sidebar {
     width: 35%;
@@ -758,7 +773,7 @@ body {
   border-color: #25d366 !important;
 }
 .chatWindow {
-  height: calc(100vh - 90px) !important;
+  height: calc(100vh - 166px) !important;
   width: 60%;
   margin: 0 0 10px 0 !important;
 }
@@ -1293,20 +1308,15 @@ body {
     right: 10px !important;
     position: absolute !important;
   }
-  .chatWindowProjectInfo {
-    display: none !important;
-  }
-  .chatWindow {
-    width: 95%;
-  }
+
   .ChatName {
     flex: 1;
   }
-  .threeDot {
-    display: block !important;
-  }
 }
 .threeDot {
+  display: none;
+}
+.Chatside {
   display: none;
 }
 .Chatside {
@@ -1315,10 +1325,12 @@ body {
   right: 0;
   top: 42px;
   bottom: 55px;
-  background-color: #070719;
+  background-color: #0e0e3d;
   color: #fff;
   white-space: nowrap;
-  overflow-x: hidden;
+  min-height: calc(100vh - 220px) !important;
+  height: calc(100vh - 220px) !important;
+  overflow-y: auto;
   transition: width 0.8s ease-in-out;
 }
 .css-1ald77x {
@@ -1488,10 +1500,15 @@ body {
   text-transform: unset !important;
   border: 1px solid #ffc000 !important;
 }
-main.windowCal {
+.windowCal {
   min-height: calc(100vh - 150px) !important;
   height: calc(100vh - 108px) !important;
-  overflow-y: scroll;
+  overflow-y: auto;
+}
+.windowCal1 {
+  min-height: calc(100vh - 166px) !important;
+  height: calc(100vh - 166px) !important;
+  overflow-y: auto;
 }
 .actionCenter .MuiDataGrid-columnHeaderTitleContainer {
   justify-content: space-evenly;
@@ -1811,4 +1828,27 @@ body {
   background-color: #fff;
   width: 115px;
   padding: 6px !important;
+}
+.dark-threeDots {
+  color: #fff;
+}
+.editCartForm {
+  width: 100%;
+  max-width: 500px;
+}
+.profileLinkItems {
+  text-decoration: none;
+  color: black;
+  font-weight: 600;
+}
+.profileLinkItems {
+  text-decoration: none;
+  color: black;
+  font-weight: 600;
+}
+@media screen and (max-width: 700px) {
+  .profileContainer {
+    min-width: 100px !important;
+    width: 100%;
+  }
 }

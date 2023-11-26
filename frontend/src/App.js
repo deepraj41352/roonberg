@@ -76,6 +76,7 @@ function App() {
   const { toggleState, userInfo, NotificationData } = state;
   const theme = toggleState ? 'dark' : 'light';
   const [searchValue, setSearchValue] = useState('');
+  const [user, setuser] = useState(true);
   const navigate = useNavigate();
   const handleInputChange = (event) => {
     setSearchValue(event.target.value);
@@ -108,7 +109,6 @@ function App() {
   useEffect(() => {
     const pathname = window.location.pathname;
     setPathName(pathname);
-    console.log('Pathname:', pathname);
   }, []);
 
   return (
@@ -236,6 +236,7 @@ function App() {
                                 Notification{' '}
                               </Link>
                             </Dropdown.Item>
+                            <hr />
                             <Dropdown.Item>
                               <Link
                                 className="profileLinkItems"
@@ -299,39 +300,60 @@ function App() {
                   </Container>
                 </Navbar>
               ) : (
+                // <Navbar expand="lg" className="main-div">
+                //   <Container className="loginPageNav">
+                //     <Navbar.Brand href="/">
+                //       <Image className="border-0" src="/logo2.png" thumbnail />
+                //     </Navbar.Brand>
+                //     <Navbar.Toggle
+                //       aria-controls="basic-navbar-nav"
+                //       className="Toggle-button"
+                //     />
+                //     <Navbar.Collapse
+                //       className="justify-content-end"
+                //       id="basic-navbar-nav"
+                //     >
+                //       <Nav className=" login-button">
+                //         <Nav className="login-nav ">
+                //           {pathName && pathName === '/registration' ? (
+                //             <a className="login-admin" href="/">
+                //               {/* <BsFillPersonFill className="fs-5 Icon-person me-1 " /> */}
+                //               Login
+                //             </a>
+                //           ) : (
+                //             <a className="login-admin" href="/registration">
+                //               Singnup
+                //             </a>
+                //           )}
+                //         </Nav>
+                //       </Nav>
+                //     </Navbar.Collapse>
+                //   </Container>
+                // </Navbar>
                 <Navbar expand="lg" className="main-div">
                   <Container className="loginPageNav">
                     <Navbar.Brand href="/">
                       <Image className="border-0" src="/logo2.png" thumbnail />
                     </Navbar.Brand>
-                    <Navbar.Toggle
-                      aria-controls="basic-navbar-nav"
-                      className="Toggle-button"
-                    />
-                    <Navbar.Collapse
-                      className="justify-content-end"
-                      id="basic-navbar-nav"
-                    >
-                      <Nav className=" login-button">
-                        <Nav className="login-nav ">
-                          {pathName && pathName === '/registration' ? (
-                            <a className="login-admin" href="/">
-                              {/* <BsFillPersonFill className="fs-5 Icon-person me-1 " /> */}
-                              Login
-                            </a>
-                          ) : (
-                            <a className="login-admin" href="/registration">
-                              Singnup
-                            </a>
-                          )}
-                        </Nav>
+                    {/* Remove Navbar.Toggle and Navbar.Collapse components */}
+                    <Nav className="justify-content-end login-button">
+                      <Nav className="login-nav ">
+                        {pathName && pathName === '/registration' ? (
+                          <a className="login-admin" href="/">
+                            Login
+                          </a>
+                        ) : (
+                          <a className="login-admin" href="/registration">
+                            Signup
+                          </a>
+                        )}
                       </Nav>
-                    </Navbar.Collapse>
+                    </Nav>
                   </Container>
                 </Navbar>
               )}
-              <main className="windowCal">
-                <div className="my-5 mx-3">
+              <main className={userInfo ? `windowCal` : `windowCal1`}>
+                <div className={userInfo ? `my-4 mx-3` : `m-0 mx-3`}>
                   <Routes>
                     <Route path="/" element={<SignUpForm />} />
                     <Route path="/test" element={<MyComponent />} />

@@ -139,7 +139,7 @@ TaskRouter.post(
           const checkMail = await sendEmailNotify(options);
           if (checkMail) {
             const notifyUser = [userSelect._id, agent._id];
-            const message = `New Task Created Project Name - ${options.projectName}, Task Name - ${options.taskName},Description - ${options.taskDescription}`;
+            const message = `New Task Created <div><div><b>Project Name</b> - ${options.projectName}</div>  <div><b>Task Name</b> - ${options.taskName}</div>  <div><b>Task Description</b> - ${options.taskDescription}</div></div>`;
             // for (const adminemailid of options.to) {
             const status = 'unseen';
             const type = 'project';
@@ -203,7 +203,7 @@ TaskRouter.post(
             // for (const adminemailid of options.to) {
 
             const notifyUser = [user._id, agent._id];
-            const message = `New Task Created Project Name - ${options.projectName}, Task Name - ${options.taskName},Description - ${options.taskDescription}`;
+            const message = `New Task Created <div><div><b>Project Name</b> - ${options.projectName}</div>  <div><b>Task Name</b> - ${options.taskName}</div>  <div><b>Task Description</b> - ${options.taskDescription}</div></div>`;
             const status = 'unseen';
             const type = 'project';
             for (const adminemailid of notifyUser) {
@@ -335,7 +335,7 @@ TaskRouter.post(
           if (checkMail) {
             for (const adminemailid of allIds) {
               const notifyUser = adminemailid;
-              const message = `New Task Created Project Name - ${options.projectName}, Task Name - ${options.taskName},Description - ${options.taskDescription}`;
+              const message = `New Task Created <div><div><b>Project Name</b> - ${options.projectName}</div>  <div><b>Task Name</b> - ${options.taskName}</div>  <div><b>Task Description</b> - ${options.taskDescription}</div></div>`;
               const status = 'unseen';
               const type = 'project';
               storeNotification(message, notifyUser, status, type);

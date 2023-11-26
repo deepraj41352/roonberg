@@ -77,9 +77,15 @@ const WidgetsDropdown = React.memo(() => {
     };
     fatchUserData();
   }, []);
+  const isEmpty =
+    activeProject.length === 0 &&
+    quedProject.length === 0 &&
+    completedProject.length === 0;
 
   const dataChartDoughnut = {
-    labels: ['Active', 'Qued', 'Completed'],
+    labels: isEmpty
+      ? ['Task Is Not Available']
+      : ['Active', 'Qued', 'Completed'],
     datasets: [
       {
         data: [

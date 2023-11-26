@@ -671,13 +671,13 @@ function ChatWindowScreen() {
                 Task Name - {projectData.taskName}{' '}
               </div>
             )}
-            <div className="" onClick={toggleSidebar}>
+            <div className={`${theme}-threeDots`} onClick={toggleSidebar}>
               <BsThreeDotsVertical className="pt-1 threeDot" />
             </div>
           </CardHeader>
           {sidebarVisible ? (
             <div className="Chatside">
-              <Card className="chatWindowProjectInfo1">
+              {/* <Card className="chatWindowProjectInfo1">
                 {projectData ? (
                   <Form className="px-3">
                     <Form.Group className="mb-3 projetStatusChat">
@@ -740,6 +740,72 @@ function ChatWindowScreen() {
                       radius="9"
                       className="ThreeDot  justify-content-center"
                       color="#0e0e3d"
+                      ariaLabel="three-dots-loading"
+                      wrapperStyle={{}}
+                      wrapperClassName=""
+                      visible={true}
+                    />
+                  </div>
+                )}
+              </Card> */}
+              <Card className={`chatWindowProjectInfo2 ${theme}chatInfo`}>
+                {projectData ? (
+                  <Form className="px-3">
+                    <Form.Group
+                      className={`mb-3 projetStatusChat ${theme}chat-info-inner`}
+                    >
+                      {/* <Form.Label className="fw-bold">Project Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="projectName"
+                  disabled
+                  value={projectData && projectData.projectName}
+                /> */}
+                      <div className="NameofOposite">
+                        {' '}
+                        {chatOpositeMember
+                          ? chatOpositeMember.first_name
+                          : null}
+                      </div>
+                      <div className="NameofOposite1">
+                        {' '}
+                        {chatOpositeMember
+                          ? `(${chatOpositeMember.role})`
+                          : null}
+                      </div>
+                      <div className="NameofOposite1">
+                        {' '}
+                        {chatOpositeMember ? chatOpositeMember.email : null}
+                      </div>
+                    </Form.Group>
+                    <Form.Group
+                      className={`mb-3 projetStatusChat ${theme}chat-info-inner`}
+                    >
+                      {/* <Form.Label className="fw-bold">Project Name</Form.Label> */}
+                      <div>Project Name - {projectData?.projectName} </div>
+                    </Form.Group>
+                    <Form.Group className="mb-3 " controlId="formBasicPassword">
+                      <Form.Label className="mb-1 fw-bold">
+                        Task Status
+                      </Form.Label>
+                      <Form.Select
+                        value={projectStatus}
+                        onChange={handleStatusUpdate}
+                      >
+                        <option value="active">Running</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+                      </Form.Select>
+                    </Form.Group>
+                  </Form>
+                ) : (
+                  <div className="d-flex mt-3 justify-content-center">
+                    <ThreeDots
+                      height="50"
+                      width="50"
+                      radius="9"
+                      className="ThreeDot  justify-content-center"
+                      color={theme == 'dark' ? 'white' : '#0e0e3d'}
                       ariaLabel="three-dots-loading"
                       wrapperStyle={{}}
                       wrapperClassName=""
