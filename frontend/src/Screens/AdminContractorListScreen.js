@@ -365,8 +365,8 @@ export default function AdminContractorListScreen() {
                   onSubmit={handleSubmit}
                   className={
                     submitting
-                      ? 'scrollInAdminproject p-4 '
-                      : 'scrollInAdminproject p-3'
+                      ? 'scrollInAdminproject p-4 mb-3'
+                      : 'scrollInAdminproject p-3 mb-3'
                   }
                 >
                   <ImCross

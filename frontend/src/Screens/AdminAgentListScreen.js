@@ -19,9 +19,10 @@ import { toast } from 'react-toastify';
 import { Store } from '../Store';
 import { ImCross } from 'react-icons/im';
 import { ColorRing, ThreeDots } from 'react-loader-spinner';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useContext, useEffect, useReducer, useState } from 'react';
 import Validations from '../Components/Validations';
+import { MdAddCircleOutline } from 'react-icons/md';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -414,8 +415,8 @@ export default function AdminAgentListScreen() {
                   <Form
                     className={
                       submitting
-                        ? 'scrollInAdminproject p-4 '
-                        : 'scrollInAdminproject p-3'
+                        ? 'scrollInAdminproject p-4 mb-3'
+                        : 'scrollInAdminproject p-3 mb-3'
                     }
                     onSubmit={handleSubmit}
                   >
@@ -480,6 +481,11 @@ export default function AdminAgentListScreen() {
                         value={selectcategories}
                         onChange={handleCategories}
                       >
+                        <MenuItem value="addNew">
+                          <Link to={`/adminCategoriesList`} className="addCont">
+                            <MdAddCircleOutline /> Add New Category
+                          </Link>
+                        </MenuItem>
                         {filteredCategories &&
                           filteredCategories.map((option) => (
                             <MenuItem key={option._id} value={option._id}>
@@ -487,7 +493,6 @@ export default function AdminAgentListScreen() {
                             </MenuItem>
                           ))}
                       </Select>
-                        
                     </FormControl>
                     {/* <FormControl className="mb-3">
                       <InputLabel>Select Category</InputLabel>
