@@ -329,7 +329,7 @@ function ProfileScreen() {
                   )}
                   <Form
                     onSubmit={submitHandler}
-                    className="p-4 w-100 editFormWidth "
+                    className="w-100 editFormWidth "
                   >
                     <div className="classforprofile">
                       <Form.Group
