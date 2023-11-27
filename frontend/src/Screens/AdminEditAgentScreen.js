@@ -65,6 +65,7 @@ function AdminEditAgent() {
   const [pureAgentData, setPureAgentData] = useState([]);
   const [filteredCategories, setFilteredCategories] = useState([]);
   const [currentUserCategories, setCurrentUsercategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const role = 'agent';
 
   // fatch agent data for filter category
@@ -90,6 +91,7 @@ function AdminEditAgent() {
 
   useEffect(() => {
     const FatchSingleUserData = async () => {
+      setIsLoading(true);
       try {
         dispatch('FATCH_REQUEST');
         const response = await axios.get(`/api/user/${id}`);
@@ -101,6 +103,8 @@ function AdminEditAgent() {
         setCategory(datas.agentCategory);
       } catch (error) {
         toast.error(error.response?.data?.message);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -160,7 +164,6 @@ function AdminEditAgent() {
       const assignedCategories = pureAgentData.flatMap(
         (agent) => agent.agentCategory
       );
-
       const apiCategory = categoryDatas
         .filter((categoryData) => category.includes(categoryData._id))
         .map((assignedCategory) => assignedCategory);
@@ -180,116 +183,138 @@ function AdminEditAgent() {
   const newMergedCategory = [...filteredCategories, ...currentUserCategories];
   return (
     <>
-      <Container className="Sign-up-container-regis d-flex w-100 profileDiv  flex-column justify-content-center align-items-center">
-        <div className="ProfileScreen-inner px-4 py-3 w-100 d-flex justify-content-center align-items-center flex-column">
-          <Row className="mb-3">
-            <Col>
-              <h4>Update Agent</h4>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <div className="overlayLoading">
-                <Card className={`${theme}CardBody editCartForm`}>
-                  <div className="FormContainerEdit2">
-                    {isSubmiting && (
-                      <div className="overlayLoadingItem1">
-                        <ColorRing
-                          visible={true}
-                          height="40"
-                          width="40"
-                          ariaLabel="blocks-loading"
-                          wrapperStyle={{}}
-                          wrapperClass="blocks-wrapper"
-                          colors={[
-                            'rgba(0, 0, 0, 1) 0%',
-                            'rgba(255, 255, 255, 1) 68%',
-                            'rgba(0, 0, 0, 1) 93%',
-                          ]}
-                        />
-                      </div>
-                    )}
+      {isLoading ? (
+        <>
+          <div className="ThreeDot">
+            <ThreeDots
+              height="80"
+              width="80"
+              radius="9"
+              className="ThreeDot justify-content-center"
+              color="#0e0e3d"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClassName=""
+              visible={true}
+            />
+          </div>
+        </>
+      ) : error ? (
+        <div>{error}</div>
+      ) : (
+        <>
+          <Container className="Sign-up-container-regis d-flex w-100 profileDiv  flex-column justify-content-center align-items-center">
+            <div className="ProfileScreen-inner px-4 py-3 w-100 d-flex justify-content-center align-items-center flex-column">
+              <Row className="mb-3">
+                <Col>
+                  <h4>Update Agent</h4>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <div className="overlayLoading">
+                    <Card className={`${theme}CardBody editCartForm`}>
+                      <div className="FormContainerEdit2">
+                        {isSubmiting && (
+                          <div className="overlayLoadingItem1">
+                            <ColorRing
+                              visible={true}
+                              height="40"
+                              width="40"
+                              ariaLabel="blocks-loading"
+                              wrapperStyle={{}}
+                              wrapperClass="blocks-wrapper"
+                              colors={[
+                                'rgba(0, 0, 0, 1) 0%',
+                                'rgba(255, 255, 255, 1) 68%',
+                                'rgba(0, 0, 0, 1) 93%',
+                              ]}
+                            />
+                          </div>
+                        )}
 
-                    <Form
-                      onSubmit={submitHandler}
-                      className="p-4 w-100 editFormWidth"
-                    >
-                      <TextField
-                        className={`${theme}-user-profile-field mb-3`}
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        label="First Name"
-                        fullWidth
-                        required
-                      />
-                      <TextField
-                        className={`${theme}-user-profile-field mb-3`}
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        label="Last Name"
-                        fullWidth
-                      />
-                      <TextField
-                        className={`${theme}-user-profile-field mb-3 profile-email-input`}
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        label="Email"
-                        type="email"
-                        fullWidth
-                        disabled
-                      />
-                      <FormControl
-                        className={`${theme}-user-profile-field mb-3`}
-                      >
-                        <InputLabel>Select Status</InputLabel>
-                        <Select
-                          className={`m-0 text-start ${theme}-user-profile-field`}
-                          value={status}
-                          onChange={(e) => setStatus(e.target.value)}
-                          required
+                        <Form
+                          onSubmit={submitHandler}
+                          className="p-4 w-100 editFormWidth"
                         >
-                          <MenuItem value={true}>Active</MenuItem>
-                          <MenuItem value={false}>Inactive</MenuItem>
-                        </Select>
-                      </FormControl>
-                      <FormControl
-                        fullWidth
-                        className={`${theme}-user-profile-field mb-3`}
-                      >
-                        <InputLabel>Select Categories</InputLabel>
-                        <Select
-                          required
-                          className={`m-0 text-start ${theme}-user-profile-field`}
-                          multiple
-                          value={category}
-                          onChange={(e) => setCategory(e.target.value)}
-                        >
-                          {newMergedCategory &&
-                            newMergedCategory.map((option) => (
-                              <MenuItem key={option._id} value={option._id}>
-                                {option.categoryName}
-                              </MenuItem>
-                            ))}
-                        </Select>
-                      </FormControl>
-                      <div className="d-flex justify-content-start mt-4">
-                        <Button
-                          className={`py-1  ${theme}-globalbtnColor`}
-                          variant="primary"
-                          type="submit"
-                          disabled={isSubmiting}
-                        >
-                          {isSubmiting ? 'UPDATING' : 'UPDATE'}
-                        </Button>
+                          <TextField
+                            className={`${theme}-user-profile-field mb-3`}
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            label="First Name"
+                            fullWidth
+                            required
+                          />
+                          <TextField
+                            className={`${theme}-user-profile-field mb-3`}
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            label="Last Name"
+                            fullWidth
+                          />
+                          <TextField
+                            className={`${theme}-user-profile-field mb-3 profile-email-input`}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            label="Email"
+                            type="email"
+                            fullWidth
+                            disabled
+                          />
+                          <FormControl
+                            className={`${theme}-user-profile-field mb-3`}
+                          >
+                            <InputLabel>Select Status</InputLabel>
+                            <Select
+                              className={`m-0 text-start ${theme}-user-profile-field`}
+                              value={status}
+                              onChange={(e) => setStatus(e.target.value)}
+                              required
+                            >
+                              <MenuItem value={true}>Active</MenuItem>
+                              <MenuItem value={false}>Inactive</MenuItem>
+                            </Select>
+                          </FormControl>
+                          <FormControl
+                            fullWidth
+                            className={`${theme}-user-profile-field mb-3`}
+                          >
+                            <InputLabel>Select Categories</InputLabel>
+                            <Select
+                              required
+                              className={`m-0 text-start ${theme}-user-profile-field`}
+                              multiple
+                              value={category}
+                              onChange={(e) => setCategory(e.target.value)}
+                            >
+                              {newMergedCategory &&
+                                newMergedCategory.map((option) => (
+                                  <MenuItem key={option._id} value={option._id}>
+                                    {option.categoryName}
+                                  </MenuItem>
+                                ))}
+                            </Select>
+                          </FormControl>
+                          <div className="d-flex justify-content-start mt-4">
+                            <Button
+                              className={`py-1  ${theme}-globalbtnColor`}
+                              variant="primary"
+                              type="submit"
+                              disabled={isSubmiting}
+                            >
+                              {isSubmiting ? 'UPDATING' : 'UPDATE'}
+                            </Button>
+                          </div>
+                        </Form>
                       </div>
-                    </Form>
+                    </Card>
                   </div>
-                </Card>
-              </div>
-            </Col>
-          </Row>
-        </div>
-      </Container>
+                </Col>
+              </Row>
+            </div>
+          </Container>
+        </>
+      )}
     </>
   );
 }

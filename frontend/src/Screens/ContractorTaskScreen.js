@@ -164,6 +164,36 @@ export default function ContractorTaskScreen() {
         </Link>
       ),
     },
+    {
+      field: 'taskStatus',
+      headerName: 'Status',
+      width: 200,
+      renderCell: (params) => {
+        return (
+          <Grid item xs={8}>
+            <div
+              className={
+                params.row.taskStatus === 'active'
+                  ? 'tableInProgressBtn'
+                  : 'tableInwaitingBtn'
+              }
+              // onClick={() => handleEdit(params.row._id)}
+            >
+              <CiSettings className="clockIcon" />
+              {params.row.taskStatus === 'waiting'
+                ? 'Waiting On You'
+                : params.row.taskStatus === 'active'
+                ? 'In Progress'
+                : params.row.taskStatus === 'completed'
+                ? 'Completed'
+                : params.row.taskStatus === 'pending'
+                ? 'Ready To Completed'
+                : ''}
+            </div>
+          </Grid>
+        );
+      },
+    },
   ];
   const [
     {
@@ -187,7 +217,6 @@ export default function ContractorTaskScreen() {
     contractorData: [],
     agentData: [],
   });
-  console.log('selectedRowId', selectedRowId);
   const [projectName, setProjectName] = useState('');
   const [SelectProjectName, setSelectProjectName] = useState('');
   const [taskName, setTaskName] = useState('');
@@ -212,7 +241,28 @@ export default function ContractorTaskScreen() {
   const [data, SetData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [ShowErrorMessage, setShowErrorMessage] = useState(false);
+  const [formData, setFormData] = useState({
+    projectStatus: 'active',
+  });
+  const [showModalDel, setShowModalDel] = useState(false);
 
+  const lastLoginTimestamp = userInfo.lastLogin;
+  const now = new Date();
+  const lastLoginDate = new Date(lastLoginTimestamp);
+  const minutesAgo = Math.floor((now - lastLoginDate) / (1000 * 60));
+  const hours = Math.floor(minutesAgo / 60);
+  const remainingMinutes = minutesAgo % 60;
+  const formattedLastLogin = `Last Login: ${
+    hours > 0 ? `${hours} ${hours === 1 ? 'Hour' : 'Hours'}` : ''
+  }${hours > 0 && remainingMinutes > 0 ? ', ' : ''}${
+    remainingMinutes > 0
+      ? `${remainingMinutes} ${remainingMinutes === 1 ? 'Minute' : 'Minutes'}`
+      : ''
+  } ago`;
+
+  const ModelOpenDel = () => {
+    setShowModalDel(true);
+  };
   const handleAddNewProject = () => {
     setDynamicfield(true);
   };
@@ -234,7 +284,9 @@ export default function ContractorTaskScreen() {
   const handleCloseRow = () => {
     setIsModelOpen(false);
     setShowModal(false);
+    setShowModalDel(false);
   };
+
   const handleNew = () => {
     setIsModelOpen(true);
   };
@@ -267,34 +319,45 @@ export default function ContractorTaskScreen() {
       });
       if (data.status === 200) {
         setSuccess(!success);
+        setSelectedRowId(null);
         toast.success(data.data.message);
       }
     } catch (error) {
       toast.error(error.message);
     } finally {
       setIsSubmiting(false);
+      setShowModalDel(false);
     }
   };
-  const handleStatusUpdate = async (e) => {
-    const taskStatus = e.target.value;
+  // {Update Task Data  .........
+  const handleStatusUpdate = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleFormSubmit = async () => {
     try {
       const data = await axios.put(
         `/api/task/updateStatus/${selectedRowId}`,
-        { taskStatus: taskStatus },
+        { taskStatus: formData.projectStatus },
         {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         }
       );
+
       if (data.status === 200) {
         setSuccess(!success);
+        setSelectedRowId(null);
         setShowModal(false);
         toast.success('Task Status updated Successfully !');
       }
-      setProjectStatus(data.projectStatus);
     } catch (err) {
       console.log(err);
     }
   };
+  // ......}
   useEffect(() => {
     setLoading(true);
     const FatchCategory = async () => {
@@ -561,21 +624,57 @@ export default function ContractorTaskScreen() {
                     {selectedRowId && (
                       <div className="btn-for-update">
                         <Button className=" btn-color1" onClick={ModelOpen}>
-                          <span class="position-relative ">Update Status</span>
+                          <span class="position-relative">Update Status</span>
                         </Button>
-                        {/* <Button
-                          className=" btn-color"
-                          // onClick={}
-                        >
-                          <span class="position-relative">Assigned Agent</span>
-                        </Button> */}
                         <Button
                           active
                           className=" btn-color2"
-                          onClick={deleteTask}
+                          onClick={ModelOpenDel}
                         >
                           <span class="position-relative">Delete</span>
                         </Button>
+                        <Modal
+                          open={showModalDel}
+                          onClose={handleCloseRow}
+                          className="overlayLoading modaleWidth p-0"
+                        >
+                          <Box
+                            className="modelBg"
+                            sx={{
+                              position: 'absolute',
+                              top: '50%',
+                              left: '50%',
+                              transform: 'translate(-50%, -50%)',
+                              width: 400,
+                              bgcolor: 'background.paper',
+                              boxShadow: 24,
+                              p: isSubmiting ? 0 : 4,
+                            }}
+                          >
+                            <div className="overlayLoading p-2">
+                              <div className="pb-4">
+                                Make sure you want to delete this task.
+                              </div>
+                              <Button
+                                variant="outlined"
+                                onClick={deleteTask}
+                                className="globalbtnColor"
+                              >
+                                Confirm
+                              </Button>
+
+                              {/* Cancel button */}
+                              <Button
+                                variant="outlined"
+                                onClick={handleCloseRow}
+                                className="ms-2 globalbtnColor"
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </Box>
+                        </Modal>
+
                         <Modal
                           open={showModal}
                           onClose={handleCloseRow}
@@ -595,42 +694,44 @@ export default function ContractorTaskScreen() {
                             }}
                           >
                             <div className="overlayLoading">
-                              {isSubmiting && (
-                                <div className="overlayLoadingItem1 y-3">
-                                  <ColorRing
-                                    visible={true}
-                                    height="40"
-                                    width="40"
-                                    ariaLabel="blocks-loading"
-                                    wrapperStyle={{}}
-                                    wrapperClass="blocks-wrapper"
-                                    colors={[
-                                      'rgba(0, 0, 0, 1) 0%',
-                                      'rgba(255, 255, 255, 1) 68%',
-                                      'rgba(0, 0, 0, 1) 93%',
-                                    ]}
-                                  />
-                                </div>
-                              )}
+                              {/* ... Your loading animation code ... */}
 
-                              <Form>
+                              <Form className="p-2">
                                 <Form.Group
-                                  className="mb-3 "
+                                  className="mb-3"
                                   controlId="formBasicPassword"
                                 >
                                   <Form.Label className="mb-1 fw-bold">
                                     Task Status
                                   </Form.Label>
                                   <Form.Select
-                                    value={projectStatus}
+                                    name="projectStatus"
+                                    value={formData.projectStatus}
                                     onChange={handleStatusUpdate}
                                   >
-                                    <option value="waiting">Waiting</option>
                                     <option value="active">Running</option>
                                     <option value="completed">Completed</option>
                                     <option value="pending">Pending</option>
                                   </Form.Select>
                                 </Form.Group>
+
+                                {/* Submit button */}
+                                <Button
+                                  variant="outlined"
+                                  onClick={handleFormSubmit}
+                                  className="globalbtnColor"
+                                >
+                                  Confirm
+                                </Button>
+
+                                {/* Cancel button */}
+                                <Button
+                                  variant="outlined"
+                                  onClick={handleCloseRow}
+                                  className="ms-2 globalbtnColor"
+                                >
+                                  Cancel
+                                </Button>
                               </Form>
                             </div>
                           </Box>
@@ -638,47 +739,14 @@ export default function ContractorTaskScreen() {
                       </div>
                     )}
                     <div className="lastLogin">
-                      <FaRegClock className="clockIcon" /> Last Login : 4 Hours,
-                      55 minutes ago
+                      <FaRegClock className="clockIcontab" />{' '}
+                      {formattedLastLogin}
                     </div>
                     <Box sx={{ height: 400, width: '100%' }}>
                       <DataGrid
-                        className="tableGrid actionCenter"
+                        className={`tableGrid actionCenter tableBg  ${theme}DataGrid`}
                         rows={ActiveData}
-                        columns={[
-                          ...columns,
-                          {
-                            field: 'action',
-                            headerName: 'Action',
-                            width: 200,
-                            renderCell: (params) => {
-                              return (
-                                <Grid item xs={8}>
-                                  <Button
-                                    variant="contained"
-                                    className={
-                                      params.row.taskStatus === 'active'
-                                        ? 'tableInProgressBtn'
-                                        : 'tableInwaitingBtn'
-                                    }
-                                    // onClick={() => handleEdit(params.row._id)}
-                                  >
-                                    <CiSettings className="clockIcon" />
-                                    {params.row.taskStatus === 'waiting'
-                                      ? 'Waiting On You'
-                                      : params.row.taskStatus === 'active'
-                                      ? 'In Progress'
-                                      : params.row.taskStatus === 'completed'
-                                      ? 'Completed'
-                                      : params.row.taskStatus === 'pending'
-                                      ? 'Ready To Completed'
-                                      : ''}
-                                  </Button>
-                                </Grid>
-                              );
-                            },
-                          },
-                        ]}
+                        columns={columns}
                         getRowId={(row) => row._id}
                         initialState={{
                           pagination: {
@@ -735,8 +803,8 @@ export default function ContractorTaskScreen() {
                           <Form
                             className={
                               isSubmiting
-                                ? 'scrollInAdminproject p-4 '
-                                : 'scrollInAdminproject p-3'
+                                ? 'scrollInAdminproject p-4 mb-3'
+                                : 'scrollInAdminproject p-3 mb-3'
                             }
                             onSubmit={handleSubmit}
                           >
@@ -756,6 +824,7 @@ export default function ContractorTaskScreen() {
                                     <Form.Check
                                       className="d-flex align-items-center gap-2"
                                       type="radio"
+                                      required
                                       id={`category-${category._id}`}
                                       name="category"
                                       value={category.categoryName}
@@ -913,66 +982,27 @@ export default function ContractorTaskScreen() {
                   >
                     {selectedRowId && (
                       <div className="btn-for-update">
-                        <Button className="btn-color1" onClick={ModelOpen}>
+                        <Button className=" btn-color1" onClick={ModelOpen}>
                           <span class="position-relative">Update Status</span>
                         </Button>
-                        {/* <Button
-                          className=" btn-color"
-                          // onClick={}
-                        >
-                          <span class="position-relative">Assigned Agent</span>
-                        </Button> */}
                         <Button
                           active
                           className=" btn-color2"
-                          onClick={deleteTask}
+                          onClick={ModelOpenDel}
                         >
                           <span class="position-relative">Delete</span>
                         </Button>
                       </div>
                     )}
                     <div className="lastLogin">
-                      <FaRegClock className="clockIcon" /> Last Login : 4 Hours,
-                      55 minutes ago
+                      <FaRegClock className="clockIcontab" />{' '}
+                      {formattedLastLogin}
                     </div>
                     <Box sx={{ height: 400, width: '100%' }}>
                       <DataGrid
-                        className="tableGrid actionCenter"
+                        className={`tableGrid actionCenter tableBg  ${theme}DataGrid`}
                         rows={PendingData}
-                        columns={[
-                          ...columns,
-                          {
-                            field: 'action',
-                            headerName: 'Action',
-                            width: 160,
-                            renderCell: (params) => {
-                              return (
-                                <Grid item xs={8}>
-                                  <Button
-                                    variant="contained"
-                                    className={
-                                      params.row.taskStatus === 'active'
-                                        ? 'tableInProgressBtn'
-                                        : 'tableInwaitingBtn'
-                                    }
-                                    // onClick={() => handleEdit(params.row._id)}
-                                  >
-                                    <CiSettings className="clockIcon" />
-                                    {params.row.taskStatus === 'waiting'
-                                      ? 'Waiting On You'
-                                      : params.row.taskStatus === 'active'
-                                      ? 'In Progress'
-                                      : params.row.taskStatus === 'completed'
-                                      ? 'Completed'
-                                      : params.row.taskStatus === 'pending'
-                                      ? 'Ready To Completed'
-                                      : ''}
-                                  </Button>
-                                </Grid>
-                              );
-                            },
-                          },
-                        ]}
+                        columns={columns}
                         getRowId={(row) => row._id}
                         initialState={{
                           pagination: {
@@ -1002,63 +1032,24 @@ export default function ContractorTaskScreen() {
                         <Button className=" btn-color1" onClick={ModelOpen}>
                           <span class="position-relative">Update Status</span>
                         </Button>
-                        {/* <Button
-                          className=" btn-color"
-                          // onClick={}
-                        >
-                          <span class="position-relative">Assigned Agent</span>
-                        </Button> */}
                         <Button
                           active
                           className=" btn-color2"
-                          onClick={deleteTask}
+                          onClick={ModelOpenDel}
                         >
                           <span class="position-relative">Delete</span>
                         </Button>
                       </div>
                     )}
                     <div className="lastLogin">
-                      <FaRegClock className="clockIcon" /> Last Login : 4 Hours,
-                      55 minutes ago
+                      <FaRegClock className="clockIcontab" />{' '}
+                      {formattedLastLogin}
                     </div>
                     <Box sx={{ height: 400, width: '100%' }}>
                       <DataGrid
-                        className="tableGrid actionCenter"
+                        className={`tableGrid actionCenter tableBg  ${theme}DataGrid`}
                         rows={CompleteData}
-                        columns={[
-                          ...columns,
-                          {
-                            field: 'action',
-                            headerName: 'Action',
-                            width: 160,
-                            renderCell: (params) => {
-                              return (
-                                <Grid item xs={8}>
-                                  <Button
-                                    variant="contained"
-                                    className={
-                                      params.row.taskStatus === 'active'
-                                        ? 'tableInProgressBtn'
-                                        : 'tableInwaitingBtn'
-                                    }
-                                    // onClick={() => handleEdit(params.row._id)}
-                                  >
-                                    <CiSettings className="clockIcon" />
-                                    {params.row.taskStatus === 'waiting'
-                                      ? 'Waiting On You'
-                                      : params.row.taskStatus === 'active'
-                                      ? 'In Progress'
-                                      : params.row.taskStatus === 'completed'
-                                      ? 'Completed'
-                                      : params.row.taskStatus === 'pending'
-                                      ? 'Ready To Completed'
-                                      : ''}
-                                  </Button>
-                                </Grid>
-                              );
-                            },
-                          },
-                        ]}
+                        columns={columns}
                         getRowId={(row) => row._id}
                         initialState={{
                           pagination: {

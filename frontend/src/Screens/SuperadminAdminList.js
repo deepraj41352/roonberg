@@ -265,7 +265,7 @@ export default function SuperadminAdminList() {
             <BiPlusMedical className="mx-2" />
             Add Admin
           </Button>
-          <div className="overlayLoading ">
+          <div className="overlayLoading d-flex justify-content-center">
             {isDeleting && (
               <div className="overlayLoadingItem1">
                 <ColorRing
@@ -280,7 +280,7 @@ export default function SuperadminAdminList() {
                 />
               </div>
             )}
-            <Box sx={{ height: 400, width: '100%' }}>
+            <Box sx={{ height: 400, width: '100%', maxWidth: 1008 }}>
               <DataGrid
                 className={`tableBg mx-2 ${theme}DataGrid`}
                 rows={AgentData}

@@ -93,9 +93,9 @@ export default function UserDataWidget(props) {
     <>
       <Box sx={{ height: 400, width: '100%' }}>
         <DataGrid
-          className={`tableGrid actionCenter`}
+          className={`tableGrid actionCenter ${theme}DataGrid`}
           rows={props.userData}
-          columns={[...columns]}
+          columns={columns}
           getRowId={(row) => row._id}
           initialState={{
             pagination: {

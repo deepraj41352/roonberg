@@ -83,16 +83,16 @@ export default function AdminProjectListScreen() {
         return <div>{contractor ? contractor.first_name : ''}</div>;
       },
     },
-    {
-      field: 'agentId',
-      headerName: 'Agent',
-      width: 150,
-      renderCell: (params) => {
-        const agent = agentData.find((item) => item._id === params.row.agentId);
+    // {
+    //   field: 'agentId',
+    //   headerName: 'Agent',
+    //   width: 150,
+    //   renderCell: (params) => {
+    //     const agent = agentData.find((item) => item._id === params.row.agentId);
 
-        return <div>{agent ? agent.first_name : ''}</div>;
-      },
-    },
+    //     return <div>{agent ? agent.first_name : ''}</div>;
+    //   },
+    // },
 
     {
       field: 'createdAt',
@@ -214,7 +214,7 @@ export default function AdminProjectListScreen() {
           <>
             <Box sx={{ height: 400, width: '100%' }}>
               <DataGrid
-                className="tableGrid actionCenter"
+                className={`tableBg mx-2 ${theme}DataGrid`}
                 rows={ProjectData}
                 columns={columns}
                 getRowId={(row) => row._id}
@@ -229,7 +229,7 @@ export default function AdminProjectListScreen() {
                 // checkboxSelection
                 disableRowSelectionOnClick
                 localeText={{
-                  noRowsLabel: 'Task Is Not Avalible',
+                  noRowsLabel: 'Project Is Not Avalible',
                 }}
               />
             </Box>

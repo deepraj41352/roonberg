@@ -326,8 +326,8 @@ export default function TaskAddButton() {
             <Form
               className={
                 isSubmiting
-                  ? 'scrollInAdminproject p-4 '
-                  : 'scrollInAdminproject p-3'
+                  ? 'scrollInAdminproject p-4 mb-3'
+                  : 'scrollInAdminproject p-3 mb-3'
               }
               onSubmit={handelBothSubmit}
             >
@@ -346,6 +346,7 @@ export default function TaskAddButton() {
                       <Form.Check
                         className="d-flex align-items-center gap-2"
                         type="radio"
+                        required
                         id={`category-${category._id}`}
                         name="category"
                         value={category.categoryName}

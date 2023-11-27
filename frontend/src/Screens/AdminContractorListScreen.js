@@ -211,229 +211,227 @@ export default function AdminContractorListScreen() {
 
   return (
     <>
-      <div className="px-3 mt-3">
-        {loading ? (
-          <>
-            <div className="ThreeDot">
-              <ThreeDots
-                height="80"
-                width="80"
-                radius="9"
-                className="ThreeDot justi`fy-content-center"
-                color="#0e0e3d"
-                ariaLabel="three-dots-loading"
-                wrapperStyle={{}}
-                wrapperClassName=""
-                visible={true}
-              />
-            </div>
-          </>
-        ) : error ? (
-          <div>{error}</div>
-        ) : (
-          <>
-            <Button
-              variant="outlined"
-              className=" m-2 d-flex globalbtnColor"
-              onClick={handleModel}
-              disabled={isDeleting}
-            >
-              <BiPlusMedical className="mx-2" />
-              Add Contractor
-            </Button>
-            <div className="overlayLoading">
-              {isDeleting && (
-                <div className="overlayLoadingItem1">
-                  <ColorRing
-                    visible={true}
-                    height="40"
-                    width="40"
-                    ariaLabel="blocks-loading"
-                    wrapperStyle={{}}
-                    wrapperClass="blocks-wrapper"
-                    const
-                    colors={['white', 'white', 'white', 'white', 'white']}
-                  />
-                </div>
-              )}
-              <Box sx={{ height: 400, width: '100%' }}>
-                <DataGrid
-                  className={
-                    theme == 'light'
-                      ? `${theme}DataGrid mx-2`
-                      : `tableBg ${theme}DataGrid mx-2`
-                  }
-                  rows={constructorData}
-                  columns={[
-                    ...columns,
-                    {
-                      field: 'userStatus',
-                      headerName: 'Status',
-                      width: 100,
-                      renderCell: (params) => {
-                        const isInactive = params.row.userStatus === 'Inactive';
-                        const cellClassName = isInactive
-                          ? 'inactive-cell'
-                          : 'active-cell';
-
-                        return (
-                          <div className={`status-cell ${cellClassName}`}>
-                            {params.row.userStatus}
-                          </div>
-                        );
-                      },
-                    },
-                    {
-                      field: 'action',
-                      headerName: 'Action',
-                      width: 250,
-                      renderCell: (params) => {
-                        return (
-                          <Grid item xs={8}>
-                            <Button
-                              variant="contained"
-                              className="mx-2 tableEditbtn"
-                              onClick={() => handleEdit(params.row._id)}
-                            >
-                              Edit
-                            </Button>
-                            <Button
-                              variant="outlined"
-                              className="mx-2 tableDeletebtn"
-                              onClick={() => deleteHandle(params.row._id)}
-                            >
-                              Delete
-                            </Button>
-                          </Grid>
-                        );
-                      },
-                    },
-                  ]}
-                  getRowId={(row) => row._id}
-                  initialState={{
-                    pagination: {
-                      paginationModel: {
-                        pageSize: 5,
-                      },
-                    },
-                  }}
-                  pageSizeOptions={[5]}
-                  // checkboxSelection
-                  disableRowSelectionOnClick
-                  localeText={{
-                    noRowsLabel: 'Contractor Data Is Not Avalible',
-                  }}
+      {loading ? (
+        <>
+          <div className="ThreeDot">
+            <ThreeDots
+              height="80"
+              width="80"
+              radius="9"
+              className="ThreeDot justi`fy-content-center"
+              color="#0e0e3d"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClassName=""
+              visible={true}
+            />
+          </div>
+        </>
+      ) : error ? (
+        <div>{error}</div>
+      ) : (
+        <>
+          <Button
+            variant="outlined"
+            className=" m-2 d-flex globalbtnColor"
+            onClick={handleModel}
+            disabled={isDeleting}
+          >
+            <BiPlusMedical className="mx-2" />
+            Add Contractor
+          </Button>
+          <div className="overlayLoading">
+            {isDeleting && (
+              <div className="overlayLoadingItem1">
+                <ColorRing
+                  visible={true}
+                  height="40"
+                  width="40"
+                  ariaLabel="blocks-loading"
+                  wrapperStyle={{}}
+                  wrapperClass="blocks-wrapper"
+                  const
+                  colors={['white', 'white', 'white', 'white', 'white']}
                 />
-              </Box>
-            </div>
-            <Modal
-              open={isModelOpen}
-              onClose={handleCloseRow}
-              className="overlayLoading modaleWidth"
-            >
-              <Box
-                className="modelBg modalRespnsive"
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  width: 400,
-                  bgcolor: 'background.paper',
-                  boxShadow: 24,
-                  p: submitting ? 0 : 4,
+              </div>
+            )}
+            <Box sx={{ height: 400, width: '100%' }}>
+              <DataGrid
+                className={
+                  theme == 'light'
+                    ? `${theme}DataGrid mx-2`
+                    : `tableBg ${theme}DataGrid mx-2`
+                }
+                rows={constructorData}
+                columns={[
+                  ...columns,
+                  {
+                    field: 'userStatus',
+                    headerName: 'Status',
+                    width: 100,
+                    renderCell: (params) => {
+                      const isInactive = params.row.userStatus === 'Inactive';
+                      const cellClassName = isInactive
+                        ? 'inactive-cell'
+                        : 'active-cell';
+
+                      return (
+                        <div className={`status-cell ${cellClassName}`}>
+                          {params.row.userStatus}
+                        </div>
+                      );
+                    },
+                  },
+                  {
+                    field: 'action',
+                    headerName: 'Action',
+                    width: 250,
+                    renderCell: (params) => {
+                      return (
+                        <Grid item xs={8}>
+                          <Button
+                            variant="contained"
+                            className="mx-2 tableEditbtn"
+                            onClick={() => handleEdit(params.row._id)}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            className="mx-2 tableDeletebtn"
+                            onClick={() => deleteHandle(params.row._id)}
+                          >
+                            Delete
+                          </Button>
+                        </Grid>
+                      );
+                    },
+                  },
+                ]}
+                getRowId={(row) => row._id}
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      pageSize: 5,
+                    },
+                  },
                 }}
-              >
-                <div className="overlayLoading">
-                  {submitting && (
-                    <div className="overlayLoadingItem1">
-                      <ColorRing
-                        visible={true}
-                        height="40"
-                        width="40"
-                        ariaLabel="blocks-loading"
-                        wrapperStyle={{}}
-                        wrapperClass="blocks-wrapper"
-                        colors={[
-                          'rgba(0, 0, 0, 1) 0%',
-                          'rgba(255, 255, 255, 1) 68%',
-                          'rgba(0, 0, 0, 1) 93%',
-                        ]}
-                      />
-                    </div>
-                  )}
-                  <Form
-                    onSubmit={handleSubmit}
-                    className={
-                      submitting
-                        ? 'scrollInAdminproject p-4 '
-                        : 'scrollInAdminproject p-3'
-                    }
-                  >
-                    <ImCross
-                      color="black"
-                      className="formcrossbtn"
-                      onClick={handleCloseRow}
+                pageSizeOptions={[5]}
+                // checkboxSelection
+                disableRowSelectionOnClick
+                localeText={{
+                  noRowsLabel: 'Contractor Data Is Not Avalible',
+                }}
+              />
+            </Box>
+          </div>
+          <Modal
+            open={isModelOpen}
+            onClose={handleCloseRow}
+            className="overlayLoading modaleWidth"
+          >
+            <Box
+              className="modelBg modalRespnsive"
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 400,
+                bgcolor: 'background.paper',
+                boxShadow: 24,
+                p: submitting ? 0 : 4,
+              }}
+            >
+              <div className="overlayLoading">
+                {submitting && (
+                  <div className="overlayLoadingItem1">
+                    <ColorRing
+                      visible={true}
+                      height="40"
+                      width="40"
+                      ariaLabel="blocks-loading"
+                      wrapperStyle={{}}
+                      wrapperClass="blocks-wrapper"
+                      colors={[
+                        'rgba(0, 0, 0, 1) 0%',
+                        'rgba(255, 255, 255, 1) 68%',
+                        'rgba(0, 0, 0, 1) 93%',
+                      ]}
                     />
+                  </div>
+                )}
+                <Form
+                  onSubmit={handleSubmit}
+                  className={
+                    submitting
+                      ? 'scrollInAdminproject p-4 '
+                      : 'scrollInAdminproject p-3'
+                  }
+                >
+                  <ImCross
+                    color="black"
+                    className="formcrossbtn"
+                    onClick={handleCloseRow}
+                  />
 
-                    <h4 className="d-flex justify-content-center">
-                      Add Contractor
-                    </h4>
+                  <h4 className="d-flex justify-content-center">
+                    Add Contractor
+                  </h4>
 
-                    <TextField
-                      className="mb-3"
-                      value={firstname}
-                      onChange={(e) => setFirstname(e.target.value)}
-                      label="First Name"
-                      fullWidth
+                  <TextField
+                    className="mb-3"
+                    value={firstname}
+                    onChange={(e) => setFirstname(e.target.value)}
+                    label="First Name"
+                    fullWidth
+                    required
+                  />
+                  <TextField
+                    className="mb-3"
+                    value={lastname}
+                    onChange={(e) => setLastname(e.target.value)}
+                    label="Last Name"
+                    fullWidth
+                  />
+
+                  <TextField
+                    className="mb-3"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    label="Email"
+                    type="email"
+                    fullWidth
+                    required
+                  />
+                  <Validations type="email" value={email} />
+                  <FormControl className="formselect">
+                    <InputLabel>Select Status</InputLabel>
+                    <Select
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
                       required
-                    />
-                    <TextField
-                      className="mb-3"
-                      value={lastname}
-                      onChange={(e) => setLastname(e.target.value)}
-                      label="Last Name"
-                      fullWidth
-                    />
-
-                    <TextField
-                      className="mb-3"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      label="Email"
-                      type="email"
-                      fullWidth
-                      required
-                    />
-                    <Validations type="email" value={email} />
-                    <FormControl className="formselect">
-                      <InputLabel>Select Status</InputLabel>
-                      <Select
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
-                        required
-                      >
-                        <MenuItem value={true}>Active</MenuItem>
-                        <MenuItem value={false}>Inactive</MenuItem>
-                      </Select>
-                    </FormControl>
-                    <br></br>
-                    <Button
-                      className="mt-2 formbtn updatingBtn globalbtnColor"
-                      variant="contained"
-                      color="primary"
-                      type="submit"
-                      disabled={submitting}
                     >
-                      {submitting ? 'SUBMITTING' : 'SUBMIT '}
-                    </Button>
-                  </Form>
-                </div>
-              </Box>
-            </Modal>
-          </>
-        )}
-      </div>
+                      <MenuItem value={true}>Active</MenuItem>
+                      <MenuItem value={false}>Inactive</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <br></br>
+                  <Button
+                    className="mt-2 formbtn updatingBtn globalbtnColor"
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    disabled={submitting}
+                  >
+                    {submitting ? 'SUBMITTING' : 'SUBMIT '}
+                  </Button>
+                </Form>
+              </div>
+            </Box>
+          </Modal>
+        </>
+      )}
     </>
   );
 }

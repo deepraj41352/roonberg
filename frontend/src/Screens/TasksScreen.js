@@ -77,6 +77,22 @@ export default function TasksScreen() {
   };
   const [selectedContractor, setSelectedContractor] = useState('');
 
+  const lastLoginTimestamp = userInfo.lastLogin;
+  const now = new Date();
+  const lastLoginDate = new Date(lastLoginTimestamp);
+  const minutesAgo = Math.floor((now - lastLoginDate) / (1000 * 60));
+  const hours = Math.floor(minutesAgo / 60);
+  const remainingMinutes = minutesAgo % 60;
+  const formattedLastLogin = `Last Login: ${
+    hours > 0 ? `${hours} ${hours === 1 ? 'Hour' : 'Hours'}` : ''
+  }${hours > 0 && remainingMinutes > 0 ? ', ' : ''}${
+    remainingMinutes > 0
+      ? `${remainingMinutes} ${remainingMinutes === 1 ? 'Minute' : 'Minutes'}`
+      : ''
+  } ago`;
+
+  // }
+
   const columns = [
     {
       width: 100,
@@ -96,7 +112,7 @@ export default function TasksScreen() {
         return (
           <>
             <Link
-              className="Link-For-ChatWindow"
+              className={`Link-For-ChatWindow ${theme}-textRow`}
               to={`/chatWindowScreen/${params.row._id}`}
             >
               {/* {params.row.categoryImage !== 'null' ? (
@@ -128,10 +144,10 @@ export default function TasksScreen() {
       width: 300,
       renderCell: (params) => (
         <Link
-          className="Link-For-ChatWindow"
+          className={`Link-For-ChatWindow ${theme}-textRow`}
           to={`/chatWindowScreen/${params.row._id}`}
         >
-          <div className="text-start">
+          <div className={`text-start ${theme}-textRow`}>
             <div>{params.row.taskName}</div>
             <div>Task ID {params.row._id}</div>
           </div>
@@ -144,10 +160,10 @@ export default function TasksScreen() {
       width: 100,
       renderCell: (params) => (
         <Link
-          className="Link-For-ChatWindow"
+          className={`Link-For-ChatWindow ${theme}-textRow`}
           to={`/chatWindowScreen/${params.row._id}`}
         >
-          <div className="text-start">
+          <div className={`text-start ${theme}-textRow`}>
             <div>{params.row.userName}</div>
             <div>Raised By</div>
           </div>
@@ -160,10 +176,10 @@ export default function TasksScreen() {
       width: 100,
       renderCell: (params) => (
         <Link
-          className="Link-For-ChatWindow"
+          className={`Link-For-ChatWindow ${theme}-textRow`}
           to={`/chatWindowScreen/${params.row._id}`}
         >
-          <div className="text-start">
+          <div className={`text-start ${theme}-textRow`}>
             <div>{params.row.agentName}</div>
             <div>Assigned By</div>
           </div>
@@ -177,8 +193,7 @@ export default function TasksScreen() {
       renderCell: (params) => {
         return (
           <Grid item xs={8}>
-            <Button
-              variant="contained"
+            <div
               className={
                 params.row.taskStatus === 'active'
                   ? 'tableInProgressBtn'
@@ -196,7 +211,7 @@ export default function TasksScreen() {
                 : params.row.taskStatus === 'pending'
                 ? 'Ready To Completed'
                 : ''}
-            </Button>
+            </div>
           </Grid>
         );
       },
@@ -467,12 +482,15 @@ export default function TasksScreen() {
       });
       if (data.status === 200) {
         setSuccess(!success);
+        setSelectedRowId(null);
+
         toast.success(data.data.message);
       }
     } catch (error) {
       toast.error(error.message);
     } finally {
       setIsSubmiting(false);
+      setShowModalDel(false);
     }
   };
   // ......}
@@ -498,6 +516,8 @@ export default function TasksScreen() {
       if (data.status === 200) {
         setSuccess(!success);
         setShowModal(false);
+        setSelectedRowId(null);
+
         toast.success('Task Status updated Successfully !');
       }
     } catch (err) {
@@ -671,12 +691,6 @@ export default function TasksScreen() {
                         <Button className=" btn-color1" onClick={ModelOpen}>
                           <span class="position-relative">Update Status</span>
                         </Button>
-                        {/* <Button
-                          className=" btn-color"
-                          // onClick={}
-                        >
-                          <span class="position-relative">Assigned Agent</span>
-                        </Button> */}
                         <Button
                           active
                           className=" btn-color2"
@@ -702,7 +716,7 @@ export default function TasksScreen() {
                               p: isSubmiting ? 0 : 4,
                             }}
                           >
-                            <div className="overlayLoading">
+                            <div className="overlayLoading p-2">
                               <div className="pb-4">
                                 Make sure you want to delete this task.
                               </div>
@@ -747,7 +761,7 @@ export default function TasksScreen() {
                             <div className="overlayLoading">
                               {/* ... Your loading animation code ... */}
 
-                              <Form>
+                              <Form className="p-2">
                                 <Form.Group
                                   className="mb-3"
                                   controlId="formBasicPassword"
@@ -790,12 +804,12 @@ export default function TasksScreen() {
                       </div>
                     )}
                     <div className="lastLogin">
-                      <FaRegClock className="clockIcon" /> Last Login : 4 Hours,
-                      55 minutes ago
+                      <FaRegClock className="clockIcontab" />
+                      {formattedLastLogin}
                     </div>
                     <Box sx={{ height: 400, width: '100%' }}>
                       <DataGrid
-                        className="tableGrid actionCenter"
+                        className={`tableGrid actionCenter tableBg  ${theme}DataGrid`}
                         rows={ActiveData}
                         columns={columns}
                         getRowId={(row) => row._id}
@@ -854,8 +868,8 @@ export default function TasksScreen() {
                           <Form
                             className={
                               isSubmiting
-                                ? 'scrollInAdminproject p-4 '
-                                : 'scrollInAdminproject p-3'
+                                ? 'scrollInAdminproject p-4 mb-3'
+                                : 'scrollInAdminproject p-3 mb-3'
                             }
                             onSubmit={handleSubmit}
                           >
@@ -876,6 +890,7 @@ export default function TasksScreen() {
                                     <Form.Check
                                       className="d-flex align-items-center gap-2"
                                       type="radio"
+                                      required
                                       id={`category-${category._id}`}
                                       name="category"
                                       value={category.categoryName}
@@ -1051,12 +1066,6 @@ export default function TasksScreen() {
                         <Button className=" btn-color1" onClick={ModelOpen}>
                           <span class="position-relative">Update Status</span>
                         </Button>
-                        {/* <Button
-                          className=" btn-color"
-                          // onClick={}
-                        >
-                          <span class="position-relative">Assigned Agent</span>
-                        </Button> */}
                         <Button
                           active
                           className=" btn-color2"
@@ -1067,12 +1076,12 @@ export default function TasksScreen() {
                       </div>
                     )}
                     <div className="lastLogin">
-                      <FaRegClock className="clockIcon" /> Last Login : 4 Hours,
-                      55 minutes ago
+                      <FaRegClock className="clockIcontab" />{' '}
+                      {formattedLastLogin}
                     </div>
                     <Box sx={{ height: 400, width: '100%' }}>
                       <DataGrid
-                        className="tableGrid actionCenter"
+                        className={`tableGrid actionCenter tableBg  ${theme}DataGrid`}
                         rows={PendingData}
                         columns={columns}
                         getRowId={(row) => row._id}
@@ -1104,28 +1113,22 @@ export default function TasksScreen() {
                         <Button className=" btn-color1" onClick={ModelOpen}>
                           <span class="position-relative">Update Status</span>
                         </Button>
-                        {/* <Button
-                          className=" btn-color"
-                          // onClick={}
-                        >
-                          <span class="position-relative">Assigned Agent</span>
-                        </Button> */}
                         <Button
                           active
                           className=" btn-color2"
-                          onClick={deleteTask}
+                          onClick={ModelOpenDel}
                         >
                           <span class="position-relative">Delete</span>
                         </Button>
                       </div>
                     )}
                     <div className="lastLogin">
-                      <FaRegClock className="clockIcon" /> Last Login : 4 Hours,
-                      55 minutes ago
+                      <FaRegClock className="clockIcontab" />{' '}
+                      {formattedLastLogin}
                     </div>
                     <Box sx={{ height: 400, width: '100%' }}>
                       <DataGrid
-                        className="tableGrid actionCenter"
+                        className={`tableGrid actionCenter tableBg  ${theme}DataGrid`}
                         rows={CompleteData}
                         columns={columns}
                         getRowId={(row) => row._id}

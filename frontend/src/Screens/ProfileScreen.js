@@ -7,6 +7,7 @@ import axios from 'axios';
 import Validations from '../Components/Validations';
 import { ColorRing } from 'react-loader-spinner';
 import {
+  Alert,
   FormControl,
   InputLabel,
   MenuItem,
@@ -26,17 +27,28 @@ function ProfileScreen() {
   const theme = toggleState ? 'dark' : 'light';
   const navigate = useNavigate();
 
-  const [firstName, setFirstName] = useState(userInfo.first_name);
-  const [lastName, setLastName] = useState(userInfo.last_name);
-  const [email, setEmail] = useState(userInfo.email);
-  const [mobileNum, setMobileNum] = useState(userInfo.phone_number);
-  const [gender, setGender] = useState(userInfo.gender || '');
-  const [dob, setDob] = useState(userInfo.dob || '');
-  const [address, setAddress] = useState(userInfo.address || '');
-  const [country, setCountry] = useState(userInfo.country || '');
+  const [firstName, setFirstName] = useState(
+    userInfo.first_name ? userInfo.first_name : ''
+  );
+  const [lastName, setLastName] = useState(
+    userInfo.last_name ? userInfo.last_name : ''
+  );
+  const [email, setEmail] = useState(userInfo.email ? userInfo.email : '');
+  const [mobileNum, setMobileNum] = useState(
+    userInfo.phone_number ? userInfo.phone_number : ''
+  );
+  const [gender, setGender] = useState(userInfo.gender ? userInfo.gender : '');
+  const [dob, setDob] = useState(userInfo.dob ? userInfo.dob : '');
+  const [address, setAddress] = useState(
+    userInfo.address ? userInfo.address : ''
+  );
+  const [country, setCountry] = useState(
+    userInfo.country ? userInfo.country : ''
+  );
 
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFileName, setSelectedFileName] = useState('');
 
   var countrylist = [
     'Afghanistan',
@@ -282,6 +294,7 @@ function ProfileScreen() {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedFile(file);
+    setSelectedFileName(file ? file.name : '');
   };
 
   return (
@@ -323,27 +336,13 @@ function ProfileScreen() {
                         className="mb-2"
                         controlId="formBasicPassword"
                       >
-                        {/* <div className="d-flex gap-3">
-                          <div>
-                            <Form.Label className="mb-1">
-                              <img className="profile-icon-inner " src={userInfo.profile_picture} alt="user-image"></img>
-                            </Form.Label>
-                          </div>
-                          <div>
-                            <Form.Label className="mb-1">
-                              Profile Picture
-                            </Form.Label>
-                            <Form.Control type="file" onChange={handleFileChange} />
-                          </div>
-                        </div> */}
-
                         <Row className="editImgParent">
-                          <Col className="">
+                          <Col>
                             <img
                               className="profile-icon-inner editCateImgContainer"
                               src={userInfo.profile_picture}
                               alt="user-image"
-                            ></img>
+                            />
                           </Col>
                           <Col className="editImgChild">
                             <div className="mb-3">
@@ -355,7 +354,7 @@ function ProfileScreen() {
                               />
                               <label
                                 htmlFor="file-input"
-                                className="editImgBtn "
+                                className="editImgBtn"
                               >
                                 <RiImageEditFill />
                               </label>
@@ -364,6 +363,15 @@ function ProfileScreen() {
                         </Row>
                       </Form.Group>
                     </div>
+                    {selectedFileName && (
+                      <Row className="mb-2 selected-img-container">
+                        <Col className="selected-img">
+                          <Alert className="selected-img-Box">
+                            Selected File: {selectedFileName}
+                          </Alert>
+                        </Col>
+                      </Row>
+                    )}
                     <div className="d-flex align-items-center gap-2 my-3">
                       <TextField
                         className={`${theme}-user-profile-field`}

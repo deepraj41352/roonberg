@@ -194,7 +194,7 @@ export default function AdminProjectListScreen() {
           <>
             <Box sx={{ height: 400, width: '100%' }}>
               <DataGrid
-                className="tableGrid actionCenter"
+                className={`tableGrid actionCenter tableBg  ${theme}DataGrid`}
                 rows={uniqueProjects}
                 columns={columns}
                 getRowId={(row) => row._id}

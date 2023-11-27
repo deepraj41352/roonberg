@@ -219,33 +219,14 @@ function App() {
                             />
                           </Dropdown.Toggle>
                           <Dropdown.Menu className="dropMenu dropMenuProfile">
-                            <Dropdown.Item>
-                              <Link
-                                to="/profile-screen"
-                                className="profileLinkItems"
-                              >
-                                Profile
-                              </Link>
+                            <Dropdown.Item href="/profile-screen">
+                              Profile
                             </Dropdown.Item>
-                            <Dropdown.Item>
-                              <Link
-                                className="profileLinkItems"
-                                to="/notificationScreen"
-                              >
-                                {' '}
-                                Notification{' '}
-                              </Link>
+                            <Dropdown.Item href="/notificationScreen">
+                              Notification
                             </Dropdown.Item>
-                            <hr />
-                            <Dropdown.Item>
-                              <Link
-                                className="profileLinkItems"
-                                onClick={signoutHandler}
-                                to="#"
-                              >
-                                {' '}
-                                Logout{' '}
-                              </Link>
+                            <Dropdown.Item onClick={signoutHandler}>
+                              Logout
                             </Dropdown.Item>
                           </Dropdown.Menu>
                         </Dropdown>

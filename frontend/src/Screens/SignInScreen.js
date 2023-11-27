@@ -123,6 +123,14 @@ function SignUpForm() {
                       {showPassword ? <FaEye /> : <FaRegEyeSlash />}
                     </div>
                   </div>
+                  <div className="validationPass mt-2">
+                    <Validations
+                      type="password"
+                      className="validationPass"
+                      value={password}
+                    />
+                  </div>
+
                   <Form.Check
                     className="mt-3 startLabel"
                     type="checkbox"
@@ -131,7 +139,6 @@ function SignUpForm() {
                       setRememberMe(e.target.checked);
                     }}
                   />
-                  <Validations type="password" value={password} />
                 </Form.Group>
                 <Button
                   className="w-100 py-1 globalbtnColor"

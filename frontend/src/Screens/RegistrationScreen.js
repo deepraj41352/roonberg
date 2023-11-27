@@ -134,7 +134,13 @@ function RegistrationForm() {
                       {showPassword ? <FaEye /> : <FaRegEyeSlash />}
                     </div>
                   </div>
-                  <Validations type="password" value={password} />
+                  <div className="validationPass mt-2">
+                    <Validations
+                      type="password"
+                      className="validationPass"
+                      value={password}
+                    />
+                  </div>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicPassword">
                   <Form.Label className="mb-1 startLabel">

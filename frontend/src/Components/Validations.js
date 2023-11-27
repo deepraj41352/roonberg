@@ -43,7 +43,7 @@ export default function Validations({ type, value }) {
   }, [validationMessage, ctxDispatch]);
 
   return validationMessage ? (
-    <Alert variant="danger" className="error validationMsg">
+    <Alert variant="danger" className="error ">
       {validationMessage}
     </Alert>
   ) : null;

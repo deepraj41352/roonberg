@@ -152,13 +152,13 @@ export default function AdminAgentListScreen() {
               const category = categoryData.find(
                 (cat) => cat._id === categoryId
               );
-              return category ? category.categoryName : ''; // Use category name or an empty string if not found
+              return category ? category.categoryName : '';
             }),
-            // agentCategory: items.agentCategory.length>0?items.agentCategory.map((categoryId)=>{ })
-            // agentCategory: categoryName ? categoryName.categoryName : '',
           };
         });
-        dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
+        if (categoryData.length !== 0) {
+          dispatch({ type: 'FATCH_SUCCESS', payload: rowData });
+        }
       } catch (error) {
         console.log(error);
       }
@@ -295,7 +295,7 @@ export default function AdminAgentListScreen() {
             <BiPlusMedical className="mx-2" />
             Add Agent
           </Button>
-          <div className="overlayLoading">
+          <div className="overlayLoading d-flex justify-content-center">
             {isDeleting && (
               <div className="overlayLoadingItem1">
                 <ColorRing
@@ -310,7 +310,7 @@ export default function AdminAgentListScreen() {
                 />
               </div>
             )}
-            <Box sx={{ height: 400, width: '100%' }}>
+            <Box sx={{ height: 400, width: '100%', maxWidth: 1008 }}>
               <DataGrid
                 className={`tableBg mx-2 ${theme}DataGrid`}
                 rows={AgentData}

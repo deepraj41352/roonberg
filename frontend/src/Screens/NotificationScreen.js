@@ -132,15 +132,15 @@ export default function NotificationScreen() {
             <>
               <div className="container mt-5">
                 <div className="row">
-                  <div className="col">
+                  <div className="col p-0">
                     <h2 className="mb-3">Notifications</h2>
                     <ul className="list-group custom-list">
                       {currentNotifications.map((item, index) => (
                         <Accordion
                           className={` ${
                             item.status === 'seen'
-                              ? `acco1-seen-${theme}`
-                              : `acco1-unseen-${theme}`
+                              ? `acco1-seen-${theme} p-0`
+                              : `acco1-unseen-${theme} p-0`
                           }`}
                         >
                           <Accordion.Item
@@ -165,18 +165,19 @@ export default function NotificationScreen() {
                                   }}
                                 />
                               </div>
-                              {console.log('item.message', item.message)}{' '}
-                              <button
-                                className={`MarkAsRead-${theme}`}
-                                style={{
-                                  display:
-                                    item.status == 'seen' ? 'none' : 'block',
-                                }}
-                                value={item._id}
-                                onClick={handleUpdateStatus}
-                              >
-                                Mark as read
-                              </button>{' '}
+                              <div>
+                                <button
+                                  className={`MarkAsRead-${theme}`}
+                                  style={{
+                                    display:
+                                      item.status == 'seen' ? 'none' : 'block',
+                                  }}
+                                  value={item._id}
+                                  onClick={handleUpdateStatus}
+                                >
+                                  Mark as read
+                                </button>
+                              </div>
                             </Accordion.Body>
                           </Accordion.Item>
                         </Accordion>

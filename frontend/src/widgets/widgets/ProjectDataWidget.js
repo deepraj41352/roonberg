@@ -162,6 +162,36 @@ export default function ProjectDataWidget() {
         </Link>
       ),
     },
+    {
+      field: 'taskStatus',
+      headerName: 'Status',
+      width: 200,
+      renderCell: (params) => {
+        return (
+          <Grid item xs={8}>
+            <div
+              className={
+                params.row.taskStatus === 'active'
+                  ? 'tableInProgressBtn'
+                  : 'tableInwaitingBtn'
+              }
+              // onClick={() => handleEdit(params.row._id)}
+            >
+              <CiSettings className="clockIcon" />
+              {params.row.taskStatus === 'waiting'
+                ? 'Waiting On You'
+                : params.row.taskStatus === 'active'
+                ? 'In Progress'
+                : params.row.taskStatus === 'completed'
+                ? 'Completed'
+                : params.row.taskStatus === 'pending'
+                ? 'Ready To Completed'
+                : ''}
+            </div>
+          </Grid>
+        );
+      },
+    },
   ];
   const [
     {
@@ -591,42 +621,9 @@ export default function ProjectDataWidget() {
 
                     <Box sx={{ height: 400, width: '100%' }}>
                       <DataGrid
-                        className="tableGrid actionCenter"
+                        className={`tableGrid actionCenter tableBg  ${theme}DataGrid`}
                         rows={ActiveData}
-                        columns={[
-                          ...columns,
-                          {
-                            field: 'action',
-                            headerName: 'Action',
-                            width: 200,
-                            renderCell: (params) => {
-                              return (
-                                <Grid item xs={8}>
-                                  <Button
-                                    variant="contained"
-                                    className={
-                                      params.row.taskStatus === 'active'
-                                        ? 'tableInProgressBtn'
-                                        : 'tableInwaitingBtn'
-                                    }
-                                    // onClick={() => handleEdit(params.row._id)}
-                                  >
-                                    <CiSettings className="clockIcon" />
-                                    {params.row.taskStatus === 'waiting'
-                                      ? 'Waiting On You'
-                                      : params.row.taskStatus === 'active'
-                                      ? 'In Progress'
-                                      : params.row.taskStatus === 'completed'
-                                      ? 'Completed'
-                                      : params.row.taskStatus === 'pending'
-                                      ? 'Ready To Completed'
-                                      : ''}
-                                  </Button>
-                                </Grid>
-                              );
-                            },
-                          },
-                        ]}
+                        columns={columns}
                         getRowId={(row) => row._id}
                         initialState={{
                           pagination: {
@@ -672,42 +669,9 @@ export default function ProjectDataWidget() {
 
                     <Box sx={{ height: 400, width: '100%' }}>
                       <DataGrid
-                        className="tableGrid actionCenter"
+                        className={`tableGrid actionCenter tableBg  ${theme}DataGrid`}
                         rows={PendingData}
-                        columns={[
-                          ...columns,
-                          {
-                            field: 'action',
-                            headerName: 'Action',
-                            width: 160,
-                            renderCell: (params) => {
-                              return (
-                                <Grid item xs={8}>
-                                  <Button
-                                    variant="contained"
-                                    className={
-                                      params.row.taskStatus === 'active'
-                                        ? 'tableInProgressBtn'
-                                        : 'tableInwaitingBtn'
-                                    }
-                                    // onClick={() => handleEdit(params.row._id)}
-                                  >
-                                    <CiSettings className="clockIcon" />
-                                    {params.row.taskStatus === 'waiting'
-                                      ? 'Waiting On You'
-                                      : params.row.taskStatus === 'active'
-                                      ? 'In Progress'
-                                      : params.row.taskStatus === 'completed'
-                                      ? 'Completed'
-                                      : params.row.taskStatus === 'pending'
-                                      ? 'Ready To Completed'
-                                      : ''}
-                                  </Button>
-                                </Grid>
-                              );
-                            },
-                          },
-                        ]}
+                        columns={columns}
                         getRowId={(row) => row._id}
                         initialState={{
                           pagination: {
@@ -726,7 +690,7 @@ export default function ProjectDataWidget() {
                     </Box>
                   </Tab>
                   <Tab
-                    className="tab-color"
+                    className={`tableGrid actionCenter tableBg  ${theme}DataGrid`}
                     eventKey="Completed Task"
                     title={
                       <span class="position-relative">Completed Task</span>
@@ -755,42 +719,9 @@ export default function ProjectDataWidget() {
 
                     <Box sx={{ height: 400, width: '100%' }}>
                       <DataGrid
-                        className="tableGrid actionCenter"
+                        className={`tableGrid actionCenter tableBg  ${theme}DataGrid`}
                         rows={CompleteData}
-                        columns={[
-                          ...columns,
-                          {
-                            field: 'action',
-                            headerName: 'Action',
-                            width: 160,
-                            renderCell: (params) => {
-                              return (
-                                <Grid item xs={8}>
-                                  <Button
-                                    variant="contained"
-                                    className={
-                                      params.row.taskStatus === 'active'
-                                        ? 'tableInProgressBtn'
-                                        : 'tableInwaitingBtn'
-                                    }
-                                    // onClick={() => handleEdit(params.row._id)}
-                                  >
-                                    <CiSettings className="clockIcon" />
-                                    {params.row.taskStatus === 'waiting'
-                                      ? 'Waiting On You'
-                                      : params.row.taskStatus === 'active'
-                                      ? 'In Progress'
-                                      : params.row.taskStatus === 'completed'
-                                      ? 'Completed'
-                                      : params.row.taskStatus === 'pending'
-                                      ? 'Ready To Completed'
-                                      : ''}
-                                  </Button>
-                                </Grid>
-                              );
-                            },
-                          },
-                        ]}
+                        columns={columns}
                         getRowId={(row) => row._id}
                         initialState={{
                           pagination: {

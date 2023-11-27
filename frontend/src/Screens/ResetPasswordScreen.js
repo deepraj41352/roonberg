@@ -107,7 +107,13 @@ export default function ResetPasswordScreen() {
                         {showPassword ? <FaEye /> : <FaRegEyeSlash />}
                       </div>
                     </div>
-                    <Validations type="password" value={password} />
+                    <div className="validationPass mt-2">
+                      <Validations
+                        type="password"
+                        className="validationPass"
+                        value={password}
+                      />
+                    </div>
                   </div>
                   <div className="mb-2">
                     <Form.Label className="textLeft text-left">

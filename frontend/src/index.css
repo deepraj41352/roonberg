@@ -1,9 +1,12 @@
-.dark {
+/* .dark {
   background-color: #ddd;
-}
+} */
 .light {
   background-color: #ddd;
 }
+/* .for-mob{
+  margin: 0 !important;
+} */
 
 body {
   margin: 0;
@@ -154,7 +157,7 @@ code {
   padding: 0px 5px;
 }
 .scrollInAdminproject {
-  max-height: 500px;
+  max-height: 450px;
   overflow-y: auto;
 }
 .fullContainer {
@@ -238,6 +241,12 @@ body {
 
 .editCartForm {
   width: 100%;
+}
+@media screen and (max-width: 500px) {
+  .cateItems {
+    max-width: 300px !important;
+    margin: 5px 20px !important;
+  }
 }
 
 @media screen and (max-width: 450px) {
@@ -660,6 +669,11 @@ body {
   }
 }
 @media (max-width: 560px) {
+  .cateEditImgChild {
+    max-width: 65px !important;
+    right: 0;
+    left: 17px;
+  }
   .sidebar {
     width: 45%;
   }
@@ -1111,6 +1125,8 @@ body {
   border-radius: 5px;
   margin-bottom: 10px;
   padding: 10px;
+  display: flex !important;
+  flex-direction: column;
 }
 
 .pagination {
@@ -1225,6 +1241,9 @@ body {
   display: none;
 }
 @media screen and (max-width: 450px) {
+  .validationPass .fade.error.alert.alert-danger.show {
+    max-width: 300px;
+  }
   .NotificationMsg {
     text-align: center;
     padding-bottom: 10px;
@@ -1282,7 +1301,7 @@ body {
   }
   .dropTab1 button#dropdown-tabs {
     width: 100% !important;
-    background-color: #3c3c5a !important;
+    background-color: RGB(14, 14, 61) !important;
   }
   .dropMenu {
     inset: 0px 2px auto 2px !important;
@@ -1292,10 +1311,14 @@ body {
     justify-content: center !important;
     color: RGB(14, 14, 61) !important;
   }
+
   .dropMenuCon:focus,
-  .dropMenuCon:hover {
+  a.dropMenuCon.dropdown-item:hover {
     color: white !important;
     background-color: RGB(14, 14, 61) !important;
+  }
+  a.dropMenuCon.dropdown-item.active {
+    background-color: unset;
   }
   .badgeAll:focus,
   .badgeAll:hover {
@@ -1329,10 +1352,11 @@ body {
   background-color: #0e0e3d;
   color: #fff;
   white-space: nowrap;
-  min-height: calc(100vh - 220px) !important;
-  height: calc(100vh - 220px) !important;
+  min-height: calc(100vh - 264px) !important;
+  height: calc(100vh - 264px) !important;
   overflow-y: auto;
   transition: width 0.8s ease-in-out;
+  z-index: 16;
 }
 .css-1ald77x {
   background-color: white !important;
@@ -1462,10 +1486,7 @@ body {
   margin: 20px auto;
   padding: 15px 6px;
 }
-.tableGrid
-  .MuiTablePagination-displayedRows.css-levciy-MuiTablePagination-displayedRows {
-  color: #000 !important;
-}
+
 .tableGrid.MuiDataGrid-root.MuiDataGrid-root--densityStandard.MuiDataGrid-withBorderColor.css-ptkaw2-MuiDataGrid-root {
   font-size: 12px !important;
   border-radius: 0px !important;
@@ -1480,24 +1501,36 @@ body {
 .tableInwaitingBtn svg.clockIcon {
   color: #ffc000;
   margin: 0 3px 3px 0;
+  font-weight: 700 !important;
+  font-size: medium;
   /* padding: 10px 0; */
 }
 .tableInProgressBtn svg.clockIcon {
   color: green;
   margin: 0 3px 3px 0;
+  font-weight: 700 !important;
+  font-size: medium;
   /* padding: 10px 0; */
 }
 .tableInProgressBtn {
-  color: green !important;
   font-weight: 300;
+  font-size: 13px !important;
+  border-radius: 3px;
+  padding: 6px 16px !important;
+  width: 170px;
+  color: green !important;
   text-transform: unset !important;
-  background: transparent !important;
+  background: #fff !important;
   border: 1px solid green !important;
 }
 .tableInwaitingBtn {
-  color: #ffc000 !important;
   font-weight: 300;
-  background: transparent !important;
+  font-size: 13px !important;
+  border-radius: 3px;
+  padding: 6px 16px !important;
+  width: 170px;
+  color: #ffc000 !important;
+  background: #fff !important;
   text-transform: unset !important;
   border: 1px solid #ffc000 !important;
 }
@@ -1674,7 +1707,6 @@ body {
 }
 .Link-For-ChatWindow {
   text-decoration: none !important;
-  color: #000 !important;
 }
 .confirmRHeight {
   height: 100%;
@@ -1731,6 +1763,8 @@ body {
   border-style: solid;
 }
 .cateborder {
+  max-height: 210px;
+  overflow-y: auto;
   margin: 10px;
   gap: 0 14px;
 }
@@ -1741,6 +1775,15 @@ body {
   left: 7px;
   padding: 0px 5px;
   color: #8a9097;
+}
+.cateItems {
+  border: 1px solid #000;
+  border-radius: 5px;
+  height: 60px;
+  margin: 5px 1px;
+  max-width: 174px;
+  padding: 5px;
+  width: 100%;
 }
 .profileToggleBtn {
   width: 64px;
@@ -1770,7 +1813,7 @@ body {
 
 .dropButton {
   max-height: 200px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 .cateItems input {
   border: 1px solid #000000 !important;
@@ -1854,4 +1897,120 @@ body {
     min-width: 100px !important;
     width: 100%;
   }
+}
+/* css remove blue box on table cloumn hover*/
+.tableBg .css-aop0yh .MuiDataGrid-columnHeader:focus,
+.css-aop0yh .MuiDataGrid-cell:focus {
+  outline: none !important;
+}
+
+.tableBg .css-aop0yh .MuiDataGrid-columnHeader:focus-within,
+.css-aop0yh .MuiDataGrid-cell:focus-within {
+  outline: none !important;
+  outline-offset: -1px;
+}
+.validationPass .fade.error.alert.alert-danger.show {
+  max-width: 350px;
+  line-height: 1;
+}
+.lightDataGrid .MuiDataGrid-cell--withRenderer .Link-For-ChatWindow {
+  color: black !important;
+}
+.darkDataGrid .MuiDataGrid-cell--withRenderer .Link-For-ChatWindow {
+  color: white !important;
+}
+.dark-textRow {
+  color: white !important;
+}
+.light-textRow {
+  color: black !important;
+}
+/* .darkDataGrid
+  .MuiDataGrid-footerContainer.MuiDataGrid-withBorderColor.css-9ffb5l
+  p {
+  color: white !important;
+}
+.lightDataGrid
+  .MuiDataGrid-footerContainer.MuiDataGrid-withBorderColor.css-9ffb5l
+  p {
+  color: black !important;
+} */
+.clockIcontab {
+  margin: 0 5px 3px 0;
+  color: #ffc000 !important;
+}
+.tableInwaitingBtn svg.clockIcon {
+  color: #ffc000;
+  margin: 0 3px 3px 0;
+  font-weight: 600 !important;
+}
+.tableInProgressBtn svg.clockIcon {
+  color: green;
+  font-weight: 600 !important;
+  margin: 0 3px 3px 0;
+}
+
+.selected-img-container {
+  position: relative;
+}
+.selected-img {
+  position: absolute;
+  bottom: 10px;
+  right: -94px;
+}
+.selected-img-Box {
+  max-width: 302px !important;
+}
+.cate-selected-img-Box {
+  max-width: 278px !important;
+}
+.cate-selected-img-Box,
+.selected-img-Box {
+  text-align: center !important;
+  width: 100% !important;
+  background: #78eb61 !important;
+  margin-bottom: 16px !important;
+  color: #fff !important;
+  max-height: 100px;
+  height: 100%;
+}
+.cate-selected-img {
+  position: absolute;
+  bottom: -16px;
+  right: -66px;
+}
+/* Profile */
+.dropMenu.dropMenuProfile.dropdown-menu.show .dropdown-item:active {
+  background-color: #07162c !important;
+}
+
+/* .pagination */
+.tableBg
+  .darkDataGrid
+  .tableGrid
+  .MuiTablePagination-displayedRows.css-levciy-MuiTablePagination-displayedRows {
+  color: white !important;
+}
+
+.lightDataGrid
+  .MuiTablePagination-displayedRows.css-levciy-MuiTablePagination-displayedRows {
+  color: black !important;
+}
+
+/* Notification */
+.table-container {
+  margin-bottom: 20px;
+  margin-top: 10px;
+}
+.table-row {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  align-items: center;
+}
+.table-cell.header-cell {
+  min-width: 130px;
+}
+.table-cell {
+  min-width: 500px;
 }

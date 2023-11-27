@@ -262,246 +262,244 @@ export default function AdminContractorListScreen() {
 
   return (
     <>
-      <div className="px-3 mt-3">
-        {loading ? (
-          <>
-            <div className="ThreeDot">
-              <ThreeDots
-                height="80"
-                width="80"
-                radius="9"
-                className="ThreeDot justi`fy-content-center"
-                color="#0e0e3d"
-                ariaLabel="three-dots-loading"
-                wrapperStyle={{}}
-                wrapperClassName=""
-                visible={true}
-              />
-            </div>
-          </>
-        ) : error ? (
-          <div>{error}</div>
-        ) : (
-          <>
-            <Button
-              variant="outlined"
-              className=" m-2 d-flex globalbtnColor"
-              onClick={handleNew}
-              disabled={isDeleting}
-            >
-              <BiPlusMedical className="mx-2" />
-              Add Category
-            </Button>
-            <div className="overlayLoading">
-              {isDeleting && (
-                <div className="overlayLoadingItem1">
-                  <ColorRing
-                    visible={true}
-                    height="40"
-                    width="40"
-                    ariaLabel="blocks-loading"
-                    wrapperStyle={{}}
-                    wrapperClass="blocks-wrapper"
-                    const
-                    colors={['white', 'white', 'white', 'white', 'white']}
-                  />
-                </div>
-              )}
-              <Box sx={{ height: 400, width: '100%' }}>
-                <DataGrid
-                  className={
-                    theme == 'light'
-                      ? `${theme}DataGrid mx-2`
-                      : `tableBg ${theme}DataGrid mx-2`
-                  }
-                  // rows={categoryData ? categoryData : noRows}
-                  rows={categoryData}
-                  columns={[
-                    ...columns,
-                    {
-                      field: 'categoryStatus',
-                      headerName: 'Status',
-                      width: 100,
-                      renderCell: (params) => {
-                        const isInactive =
-                          params.row.categoryStatus === 'Inactive';
-                        const cellClassName = isInactive
-                          ? 'inactive-cell'
-                          : 'active-cell';
-
-                        return (
-                          <div className={`status-cell ${cellClassName}`}>
-                            {params.row.categoryStatus}
-                          </div>
-                        );
-                      },
-                    },
-                    {
-                      field: 'action',
-                      headerName: 'Action',
-                      width: 250,
-                      renderCell: (params) => {
-                        return (
-                          <Grid item xs={8}>
-                            <Button
-                              variant="contained"
-                              className="mx-2 tableEditbtn"
-                              onClick={() => handleEdit(params.row._id)}
-                            >
-                              Edit
-                            </Button>
-                            <Button
-                              variant="outlined"
-                              className="mx-2 tableDeletebtn"
-                              onClick={() => deleteHandle(params.row._id)}
-                            >
-                              Delete
-                            </Button>
-                          </Grid>
-                        );
-                      },
-                    },
-                  ]}
-                  getRowId={getRowId}
-                  initialState={{
-                    pagination: {
-                      paginationModel: {
-                        pageSize: 5,
-                      },
-                    },
-                  }}
-                  pageSizeOptions={[5]}
-                  // checkboxSelection
-                  disableRowSelectionOnClick
-                  // gridOptions={gridOptions}
-                  localeText={{ noRowsLabel: 'Category Data Is Not Avalible' }}
-                  // getRowClassName={(params) => (params.row.categoryStatus === 'Inactive' ? 'inactive-row' : '')}
+      {loading ? (
+        <>
+          <div className="ThreeDot">
+            <ThreeDots
+              height="80"
+              width="80"
+              radius="9"
+              className="ThreeDot justi`fy-content-center"
+              color="#0e0e3d"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClassName=""
+              visible={true}
+            />
+          </div>
+        </>
+      ) : error ? (
+        <div>{error}</div>
+      ) : (
+        <>
+          <Button
+            variant="outlined"
+            className=" m-2 d-flex globalbtnColor"
+            onClick={handleNew}
+            disabled={isDeleting}
+          >
+            <BiPlusMedical className="mx-2" />
+            Add Category
+          </Button>
+          <div className="overlayLoading">
+            {isDeleting && (
+              <div className="overlayLoadingItem1">
+                <ColorRing
+                  visible={true}
+                  height="40"
+                  width="40"
+                  ariaLabel="blocks-loading"
+                  wrapperStyle={{}}
+                  wrapperClass="blocks-wrapper"
+                  const
+                  colors={['white', 'white', 'white', 'white', 'white']}
                 />
-              </Box>
-            </div>
-            <Modal
-              open={isModelOpen}
-              onClose={handleCloseRow}
-              className="overlayLoading modaleWidth"
-            >
-              <Box
-                className="modelBg"
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  width: 400,
-                  bgcolor: 'background.paper',
-                  boxShadow: 24,
-                  p: submitting ? 0 : 4,
-                }}
-              >
-                <div className="overlayLoading">
-                  {submitting && (
-                    <div className="overlayLoadingItem1">
-                      <ColorRing
-                        visible={true}
-                        height="40"
-                        width="40"
-                        ariaLabel="blocks-loading"
-                        wrapperStyle={{}}
-                        wrapperClass="blocks-wrapper"
-                        colors={[
-                          'rgba(0, 0, 0, 1) 0%',
-                          'rgba(255, 255, 255, 1) 68%',
-                          'rgba(0, 0, 0, 1) 93%',
-                        ]}
-                      />
-                    </div>
-                  )}
-                  <Form
-                    className={
-                      submitting
-                        ? 'scrollInAdminproject p-4 '
-                        : 'scrollInAdminproject p-3'
-                    }
-                  >
-                    <ImCross
-                      color="black"
-                      className="formcrossbtn"
-                      onClick={handleCloseRow}
-                    />
-                    <h4 className="d-flex justify-content-center">
-                      Add Category
-                    </h4>
+              </div>
+            )}
+            <Box sx={{ height: 400, width: '100%' }}>
+              <DataGrid
+                className={
+                  theme == 'light'
+                    ? `${theme}DataGrid mx-2`
+                    : `tableBg ${theme}DataGrid mx-2`
+                }
+                // rows={categoryData ? categoryData : noRows}
+                rows={categoryData}
+                columns={[
+                  ...columns,
+                  {
+                    field: 'categoryStatus',
+                    headerName: 'Status',
+                    width: 100,
+                    renderCell: (params) => {
+                      const isInactive =
+                        params.row.categoryStatus === 'Inactive';
+                      const cellClassName = isInactive
+                        ? 'inactive-cell'
+                        : 'active-cell';
 
-                    <TextField
-                      className="mb-3"
-                      value={category}
-                      label="Category Name"
-                      fullWidth
-                      onChange={(e) => setCatogry(e.target.value)}
+                      return (
+                        <div className={`status-cell ${cellClassName}`}>
+                          {params.row.categoryStatus}
+                        </div>
+                      );
+                    },
+                  },
+                  {
+                    field: 'action',
+                    headerName: 'Action',
+                    width: 250,
+                    renderCell: (params) => {
+                      return (
+                        <Grid item xs={8}>
+                          <Button
+                            variant="contained"
+                            className="mx-2 tableEditbtn"
+                            onClick={() => handleEdit(params.row._id)}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            className="mx-2 tableDeletebtn"
+                            onClick={() => deleteHandle(params.row._id)}
+                          >
+                            Delete
+                          </Button>
+                        </Grid>
+                      );
+                    },
+                  },
+                ]}
+                getRowId={getRowId}
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      pageSize: 5,
+                    },
+                  },
+                }}
+                pageSizeOptions={[5]}
+                // checkboxSelection
+                disableRowSelectionOnClick
+                // gridOptions={gridOptions}
+                localeText={{ noRowsLabel: 'Category Data Is Not Avalible' }}
+                // getRowClassName={(params) => (params.row.categoryStatus === 'Inactive' ? 'inactive-row' : '')}
+              />
+            </Box>
+          </div>
+          <Modal
+            open={isModelOpen}
+            onClose={handleCloseRow}
+            className="overlayLoading modaleWidth"
+          >
+            <Box
+              className="modelBg"
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 400,
+                bgcolor: 'background.paper',
+                boxShadow: 24,
+                p: submitting ? 0 : 4,
+              }}
+            >
+              <div className="overlayLoading">
+                {submitting && (
+                  <div className="overlayLoadingItem1">
+                    <ColorRing
+                      visible={true}
+                      height="40"
+                      width="40"
+                      ariaLabel="blocks-loading"
+                      wrapperStyle={{}}
+                      wrapperClass="blocks-wrapper"
+                      colors={[
+                        'rgba(0, 0, 0, 1) 0%',
+                        'rgba(255, 255, 255, 1) 68%',
+                        'rgba(0, 0, 0, 1) 93%',
+                      ]}
+                    />
+                  </div>
+                )}
+                <Form
+                  className={
+                    submitting
+                      ? 'scrollInAdminproject p-4 '
+                      : 'scrollInAdminproject p-3'
+                  }
+                >
+                  <ImCross
+                    color="black"
+                    className="formcrossbtn"
+                    onClick={handleCloseRow}
+                  />
+                  <h4 className="d-flex justify-content-center">
+                    Add Category
+                  </h4>
+
+                  <TextField
+                    className="mb-3"
+                    value={category}
+                    label="Category Name"
+                    fullWidth
+                    onChange={(e) => setCatogry(e.target.value)}
+                    required
+                  />
+                  <TextField
+                    className="mb-3"
+                    value={categoryDesc}
+                    label="Add Description"
+                    fullWidth
+                    onChange={(e) => setCatogryDesc(e.target.value)}
+                  />
+                  <FormControl className="mb-3">
+                    <InputLabel>Select Status</InputLabel>
+                    <Select
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
                       required
-                    />
-                    <TextField
-                      className="mb-3"
-                      value={categoryDesc}
-                      label="Add Description"
-                      fullWidth
-                      onChange={(e) => setCatogryDesc(e.target.value)}
-                    />
-                    <FormControl className="mb-3">
-                      <InputLabel>Select Status</InputLabel>
-                      <Select
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
-                        required
-                      >
-                        <MenuItem value={true}>Active</MenuItem>
-                        <MenuItem value={false}>Inactive</MenuItem>
-                      </Select>
-                    </FormControl>
-                    <TextField
-                      className="mb-3"
+                    >
+                      <MenuItem value={true}>Active</MenuItem>
+                      <MenuItem value={false}>Inactive</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <TextField
+                    className="mb-3"
+                    type="file"
+                    fullWidth
+                    onChange={handleFileChange}
+                    required
+                    style={{ display: 'none' }}
+                  />
+                  <FormControl className="mb-3 cateLogoImgContainer">
+                    <InputLabel className="cateLogoImgLabel">
+                      {selectedFile ? selectedFile.name : 'Upload Logo'}
+                    </InputLabel>
+                    <Input
                       type="file"
-                      fullWidth
                       onChange={handleFileChange}
                       required
                       style={{ display: 'none' }}
+                      id="file-input"
                     />
-                    <FormControl className="mb-3 cateLogoImgContainer">
-                      <InputLabel className="cateLogoImgLabel">
-                        {selectedFile ? selectedFile.name : 'Upload Logo'}
-                      </InputLabel>
-                      <Input
-                        type="file"
-                        onChange={handleFileChange}
-                        required
-                        style={{ display: 'none' }}
-                        id="file-input"
-                      />
-                      <label htmlFor="file-input">
-                        <Button
-                          variant="contained"
-                          component="span"
-                          className="globalbtnColor"
-                        >
-                          Browse
-                        </Button>
-                      </label>
-                    </FormControl>
-                    <Button
-                      className="mt-2 formbtn updatingBtn globalbtnColor"
-                      variant="contained"
-                      color="primary"
-                      onClick={submitHandler}
-                      disabled={submitting}
-                    >
-                      {submitting ? 'SUBMITTING' : 'SUBMIT '}
-                    </Button>
-                  </Form>
-                </div>
-              </Box>
-            </Modal>
-          </>
-        )}
-      </div>
+                    <label htmlFor="file-input">
+                      <Button
+                        variant="contained"
+                        component="span"
+                        className="globalbtnColor"
+                      >
+                        Browse
+                      </Button>
+                    </label>
+                  </FormControl>
+                  <Button
+                    className="mt-2 formbtn updatingBtn globalbtnColor"
+                    variant="contained"
+                    color="primary"
+                    onClick={submitHandler}
+                    disabled={submitting}
+                  >
+                    {submitting ? 'SUBMITTING' : 'SUBMIT '}
+                  </Button>
+                </Form>
+              </div>
+            </Box>
+          </Modal>
+        </>
+      )}
     </>
   );
 }
