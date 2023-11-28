@@ -251,7 +251,7 @@ function ChatWindowScreen() {
   useEffect(() => {
     socket.current.emit('addUser', userInfo._id, userInfo.role);
     socket.current.on('getUsers', (users) => {});
-  }, []);
+  }, [userInfo]);
 
   useEffect(() => {
     const getMessages = async () => {

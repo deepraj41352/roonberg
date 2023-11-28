@@ -569,10 +569,19 @@ body {
 .search-bar-dash-inner {
   background-color: #f8f9fa !important;
 }
+.mainConNav {
+  width: 79%;
+}
+.sidebar.visible {
+  width: 0px;
+  /* display: none; */
+}
 .sidebar {
-  position: fixed;
   width: 21%;
   min-height: 100vh;
+
+  /* height: 100vh !important; */
+  /* background-color: #120c16; */
   background-color: #070719;
   color: #fff;
   white-space: nowrap;
@@ -580,18 +589,6 @@ body {
   transition: width 0.3s ease-in-out;
 }
 
-.sidebar.visible {
-  width: 0;
-}
-
-.mainConNav {
-  width: 79%;
-  float: right;
-}
-
-.mainConNav.hidden {
-  width: 100%;
-}
 .admin-btn-logo2 {
   display: none;
 }
@@ -2013,4 +2010,7 @@ body {
 }
 .table-cell {
   min-width: 500px;
+}
+.darkDataGrid .css-whi0l6 {
+  color: white !important;
 }

@@ -117,7 +117,7 @@ function App() {
 
       <div>
         <Container fluid className="px-0">
-          <div>
+          <div className="d-flex ">
             {userInfo ? (
               <Sidebar
                 sidebarVisible={sidebarVisible}
@@ -125,11 +125,7 @@ function App() {
               />
             ) : null}
 
-            <div
-              className={`px-0 ${
-                userInfo && !sidebarVisible ? 'mainConNav' : 'w-100'
-              }`}
-            >
+            <div className={`px-0  w-100`}>
               {userInfo ? (
                 <Navbar expand="lg" className="admin-navbar">
                   <Container fluid>
@@ -146,28 +142,6 @@ function App() {
                         thumbnail
                       />
                     </Navbar.Brand>
-                    {/* <div className="searchbar">
-                      <Form className="d-flex">
-                        <InputGroup className="search-bar-dash">
-                          <Form.Control
-                            type="search"
-                            value={searchValue}
-                            onChange={handleInputChange}
-                            onClick={handleSearchScreen}
-                            className="search-bar-dash-inner"
-                            placeholder="Search..."
-                            aria-label="Search"
-                            aria-describedby="basic-addon2"
-                          />
-                          <InputGroup.Text id="basic-addon2">
-                            <BsSearch className="fs-4" />
-                          </InputGroup.Text>
-                        </InputGroup>
-                      </Form>
-                    </div> */}
-
-                    {/* <Navbar.Toggle aria-controls="navbarScroll" /> */}
-
                     <Navbar.Collapse
                       className="justify-content-end disNone"
                       id="navbarScroll"
@@ -180,15 +154,6 @@ function App() {
                         <div className="py-2">
                           <Theme />
                         </div>
-
-                        {/* {/* <Link href="#action1">
-                          <BiShareAlt className="fs-4 admin-btn-logo" />
-                        </Link>
-
-                        <Link href="#">
-                          <FiClock className="fs-4 admin-btn-logo" />
-                        </Link> */}
-
                         <Link
                           to="/notificationScreen"
                           className="position-relative"
@@ -232,46 +197,6 @@ function App() {
                         </Dropdown>
                       </Nav>
                     </Navbar.Collapse>
-
-                    {/* <div
-                      className="profile-icon me-1 ms-3"
-                      onClick={toggleDropdown}
-                    >
-                      <img
-                        className="w-100 h-100 profile-icon-inner img-fornavs"
-                        src={
-                          userInfo.profile_picture
-                            ? userInfo.profile_picture
-                            : './avatar.png'
-                        }
-                        alt="userimg"
-                      />
-                      {isDropdownOpen && (
-                        <div
-                          className="dropdown-content"
-                          onClick={closeDropdown}
-                        >
-                          <Link to="/profile-screen">Profile</Link>
-                          <Link
-                            to="/notificationScreen"
-                            className="position-relative"
-                          >
-                            Notification
-                            {NotificationData.length > 0 && (
-                              <span className="position-absolute notification-badgeApp top-0 start-110 translate-middle badge rounded-pill bg-danger">
-                                {NotificationData.length}
-                              </span>
-                            )}
-                          </Link>
-          
-                          <hr />
-                          <Link onClick={signoutHandler} to="#">
-                            Logout
-                          </Link>
-                        </div>
-                      )}
-                    </div> */}
-
                     <div
                       className="p-2 me-3 fs-5 admin-btn-logo2"
                       onClick={toggleSidebar}
@@ -281,36 +206,6 @@ function App() {
                   </Container>
                 </Navbar>
               ) : (
-                // <Navbar expand="lg" className="main-div">
-                //   <Container className="loginPageNav">
-                //     <Navbar.Brand href="/">
-                //       <Image className="border-0" src="/logo2.png" thumbnail />
-                //     </Navbar.Brand>
-                //     <Navbar.Toggle
-                //       aria-controls="basic-navbar-nav"
-                //       className="Toggle-button"
-                //     />
-                //     <Navbar.Collapse
-                //       className="justify-content-end"
-                //       id="basic-navbar-nav"
-                //     >
-                //       <Nav className=" login-button">
-                //         <Nav className="login-nav ">
-                //           {pathName && pathName === '/registration' ? (
-                //             <a className="login-admin" href="/">
-                //               {/* <BsFillPersonFill className="fs-5 Icon-person me-1 " /> */}
-                //               Login
-                //             </a>
-                //           ) : (
-                //             <a className="login-admin" href="/registration">
-                //               Singnup
-                //             </a>
-                //           )}
-                //         </Nav>
-                //       </Nav>
-                //     </Navbar.Collapse>
-                //   </Container>
-                // </Navbar>
                 <Navbar expand="lg" className="main-div">
                   <Container className="loginPageNav">
                     <Navbar.Brand href="/">
@@ -336,7 +231,10 @@ function App() {
               <main className={userInfo ? `windowCal` : `windowCal1`}>
                 <div className={userInfo ? `my-4 mx-3` : `m-0 mx-3`}>
                   <Routes>
-                    <Route path="/" element={<SignUpForm />} />
+                    <Route
+                      path="/"
+                      element={userInfo ? <AdminDashboard /> : <SignUpForm />}
+                    />
                     <Route path="/test" element={<MyComponent />} />
                     <Route
                       path="/confirm/:token"

@@ -211,7 +211,7 @@ export default function AdminAgentListScreen() {
         setLastName('');
         setStatus('');
         setEmail('');
-        setSelectCategories('');
+        setSelectCategories([]);
         dispatch({ type: 'UPDATE_SUCCESS', payload: true });
         dispatch({ type: 'FATCH_SUBMITTING', payload: false });
       }

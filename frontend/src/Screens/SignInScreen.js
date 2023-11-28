@@ -23,7 +23,11 @@ function SignUpForm() {
   };
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
-
+  useEffect(() => {
+    if (userInfo) {
+      navigate('/dashboard');
+    }
+  }, [userInfo, navigate]);
   useEffect(() => {
     const rememberedUser = localStorage.getItem('rememberedUser');
     if (rememberedUser) {
@@ -68,12 +72,6 @@ function SignUpForm() {
       setIsSubmiting(false);
     }
   };
-
-  useEffect(() => {
-    if (userInfo) {
-      navigate('/dashboard');
-    }
-  }, [userInfo, navigate]);
 
   return (
     <Container className="loginPage d-flex  flex-column justify-content-center align-items-center">
