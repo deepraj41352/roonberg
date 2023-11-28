@@ -574,6 +574,8 @@ body {
 }
 .sidebar.visible {
   width: 0px;
+  max-width: 0px;
+  min-width: 0px;
   /* display: none; */
 }
 .sidebar {
