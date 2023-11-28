@@ -471,9 +471,16 @@ function ProfileScreen() {
                       >
                         <InputLabel>Country</InputLabel>
                         <Select
-                          // className=""
                           value={country}
                           onChange={(e) => setCountry(e.target.value)}
+                          MenuProps={{
+                            PaperProps: {
+                              style: {
+                                maxHeight: 150,
+                                top: 474,
+                              },
+                            },
+                          }}
                         >
                           {countrylist.map((countryName) => (
                             <MenuItem key={countryName} value={countryName}>

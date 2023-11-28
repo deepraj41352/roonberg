@@ -19,6 +19,8 @@ const columns = [
     field: 'last_name',
     headerName: 'Last Name',
     width: 120,
+    renderCell: (params) =>
+      params.row.last_name ? params.row.last_name : 'NA',
   },
   {
     field: 'email',
