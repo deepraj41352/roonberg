@@ -27,7 +27,17 @@ const columns = [
     headerName: 'Email',
     width: 130,
   },
-  { field: 'role', headerName: 'Role', width: 150 },
+  {
+    field: 'role',
+    headerName: 'Role',
+    width: 150,
+    renderCell: (params) => {
+      const capitalizeFirstLetter = (str) => {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+      };
+      return capitalizeFirstLetter(params.row.role);
+    },
+  },
   {
     field: 'createdAt',
     headerName: 'Registration',

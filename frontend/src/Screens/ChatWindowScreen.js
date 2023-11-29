@@ -33,6 +33,7 @@ import MUIRichTextEditor from 'mui-rte';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { MdCancel } from 'react-icons/md';
 import { FaArrowLeft, FaImage } from 'react-icons/fa';
+import truncateText from '../TruncateText';
 
 function ChatWindowScreen() {
   const { id } = useParams();
@@ -71,7 +72,14 @@ function ChatWindowScreen() {
   const audioRef = useRef();
   const SocketUrl = process.env.REACT_APP_SOCKETURL;
   // const socket = io(SocketUrl); // Replace with your server URL
+  const [showTooltip, setShowTooltip] = useState(false);
 
+  const handleTooltipClick = () => {
+    setShowTooltip(true);
+  };
+  const handleTooltipClickClose = () => {
+    setShowTooltip(false);
+  };
   useEffect(() => {
     if (selectedfile && selectedfile.type) {
       const mediaType =
@@ -668,7 +676,7 @@ function ChatWindowScreen() {
             )}
             {projectData && (
               <div className={`TasknameNav me-3  ${theme}backbtn`}>
-                Task Name - {projectData.taskName}{' '}
+                Task Name -{truncateText(projectData?.taskName, 30)}
               </div>
             )}
             <div className={`${theme}-threeDots`} onClick={toggleSidebar}>
@@ -778,11 +786,45 @@ function ChatWindowScreen() {
                         {chatOpositeMember ? chatOpositeMember.email : null}
                       </div>
                     </Form.Group>
+
                     <Form.Group
                       className={`mb-3 projetStatusChat ${theme}chat-info-inner`}
                     >
                       {/* <Form.Label className="fw-bold">Project Name</Form.Label> */}
-                      <div>Project Name - {projectData?.projectName} </div>
+                      <div>
+                        Project Name -{' '}
+                        {truncateText(projectData?.projectName, 30)}
+                      </div>
+                    </Form.Group>
+                    <Form.Group
+                      className={`mb-3 projetStatusChat ${theme}chat-info-inner`}
+                    >
+                      {!showTooltip && (
+                        <>
+                          <div
+                            className="tooltipShow"
+                            onClick={handleTooltipClick}
+                          >
+                            Task Description -{' '}
+                            {truncateText(projectData?.taskDescription, 30)}
+                          </div>
+                        </>
+                      )}
+                      {showTooltip && (
+                        <>
+                          <div className="d-flex justify-content-end">
+                            <button
+                              className="tooltiphide"
+                              onClick={handleTooltipClickClose}
+                            >
+                              Hide
+                            </button>
+                          </div>
+                          <div className="taskDescription">
+                            Task Description - {projectData?.taskDescription}
+                          </div>
+                        </>
+                      )}
                     </Form.Group>
                     <Form.Group className="mb-3 " controlId="formBasicPassword">
                       <Form.Label className="mb-1 fw-bold">
@@ -1136,10 +1178,19 @@ function ChatWindowScreen() {
                 ariaLabel="blocks-loading"
                 wrapperStyle={{}}
                 wrapperClass="blocks-wrapper"
-                colors={[
-                  'rgba(0, 0, 0, 1) 0%, rgba(17, 17, 74, 1) 68%, rgba(0, 0, 0, 1) 93%',
-                ]}
-                className={`${theme}-ringhcolor`}
+                colors={
+                  toggleState
+                    ? ['white', 'white', 'white', 'white', 'white']
+                    : [
+                        'rgba(0, 0, 0, 1) 0%',
+                        'rgba(17, 17, 74, 1) 68%',
+                        'rgba(0, 0, 0, 1) 93%',
+                      ]
+                }
+                // colors={[
+                //   'rgba(0, 0, 0, 1) 0%, rgba(17, 17, 74, 1) 68%, rgba(0, 0, 0, 1) 93%',
+                // ]}
+                // className={`${theme}-ringhcolor`}
               />
             ) : (
               <IoSendSharp
@@ -1181,6 +1232,33 @@ function ChatWindowScreen() {
               >
                 {/* <Form.Label className="fw-bold">Project Name</Form.Label> */}
                 <div>Project Name - {projectData?.projectName} </div>
+              </Form.Group>
+              <Form.Group
+                className={`mb-3 projetStatusChat ${theme}chat-info-inner`}
+              >
+                {/* {!showTooltip && (
+                  <>
+                    <div className="tooltipShow" onClick={handleTooltipClick}>
+                      Task Description -{' '}
+                      {truncateText(projectData?.taskDescription, 30)}
+                    </div>
+                  </>
+                )}
+                {showTooltip && (
+                  <>
+                    <div className="d-flex justify-content-end">
+                      <button
+                        className="tooltiphide"
+                        onClick={handleTooltipClickClose}
+                      >
+                        Hide
+                      </button>
+                    </div> */}
+                <div className="taskDescription">
+                  Task Description - {projectData?.taskDescription}
+                </div>
+                {/* </>
+                )} */}
               </Form.Group>
               <Form.Group className="mb-3 " controlId="formBasicPassword">
                 <Form.Label className="mb-1 fw-bold">Task Status</Form.Label>

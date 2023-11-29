@@ -58,99 +58,86 @@ export default function ResetPasswordScreen() {
   }, [userInfo, navigate]);
 
   return (
-    <>
-      <Container className="loginPage d-flex  flex-column justify-content-center align-items-center windowCal1">
-        <div className="Sign-up-container-inner py-3">
-          <Row>
-            <Col>
-              <h4 className="mb-3 heading4">Reset Password</h4>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <Card className="p-4 formColor">
-                <Form
-                  onSubmit={submitHandler}
-                  className="resetFormWidth d-flex flex-column"
-                >
-                  {/* <Form.Label className="textLeft text-left">
-                  Email Address
-                </Form.Label>
-                <Form.Control
-                  className="px-2  py-1 mb-3"
-                  value={email}
-                  type="email"
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                <Validations type="email" value={email} /> */}
-                  <div className="mb-2">
-                    <Form.Label className="textLeft text-left startLabel">
-                      Password
-                    </Form.Label>
-                    <div className="Password-input-eye mb-2">
-                      <div className=" rounded-2">
-                        <Form.Control
-                          id="password"
-                          value={password}
-                          className="pswd-input"
-                          type={showPassword ? 'text' : 'password'}
-                          onChange={(e) => {
-                            setPassword(e.target.value);
-                          }}
-                        />
-                      </div>
-                      <div
-                        className="eye-bttn "
-                        onClick={togglePasswordVisibility}
-                      >
-                        {showPassword ? <FaEye /> : <FaRegEyeSlash />}
-                      </div>
-                    </div>
-                    <div className="validationPass mt-2">
-                      <Validations
-                        type="password"
-                        className="validationPass"
+    <Container className="loginPage d-flex  flex-column justify-content-center align-items-center">
+      <div className="Sign-up-container-inner py-3">
+        <Row>
+          <Col>
+            <h4 className="mb-3 heading4">Reset Password</h4>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Card className="formColor">
+              <Form
+                onSubmit={submitHandler}
+                className="resetFormWidth p-4 d-flex flex-column"
+              >
+                <div className="mb-2">
+                  <Form.Label className="textLeft text-left startLabel">
+                    Password
+                  </Form.Label>
+                  <div className="Password-input-eye mb-2">
+                    <div className=" rounded-2">
+                      <Form.Control
+                        id="password"
                         value={password}
+                        className="pswd-input"
+                        type={showPassword ? 'text' : 'password'}
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                        }}
                       />
                     </div>
-                  </div>
-                  <div className="mb-2">
-                    <Form.Label className="textLeft text-left">
-                      Confirm Password
-                    </Form.Label>
-                    <div className="Password-input-eye mb-2">
-                      <div className=" rounded-2">
-                        <Form.Control
-                          id="password"
-                          value={confirmPassword}
-                          onChange={(e) => setConfirmPassword(e.target.value)}
-                          className="pswd-input"
-                          type={showPassword ? 'text' : 'password'}
-                          required
-                        />
-                      </div>
-                      <div
-                        className="eye-bttn "
-                        onClick={togglePasswordVisibility}
-                      >
-                        {showPassword ? <FaEye /> : <FaRegEyeSlash />}
-                      </div>
+                    <div
+                      className="eye-bttn "
+                      onClick={togglePasswordVisibility}
+                    >
+                      {showPassword ? <FaEye /> : <FaRegEyeSlash />}
                     </div>
                   </div>
-                  <Button
-                    type="submit"
-                    className="globalbtnColor px-2 py-1"
-                    disabled={isSubmiting}
-                  >
-                    {isSubmiting ? 'SUBMITING' : 'SUBMIT'}
-                  </Button>
-                </Form>
-              </Card>
-            </Col>
-          </Row>
-        </div>
-      </Container>
-    </>
+                  <div className="validationPass mt-2">
+                    <Validations
+                      type="password"
+                      className="validationPass"
+                      value={password}
+                    />
+                  </div>
+                </div>
+                <div className="mb-2">
+                  <Form.Label className="textLeft text-left startLabel">
+                    Confirm Password
+                  </Form.Label>
+                  <div className="Password-input-eye mb-2">
+                    <div className=" rounded-2">
+                      <Form.Control
+                        id="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="pswd-input"
+                        type={showPassword ? 'text' : 'password'}
+                        required
+                      />
+                    </div>
+                    <div
+                      className="eye-bttn "
+                      onClick={togglePasswordVisibility}
+                    >
+                      {showPassword ? <FaEye /> : <FaRegEyeSlash />}
+                    </div>
+                  </div>
+                </div>
+                <Button
+                  type="submit"
+                  className="globalbtnColor px-2 py-1"
+                  disabled={isSubmiting}
+                >
+                  {isSubmiting ? 'SUBMITING' : 'SUBMIT'}
+                </Button>
+              </Form>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    </Container>
   );
 }

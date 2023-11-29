@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 import {
+  Alert,
   Avatar,
   Button,
   Grid,
@@ -110,6 +111,7 @@ export default function AdminContractorListScreen() {
   const [categoryDesc, setCatogryDesc] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [updateData, setUpdateData] = useState(true);
+  const [ShowErrorMessage, setShowErrorMessage] = useState(false);
   const [
     {
       loading,
@@ -260,6 +262,17 @@ export default function AdminContractorListScreen() {
     }
   };
 
+  const validation = (e) => {
+    const inputValue = e.target.value;
+    setCatogry(inputValue);
+    const firstLetterRegex = /^[a-zA-Z]/;
+    if (!firstLetterRegex.test(inputValue.charAt(0))) {
+      setShowErrorMessage(true);
+    } else {
+      setShowErrorMessage(false);
+    }
+  };
+
   return (
     <>
       {loading ? (
@@ -393,109 +406,130 @@ export default function AdminContractorListScreen() {
                 width: 400,
                 bgcolor: 'background.paper',
                 boxShadow: 24,
-                p: submitting ? 0 : 4,
+                p: 4,
+                borderRadius: 1,
               }}
             >
-              <div className="overlayLoading">
-                {submitting && (
-                  <div className="overlayLoadingItem1">
-                    <ColorRing
-                      visible={true}
-                      height="40"
-                      width="40"
-                      ariaLabel="blocks-loading"
-                      wrapperStyle={{}}
-                      wrapperClass="blocks-wrapper"
-                      colors={[
-                        'rgba(0, 0, 0, 1) 0%',
-                        'rgba(255, 255, 255, 1) 68%',
-                        'rgba(0, 0, 0, 1) 93%',
-                      ]}
-                    />
-                  </div>
-                )}
-                <Form
-                  className={
-                    submitting
-                      ? 'scrollInAdminproject p-4 mb-3'
-                      : 'scrollInAdminproject p-3 mb-3'
-                  }
+              {submitting && (
+                <div className="overlayLoadingItem1">
+                  <ColorRing
+                    visible={true}
+                    height="40"
+                    width="40"
+                    ariaLabel="blocks-loading"
+                    wrapperStyle={{}}
+                    wrapperClass="blocks-wrapper"
+                    colors={[
+                      'rgba(0, 0, 0, 1) 0%',
+                      'rgba(255, 255, 255, 1) 68%',
+                      'rgba(0, 0, 0, 1) 93%',
+                    ]}
+                  />
+                </div>
+              )}
+              {/* <Form onSubmit={submitHandler}>
+                <TextField
+                  required
+                  className="mb-3"
+                  value={category}
+                  onChange={(e) => setCatogry(e.target.value)}
+                  label="Task Name"
+                  fullWidth
+                  type="text"
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                  className="mt-2 formbtn updatingBtn globalbtnColor"
                 >
-                  <ImCross
-                    color="black"
-                    className="formcrossbtn"
-                    onClick={handleCloseRow}
-                  />
-                  <h4 className="d-flex justify-content-center">
-                    Add Category
-                  </h4>
+                  {isSubmiting ? 'SUBMITTING' : 'SUBMIT '}
+                </Button>
+              </Form> */}
+              <Form
+                className="scrollInAdminproject p-3"
+                // onSubmit={submitHandler}
+              >
+                <ImCross
+                  color="black"
+                  className="formcrossbtn"
+                  onClick={handleCloseRow}
+                />
+                <h4 className="d-flex justify-content-center">Add Category</h4>
 
-                  <TextField
-                    className="mb-3"
-                    value={category}
-                    label="Category Name"
-                    fullWidth
-                    onChange={(e) => setCatogry(e.target.value)}
-                    required
-                  />
-                  <TextField
-                    className="mb-3"
-                    value={categoryDesc}
-                    label="Add Description"
-                    fullWidth
-                    onChange={(e) => setCatogryDesc(e.target.value)}
-                  />
-                  <FormControl className="mb-3">
-                    <InputLabel>Select Status</InputLabel>
-                    <Select
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value)}
-                      required
-                    >
-                      <MenuItem value={true}>Active</MenuItem>
-                      <MenuItem value={false}>Inactive</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <TextField
-                    className="mb-3"
-                    type="file"
-                    fullWidth
-                    onChange={handleFileChange}
-                    required
-                    style={{ display: 'none' }}
-                  />
-                  <FormControl className="mb-3 cateLogoImgContainer">
-                    <InputLabel className="cateLogoImgLabel">
-                      {selectedFile ? selectedFile.name : 'Upload Logo'}
-                    </InputLabel>
-                    <Input
-                      type="file"
-                      onChange={handleFileChange}
-                      required
-                      style={{ display: 'none' }}
-                      id="file-input"
-                    />
-                    <label htmlFor="file-input">
-                      <Button
-                        variant="contained"
-                        component="span"
-                        className="globalbtnColor"
-                      >
-                        Browse
-                      </Button>
-                    </label>
-                  </FormControl>
-                  <Button
-                    className="mt-2 formbtn updatingBtn globalbtnColor"
-                    variant="contained"
-                    color="primary"
-                    onClick={submitHandler}
-                    disabled={submitting}
+                <TextField
+                  className="mb-3"
+                  value={category}
+                  label="Category Name"
+                  fullWidth
+                  onChange={validation}
+                  required
+                />
+                {ShowErrorMessage && (
+                  <Alert
+                    variant="danger"
+                    className="error nameValidationErrorBox"
                   >
-                    {submitting ? 'SUBMITTING' : 'SUBMIT '}
-                  </Button>
-                </Form>
-              </div>
+                    The first letter of the Category should be an alphabet
+                  </Alert>
+                )}
+                <TextField
+                  className="mb-3"
+                  value={categoryDesc}
+                  label="Add Description"
+                  required
+                  fullWidth
+                  onChange={(e) => setCatogryDesc(e.target.value)}
+                />
+                <FormControl className="mb-3">
+                  <InputLabel>Select Status</InputLabel>
+                  <Select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    required
+                  >
+                    <MenuItem value={true}>Active</MenuItem>
+                    <MenuItem value={false}>Inactive</MenuItem>
+                  </Select>
+                </FormControl>
+                <TextField
+                  className="mb-3"
+                  type="file"
+                  fullWidth
+                  onChange={handleFileChange}
+                  required
+                  style={{ display: 'none' }}
+                />
+                <FormControl className="mb-3 cateLogoImgContainer">
+                  <InputLabel className="cateLogoImgLabel">
+                    {selectedFile ? selectedFile.name : 'Upload Logo'}
+                  </InputLabel>
+                  <Input
+                    type="file"
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }}
+                    id="file-input"
+                  />
+                  <label htmlFor="file-input">
+                    <Button
+                      variant="contained"
+                      component="span"
+                      className="globalbtnColor"
+                    >
+                      Browse
+                    </Button>
+                  </label>
+                </FormControl>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                  onClick={submitHandler}
+                  className="mt-2 formbtn updatingBtn globalbtnColor model-btn "
+                >
+                  {submitting && isSubmiting ? 'SUBMITTING' : 'SUBMIT '}
+                </Button>
+              </Form>
             </Box>
           </Modal>
         </>

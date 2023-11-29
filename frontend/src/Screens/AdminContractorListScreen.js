@@ -340,94 +340,89 @@ export default function AdminContractorListScreen() {
                 width: 400,
                 bgcolor: 'background.paper',
                 boxShadow: 24,
-                p: submitting ? 0 : 4,
+                p: 4,
+                borderRadius: 1,
               }}
             >
-              <div className="overlayLoading">
-                {submitting && (
-                  <div className="overlayLoadingItem1">
-                    <ColorRing
-                      visible={true}
-                      height="40"
-                      width="40"
-                      ariaLabel="blocks-loading"
-                      wrapperStyle={{}}
-                      wrapperClass="blocks-wrapper"
-                      colors={[
-                        'rgba(0, 0, 0, 1) 0%',
-                        'rgba(255, 255, 255, 1) 68%',
-                        'rgba(0, 0, 0, 1) 93%',
-                      ]}
-                    />
-                  </div>
-                )}
-                <Form
-                  onSubmit={handleSubmit}
-                  className={
-                    submitting
-                      ? 'scrollInAdminproject p-4 mb-3'
-                      : 'scrollInAdminproject p-3 mb-3'
-                  }
-                >
-                  <ImCross
-                    color="black"
-                    className="formcrossbtn"
-                    onClick={handleCloseRow}
+              {submitting && (
+                <div className="overlayLoadingItem1">
+                  <ColorRing
+                    visible={true}
+                    height="40"
+                    width="40"
+                    ariaLabel="blocks-loading"
+                    wrapperStyle={{}}
+                    wrapperClass="blocks-wrapper"
+                    colors={[
+                      'rgba(0, 0, 0, 1) 0%',
+                      'rgba(255, 255, 255, 1) 68%',
+                      'rgba(0, 0, 0, 1) 93%',
+                    ]}
                   />
+                </div>
+              )}
+              <Form
+                onSubmit={handleSubmit}
+                className="scrollInAdminproject p-3"
+              >
+                <ImCross
+                  color="black"
+                  className="formcrossbtn"
+                  onClick={handleCloseRow}
+                />
 
-                  <h4 className="d-flex justify-content-center">
-                    Add Contractor
-                  </h4>
+                <h4 className="d-flex justify-content-center">
+                  Add Contractor
+                </h4>
 
-                  <TextField
-                    className="mb-3"
-                    value={firstname}
-                    onChange={(e) => setFirstname(e.target.value)}
-                    label="First Name"
-                    fullWidth
+                <TextField
+                  className="mb-3"
+                  value={firstname}
+                  onChange={(e) => setFirstname(e.target.value)}
+                  label="First Name"
+                  fullWidth
+                  required
+                />
+                <TextField
+                  className="mb-3"
+                  value={lastname}
+                  onChange={(e) => setLastname(e.target.value)}
+                  label="Last Name"
+                  fullWidth
+                />
+
+                <TextField
+                  className="mb-3"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  label="Email"
+                  type="email"
+                  fullWidth
+                  required
+                />
+                <Validations type="email" value={email} />
+                <FormControl className="formselect">
+                  <InputLabel>Select Status</InputLabel>
+                  <Select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
                     required
-                  />
-                  <TextField
-                    className="mb-3"
-                    value={lastname}
-                    onChange={(e) => setLastname(e.target.value)}
-                    label="Last Name"
-                    fullWidth
-                  />
-
-                  <TextField
-                    className="mb-3"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    label="Email"
-                    type="email"
-                    fullWidth
-                    required
-                  />
-                  <Validations type="email" value={email} />
-                  <FormControl className="formselect">
-                    <InputLabel>Select Status</InputLabel>
-                    <Select
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value)}
-                      required
-                    >
-                      <MenuItem value={true}>Active</MenuItem>
-                      <MenuItem value={false}>Inactive</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <br></br>
-                  <Button
-                    className="mt-2 formbtn updatingBtn globalbtnColor"
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                    disabled={submitting}
                   >
-                    {submitting ? 'SUBMITTING' : 'SUBMIT '}
-                  </Button>
-                </Form>
-              </div>
+                    <MenuItem value={true}>Active</MenuItem>
+                    <MenuItem value={false}>Inactive</MenuItem>
+                  </Select>
+                </FormControl>
+                <br></br>
+                <Button
+                  className="mt-2 formbtn updatingBtn globalbtnColor model-btn "
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                  disabled={submitting}
+                >
+                  {submitting ? 'SUBMITTING' : 'SUBMIT '}
+                </Button>
+              </Form>
             </Box>
           </Modal>
         </>

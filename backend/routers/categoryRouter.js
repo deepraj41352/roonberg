@@ -47,6 +47,15 @@ categoryRouter.post(
   upload.single('categoryImage'),
   expressAsyncHandler(async (req, res) => {
     try {
+      const categoryName = capitalizeFirstLetter(req.body.categoryName);
+      let categoryNames = await Category.findOne({
+        categoryName: categoryName,
+      });
+      if (categoryNames) {
+        res
+          .status(201)
+          .send({ message: 'A Category With The Same Name Already Exists' });
+      }
       if (req.file) {
         const profile_picture = await uploadDoc(req);
         req.body.categoryImage = profile_picture;

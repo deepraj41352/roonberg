@@ -64,7 +64,7 @@ export default function ForgetPassword() {
                   className="globalbtnColor px-5 py-1"
                   disabled={isSubmiting}
                 >
-                  {isSubmiting ? 'Submiting...' : 'Submit'}
+                  {isSubmiting ? 'SUBMITTING' : 'SUBMIT '}
                 </Button>
               </Form>
             </Card>
@@ -88,7 +88,7 @@ export default function ForgetPassword() {
                 className="globalbtnColor btn-resend px-5 py-1"
                 disabled={isSubmiting}
               >
-                {isSubmiting ? 'Resending...' : 'Resend'}
+                {isSubmiting ? 'RESENDING' : 'RESEND'}
               </Button>
             </Card>
           </Col>

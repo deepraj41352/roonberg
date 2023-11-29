@@ -11,7 +11,6 @@ import {
   Typography,
 } from '@mui/material';
 import { ImCross } from 'react-icons/im';
-
 import Modal from '@mui/material/Modal';
 import { Alert, Dropdown, Form } from 'react-bootstrap';
 import { BiPlusMedical } from 'react-icons/bi';
@@ -30,6 +29,7 @@ import AvatarImage from '../Components/Avatar';
 import { CiSettings } from 'react-icons/ci';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import truncateText from '../TruncateText';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -225,7 +225,7 @@ export default function TasksScreen() {
       successDelete,
       successUpdate,
       // categoryData,
-      agentData,
+      // agentData,
       // contractorData,
     },
     dispatch,
@@ -237,7 +237,7 @@ export default function TasksScreen() {
     successUpdate: false,
     // categoryData: [],
     // contractorData: [],
-    agentData: [],
+    // agentData: [],
   });
   console.log('selectedRowId', selectedRowId);
   const [projectName, setProjectName] = useState('');
@@ -250,7 +250,8 @@ export default function TasksScreen() {
   const [ProjectData, setProjectData] = useState([]);
   const [contractorData, setContractorData] = useState([]);
   const [ShowErrorMessage, setShowErrorMessage] = useState(false);
-
+  const [agentData, setAgentData] = useState([]);
+  const [filterCategory, setFilterCategory] = useState([]);
   const navigate = useNavigate();
   const [projectStatus, setProjectStatus] = useState('active');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -337,6 +338,55 @@ export default function TasksScreen() {
   }, [success]);
   // ......}
 
+  // {Get Category.........
+  useEffect(() => {
+    setLoading(true);
+    const FatchCategory = async () => {
+      try {
+        const response = await axios.get(`/api/category/`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        const datas = response.data;
+        setCategoryData(datas);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    FatchCategory();
+  }, []);
+  // ......}
+
+  // {Get Agent User}
+  useEffect(() => {
+    const FatchContractorData = async () => {
+      try {
+        const { data } = await axios.post(`/api/user/`, { role: 'agent' });
+        setAgentData(data);
+      } catch (error) {}
+    };
+    FatchContractorData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = () => {
+      const filteredCategory = agentData.flatMap(
+        (agentCate) => agentCate.agentCategory
+      );
+      console.log('filteredCategory', filteredCategory);
+
+      const matchWithCateData = filteredCategory.map((AgentsCateId) =>
+        categoryData.find((cat) => cat._id === AgentsCateId)
+      );
+
+      const finalCategory = matchWithCateData.filter(Boolean);
+      setFilterCategory(finalCategory);
+      console.log('matchWithCateData', finalCategory);
+    };
+    fetchData();
+  }, [agentData, categoryData]);
+
   // {Get  Contractor User.........
   useEffect(() => {
     const FatchContractorData = async () => {
@@ -359,26 +409,6 @@ export default function TasksScreen() {
     };
 
     FatchContractorData();
-  }, []);
-  // ......}
-
-  // {Get Category.........
-  useEffect(() => {
-    setLoading(true);
-    const FatchCategory = async () => {
-      try {
-        const response = await axios.get(`/api/category/`, {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        });
-        const datas = response.data;
-        setCategoryData(datas);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    FatchCategory();
   }, []);
   // ......}
 
@@ -630,7 +660,7 @@ export default function TasksScreen() {
               </Button>
             </div>
 
-            <div className="tableScreen">
+            <div>
               <div className="overlayLoading">
                 {isDeleting && (
                   <div className="overlayLoadingItem1">
@@ -714,6 +744,7 @@ export default function TasksScreen() {
                               bgcolor: 'background.paper',
                               boxShadow: 24,
                               p: isSubmiting ? 0 : 4,
+                              borderRadius: 1,
                             }}
                           >
                             <div className="overlayLoading p-2">
@@ -756,6 +787,7 @@ export default function TasksScreen() {
                               bgcolor: 'background.paper',
                               boxShadow: 24,
                               p: isSubmiting ? 0 : 4,
+                              borderRadius: 1,
                             }}
                           >
                             <div className="overlayLoading">
@@ -807,6 +839,7 @@ export default function TasksScreen() {
                       <FaRegClock className="clockIcontab" />
                       {formattedLastLogin}
                     </div>
+
                     <Box sx={{ height: 400, width: '100%' }}>
                       <DataGrid
                         className={`tableGrid actionCenter tableBg  ${theme}DataGrid`}
@@ -843,216 +876,220 @@ export default function TasksScreen() {
                           width: 400,
                           bgcolor: 'background.paper',
                           boxShadow: 24,
-                          p: isSubmiting ? 0 : 4,
+                          p: 4,
+                          borderRadius: 1,
                         }}
                       >
-                        <div className="overlayLoading">
-                          {isSubmiting && (
-                            <div className="overlayLoadingItem1 y-3">
-                              <ColorRing
-                                visible={true}
-                                height="40"
-                                width="40"
-                                ariaLabel="blocks-loading"
-                                wrapperStyle={{}}
-                                wrapperClass="blocks-wrapper"
-                                colors={[
-                                  'rgba(0, 0, 0, 1) 0%',
-                                  'rgba(255, 255, 255, 1) 68%',
-                                  'rgba(0, 0, 0, 1) 93%',
-                                ]}
+                        {isSubmiting && (
+                          <div className="overlayLoadingItem1 y-3">
+                            <ColorRing
+                              visible={true}
+                              height="40"
+                              width="40"
+                              ariaLabel="blocks-loading"
+                              wrapperStyle={{}}
+                              wrapperClass="blocks-wrapper"
+                              colors={[
+                                'rgba(0, 0, 0, 1) 0%',
+                                'rgba(255, 255, 255, 1) 68%',
+                                'rgba(0, 0, 0, 1) 93%',
+                              ]}
+                            />
+                          </div>
+                        )}
+
+                        <Form
+                          className="scrollInAdminproject p-3"
+                          onSubmit={handleSubmit}
+                        >
+                          <ImCross
+                            color="black"
+                            className="formcrossbtn"
+                            onClick={handleCloseRow}
+                          />
+                          <h4 className="d-flex justify-content-center">
+                            Add Task
+                          </h4>
+
+                          <div className="cateContainer mb-3">
+                            <p className="cateItem">Categories</p>
+                            <div className="d-flex flex-wrap cateborder ">
+                              {filterCategory.map((category) => (
+                                <div key={category._id} className="cateItems">
+                                  <Form.Check
+                                    className="d-flex align-items-center gap-2"
+                                    type="radio"
+                                    id={`category-${category._id}`}
+                                    name="category"
+                                    value={category.categoryName}
+                                    label={
+                                      <div className="d-flex align-items-center">
+                                        <div className="">
+                                          {category.categoryImage !== 'null' ? (
+                                            <Avatar
+                                              src={category.categoryImage}
+                                            />
+                                          ) : (
+                                            <AvatarImage
+                                              name={category.categoryName}
+                                              bgColor={generateColorFromAscii(
+                                                category.categoryName[0].toLowerCase()
+                                              )}
+                                            />
+                                          )}
+                                        </div>
+                                        <div className="d-flex">
+                                          <span
+                                            className="ms-2 spanForCate"
+                                            data-tooltip={category.categoryName}
+                                          >
+                                            {truncateText(
+                                              category.categoryName,
+                                              7
+                                            )}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    }
+                                    onChange={(e) =>
+                                      setCategory(e.target.value)
+                                    }
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          <FormControl
+                            className={dynamicfield ? 'disable mb-3' : 'mb-3'}
+                          >
+                            <InputLabel>Select Project </InputLabel>
+                            <Select
+                              value={SelectProjectName}
+                              onChange={(e) => selectedProjectContractor(e)}
+                              // required
+                              MenuProps={{
+                                PaperProps: {
+                                  style: {
+                                    maxHeight: 150,
+                                    top: 474,
+                                  },
+                                },
+                              }}
+                            >
+                              <MenuItem
+                                disabled={dynamicfield}
+                                onClick={() => {
+                                  handleAddNewProject();
+                                }}
+                              >
+                                <MdAddCircleOutline /> Add New Project
+                              </MenuItem>
+                              {ProjectData &&
+                                ProjectData.map((items) => (
+                                  <MenuItem
+                                    key={items._id}
+                                    value={items.projectName}
+                                    onClick={() => removeDymanic()}
+                                  >
+                                    {items.projectName}
+                                  </MenuItem>
+                                ))}
+                            </Select>
+                          </FormControl>
+
+                          {dynamicfield ? (
+                            <div className="d-flex align-items-center gap-1">
+                              <TextField
+                                required
+                                className="mb-3"
+                                value={projectName}
+                                onChange={(e) => setProjectName(e.target.value)}
+                                label="Project Name"
+                                fullWidth
                               />
                             </div>
+                          ) : null}
+
+                          <TextField
+                            required
+                            className="mb-3"
+                            value={taskName}
+                            onChange={validation}
+                            label="Task Name"
+                            fullWidth
+                            type="text"
+                          />
+                          {ShowErrorMessage && (
+                            <Alert
+                              variant="danger"
+                              className="error nameValidationErrorBox"
+                            >
+                              The first letter of the task should be an alphabet
+                            </Alert>
                           )}
 
-                          <Form
-                            className={
-                              isSubmiting
-                                ? 'scrollInAdminproject p-4 mb-3'
-                                : 'scrollInAdminproject p-3 mb-3'
-                            }
-                            onSubmit={handleSubmit}
-                          >
-                            <ImCross
-                              color="black"
-                              className="formcrossbtn"
-                              onClick={handleCloseRow}
-                            />
-                            <h4 className="d-flex justify-content-center">
-                              Add Task
-                            </h4>
+                          <TextField
+                            required
+                            className="mb-3"
+                            value={taskDesc}
+                            onChange={(e) => setTaskDesc(e.target.value)}
+                            label="Description"
+                            fullWidth
+                          />
 
-                            <div className="cateContainer mb-3">
-                              <p className="cateItem">Categories</p>
-                              <div className="d-flex flex-wrap cateborder ">
-                                {categoryData.map((category) => (
-                                  <div key={category._id} className="cateItems">
-                                    <Form.Check
-                                      className="d-flex align-items-center gap-2"
-                                      type="radio"
-                                      required
-                                      id={`category-${category._id}`}
-                                      name="category"
-                                      value={category.categoryName}
-                                      label={
-                                        <div className="d-flex align-items-center">
-                                          <div className="">
-                                            {category.categoryImage !==
-                                            'null' ? (
-                                              <Avatar
-                                                src={category.categoryImage}
-                                              />
-                                            ) : (
-                                              <AvatarImage
-                                                name={category.categoryName}
-                                                bgColor={generateColorFromAscii(
-                                                  category.categoryName[0].toLowerCase()
-                                                )}
-                                              />
-                                            )}
-                                          </div>
-                                          <div className="d-flex">
-                                            <span className="ms-2 spanForCate">
-                                              {category.categoryName}
-                                            </span>
-                                          </div>
-                                        </div>
-                                      }
-                                      onChange={(e) =>
-                                        setCategory(e.target.value)
-                                      }
-                                    />
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-
-                            <FormControl
-                              className={dynamicfield ? 'disable mb-3' : 'mb-3'}
-                            >
-                              <InputLabel>Select Project </InputLabel>
+                          <FormControl className={'mb-3'}>
+                            <InputLabel>Select Contractor</InputLabel>
+                            {SelectProjectName && selectedContractor ? (
                               <Select
-                                value={SelectProjectName}
-                                onChange={(e) => selectedProjectContractor(e)}
-                                // required
+                                value={selectedContractor[0]._id}
+                                onChange={(e) =>
+                                  setContractorName(e.target.value)
+                                }
+                                disabled
                               >
-                                <MenuItem
-                                  disabled={dynamicfield}
-                                  onClick={() => {
-                                    handleAddNewProject();
-                                  }}
-                                >
-                                  <MdAddCircleOutline /> Add New Project
+                                <MenuItem value={selectedContractor[0]._id}>
+                                  {selectedContractor[0].first_name}
                                 </MenuItem>
-                                {ProjectData &&
-                                  ProjectData.map((items) => (
-                                    <MenuItem
-                                      key={items._id}
-                                      value={items.projectName}
-                                      onClick={() => removeDymanic()}
-                                    >
-                                      {items.projectName}
-                                    </MenuItem>
-                                  ))}
                               </Select>
-                            </FormControl>
-
-                            {dynamicfield ? (
-                              <div className="d-flex align-items-center gap-1">
-                                <TextField
-                                  required
-                                  className="mb-3"
-                                  value={projectName}
-                                  onChange={(e) =>
-                                    setProjectName(e.target.value)
-                                  }
-                                  label="Project Name"
-                                  fullWidth
-                                />
-                              </div>
-                            ) : null}
-
-                            <TextField
-                              required
-                              className="mb-3"
-                              value={taskName}
-                              onChange={validation}
-                              label="Task Name"
-                              fullWidth
-                              type="text"
-                            />
-                            {ShowErrorMessage && (
-                              <Alert
-                                variant="danger"
-                                className="error nameValidationErrorBox"
+                            ) : (
+                              <Select
+                                value={contractorName}
+                                onChange={(e) =>
+                                  setContractorName(e.target.value)
+                                }
+                                required
                               >
-                                The first letter of the task should be an
-                                alphabet
-                              </Alert>
+                                <MenuItem value="" disabled>
+                                  Select Contractor
+                                </MenuItem>
+                                <MenuItem value="addNew">
+                                  <Link
+                                    to={`/adminContractorList`}
+                                    className="addCont"
+                                  >
+                                    <MdAddCircleOutline /> Add New Contractor
+                                  </Link>
+                                </MenuItem>
+                                {contractorData.map((item) => (
+                                  <MenuItem key={item._id} value={item._id}>
+                                    {item.first_name}
+                                  </MenuItem>
+                                ))}
+                              </Select>
                             )}
+                          </FormControl>
 
-                            <TextField
-                              required
-                              className="mb-3"
-                              value={taskDesc}
-                              onChange={(e) => setTaskDesc(e.target.value)}
-                              label="Description"
-                              fullWidth
-                            />
-
-                            <FormControl className={'mb-3'}>
-                              <InputLabel>Select Contractor</InputLabel>
-                              {SelectProjectName && selectedContractor ? (
-                                <Select
-                                  value={selectedContractor[0]._id}
-                                  onChange={(e) =>
-                                    setContractorName(e.target.value)
-                                  }
-                                  disabled
-                                >
-                                  <MenuItem value={selectedContractor[0]._id}>
-                                    {selectedContractor[0].first_name}
-                                  </MenuItem>
-                                </Select>
-                              ) : (
-                                <Select
-                                  value={contractorName}
-                                  onChange={(e) =>
-                                    setContractorName(e.target.value)
-                                  }
-                                  required
-                                >
-                                  <MenuItem value="" disabled>
-                                    Select Contractor
-                                  </MenuItem>
-                                  <MenuItem value="addNew">
-                                    <Link
-                                      to={`/adminContractorList`}
-                                      className="addCont"
-                                    >
-                                      <MdAddCircleOutline /> Add New Contractor
-                                    </Link>
-                                  </MenuItem>
-                                  {contractorData.map((item) => (
-                                    <MenuItem key={item._id} value={item._id}>
-                                      {item.first_name}
-                                    </MenuItem>
-                                  ))}
-                                </Select>
-                              )}
-                            </FormControl>
-
-                            <Button
-                              variant="contained"
-                              color="primary"
-                              type="submit"
-                              className="mt-2 formbtn updatingBtn globalbtnColor"
-                              disabled={ShowErrorMessage}
-                            >
-                              {isSubmiting ? 'SUBMITTING' : 'SUBMIT '}
-                            </Button>
-                          </Form>
-                        </div>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            className="mt-2 formbtn updatingBtn globalbtnColor"
+                            disabled={ShowErrorMessage}
+                          >
+                            {isSubmiting ? 'SUBMITTING' : 'SUBMIT '}
+                          </Button>
+                        </Form>
                       </Box>
                     </Modal>
                   </Tab>

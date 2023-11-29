@@ -20,6 +20,15 @@ socket.emit('connectionForNotify', () => {
 
 const TaskRouter = express.Router();
 
+const truncateText = (text, maxLength) => {
+  if (text.length <= maxLength) {
+    return text;
+  } else {
+    // If the text exceeds the maxLength, truncate and append "..."
+    return text.slice(0, maxLength) + '...';
+  }
+};
+
 TaskRouter.get(
   '/project',
   isAuth,
@@ -139,8 +148,16 @@ TaskRouter.post(
           const checkMail = await sendEmailNotify(options);
           if (checkMail) {
             const notifyUser = [userSelect._id, agent._id];
-            const message = `New Task Created <div><div><b>Project Name</b> - ${options.projectName}</div>  <div><b>Task Name</b> - ${options.taskName}</div>  <div><b>Task Description</b> - ${options.taskDescription}</div></div>`;
-            // for (const adminemailid of options.to) {
+            const message = `New Task Created <div><div><b>Project Name</b> - ${truncateText(
+              options.projectName,
+              30
+            )}</div>  <div><b>Task Name</b> - ${truncateText(
+              options.taskName,
+              30
+            )}</div>  <div><b>Task Description</b> - ${truncateText(
+              options.taskDescription,
+              30
+            )}</div></div>`;
             const status = 'unseen';
             const type = 'project';
             for (const adminemailid of notifyUser) {
@@ -203,7 +220,16 @@ TaskRouter.post(
             // for (const adminemailid of options.to) {
 
             const notifyUser = [user._id, agent._id];
-            const message = `New Task Created <div><div><b>Project Name</b> - ${options.projectName}</div>  <div><b>Task Name</b> - ${options.taskName}</div>  <div><b>Task Description</b> - ${options.taskDescription}</div></div>`;
+            const message = `New Task Created <div><div><b>Project Name</b> - ${truncateText(
+              options.projectName,
+              30
+            )}</div>  <div><b>Task Name</b> - ${truncateText(
+              options.taskName,
+              30
+            )}</div>  <div><b>Task Description</b> - ${truncateText(
+              options.taskDescription,
+              30
+            )}</div></div>`;
             const status = 'unseen';
             const type = 'project';
             for (const adminemailid of notifyUser) {
@@ -335,7 +361,16 @@ TaskRouter.post(
           if (checkMail) {
             for (const adminemailid of allIds) {
               const notifyUser = adminemailid;
-              const message = `New Task Created <div><div><b>Project Name</b> - ${options.projectName}</div>  <div><b>Task Name</b> - ${options.taskName}</div>  <div><b>Task Description</b> - ${options.taskDescription}</div></div>`;
+              const message = `New Task Created <div><div><b>Project Name</b> - ${truncateText(
+                options.projectName,
+                30
+              )}</div>  <div><b>Task Name</b> - ${truncateText(
+                options.taskName,
+                30
+              )}</div>  <div><b>Task Description</b> - ${truncateText(
+                options.taskDescription,
+                30
+              )}</div></div>`;
               const status = 'unseen';
               const type = 'project';
               storeNotification(message, notifyUser, status, type);
@@ -403,7 +438,16 @@ TaskRouter.post(
           if (checkMail) {
             for (const adminemailid of allIds) {
               const notifyUser = adminemailid;
-              const message = `New Task Created <div><div><b>Project Name</b> - ${options.projectName}</div>  <div><b>Task Name</b> - ${options.taskName}</div>  <div><b>Task Description</b> - ${options.taskDescription}</div></div>`;
+              const message = `New Task Created <div><div><b>Project Name</b> - ${truncateText(
+                options.projectName,
+                30
+              )}</div>  <div><b>Task Name</b> - ${truncateText(
+                options.taskName,
+                30
+              )}</div>  <div><b>Task Description</b> - ${truncateText(
+                options.taskDescription,
+                30
+              )}</div></div>`;
               const status = 'unseen';
               const type = 'project';
               storeNotification(message, notifyUser, status, type);
@@ -511,7 +555,20 @@ TaskRouter.put(
           ...adminIds,
           ...superAdminIds,
         ];
-        const message = `Task Status Update Task Status- ${updateStatus.taskStatus}, Project Name - ${updateStatus.projectName},  Task Name - ${updateStatus.taskName},Description - ${updateStatus.taskDescription}`;
+        const message = `Task Status Update <div><div><b>Task Status</b> - ${truncateText(
+          updateStatus.taskStatus,
+          30
+        )}</div>  <div><b>Project Name</b> - ${truncateText(
+          updateStatus.projectName,
+          30
+        )}</div>  <div><b>Task Name</b> - ${truncateText(
+          updateStatus.taskName,
+          30
+        )}</div>
+        <div><b>Task Description</b> - ${truncateText(
+          updateStatus.taskDescription,
+          30
+        )}</div></div>`;
         const status = 'unseen';
         const type = 'project';
         for (const adminemailid of notifyUser) {
